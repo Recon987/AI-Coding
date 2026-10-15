@@ -4,6 +4,8 @@ import {
   calendarItems,
   dayKey,
   formatCoordinates,
+  holidayName,
+  RECURRENCE_LABEL,
 } from "../../shared/model.mjs";
 import type { Data, Page } from "../types";
 import { formatTime, SectionHead, Tag } from "../ui";
@@ -39,8 +41,6 @@ export function Briefing({
   const calls = data.calls.filter((c) => !c.done);
   const rows =
     filter === "overdue" ? overdue : filter === "today" ? dueToday : tasks;
-  const items = calendarItems(data);
-  const daily = items.filter((i) => dayKey(new Date(i.at)) === date);
   const weekStart = new Date(`${date}T12:00:00`);
   weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
   const week = Array.from({ length: 7 }, (_, index) => {
@@ -48,6 +48,14 @@ export function Briefing({
     day.setDate(day.getDate() + index);
     return day;
   });
+  const weekRangeStart = dayKey(week[0]);
+  const weekRangeEnd = dayKey(week[week.length - 1]);
+  const items = calendarItems(data, {
+    startDate: date < weekRangeStart ? date : weekRangeStart,
+    endDate: date > weekRangeEnd ? date : weekRangeEnd,
+  });
+  const daily = items.filter((i) => dayKey(new Date(i.at)) === date);
+  const holiday = holidayName(date);
   function chooseDate(value: string) {
     setDate(value);
     setExpandedDay(false);
@@ -312,6 +320,7 @@ export function Briefing({
                 }
               </b>
             </span>
+            {holiday && <Tag tone="red">{holiday}</Tag>}
           </div>
           {(expandedDay ? daily : daily.slice(0, 4)).map((row) => {
             const coordinates =
@@ -338,6 +347,9 @@ export function Briefing({
                   </strong>
                   <small>
                     {row.category}
+                    {row.recurrence && row.recurrence !== "none"
+                      ? ` · ${RECURRENCE_LABEL[row.recurrence]} 반복`
+                      : ""}
                     {row.done ? " · 완료" : ""}
                   </small>
                   {coordinates && (

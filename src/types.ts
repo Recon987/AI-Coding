@@ -1,6 +1,14 @@
 import type { Coordinates } from "../shared/model.mjs";
+export type EventRecurrence = "none" | "daily" | "weekly" | "monthly" | "yearly";
 export type Note = { id: string; title: string; body: string };
-export type Event = { id: string; title: string; at: string; done: boolean };
+export type Event = {
+  id: string;
+  title: string;
+  at: string;
+  done: boolean;
+  recurrence?: EventRecurrence;
+  repeatUntil?: string | null;
+};
 export type Call = Note & { phone: string; done: boolean };
 export type Folder = { id: string; title: string; path: string };
 export type Patrol = {
@@ -87,6 +95,14 @@ export type CalendarItem = {
   done: boolean;
   category: string;
   page: string;
+  recurrence?: EventRecurrence;
+  repeatUntil?: string | null;
+  occurrenceDate?: string;
+};
+export type HolidayEntry = {
+  date: string;
+  name: string;
+  substitute: boolean;
 };
 declare global {
   interface Window {

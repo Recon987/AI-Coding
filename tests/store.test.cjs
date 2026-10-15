@@ -362,3 +362,96 @@ test("브리핑 좌표는 순찰 원본의 변경·삭제를 반영하고 누락
   assert.doesNotMatch(briefing(data, date), /좌표:/);
   assert.throws(() => formatCoordinates({ latitude: 91, longitude: 0 }));
 });
+
+test("반복 일정은 복제 저장 없이 기간별 회차를 파생하고 월말·윤년·종료일을 지킨다", () => {
+  const monthly = {
+    id: "em",
+    title: "월간 안전점검",
+    at: "2026-01-31T09:30:00+09:00",
+    done: false,
+    recurrence: "monthly",
+    repeatUntil: "2026-04-30",
+  };
+  const d = { ...empty(), events: [monthly] };
+  const items = calendarItems(d, {
+    startDate: "2026-01-01",
+    endDate: "2026-06-01",
+  });
+  assert.equal(d.events.length, 1);
+  assert.deepEqual(
+    items.map((i) => dayKey(new Date(i.at))),
+    ["2026-01-31", "2026-02-28", "2026-03-31", "2026-04-30"],
+  );
+  assert.match(briefing(d, "2026-02-28"), /\[예정\/매월\].*월간 안전점검/);
+  assert.doesNotMatch(briefing(d, "2026-05-31"), /월간 안전점검/);
+
+  const leapYearly = {
+    id: "ey",
+    title: "윤년 시설점검",
+    at: "2028-02-29T10:00:00+09:00",
+    done: false,
+    recurrence: "yearly",
+    repeatUntil: "2030-03-01",
+  };
+  const yearlyItems = calendarItems(
+    { ...empty(), events: [leapYearly] },
+    { startDate: "2028-01-01", endDate: "2030-12-31" },
+  );
+  assert.deepEqual(
+    yearlyItems.map((i) => dayKey(new Date(i.at))),
+    ["2028-02-29", "2029-02-28", "2030-02-28"],
+  );
+
+  const febOcc = items.find((i) => dayKey(new Date(i.at)) === "2026-02-28");
+  const rem = reminderItems(d, Date.parse(febOcc.at) + 5000);
+  assert.equal(due(rem, Date.parse(febOcc.at) + 5000, new Set()).length, 1);
+});
+
+test("잘못된 반복 주기와 시작일 이전 종료일·비반복 종료일을 거부하고 기존 일정을 보존한다", () => {
+  const baseEvent = {
+    id: "e1",
+    title: "주간 회의",
+    at: "2026-10-15T09:00:00+09:00",
+    done: false,
+  };
+  for (const invalid of [
+    { ...baseEvent, recurrence: "hourly" },
+    { ...baseEvent, repeatUntil: "2026-10-20" },
+    { ...baseEvent, recurrence: "none", repeatUntil: "2026-10-20" },
+    { ...baseEvent, recurrence: "weekly", repeatUntil: "2026-10-14" },
+    { ...baseEvent, recurrence: "weekly", repeatUntil: "2026-02-30" },
+  ]) {
+    assert.throws(() => normalize({ ...empty(), events: [invalid] }));
+  }
+  const validRecurring = {
+    ...baseEvent,
+    recurrence: "weekly",
+    repeatUntil: "2026-11-15",
+  };
+  const roundtrip = normalize({
+    ...empty(),
+    events: [baseEvent, { ...validRecurring, id: "e2" }],
+  });
+  assert.deepEqual(roundtrip.events[0], baseEvent);
+  assert.deepEqual(roundtrip.events[1], { ...validRecurring, id: "e2" });
+});
+
+test("오프라인 법정공휴일·대체공휴일(양력 및 2025~2035 음력)을 계산하고 브리핑에 표시한다", () => {
+  const { holidayName, holidaysForYear } = require("../shared/model.mjs");
+  assert.equal(holidayName("2026-03-01"), "삼일절");
+  assert.equal(holidayName("2026-03-02"), "대체공휴일");
+  assert.equal(holidayName("2026-05-24"), "부처님오신날");
+  assert.equal(holidayName("2026-05-25"), "대체공휴일");
+  assert.equal(holidayName("2026-08-15"), "광복절");
+  assert.equal(holidayName("2026-08-17"), "대체공휴일");
+  assert.equal(holidayName("2026-09-25"), "추석");
+  assert.equal(holidayName("2026-09-28"), null);
+  assert.equal(holidayName("2025-05-05"), "어린이날 · 부처님오신날");
+  assert.equal(holidayName("2025-05-06"), "대체공휴일");
+  assert.equal(holidayName("2028-10-03"), "개천절 · 추석");
+  assert.equal(holidayName("2028-10-05"), "대체공휴일");
+  assert.ok(holidaysForYear(2026).length >= 15);
+  assert.throws(() => holidayName("2026-02-30"));
+  assert.throws(() => holidaysForYear(1800));
+  assert.match(briefing(empty(), "2026-03-01"), /2026-03-01 \(삼일절\) 업무 브리핑/);
+});

@@ -1,11 +1,29 @@
-import type { Data, CalendarItem } from "../src/types";
+import type {
+  Data,
+  CalendarItem,
+  Event,
+  EventRecurrence,
+  HolidayEntry,
+} from "../src/types";
 export const collections: string[];
+export const RECURRENCE: EventRecurrence[];
+export const RECURRENCE_LABEL: Record<EventRecurrence, string>;
 export function empty(): Data;
 export function normalize(input: unknown): Data;
 export function dayKey(date?: Date): string;
-export function calendarItems(data: Data): CalendarItem[];
+export function holidaysForYear(year: number): HolidayEntry[];
+export function holidayName(date: string): string | null;
+export function expandEventOccurrences(
+  event: Event,
+  range?: { startDate?: string; endDate?: string },
+): CalendarItem[];
+export function calendarItems(
+  data: Data,
+  range?: { startDate?: string; endDate?: string },
+): CalendarItem[];
 export function reminderItems(
   data: Data,
+  now?: number,
 ): { id: string; title: string; at: string; done: boolean }[];
 export function briefing(data: Data, date: string): string;
 

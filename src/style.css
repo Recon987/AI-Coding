@@ -2188,3 +2188,25 @@ button:has(> svg) {
   right: 0;
   z-index: 2;
 }
+
+.day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.holiday-day .day-number {
+  color: #ab5349;
+  font-weight: 600;
+}
+.holiday-label {
+  font-size: 9px;
+  color: #ab5349;
+  background: #fcebe5;
+  border-radius: 3px;
+  padding: 1px 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}

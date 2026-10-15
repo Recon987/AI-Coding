@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { empty, normalize, formatCoordinates } from "../shared/model.mjs";
+import {
+  empty,
+  normalize,
+  formatCoordinates,
+  RECURRENCE_LABEL,
+} from "../shared/model.mjs";
 import type { Data, Page } from "./types";
 import { Office } from "./components/Office";
 import { Briefing } from "./components/Briefing";
@@ -45,7 +50,7 @@ const subtitles: Record<Page, string> = {
   patrol: "현장의 확인 사항과 조치 내용을 기록하고 다음 업무로 연결합니다.",
   handover: "남은 조치와 담당자, 마감일을 한눈에 확인합니다.",
   submission: "서류 제출 기한을 일정과 함께 관리합니다.",
-  calendar: "일정·순찰·인수인계·제출 기한을 하나의 달력에서 확인합니다.",
+  calendar: "일정·순찰·인수인계·제출 기한과 공휴일·반복 일정을 확인합니다.",
   calls: "짧게 기록하고, 처리 여부를 남기세요.",
   notes: "업무 중 떠오른 생각과 확인할 내용을 모아둡니다.",
   folders: "자주 사용하는 업무 폴더를 바로 엽니다.",
@@ -211,7 +216,10 @@ function App() {
       id: e.id,
       page: "calendar" as Page,
       title: e.title,
-      text: "",
+      text:
+        e.recurrence && e.recurrence !== "none"
+          ? `${RECURRENCE_LABEL[e.recurrence]} 반복 ${e.repeatUntil || ""}`
+          : "",
     })),
     ...data.notes.map((n) => ({
       id: n.id,
@@ -282,7 +290,7 @@ function App() {
           <span className="offline-dot" />
           {api ? "내 PC에 저장" : "브라우저 체험 모드"}
           <small>오프라인 개인 업무 공간</small>
-          <span className="version">v0.4.0</span>
+          <span className="version">v0.5.0</span>
         </div>
       </aside>
       <main>
