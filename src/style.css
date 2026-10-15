@@ -2162,3 +2162,29 @@ button:has(> svg) {
   display: inline-flex;
   white-space: nowrap;
 }
+/* Keep the employee and edit action visible while narrow windows scroll dates/details. */
+.roster-table tbody th:first-child,
+.week-table tbody th:first-child {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 1;
+}
+.roster-table thead th:first-child,
+.week-table thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+.roster-table td:last-child {
+  position: sticky;
+  right: 0;
+  min-width: 64px;
+  background: white;
+  box-shadow: -1px 0 0 #e8ede3;
+}
+.roster-table thead th:last-child {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+}
