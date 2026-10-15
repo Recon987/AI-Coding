@@ -58,10 +58,69 @@ const path = require("node:path");
     await page.getByLabel("확인 사항").fill("안내판 추가 확인");
     await page.getByLabel("현장 조치").fill("통행 상태 확인");
     await page.getByLabel("확인 등급").selectOption("attention");
+    // DD input: partial, malformed and out-of-range values block saving.
+    await page.getByLabel("위도 (DD)", { exact: true }).fill("37.5");
+    assert.equal(
+      await page
+        .getByRole("button", { name: "순찰 저장", exact: true })
+        .isEnabled(),
+      false,
+    );
+    await page.getByLabel("경도 (DD)", { exact: true }).fill("181");
+    assert.equal(
+      await page
+        .getByRole("button", { name: "순찰 저장", exact: true })
+        .isEnabled(),
+      false,
+    );
+    await page.getByLabel("경도 (DD)", { exact: true }).fill("0x7f");
+    assert.equal(
+      await page
+        .getByRole("button", { name: "순찰 저장", exact: true })
+        .isEnabled(),
+      false,
+    );
+    await page.getByLabel("경도 (DD)", { exact: true }).fill("127.25");
+    assert.equal(
+      await page.getByLabel("DMS 변환 결과").textContent(),
+      "N 37° 30′ 0″, E 127° 15′ 0″",
+    );
+    await page.getByLabel("좌표 입력 형식").selectOption("dms");
+    assert.equal(
+      await page.getByLabel("DD 변환 결과").textContent(),
+      "위도 37.5°, 경도 127.25°",
+    );
+    await page.getByLabel("좌표 입력 형식").selectOption("dd");
     await page.getByRole("button", { name: "순찰 저장", exact: true }).click();
     await page
       .getByRole("heading", { name: "오전 탐방로 순찰", exact: true })
       .waitFor();
+    assert.deepEqual(
+      (await page.evaluate(() => window.workdesk.load())).patrols[0]
+        .coordinates,
+      { latitude: 37.5, longitude: 127.25 },
+    );
+    assert.equal(
+      await page.getByLabel("위도 (DD)", { exact: true }).inputValue(),
+      "",
+    );
+    await page.getByLabel("순찰 검색").fill("127.25");
+    assert.equal(await page.locator(".record").count(), 1);
+    await page.getByLabel("순찰 검색").fill("W 127°");
+    assert.equal(await page.locator(".record").count(), 0);
+    await page.getByLabel("순찰 검색").fill("N 37° 30′");
+    assert.equal(await page.locator(".record").count(), 1);
+    await page.getByLabel("순찰 검색").fill("");
+    await page.getByLabel("기록 통합 검색").fill("127.25");
+    await page.locator(".search-result").click();
+    await page
+      .getByRole("heading", { name: "순찰 기록 수정", exact: true })
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("위도 (DD)", { exact: true }).inputValue(),
+      "37.5",
+    );
+    await page.getByRole("button", { name: "수정 취소", exact: true }).click();
     await page
       .getByRole("button", { name: "인수인계로 연결", exact: true })
       .click();
@@ -127,6 +186,10 @@ const path = require("node:path");
     data = JSON.parse(fs.readFileSync(backup, "utf8"));
     assert.equal(data.version, 2);
     assert.equal(data.patrols[0].route, "안내소 → 전망대");
+    assert.deepEqual(data.patrols[0].coordinates, {
+      latitude: 37.5,
+      longitude: 127.25,
+    });
     assert.equal(data.calls[0].done, true);
     data.notes[0].title = "복원 확인 메모";
     fs.writeFileSync(backup, JSON.stringify(data));
@@ -154,11 +217,41 @@ const path = require("node:path");
     await nav("현장 순찰");
     await page.getByRole("button", { name: "수정", exact: true }).click();
     await page.getByLabel("기록 제목").fill("오전 탐방로 순찰 수정");
+    assert.equal(
+      await page.getByLabel("경도 (DD)", { exact: true }).inputValue(),
+      "127.25",
+    );
+    await page.getByLabel("좌표 입력 형식").selectOption("dms");
+    await page.getByLabel("위도 분", { exact: true }).fill("60");
+    assert.equal(
+      await page
+        .getByRole("button", { name: "변경 저장", exact: true })
+        .isEnabled(),
+      false,
+    );
+    await page.getByLabel("위도 분", { exact: true }).fill("45");
+    await page.getByLabel("위도 방향").selectOption("S");
+    await page.getByLabel("경도 방향").selectOption("W");
+    assert.equal(
+      await page.getByLabel("DD 변환 결과").textContent(),
+      "위도 -37.75°, 경도 -127.25°",
+    );
     await page.getByRole("button", { name: "변경 저장", exact: true }).click();
     await page
       .getByRole("heading", { name: "오전 탐방로 순찰 수정" })
       .waitFor();
     await nav("업무 브리핑");
+    await page
+      .locator(".timeline-row")
+      .filter({ hasText: "위도 -37.75°, 경도 -127.25°" })
+      .waitFor();
+    await page
+      .getByRole("button", { name: "브리핑 미리보기", exact: true })
+      .click();
+    assert.match(
+      await page.locator(".report-preview pre").textContent(),
+      /S 37° 45′ 0″, W 127° 15′ 0″/,
+    );
     const report = path.join(dir, "briefing.txt");
     await app.evaluate(({ dialog }, file) => {
       dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
@@ -166,6 +259,14 @@ const path = require("node:path");
     await page.getByRole("button", { name: "텍스트로 내보내기" }).click();
     await page.getByText("브리핑을 텍스트 파일로 저장했습니다.").waitFor();
     assert.match(fs.readFileSync(report, "utf8"), /오전 탐방로 순찰 수정/);
+    assert.match(
+      fs.readFileSync(report, "utf8"),
+      /위도 -37.75°, 경도 -127.25°/,
+    );
+    assert.match(
+      fs.readFileSync(report, "utf8"),
+      /S 37° 45′ 0″, W 127° 15′ 0″/,
+    );
     if (process.env.PARK_SCREENSHOT_PATH) {
       await page.setViewportSize({ width: 1440, height: 1000 });
       await page.evaluate(() => window.scrollTo(0, 0));
@@ -174,6 +275,52 @@ const path = require("node:path");
         fullPage: true,
       });
     }
+    // Optional coordinates: legacy-shaped record, valid zero pair, explicit clearing.
+    await nav("현장 순찰");
+    await page.getByLabel("기록 제목").fill("좌표 없는 순찰");
+    await page.getByLabel("순찰 구간").fill("관리 거점");
+    await page.getByLabel("기록자").fill("시험 담당");
+    await page.getByRole("button", { name: "순찰 저장", exact: true }).click();
+    const optional = page
+      .locator(".record")
+      .filter({
+        has: page.getByRole("heading", { name: "좌표 없는 순찰", exact: true }),
+      });
+    await optional.waitFor();
+    assert.equal(
+      (await page.evaluate(() => window.workdesk.load())).patrols[1]
+        .coordinates,
+      undefined,
+    );
+    await optional.getByRole("button", { name: "수정", exact: true }).click();
+    await page.getByLabel("위도 (DD)", { exact: true }).fill("0");
+    await page.getByLabel("경도 (DD)", { exact: true }).fill("0");
+    await page.getByRole("button", { name: "변경 저장", exact: true }).click();
+    await optional.getByText("위도 0°, 경도 0°", { exact: false }).waitFor();
+    assert.deepEqual(
+      (await page.evaluate(() => window.workdesk.load())).patrols[1]
+        .coordinates,
+      { latitude: 0, longitude: 0 },
+    );
+    await optional.getByRole("button", { name: "수정", exact: true }).click();
+    await page
+      .getByRole("button", { name: "좌표 지우기", exact: true })
+      .click();
+    await page.getByRole("button", { name: "변경 저장", exact: true }).click();
+    await page
+      .getByRole("heading", { name: "순찰 기록 등록", exact: true })
+      .waitFor();
+    assert.equal(
+      (await page.evaluate(() => window.workdesk.load())).patrols[1]
+        .coordinates,
+      null,
+    );
+    assert.equal(await optional.locator(".coordinate-summary").count(), 0);
+    assert.deepEqual(
+      (await page.evaluate(() => window.workdesk.load())).patrols[0]
+        .coordinates,
+      { latitude: -37.75, longitude: -127.25 },
+    );
     // Verify actual process restart, not only a renderer reload.
     const saved = await page.evaluate(() => window.workdesk.load());
     await app.close();
@@ -202,7 +349,7 @@ const path = require("node:path");
     await reopened.getByText(dir, { exact: true }).waitFor();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: 순찰→인수인계, 제출·달력 연계, 검색, 완료 기록, 백업·복원/잘못된 백업 거부, 브리핑 출력, 재실행 보존, 폴더 등록",
+      "PASS: DD/DMS 좌표 입력·검증·수정·검색·지우기·브리핑, 순찰→인수인계, 제출·달력 연계, 검색, 완료 기록, 백업·복원/잘못된 백업 거부, 브리핑 출력, 재실행 보존, 폴더 등록",
     );
   } finally {
     if (app) await app.close();

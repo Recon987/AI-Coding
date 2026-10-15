@@ -94,6 +94,19 @@ export function dmsToDecimal(input, axis) {
   return value === 0 ? 0 : ["S", "W"].includes(hemisphere) ? -value : value;
 }
 
+export function formatCoordinates(input, format = "dd") {
+  const value = validateCoordinates(input);
+  ensure(["dd", "dms"].includes(format), "좌표 표시 형식을 확인하세요.");
+  if (format === "dd")
+    return `위도 ${value.latitude}°, 경도 ${value.longitude}°`;
+  return ["latitude", "longitude"]
+    .map((axis) => {
+      const dms = decimalToDms(value[axis], axis);
+      return `${dms.hemisphere} ${dms.degrees}° ${dms.minutes}′ ${dms.seconds}″`;
+    })
+    .join(", ");
+}
+
 // v1 -> v2 is additive and returns a new object without modifying the input.
 export function normalize(input) {
   ensure(
@@ -251,7 +264,7 @@ export function briefing(data, date) {
     `순찰 기록 (${patrols.length})`,
     ...patrols.map(
       (p) =>
-        `- ${p.title} | ${p.route} | ${p.observer}\n  확인: ${p.findings || "없음"}\n  현장 조치: ${p.action || "없음"}`,
+        `- ${p.title} | ${p.route} | ${p.observer}\n  확인: ${p.findings || "없음"}\n  현장 조치: ${p.action || "없음"}${p.coordinates ? `\n  좌표: ${formatCoordinates(p.coordinates)} | ${formatCoordinates(p.coordinates, "dms")}` : ""}`,
     ),
     "",
     `미완료 인계·제출 (${due.length}, 기준일까지 마감)`,

@@ -1,10 +1,25 @@
-# v0.2 검증 결과 — 2026-10-15 (한국 시간)
+# 검증 결과 — 2026-10-15 (한국 시간)
+
+## v0.3 / TASK-v0.3-01
+
+- Step 1: 협업 문서 추가, npm test 9/9 및 npm run test:desktop 통과 후 푸시.
+- Part A: `501dd3928fd647dabe5c2e4ee045aa27f412a889`, npm test 12/12 및 npm run test:desktop 통과. [Windows 소스·패키징 검증도 성공](https://github.com/Recon987/AI-Coding/actions/runs/38739135156).
+- Part B: 이번 커밋의 소스에서 Linux Node.js 24, npm test **13/13**, npm run test:desktop **통과**. TypeScript 검사와 Vite 프로덕션 빌드 포함. 실제 Electron 화면의 DMS 입력 배치도 확인했다.
+- Part B Windows 자동 빌드는 푸시 후 실행된다. 위 Part A 결과를 Part B Windows 검증으로 간주하지 않는다. [최신 Windows 실행](https://github.com/Recon987/AI-Coding/actions/workflows/windows-build.yml)에서 해당 커밋의 성공 여부를 확인한다.
+
+추가 검증: DD/DMS의 양쪽 반구·0·±90/180 경계·소수 초·자리올림; NaN/Infinity/문자·범위·DMS 방향 오류 거부; 좌표 없는 v0.2와 null/0도/유효 좌표 저장 왕복; 잘못된 좌표 저장 시 기존 파일 보존. 브리핑은 좌표 변경·제거를 순찰 원본에서 반영한다.
+
+Electron 시나리오: DD 부분 입력/181도/16진수 오류 차단 → DD 저장 → DMS 표시·형식 전환 → 순찰/통합 좌표 검색 → 백업·복원에서 좌표 유지 → DMS 분 60 거부 → S/W 좌표 수정 → 화면·미리보기·TXT 대조 → 좌표 없는 기록 등록 → 0도 저장 → 좌표 지우기 → 프로세스 재실행 보존. 기존 인계·제출·달력·전화·메모·복원 오류·폴더 시나리오도 함께 통과했다. 임시 프로필과 가상 자료만 사용했다.
+
+좌표계/EPSG 변환이나 지도 위치 정확도는 검사 대상이 아니다. 새 외부 패키지·API·IPC는 추가하지 않았으며 renderer 보안 설정, 저장 한도·백업 정책은 그대로다.
+
+## v0.2 기준선 검증 결과 — 2026-10-15 (한국 시간)
 
 검증한 소스 커밋: `93faf101181ff52698d1f69add71b21a1e58bd90`.
 
 [Windows 빌드 실행](https://github.com/Recon987/AI-Coding/actions/runs/38701817780)
 
-## 통과
+### 통과
 
 - Linux 클라우드: Node.js 24, 데이터 테스트 9개, TypeScript/프로덕션 빌드, 실제 Electron 업무 시나리오.
 - GitHub Windows 러너: 잠금 의존성 설치, 데이터 테스트 9개, 소스 실행 Electron 업무 시나리오.
@@ -14,8 +29,8 @@
 
 업무 시나리오: 메모/전화 등록, 순찰→인계 연결과 중복 방지, 제출 기한과 달력 원본 연계, 통합 검색, 완료 일시, 백업·복원, 잘못된 순찰 참조의 복원 거부, 브리핑 TXT, 프로세스 종료/재실행 보존, 폴더 등록. 파일 선택/확인 대화상자만 테스트에서 대체했다.
 
-## 별도 확인 필요
+### 별도 확인 필요
 
 NSIS 설치 마법사 및 portable 바깥 실행기의 실기기 실행, Windows 10, 기관 보안 프로그램, 실제 OS 알림 표시·집중 지원, 탐색기 실행, 높은 DPI와 다중 모니터. 자동 검증은 기관 배포 승인을 뜻하지 않는다. 코드 서명 및 저장 암호화는 미구현이다.
 
-첫 Windows 실행은 electron-builder의 자동 게시 동작 때문에 빌드 마지막에 실패했다. `--publish never`를 명시하고 NSIS/portable 대상을 모두 지정한 뒤 위 실행에서 통과했다. 이후 코드는 변경하지 않았으며 이 문서는 결과만 추가한다.
+첫 Windows 실행은 electron-builder의 자동 게시 동작 때문에 빌드 마지막에 실패했다. `--publish never`를 명시하고 NSIS/portable 대상을 모두 지정한 뒤 위 실행에서 통과했다. 이 항목은 v0.2 당시의 검증 기록이다.

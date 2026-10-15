@@ -1,3 +1,5 @@
+import { formatCoordinates } from "../../shared/model.mjs";
+import { CoordinateInput } from "./CoordinateInput";
 import { useState } from "react";
 import type { Data, Patrol, Save, Task } from "../types";
 import {
@@ -35,17 +37,26 @@ export function Patrols({
   const [draft, setDraft] = useState(
     () => data.patrols.find((p) => p.id === initialId) || blank(),
   );
+  const [editorKey, setEditorKey] = useState(0);
+  const [coordinateError, setCoordinateError] = useState("");
+  const resetDraft = (value: Patrol) => {
+    setDraft(value);
+    setCoordinateError("");
+    setEditorKey((key) => key + 1);
+  };
   const [query, setQuery] = useState("");
-  const patch = (values: Partial<Patrol>) => setDraft({ ...draft, ...values });
+  const patch = (values: Partial<Patrol>) =>
+    setDraft((current) => ({ ...current, ...values }));
   const rows = [...data.patrols]
     .filter((p) =>
-      `${p.title} ${p.route} ${p.observer} ${p.findings}`
+      `${p.title} ${p.route} ${p.observer} ${p.findings} ${p.action} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`
         .toLowerCase()
         .includes(query.toLowerCase()),
     )
     .sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (coordinateError) return;
     const item = {
       ...draft,
       id: draft.id || crypto.randomUUID(),
@@ -62,7 +73,7 @@ export function Patrols({
           : [...data.patrols, item],
       })
     )
-      setDraft(blank());
+      resetDraft(blank());
   }
   async function handover(p: Patrol) {
     const existing = data.tasks.find((t) => t.patrolId === p.id && !t.done);
@@ -94,7 +105,7 @@ export function Patrols({
         </SectionHead>
         <input
           aria-label="순찰 검색"
-          placeholder="구간, 기록자, 확인 사항 검색"
+          placeholder="구간, 기록자, 확인 사항, 좌표 검색"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -128,6 +139,13 @@ export function Patrols({
                 <strong>현장 조치</strong> {p.action}
               </p>
             )}
+            {p.coordinates && (
+              <p className="coordinate-summary">
+                {formatCoordinates(p.coordinates)}
+                <br />
+                {formatCoordinates(p.coordinates, "dms")}
+              </p>
+            )}
             <p className="source">기록자 · {p.observer}</p>
             <div className="record-actions">
               <button
@@ -139,7 +157,7 @@ export function Patrols({
                   ? "후속 조치 보기"
                   : "인수인계로 연결"}
               </button>
-              <button disabled={busy} onClick={() => setDraft(p)}>
+              <button disabled={busy} onClick={() => resetDraft(p)}>
                 수정
               </button>
               <button
@@ -160,7 +178,7 @@ export function Patrols({
                         ),
                       })
                     ) {
-                      if (draft.id === p.id) setDraft(blank());
+                      if (draft.id === p.id) resetDraft(blank());
                     }
                   }
                 }}
@@ -226,6 +244,15 @@ export function Patrols({
             }}
           />
         </Field>
+        <CoordinateInput
+          key={editorKey}
+          initial={draft.coordinates}
+          busy={busy}
+          onChange={(coordinates, error) => {
+            setCoordinateError(error);
+            if (!error) patch({ coordinates });
+          }}
+        />
         <Field label="확인 사항">
           <textarea
             rows={4}
@@ -247,14 +274,14 @@ export function Patrols({
           개인 업무 기록입니다. 긴급 상황은 기관의 보고·대응 절차를 이용하세요.
         </p>
         <div className="form-actions">
-          <button className="primary" disabled={busy}>
+          <button className="primary" disabled={busy || !!coordinateError}>
             {draft.id ? "변경 저장" : "순찰 저장"}
           </button>
           {draft.id && (
             <button
               type="button"
               disabled={busy}
-              onClick={() => setDraft(blank())}
+              onClick={() => resetDraft(blank())}
             >
               수정 취소
             </button>

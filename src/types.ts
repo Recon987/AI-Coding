@@ -1,8 +1,10 @@
+import type { Coordinates } from "../shared/model.mjs";
 export type Note = { id: string; title: string; body: string };
 export type Event = { id: string; title: string; at: string; done: boolean };
 export type Call = Note & { phone: string; done: boolean };
 export type Folder = { id: string; title: string; path: string };
 export type Patrol = {
+  coordinates?: Coordinates | null;
   id: string;
   title: string;
   at: string;

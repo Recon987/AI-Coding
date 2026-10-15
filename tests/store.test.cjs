@@ -341,3 +341,24 @@ test("v0.2 순찰 누락/null 좌표와 0도 좌표는 손실 없이 저장·백
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("브리핑 좌표는 순찰 원본의 변경·삭제를 반영하고 누락 시 생략한다", () => {
+  const { formatCoordinates } = require("../shared/model.mjs");
+  const data = {
+    ...empty(),
+    patrols: [
+      { ...patrol, coordinates: { latitude: 37.5, longitude: 127.25 } },
+    ],
+  };
+  const date = dayKey(new Date(patrol.at));
+  assert.match(
+    briefing(data, date),
+    /위도 37.5°, 경도 127.25° \| N 37° 30′ 0″, E 127° 15′ 0″/,
+  );
+  data.patrols[0].coordinates = { latitude: 0, longitude: -127.25 };
+  assert.match(briefing(data, date), /위도 0°, 경도 -127.25°/);
+  assert.doesNotMatch(briefing(data, date), /37.5/);
+  delete data.patrols[0].coordinates;
+  assert.doesNotMatch(briefing(data, date), /좌표:/);
+  assert.throws(() => formatCoordinates({ latitude: 91, longitude: 0 }));
+});

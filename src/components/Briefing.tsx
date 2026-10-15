@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { briefing, dayKey } from "../../shared/model.mjs";
+import { briefing, dayKey, formatCoordinates } from "../../shared/model.mjs";
 import type { Data, Page } from "../types";
 import { Empty, formatTime, SectionHead, Tag } from "../ui";
 export function Briefing({
@@ -160,12 +160,16 @@ export function Briefing({
               title: p.title,
               at: p.at,
               label: p.route,
+              coordinates: p.coordinates
+                ? `${formatCoordinates(p.coordinates)} | ${formatCoordinates(p.coordinates, "dms")}`
+                : "",
               page: "patrol",
             })),
             ...events.map((e) => ({
               id: e.id,
               title: e.title,
               at: e.at,
+              coordinates: "",
               label: e.done ? "완료 일정" : "예정 일정",
               page: "calendar",
             })),
@@ -188,6 +192,11 @@ export function Briefing({
                 <div>
                   <strong>{row.title}</strong>
                   <small>{row.label}</small>
+                  {row.coordinates && (
+                    <small className="coordinate-summary">
+                      {row.coordinates}
+                    </small>
+                  )}
                 </div>
               </button>
             ))}

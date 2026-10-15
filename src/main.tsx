@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { empty, normalize } from "../shared/model.mjs";
+import { empty, normalize, formatCoordinates } from "../shared/model.mjs";
 import type { Data, Page } from "./types";
 import { Briefing } from "./components/Briefing";
 import { Patrols } from "./components/Patrols";
@@ -164,7 +164,7 @@ function App() {
       id: p.id,
       page: "patrol" as Page,
       title: p.title,
-      text: `${p.route} ${p.observer} ${p.findings} ${p.action}`,
+      text: `${p.route} ${p.observer} ${p.findings} ${p.action} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`,
     })),
     ...data.tasks.map((t) => ({
       id: t.id,
@@ -244,7 +244,7 @@ function App() {
           <span className="offline-dot" />
           {api ? "내 PC에 저장" : "브라우저 체험 모드"}
           <small>기록이 다음 업무의 시작이 됩니다.</small>
-          <span className="version">v0.2 · 현장과 사무를 연결</span>
+          <span className="version">v0.3 · 현장과 사무를 연결</span>
         </div>
       </aside>
       <main>

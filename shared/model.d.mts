@@ -28,3 +28,8 @@ export function dmsToDecimal(
   input: DmsCoordinate,
   axis: CoordinateAxis,
 ): number;
+
+export function formatCoordinates(
+  input: Coordinates,
+  format?: "dd" | "dms",
+): string;
