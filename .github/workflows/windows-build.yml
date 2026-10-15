@@ -20,8 +20,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: "24"
           cache: npm
@@ -35,6 +35,11 @@ jobs:
         run: npm run package:win
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - name: Verify packaged Windows app
+        shell: pwsh
+        run: |
+          $env:PARK_TEST_EXECUTABLE = (Resolve-Path "release/win-unpacked/공원 업무 수첩.exe").Path
+          node tests/desktop-smoke.cjs
       - name: Calculate checksums
         shell: pwsh
         run: |

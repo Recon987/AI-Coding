@@ -10,13 +10,13 @@ const path = require("node:path");
   let app;
   const launch = () =>
     electron.launch({
-      executablePath: require("electron"),
+      executablePath: process.env.PARK_TEST_EXECUTABLE || require("electron"),
       args: [
         ...(process.platform === "linux"
           ? ["--no-sandbox", "--ozone-platform=headless"]
           : []),
         "--user-data-dir=" + path.join(dir, "profile"),
-        root,
+        ...(process.env.PARK_TEST_EXECUTABLE ? [] : [root]),
       ],
       timeout: 30000,
       env: {
@@ -166,12 +166,14 @@ const path = require("node:path");
     await page.getByRole("button", { name: "텍스트로 내보내기" }).click();
     await page.getByText("브리핑을 텍스트 파일로 저장했습니다.").waitFor();
     assert.match(fs.readFileSync(report, "utf8"), /오전 탐방로 순찰 수정/);
-    await page.setViewportSize({ width: 1440, height: 1000 });
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({
-      path: path.join(root, "docs", "workdesk-v0.2.png"),
-      fullPage: true,
-    });
+    if (process.env.PARK_SCREENSHOT_PATH) {
+      await page.setViewportSize({ width: 1440, height: 1000 });
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.screenshot({
+        path: process.env.PARK_SCREENSHOT_PATH,
+        fullPage: true,
+      });
+    }
     // Verify actual process restart, not only a renderer reload.
     const saved = await page.evaluate(() => window.workdesk.load());
     await app.close();
