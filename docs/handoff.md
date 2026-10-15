@@ -37,8 +37,9 @@ Step 1 커밋·푸시 완료: b8711cf942d8244d8cc88787bd423e5be5a2cee5.
 Step 2 커밋·푸시 완료: 501dd3928fd647dabe5c2e4ee045aa27f412a889.
 Step 2 / Part A: npm test 12/12 통과; npm run test:desktop 통과. 추가 3개 테스트는 DD/DMS 정확도·자리올림, 잘못된 좌표 거부, v0.2 누락/null·0도·유효 좌표 왕복 및 잘못된 저장 시 원본 보존을 검증한다.
 
-Step 3 / Part B 완료: npm test 13/13 및 npm run test:desktop 통과. CoordinateInput의 부분 입력·범위 오류 저장 차단, DD/DMS 실시간 변환, 수정·검색·좌표 제거, 브리핑 화면·TXT, 백업·복원·재실행 검증 완료. 앱 0.3.0 / 자료 v2. README/validation 갱신. 이 문서와 함께 즉시 커밋·푸시한다.
-Part A Windows CI 성공: https://github.com/Recon987/AI-Coding/actions/runs/38739135156 . Part B Windows CI는 푸시 후 확인 필요.
+Step 3 커밋·푸시 완료: bfc64f135cf4b79021280212cea3a3d9658ecf01.
+Step 3 / Part B 완료: npm test 13/13 및 npm run test:desktop 통과. CoordinateInput의 부분 입력·범위 오류 저장 차단, DD/DMS 실시간 변환, 수정·검색·좌표 제거, 브리핑 화면·TXT, 백업·복원·재실행 검증 완료. 앱 0.3.0 / 자료 v2. README/validation 갱신·푸시 완료. 이번 문서 후속 커밋은 검증 증빙만 추가한다.
+Part A Windows CI 성공: https://github.com/Recon987/AI-Coding/actions/runs/38739135156 . Part B Windows CI도 성공: https://github.com/Recon987/AI-Coding/actions/runs/38740063182 . 단위 테스트 13/13, 소스 및 패키징된 Electron 스모크 통과. 설치형/portable 0.3.0 및 SHA256SUMS: https://github.com/Recon987/AI-Coding/actions/runs/38740063182/artifacts/11976441150 (GitHub 로그인, 보관 14일).
 
 ## 최신 인계 패킷
 
@@ -46,9 +47,9 @@ Part A Windows CI 성공: https://github.com/Recon987/AI-Coding/actions/runs/387
 
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (main)
-- **Latest Pushed Commit**: 501dd3928fd647dabe5c2e4ee045aa27f412a889 - feat: add offline coordinate model (TASK-v0.3-01 Part A)
-- **Completed Steps & Modified Files**: Step 1·2 푸시 완료. Step 3 완료·커밋 대상: shared/model.*, src/types.ts, src/components/{CoordinateInput,Patrols,Briefing}.tsx, src/main.tsx, src/style.css, tests/{store.test,desktop-smoke}.cjs, package*.json, README.md, docs/{validation,handoff}.md.
+- **Latest Pushed Commit**: bfc64f135cf4b79021280212cea3a3d9658ecf01 - feat: integrate patrol coordinates and briefing (TASK-v0.3-01 Part B)
+- **Completed Steps & Modified Files**: Step 1~3 푸시 완료: shared/model.*, src/types.ts, src/components/{CoordinateInput,Patrols,Briefing}.tsx, src/main.tsx, src/style.css, tests/{store.test,desktop-smoke}.cjs, package*.json, README.md, docs/{validation,handoff}.md.
 - **Changed Interfaces / Schema Diff**: Patrol.coordinates?: Coordinates | null; formatCoordinates(input, format?) 공통 표시 추가. 기존 변환 함수 유지. 새 IPC/의존성 없음. 앱 0.3.0, 자료 v2.
-- **Test Status**: npm test 13/13, npm run test:desktop 통과. Part A Windows 성공, Part B Windows CI는 푸시 후 확인.
-- **Remaining Work for Gemini**: 요청한 Step 1~3 구현은 완료. Part B Windows CI 결과 및 기관 실기기 확인. 다음 과제는 위 백로그에서 선택(암호화/트레이/법령 등); EPSG 변환과 혼동하지 말 것.
-- **Modified Code Snippets (if uncommitted)**: 위 Step 3 파일을 이 문서와 함께 즉시 커밋·푸시. 미완성 코드 없음.
+- **Test Status**: npm test 13/13, npm run test:desktop 통과. Part B Windows에서도 두 검사 통과 및 패키징된 EXE 스모크 통과. 다운로드 업로드 완료.
+- **Remaining Work for Gemini**: 요청한 Step 1~3 및 Windows 검증 완료. 기관 실기기에서 설치/알림/DPI/보안 프로그램 확인 필요. 다음 과제는 위 백로그에서 선택(암호화/트레이/법령 등); EPSG 변환과 혼동하지 말 것.
+- **Modified Code Snippets (if uncommitted)**: 미완성 코드 없음. 이 증빙 갱신은 docs/handoff.md와 docs/validation.md만 변경하여 커밋·푸시한다.

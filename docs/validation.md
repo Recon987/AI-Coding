@@ -4,8 +4,10 @@
 
 - Step 1: 협업 문서 추가, npm test 9/9 및 npm run test:desktop 통과 후 푸시.
 - Part A: `501dd3928fd647dabe5c2e4ee045aa27f412a889`, npm test 12/12 및 npm run test:desktop 통과. [Windows 소스·패키징 검증도 성공](https://github.com/Recon987/AI-Coding/actions/runs/38739135156).
-- Part B: 이번 커밋의 소스에서 Linux Node.js 24, npm test **13/13**, npm run test:desktop **통과**. TypeScript 검사와 Vite 프로덕션 빌드 포함. 실제 Electron 화면의 DMS 입력 배치도 확인했다.
-- Part B Windows 자동 빌드는 푸시 후 실행된다. 위 Part A 결과를 Part B Windows 검증으로 간주하지 않는다. [최신 Windows 실행](https://github.com/Recon987/AI-Coding/actions/workflows/windows-build.yml)에서 해당 커밋의 성공 여부를 확인한다.
+- Part B: `bfc64f135cf4b79021280212cea3a3d9658ecf01` 소스에서 Linux Node.js 24, npm test **13/13**, npm run test:desktop **통과**. TypeScript 검사와 Vite 프로덕션 빌드 포함. 실제 Electron 화면의 DMS 입력 배치도 확인했다.
+- Part B [Windows 실행 성공](https://github.com/Recon987/AI-Coding/actions/runs/38740063182): Node.js 24 잠금 설치, npm test **13/13**, npm run test:desktop 통과, NSIS/portable 빌드 및 패키징된 `win-unpacked/공원 업무 수첩.exe`의 동일 스모크 테스트 통과(2분 8초).
+- `공원 업무 수첩 Setup 0.3.0.exe`, `공원 업무 수첩 0.3.0.exe`, `SHA256SUMS.txt`를 [park-workdesk-windows-4 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38740063182/artifacts/11976441150)로 제공한다. GitHub 로그인 필요, 보관 14일.
+- 검증 증빙 추가 커밋은 문서만 변경한다. 위 소스 해시의 Linux/Windows 결과를 기록하며 기관 실기기 검사와 구분한다.
 
 추가 검증: DD/DMS의 양쪽 반구·0·±90/180 경계·소수 초·자리올림; NaN/Infinity/문자·범위·DMS 방향 오류 거부; 좌표 없는 v0.2와 null/0도/유효 좌표 저장 왕복; 잘못된 좌표 저장 시 기존 파일 보존. 브리핑은 좌표 변경·제거를 순찰 원본에서 반영한다.
 
