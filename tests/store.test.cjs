@@ -202,3 +202,142 @@ test("브리핑은 선택 날짜의 순찰과 기준일까지 미완료 업무�
   assert.match(briefing(d, "2026-10-17"), /안내판 재점검/);
   assert.throws(() => briefing(d, "bad-date"));
 });
+
+const {
+  decimalToDms,
+  dmsToDecimal,
+  validateCoordinates,
+} = require("../shared/model.mjs");
+test("DD↔DMS는 양쪽 반구·경계·소수 초를 변환하고 자리올림한다", () => {
+  assert.deepEqual(decimalToDms(37.5, "latitude"), {
+    degrees: 37,
+    minutes: 30,
+    seconds: 0,
+    hemisphere: "N",
+  });
+  assert.equal(
+    dmsToDecimal(
+      { degrees: 127, minutes: 15, seconds: 30, hemisphere: "W" },
+      "longitude",
+    ),
+    -(127 + 15 / 60 + 30 / 3600),
+  );
+  assert.deepEqual(decimalToDms(12 + 59 / 60 + 59.9999998 / 3600, "latitude"), {
+    degrees: 13,
+    minutes: 0,
+    seconds: 0,
+    hemisphere: "N",
+  });
+  for (const axis of ["latitude", "longitude"]) {
+    const limit = axis === "latitude" ? 90 : 180;
+    for (const value of [
+      -limit,
+      -37.123456789,
+      -0.00001,
+      -0,
+      0,
+      37.5,
+      0.00001,
+      limit - 1e-11,
+      limit,
+    ]) {
+      const result = decimalToDms(value, axis);
+      assert.ok(result.seconds < 60 && result.minutes < 60);
+      assert.ok(
+        Math.abs(dmsToDecimal(result, axis) - value) <= 1.4e-10,
+        `${axis}: ${value}`,
+      );
+    }
+  }
+  assert.equal(
+    Object.is(
+      dmsToDecimal(
+        { degrees: 0, minutes: 0, seconds: 0, hemisphere: "S" },
+        "latitude",
+      ),
+      -0,
+    ),
+    false,
+  );
+});
+test("좌표의 범위·자료형·DMS 성분과 반구를 엄격히 검증한다", () => {
+  for (const bad of [
+    NaN,
+    Infinity,
+    -Infinity,
+    "37",
+    null,
+    undefined,
+    true,
+    90.000001,
+    -90.000001,
+  ])
+    assert.throws(() => decimalToDms(bad, "latitude"));
+  assert.throws(() => decimalToDms(180.000001, "longitude"));
+  assert.throws(() => decimalToDms(0, "unknown"));
+  const dms = { degrees: 37, minutes: 30, seconds: 0, hemisphere: "N" };
+  for (const change of [
+    { degrees: -1 },
+    { degrees: 90.1 },
+    { degrees: 90 },
+    { minutes: 60 },
+    { minutes: -1 },
+    { minutes: 0.5 },
+    { seconds: 60 },
+    { seconds: -1 },
+    { seconds: NaN },
+    { seconds: "1" },
+    { hemisphere: "E" },
+  ])
+    assert.throws(() => dmsToDecimal({ ...dms, ...change }, "latitude"));
+  assert.throws(() => dmsToDecimal(null, "latitude"));
+  assert.throws(() =>
+    dmsToDecimal({ ...dms, degrees: 180, hemisphere: "E" }, "longitude"),
+  );
+  for (const input of [
+    null,
+    [],
+    {},
+    { latitude: 0 },
+    { latitude: "0", longitude: 0 },
+    { latitude: 0, longitude: 181 },
+  ])
+    assert.throws(() => validateCoordinates(input));
+  assert.deepEqual(validateCoordinates({ latitude: 90, longitude: -180 }), {
+    latitude: 90,
+    longitude: -180,
+  });
+});
+test("v0.2 순찰 누락/null 좌표와 0도 좌표는 손실 없이 저장·백업 왕복한다", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "workdesk-coordinates-"));
+  try {
+    const file = path.join(dir, "workdesk.json");
+    for (const row of [
+      patrol,
+      { ...patrol, coordinates: null },
+      { ...patrol, coordinates: { latitude: 0, longitude: 0 } },
+      { ...patrol, coordinates: { latitude: -35.125, longitude: 127.75 } },
+    ]) {
+      const data = { ...empty(), patrols: [row], tasks: [task] };
+      const before = JSON.stringify(data);
+      write(file, data);
+      assert.deepEqual(read(file), data);
+      assert.equal(JSON.stringify(data), before);
+      assert.equal(read(file).version, 2);
+    }
+    const previous = fs.readFileSync(file, "utf8");
+    for (const coordinates of [
+      { latitude: 91, longitude: 127 },
+      { latitude: 37 },
+      { latitude: 37, longitude: "127" },
+      false,
+    ]) {
+      assert.throws(() =>
+        write(file, { ...empty(), patrols: [{ ...patrol, coordinates }] }),
+      );
+      assert.equal(fs.readFileSync(file, "utf8"), previous);
+    }
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

@@ -25,6 +25,75 @@ const ensure = (condition, message) => {
   if (!condition) throw new Error(message);
 };
 
+// Angular notation only: no datum/projection transformation or network access.
+function coordinateLimit(axis) {
+  ensure(["latitude", "longitude"].includes(axis), "좌표 축을 확인하세요.");
+  return axis === "latitude" ? 90 : 180;
+}
+function validateDecimal(value, axis) {
+  const limit = coordinateLimit(axis);
+  ensure(
+    Number.isFinite(value) && Math.abs(value) <= limit,
+    `${axis === "latitude" ? "위도" : "경도"}는 -${limit}~${limit}도 사이의 숫자여야 합니다.`,
+  );
+  return value === 0 ? 0 : value;
+}
+export function validateCoordinates(input) {
+  ensure(
+    input && typeof input === "object" && !Array.isArray(input),
+    "위도와 경도를 함께 입력하세요.",
+  );
+  return {
+    latitude: validateDecimal(input.latitude, "latitude"),
+    longitude: validateDecimal(input.longitude, "longitude"),
+  };
+}
+export function decimalToDms(value, axis) {
+  value = validateDecimal(value, axis);
+  // Round total microarcseconds first so seconds/minutes carry correctly.
+  const total = Math.round(Math.abs(value) * 3600 * 1e6);
+  const degrees = Math.floor(total / 3600000000);
+  const minutes = Math.floor((total % 3600000000) / 60000000);
+  const seconds = (total % 60000000) / 1e6;
+  return {
+    degrees,
+    minutes,
+    seconds,
+    hemisphere:
+      axis === "latitude" ? (value < 0 ? "S" : "N") : value < 0 ? "W" : "E",
+  };
+}
+export function dmsToDecimal(input, axis) {
+  const limit = coordinateLimit(axis);
+  ensure(
+    input && typeof input === "object" && !Array.isArray(input),
+    "도·분·초를 입력하세요.",
+  );
+  const { degrees, minutes, seconds, hemisphere } = input;
+  ensure(
+    Number.isInteger(degrees) && degrees >= 0 && degrees <= limit,
+    `도는 0~${limit} 사이의 정수여야 합니다.`,
+  );
+  ensure(
+    Number.isInteger(minutes) && minutes >= 0 && minutes < 60,
+    "분은 0~59 사이의 정수여야 합니다.",
+  );
+  ensure(
+    Number.isFinite(seconds) && seconds >= 0 && seconds < 60,
+    "초는 0 이상 60 미만이어야 합니다.",
+  );
+  ensure(
+    (axis === "latitude" ? ["N", "S"] : ["E", "W"]).includes(hemisphere),
+    "위도는 N/S, 경도는 E/W 방향을 선택하세요.",
+  );
+  ensure(
+    degrees < limit || (minutes === 0 && seconds === 0),
+    "위도 90도·경도 180도에서는 분·초가 0이어야 합니다.",
+  );
+  const value = degrees + minutes / 60 + seconds / 3600;
+  return value === 0 ? 0 : ["S", "W"].includes(hemisphere) ? -value : value;
+}
+
 // v1 -> v2 is additive and returns a new object without modifying the input.
 export function normalize(input) {
   ensure(
@@ -62,6 +131,8 @@ export function normalize(input) {
           "폴더의 절대 경로를 확인하세요.",
         );
       if (key === "patrols") {
+        if (row.coordinates !== undefined && row.coordinates !== null)
+          validateCoordinates(row.coordinates);
         ensure(
           required(row.route, 500) && required(row.observer, 100),
           "순찰 구간과 기록자를 입력하세요.",

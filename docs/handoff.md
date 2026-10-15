@@ -19,7 +19,7 @@
 - **Step 2 / Part A**: shared/model.mjs 및 선언 파일에 순수 변환/검증 함수, 선택적 순찰 좌표 필드 검증 추가. 기존 v0.2 순찰은 그대로 읽힌다. tests/store.test.cjs에 정확도·오류·호환성 검증 추가 후 두 검사 통과·즉시 푸시.
 - **Step 3 / Part B**: src/types.ts와 순찰 UI의 DD/DMS 양방향 입력·즉시 표시·검색, 브리핑 화면/TXT의 선택 좌표 표시, 실제 Electron 스모크 테스트. README/validation/인계장 갱신, 두 검사 통과·즉시 푸시.
 
-설계 예정: `coordinates?: {latitude: number; longitude: number} | null`. 저장 원본은 DD, DMS는 파생값이다. 누락/null은 좌표 없음이며 0도와 혼동하지 않는다. 데이터 포맷 v2를 유지한다. 실제 시그니처와 반올림 정밀도는 Step 2 완료 시 확정 기록한다.
+Part A 구현: `coordinates?: {latitude: number; longitude: number} | null`. 저장 원본은 DD, DMS는 파생값이다. 누락/null은 좌표 없음이며 0도와 혼동하지 않는다. 데이터 포맷 v2를 유지한다. `validateCoordinates(input)`, `decimalToDms(value, axis)`, `dmsToDecimal(input, axis)`를 제공한다. axis는 latitude/longitude, DMS는 degrees/minutes/seconds/hemisphere(N/S/E/W). 초 소수 6자리로 반올림하고 자리올림하며, 왕복 오차는 1.4e-10도 이내. 잘못된 값은 예외로 거부한다. TypeScript Patrol 필드·UI는 Part B에서 연결한다.
 
 ## 후속 백로그
 
@@ -33,7 +33,8 @@
 
 ## 최신 검증 기록
 
-Step 1: npm test 9/9 통과, npm run test:desktop 통과(빌드 및 실제 Electron 시나리오). 소스 코드 변경 없음. 협업 문서 두 개를 즉시 커밋·푸시한다.
+Step 1 커밋·푸시 완료: b8711cf942d8244d8cc88787bd423e5be5a2cee5.
+Step 2 / Part A: npm test 12/12 통과; npm run test:desktop 통과. 추가 3개 테스트는 DD/DMS 정확도·자리올림, 잘못된 좌표 거부, v0.2 누락/null·0도·유효 좌표 왕복 및 잘못된 저장 시 원본 보존을 검증한다.
 
 ## 최신 인계 패킷
 
@@ -41,9 +42,9 @@ Step 1: npm test 9/9 통과, npm run test:desktop 통과(빌드 및 실제 Elect
 
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (main)
-- **Latest Pushed Commit**: 0f40e2ab9be281721b4e32378f53c5db4e76288e - Document verified Windows v0.2 build and artifacts
-- **Completed Steps & Modified Files**: Step 1 협업 문서 작성: AGENTS.md, docs/handoff.md. 두 검사 통과, Step 1 커밋 대상.
-- **Changed Interfaces / Schema Diff**: 없음. 앱 v0.2 / 자료 v2 유지.
-- **Test Status**: npm test 9/9 통과; npm run test:desktop 통과.
-- **Remaining Work for Gemini**: Step 2 좌표 모델·검증·테스트, Step 3 UI·검색·브리핑·스모크 및 문서.
-- **Modified Code Snippets (if uncommitted)**: 코드 변경 없음. 협업 문서 두 개만 신규 작성.
+- **Latest Pushed Commit**: b8711cf942d8244d8cc88787bd423e5be5a2cee5 - docs: establish Codex Gemini relay rules (Step 1)
+- **Completed Steps & Modified Files**: Step 1 푸시 완료. Step 2 완료·커밋 대상: shared/model.mjs, shared/model.d.mts, tests/store.test.cjs, docs/handoff.md.
+- **Changed Interfaces / Schema Diff**: 선택 patrol.coordinates 및 DD↔DMS 변환·검증 함수 추가. 자료 v2 유지. 상세 계약은 위 Part A 항목 참조.
+- **Test Status**: npm test 12/12 통과; npm run test:desktop 통과.
+- **Remaining Work for Gemini**: Step 3 UI·검색·브리핑·스모크 및 문서.
+- **Modified Code Snippets (if uncommitted)**: 위 Step 2 파일을 이 문서와 함께 즉시 커밋·푸시. 미완성 코드 없음.
