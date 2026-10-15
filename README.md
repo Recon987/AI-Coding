@@ -47,6 +47,8 @@ DD 원본만 저장하고 DMS 초는 소수 6자리까지 계산합니다(자리
 
 ## Windows에서 확인하기
 
+2026-10-15 검증 완료: [v0.4 설치형·portable 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38745960865/artifacts/11978616999). GitHub 로그인 필요, 보관 14일.
+
 회사 네트워크에서 개발용 패키지를 설치할 필요가 없도록 [Windows 빌드](https://github.com/Recon987/AI-Coding/actions/workflows/windows-build.yml)를 준비했습니다.
 
 1. GitHub에 로그인하고 **성공 표시가 있는 최신 빌드 실행**을 엽니다. 성공 기록이 없다면 아직 실행 파일이 준비되지 않은 상태입니다.

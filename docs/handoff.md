@@ -61,7 +61,7 @@ v1/v2 로드 지원, 파일 전환 시 원본 바이트를 .v1-backup.json 또�
 
 사용자는 ERP 열·근무 코드·조합·운영 범위를 **미확인**으로 답변했다. docs/erp-integration.md에 표준 CSV 계약과 실제 ERP 매핑 대기 상태를 기록했다. ERP/공용 서버 자동 조회는 구현하지 않았다. 현황은 날짜별 근무 + 현재 직원 소속이며 과거 인사 소속 이력은 미구현이다. 자동 편성·법령/장부·암호화는 별도 백로그다.
 
-npm test 19/19, test:desktop 통과. 1280×800/960×800 화면 확인. Windows v0.4 실행 결과는 푸시 후 확인한다. Part B 푸시: b79e8a07894bc5dfc8214e3096884b3f4e123eb7. 좁은 창에서 직원 이름·수정 버튼을 고정하는 후속 배치 수정도 두 검사를 통과했다. 앞 단계 모델 푸시 619b7bc53fea0e0886dffd70bf2113c7e5cf81f1.
+npm test 19/19, test:desktop 통과. 1280×800/960×800 화면 확인. Windows v0.4 검증 성공: 소스 bd74297a36ac9c025105a334339007b375296cef, 실행 https://github.com/Recon987/AI-Coding/actions/runs/38745960865 . npm test 19/19, 소스 및 패키징된 EXE 스모크, NSIS/portable 및 체크섬 업로드 통과. 다운로드 https://github.com/Recon987/AI-Coding/actions/runs/38745960865/artifacts/11978616999 (GitHub 로그인, 보관 14일). Part B 푸시: b79e8a07894bc5dfc8214e3096884b3f4e123eb7. 좁은 창에서 직원 이름·수정 버튼을 고정하는 후속 배치 수정도 두 검사를 통과했다. 앞 단계 모델 푸시 619b7bc53fea0e0886dffd70bf2113c7e5cf81f1.
 
 ## 최신 인계 패킷
 
@@ -69,9 +69,9 @@ npm test 19/19, test:desktop 통과. 1280×800/960×800 화면 확인. Windows v
 
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (main)
-- **Latest Pushed Commit**: b79e8a07894bc5dfc8214e3096884b3f4e123eb7 - feat: add office roster board and reviewed CSV imports (TASK-OFFICE-01 Part B)
+- **Latest Pushed Commit**: bd74297a36ac9c025105a334339007b375296cef - fix: keep roster edit actions visible in narrow windows (TASK-OFFICE-01)
 - **Completed Steps & Modified Files**: UX·OFFICE 모델 푸시 완료. Part B: shared/office-import.*, components/{Office,OfficeDirectory,OfficeImport,Sheet,Briefing,Icon}.tsx, src/{main,types,ui,style}, tests/{office.test,desktop-smoke}.cjs, package*.json, README·architecture·validation·erp-integration·handoff 및 화면 이미지.
 - **Changed Interfaces / Schema Diff**: 앱 0.4.0 / Data v3. previewOfficeImport/parseCsv/importColumns 및 표준 CSV 계약. 새 IPC/외부 의존성 없음. v1/v2 자동 백업 전환 유지.
-- **Test Status**: npm test 19/19, npm run test:desktop 통과. Windows v0.4 확인 예정.
-- **Remaining Work for Gemini**: 실제 ERP 열·코드·근무 조합 매핑(사용자 미확인), 인사 소속 이력/공용 서버·편성 규칙은 별도 설계. 현재 Windows 검증은 Codex 진행 중.
-- **Modified Code Snippets (if uncommitted)**: Part B 푸시 완료. src/style.css 직원/수정 고정 열 및 본 기록만 후속 커밋·푸시. 미완성 코드 없음.
+- **Test Status**: npm test 19/19, npm run test:desktop 통과. Windows v0.4 npm test 19/19, 소스 및 패키징된 EXE 스모크 통과. 실행 파일 업로드 완료.
+- **Remaining Work for Gemini**: 실제 ERP 열·코드·근무 조합 매핑(사용자 미확인), 인사 소속 이력/공용 서버·편성 규칙은 별도 설계. Windows 검증 완료. 후속 우선순위는 ERP 매핑 확인, 인사 이력, 편성 규칙/공용 서버, 암호화 및 기존 도구 확장.
+- **Modified Code Snippets (if uncommitted)**: 코드 모두 푸시 완료. 이번 후속 커밋은 README/validation/handoff의 검증 증빙만 갱신한다. 미완성·미커밋 코드 없음.
