@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { createRoot } from "react-dom/client";
 import {
   empty,
@@ -7,6 +13,7 @@ import {
   RECURRENCE_LABEL,
 } from "../shared/model.mjs";
 import type { Data, Page } from "./types";
+import { hasDirtyDrafts, subscribeDirty } from "./drafts";
 import { Office } from "./components/Office";
 import { Briefing } from "./components/Briefing";
 import { Patrols } from "./components/Patrols";
@@ -70,6 +77,23 @@ function App() {
     return () => clearInterval(timer);
   }, []);
   const searchInput = useRef<HTMLInputElement>(null);
+  const searchDialog = useRef<HTMLDialogElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const dirty = useSyncExternalStore(
+    subscribeDirty,
+    hasDirtyDrafts,
+    () => false,
+  );
+  useEffect(() => {
+    const dialog = searchDialog.current;
+    if (searchOpen) {
+      if (dialog && !dialog.open) dialog.showModal();
+      searchInput.current?.focus();
+    } else {
+      dialog?.close();
+      setQuery("");
+    }
+  }, [searchOpen]);
   const [feedback, setFeedback] = useState("");
   useEffect(() => {
     if (!feedback) return;
@@ -87,12 +111,9 @@ function App() {
         (event.key === "/" && !editing)
       ) {
         event.preventDefault();
+        setSearchOpen(true);
         searchInput.current?.focus();
         searchInput.current?.select();
-      }
-      if (event.key === "Escape" && target === searchInput.current) {
-        setQuery("");
-        searchInput.current?.blur();
       }
     };
     window.addEventListener("keydown", shortcut);
@@ -153,6 +174,12 @@ function App() {
   );
   function navigate(next: Page, id?: string) {
     if (saving.current) return;
+    if (
+      hasDirtyDrafts() &&
+      !confirm("저장하지 않은 변경 사항이 있습니다. 내용을 버리고 이동할까요?")
+    )
+      return;
+    setSearchOpen(false);
     setPage(next);
     setFocusId(id);
     setQuery("");
@@ -249,9 +276,6 @@ function App() {
             공원 업무 수첩<small>PARK WORKDESK</small>
           </div>
         </div>
-        <div className="workspace-label">
-          <span className="status-dot" /> 개인 업무 공간
-        </div>
         <nav>
           {sections.map((section) => (
             <div className="nav-section" key={section.label}>
@@ -287,63 +311,79 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <span className="offline-dot" />
-          {api ? "내 PC에 저장" : "브라우저 체험 모드"}
-          <small>오프라인 개인 업무 공간</small>
-          <span className="version">v0.5.0</span>
+          <span className="version">공원 업무 수첩 · v0.5.1</span>
         </div>
       </aside>
       <main>
         <header className="topbar">
-          <div className="breadcrumbs">
-            나의 업무 공간 <span>/</span> <strong>{pageNames[page]}</strong>
-          </div>
+          <span className="workspace-title">업무 공간</span>
           <div className="top-actions">
-            <span className="save-indicator" role="status">
-              {busy ? (
-                <>
-                  <Icon name="clock" size={14} />
-                  저장 중
-                </>
-              ) : ready ? (
-                <>
-                  <Icon name="check" size={14} />내 PC 저장
-                </>
-              ) : (
-                "불러오는 중"
-              )}
-            </span>
-            <div className="global-search">
-              <Icon name="search" size={16} />
-              <input
-                ref={searchInput}
-                aria-label="기록 통합 검색"
-                placeholder="기록 통합 검색"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-              <kbd>Ctrl K</kbd>
-            </div>
-            <button disabled={!api || !ready || busy} onClick={() => backup()}>
-              백업
-            </button>
-            <button
-              disabled={!api || !ready || busy}
-              onClick={() => backup(true)}
+            <span
+              className={`save-indicator ${dirty ? "unsaved" : ""}`}
+              role="status"
+              data-state={
+                busy ? "busy" : dirty ? "unsaved" : ready ? "ready" : "loading"
+              }
             >
-              복원
+              <Icon
+                name={busy ? "clock" : dirty ? "notes" : "check"}
+                size={14}
+              />
+              {busy
+                ? "처리 중"
+                : dirty
+                  ? "저장되지 않은 변경"
+                  : ready
+                    ? "이 PC에 저장"
+                    : "불러오는 중"}
+            </span>
+            <button
+              className="global-search"
+              disabled={!ready}
+              aria-label="통합 검색 열기"
+              aria-keyshortcuts="Control+K"
+              onClick={() => setSearchOpen(true)}
+            >
+              <Icon name="search" size={17} />
+              <span>기록 검색</span>
+              <kbd>Ctrl K</kbd>
             </button>
+            <details className="data-menu">
+              <summary>자료 관리</summary>
+              <div>
+                <button
+                  disabled={!api || !ready || busy}
+                  onClick={(event) => {
+                    event.currentTarget
+                      .closest("details")
+                      ?.removeAttribute("open");
+                    backup();
+                  }}
+                >
+                  <Icon name="download" size={16} />
+                  백업
+                </button>
+                <button
+                  disabled={!api || !ready || busy}
+                  onClick={(event) => {
+                    event.currentTarget
+                      .closest("details")
+                      ?.removeAttribute("open");
+                    backup(true);
+                  }}
+                >
+                  <Icon name="handover" size={16} />
+                  복원
+                </button>
+              </div>
+            </details>
           </div>
         </header>
-        <div className="content">
+        <div className={`content page-${page}`}>
           <div className="page-heading">
             <div>
-              <h1>{query.trim() ? "통합 검색" : pageNames[page]}</h1>
-              <p>
-                {query.trim()
-                  ? `“${query.trim()}” 검색 결과 ${searchRows.length}건`
-                  : subtitles[page]}
-              </p>
+              <h1>{pageNames[page]}</h1>
+              <p>{subtitles[page]}</p>
             </div>
             <time className="current-date">
               {new Date().toLocaleDateString("ko-KR", {
@@ -351,7 +391,6 @@ function App() {
                 day: "numeric",
                 weekday: "long",
               })}
-              <span>로컬 기록 기준</span>
             </time>
           </div>
           {!api && (
@@ -377,30 +416,6 @@ function App() {
                 ? "원본 데이터를 보존한 상태에서 시작을 중단했습니다."
                 : "업무 기록을 불러오는 중입니다."}
             </p>
-          ) : query.trim() ? (
-            <section className="panel">
-              <SectionHead title="검색 결과" />
-              {searchRows.slice(0, 100).map((r) => (
-                <button
-                  className="search-result"
-                  key={r.page + r.id}
-                  onClick={() => navigate(r.page, r.id)}
-                >
-                  <Tag>{pageNames[r.page]}</Tag>
-                  <div>
-                    <strong>{r.title}</strong>
-                    <p>{r.text.slice(0, 140)}</p>
-                  </div>
-                  <span>↗</span>
-                </button>
-              ))}
-              {!searchRows.length && <Empty>일치하는 기록이 없습니다.</Empty>}
-              {searchRows.length > 100 && (
-                <p className="help">
-                  처음 100건을 표시합니다. 검색어를 구체적으로 입력하세요.
-                </p>
-              )}
-            </section>
           ) : (
             <>
               {page === "office" && (
@@ -554,10 +569,75 @@ function App() {
             </>
           )}
         </div>
-        <footer>
-          <span>공원 업무 수첩</span>오프라인 개인 업무 공간
-        </footer>
       </main>
+      <dialog
+        ref={searchDialog}
+        className="search-dialog"
+        aria-label="통합 검색 창"
+        onCancel={(event) => {
+          event.preventDefault();
+          setSearchOpen(false);
+        }}
+      >
+        <div className="search-dialog-header">
+          <Icon name="search" size={20} />
+          <input
+            ref={searchInput}
+            aria-label="기록 통합 검색"
+            placeholder="제목, 구간, 담당자, 전화번호로 검색"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          <button
+            type="button"
+            aria-label="통합 검색 닫기"
+            onClick={() => setSearchOpen(false)}
+          >
+            닫기 <kbd>Esc</kbd>
+          </button>
+        </div>
+        <div className="search-results">
+          {query.trim() ? (
+            <>
+              <p className="search-count">검색 결과 {searchRows.length}건</p>
+              {searchRows.slice(0, 100).map((row) => (
+                <button
+                  className="search-result"
+                  key={row.page + row.id}
+                  onClick={() => navigate(row.page, row.id)}
+                >
+                  <Icon name={row.page} />
+                  <div>
+                    <strong>{row.title}</strong>
+                    <p>{row.text.slice(0, 140)}</p>
+                  </div>
+                  <Tag>{pageNames[row.page]}</Tag>
+                </button>
+              ))}
+              {!searchRows.length && (
+                <Empty>
+                  일치하는 기록이 없습니다. 다른 제목이나 담당자로 검색하세요.
+                </Empty>
+              )}
+              {searchRows.length > 100 && (
+                <p className="help">
+                  처음 100건을 표시합니다. 검색어를 구체적으로 입력하세요.
+                </p>
+              )}
+            </>
+          ) : (
+            <div className="search-hint">
+              <Icon name="search" size={28} />
+              <h2>어떤 기록을 찾으세요?</h2>
+              <p>
+                순찰·인수인계·일정·전화·메모를 한 번에 검색합니다.
+                <br />
+                검색을 닫으면 작성 중이던 화면으로 돌아갑니다.
+              </p>
+            </div>
+          )}
+        </div>
+      </dialog>
     </div>
   );
 }

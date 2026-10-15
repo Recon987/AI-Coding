@@ -1,33 +1,22 @@
 # AI-Coding 작업 인계장 (`docs/handoff.md`)
 
-**저장소**: `Recon987/AI-Coding` (`main`) · **앱/데이터 버전**: `0.5.0` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
+**저장소**: `Recon987/AI-Coding` (`main`) · **앱/데이터 버전**: `0.5.1` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
 
 이 문서는 **ChatGPT Codex**와 **Gemini**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 쓰는 단일 인계장이다. 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 기록한다.
 
 ## 1. 최신 인계 패킷
 
+문서의 커밋 해시는 작성 직전 확인한 원격 기준이다. 문서를 포함한 최종 해시는 응답 패킷과 git log -1에서 확인한다.
+
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (main)
-- **Base Commit**: bd74297a36ac9c025105a334339007b375296cef (v0.4.0 / TASK-OFFICE-01)
-- **Completed Steps & Modified Files**:
-  - `TASK-CALENDAR-01` (v0.5.0 — 오프라인 법정공휴일·대체공휴일 및 반복 일정 파생 표시):
-    - `shared/model.mjs`, `shared/model.d.mts`: `RECURRENCE` (`none | daily | weekly | monthly | yearly`), `RECURRENCE_LABEL`, `eventItem`의 `recurrence`·`repeatUntil` 검증, `holidaysForYear(year)`·`holidayName(date)`(양력 법정공휴일 + 2025~2035 음력 공휴일 + 공휴일법 기준 대체공휴일 계산), `expandEventOccurrences(event, range)`(월말·윤년 보정 포함), `calendarItems(data, range)`·`reminderItems(data, now)`·`briefing(data, date)` 연동.
-    - `src/types.ts`, `src/components/Calendar.tsx`, `src/components/Briefing.tsx`, `src/main.tsx`, `src/style.css`: 월간 달력 셀 및 선택 날짜 헤더 공휴일 배지, 개인 일정 반복 주기·반복 종료일 입력/수정 UI, 브리핑 화면·TXT 공휴일 및 반복 일정 표시, 통합 검색 반복 주기 텍스트 반영.
-    - `tests/store.test.cjs`, `package.json`, `README.md`, `docs/validation.md`, `docs/handoff.md`: 반복 일정·공휴일 단위 테스트 3종 추가(총 22/22 통과) 및 v0.5.0 문서 갱신.
-- **Changed Interfaces / Schema Diff**:
-  - `EventItem`: `recurrence?: "none" | "daily" | "weekly" | "monthly" | "yearly"`, `repeatUntil?: string | null` 선택 필드 추가(기존 `v3` 단일 일정은 속성 추가 없이 바이트 단위 동일 보존).
-  - 신규 함수: `holidaysForYear(year)`, `holidayName(date)`, `expandEventOccurrences(event, range?)`.
-  - 확장 함수: `calendarItems(data, range?)`, `reminderItems(data, now?)`.
-- **Test Status**:
-  - `tests/store.test.cjs` (16/16) 및 `tests/office.test.cjs` (6/6) 총 **22/22** 통과.
-- **Remaining Work for Codex**:
-  1. 본 `v0.5.0` 변경본 커밋·푸시 후 Node 24 환경에서 `npm run test:desktop`(반복 일정·공휴일 UI 시나리오 추가 가능) 및 GitHub Actions Windows 패키징(`windows-build.yml`) 실행 확인.
-  2. 다음 백로그 착수:
-     - **TASK-TRAY-01**: 시스템 트레이 상주 옵션(창 닫기 시 트레이 최소화 토글, 절전 복귀 후 알림 점검, 종료 메뉴).
-     - **TASK-CALENDAR-02**: 반복 일정 회차별 개별 완료·예외일(`excludedDates`) 처리.
-     - **TASK-LAW-01**: 오프라인 법령·지침 반입 및 조문 검색.
-- **Modified Code Snippets (if uncommitted)**: `AI-Coding-v0.5.0.zip` 전체 반영 완료.
+- **Latest Pushed Commit**: c32d5904ddb3ee15e3a36a89ac98649f513f83cf - Add files via upload
+- **Completed Steps & Modified Files**: Gemini TASK-CALENDAR-01 확인·통합. 독립 UI 검토 2회와 구현: src/main.tsx, drafts.ts, components/{EditorDialog,Sheet,Briefing,Calendar,Office,OfficeDirectory,Patrols,Personal,Tasks}, style.css, tests/{desktop-smoke,review-fixture,ui-review}.cjs, README·validation·ui-review-loop 및 캡처/측정.
+- **Changed Interfaces / Schema Diff**: 앱0.5.1 / 자료v3. 공휴일·반복필드/함수 유지. 편집 dirty registry, 검색 overlay, 추가/수정 modal·원문펼침. 기존 IPC 유지.
+- **Test Status**: baseline npm test22/22·test:desktop 통과; 통합 후도 두 검사 통과. UI83항목/페이지오류0/외부요청0. Windows 확인 예정.
+- **Remaining Work for Gemini**: 다음 TASK-TRAY-01(옵트인 상주·종료·resume알림), 오래된 일간반복400회 탐색상한 선행수정. Codex 진행 중. 회차별완료/예외는CALENDAR-02. 타이포/날짜표기등 UI후속은ui-review-loop 참조.
+- **Modified Code Snippets (if uncommitted)**: 완성된 UI 단계 즉시 커밋·푸시. 미완성 코드 없음.
 ```
 
 ## 2. 다음 백로그 우선순위
@@ -51,3 +40,7 @@
 1. 실행한 검증 명령과 통과 여부를 사실대로 적는다.
 2. 커밋하지 못한 변경이 있으면 `git diff` 핵심 요약을 패킷에 남긴다.
 3. 문서를 갱신하고 같은 형식으로 다음 담당 에이전트가 바로 이어받을 수 있게 한다.
+
+## 보존한 Gemini TASK-CALENDAR-01
+
+양력 법정/대체 및2025~2035 음력 공휴일, recurrence/repeatUntil 선택필드, holidaysForYear/holidayName/expandEventOccurrences/calendarItems(range)/reminderItems(now)/briefing 연계를 유지한다. 원본 하나에서회차를파생한다. 기존v3누락필드에임의기본값을쓰지않는다. 기준선 c32d590 npm test22/22·desktop통과. 검토에서발견한400회원본탐색상한은현재/먼미래반복조회와resume알림에영향을주므로TRAY선행수정대상이다.

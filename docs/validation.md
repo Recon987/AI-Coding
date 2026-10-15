@@ -1,11 +1,17 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## v0.5.1 / 독립 UI 검토 루프 + 달력 통합
+
+원격 c32d590 (Gemini TASK-CALENDAR-01) 기준선에서 npm test 22/22와 npm run test:desktop 통과 후 진행했다. UI 변경과 공휴일/반복 일정 필드를 통합했으며 자료 v3/기존 IPC를 유지한다. 최종 npm test 22/22, npm run test:desktop 통과. 추가 회귀는 검색 중 초안 보존·초기 입력 focus·닫기 거부·실패 IPC 저장 시 입력 유지다. 파일/확인창 UI만 결정적으로 대체한다.
+
+[UI 검토 기록](ui-review-loop.md): 같은 가상 자료·3종 창 크기와125%에서 83개 실제 화면 측정 통과, 페이지 오류0/외부요청0. Windows 새 빌드는 푸시 후 확인한다.
+
 ## v0.5 / TASK-CALENDAR-01 (Gemini 릴레이 구현)
 
 - 단위 검증: `tests/store.test.cjs` 및 `tests/office.test.cjs` 총 **22/22** 통과 (`store.test.cjs` 16개 + `office.test.cjs` 6개).
 - 반복 일정 검증: `none | daily | weekly | monthly | yearly` 및 `repeatUntil` 검증, 원본 복제 없이 기간별 회차 파생(`expandEventOccurrences`), 월말(`2026-01-31` → `2026-02-28` → `2026-03-31`) 및 윤년(`2028-02-29` → `2029-02-28`) 보정, 잘못된 반복 주기·비반복 종료일·시작일 이전 종료일 거부, 기존 `v3` 단일 일정의 바이트 단위 무손실 왕복 저장 확인.
 - 오프라인 공휴일·대체공휴일 검증: 양력 법정공휴일 및 2025~2035년 음력 공휴일(설날 연휴·부처님오신날·추석 연휴)과 공휴일법 시행령 기준 대체공휴일(`2026-03-02`, `2026-05-25`, `2026-08-17`, `2025-05-06`, `2028-10-05` 등) 계산, 월간 달력 배지 및 브리핑 TXT 표출 확인.
-- 후속 확인: GitHub 푸시 후 Node 24 환경에서 `npm run test:desktop` 및 Windows Actions 패키징(`windows-build.yml`) 실행 확인.
+- Codex 확인: Node 24에서 `npm run test:desktop` 통과. Windows Actions 패키징(`windows-build.yml`) 실행 확인.
 
 ## v0.4 / TASK-OFFICE-01
 

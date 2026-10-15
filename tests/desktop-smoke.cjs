@@ -8,6 +8,7 @@ const path = require("node:path");
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "park-desktop-test-"));
   const root = path.resolve(__dirname, "..");
   let app;
+  let failed = false;
   const launch = () =>
     electron.launch({
       executablePath: process.env.PARK_TEST_EXECUTABLE || require("electron"),
@@ -30,19 +31,134 @@ const path = require("node:path");
     const page = await app.firstWindow();
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    page.on("dialog", (d) => d.accept());
-    const nav = (name) =>
-      page.locator("nav").getByRole("button", { name, exact: true }).click();
+    const acceptDialogs = async (dialog) => {
+      try {
+        await dialog.accept();
+      } catch (error) {
+        if (!String(error).includes("No dialog is showing"))
+          errors.push(String(error));
+      }
+    };
+    page.on("dialog", acceptDialogs);
+    // Confirmation widgets are native UI in Electron; keep choices deterministic.
+    await page.addInitScript(() => {
+      window.confirm = () => true;
+    });
+    await page.evaluate(() => {
+      window.confirm = () => true;
+    });
+    const nav = async (name) => {
+      const editor = page.locator(".sheet[open]");
+      if (await editor.count())
+        await editor.getByRole("button", { name: "취소", exact: true }).click();
+      await page
+        .locator("nav")
+        .getByRole("button", { name, exact: true })
+        .click();
+    };
+    const add = (name) =>
+      page.getByRole("button", { name, exact: true }).click();
+    const search = async (query) => {
+      await page.keyboard.press("Control+k");
+      await page.getByLabel("기록 통합 검색", { exact: true }).fill(query);
+    };
+    const manage = async (name) => {
+      await page.locator(".data-menu > summary").click();
+      await page
+        .locator(".data-menu")
+        .getByRole("button", { name, exact: true })
+        .click();
+    };
     await page
       .getByRole("heading", { name: "업무 브리핑", exact: true })
       .waitFor();
     assert.ok(await page.evaluate(() => !!window.workdesk));
     await nav("업무 메모");
+    await add("메모 추가");
+    assert.equal(
+      await page
+        .getByLabel("제목", { exact: true })
+        .evaluate((el) => el === document.activeElement),
+      true,
+    );
+    await page.getByLabel("제목", { exact: true }).fill("저장 전 초안");
+    await page
+      .getByLabel("내용", { exact: true })
+      .fill("검색 후에도 유지할 내용");
+    assert.equal(
+      await page.locator(".save-indicator").getAttribute("data-state"),
+      "unsaved",
+    );
+    await search("검색 결과 없음");
+    await page.keyboard.press("Escape");
+    assert.equal(
+      await page.getByLabel("제목", { exact: true }).inputValue(),
+      "저장 전 초안",
+    );
+    assert.equal(
+      await page.getByLabel("내용", { exact: true }).inputValue(),
+      "검색 후에도 유지할 내용",
+    );
+    // Stub only the confirmation widget; actual dirty/cancel code runs unchanged.
+    await page.evaluate(() => {
+      window.__parkPromptCount = 0;
+      window.confirm = () => {
+        window.__parkPromptCount++;
+        return false;
+      };
+    });
+    await page
+      .locator(".sheet[open]")
+      .getByRole("button", { name: "취소", exact: true })
+      .click();
+    assert.equal(await page.evaluate(() => window.__parkPromptCount), 1);
+    await page.evaluate(() => {
+      window.confirm = () => true;
+    });
+    assert.equal(
+      await page.getByLabel("제목", { exact: true }).inputValue(),
+      "저장 전 초안",
+    );
+    // A failed IPC save must leave the draft and a visible inline error intact.
+    await app.evaluate(({ ipcMain }) => {
+      globalThis.__parkOriginalSaveHandler =
+        ipcMain._invokeHandlers.get("save");
+      if (typeof globalThis.__parkOriginalSaveHandler !== "function")
+        throw new Error("실제 저장 핸들러가 없습니다.");
+      ipcMain.removeHandler("save");
+      ipcMain.handle("save", () => {
+        throw new Error("가상 저장 오류");
+      });
+    });
+    await page
+      .locator(".sheet[open]")
+      .getByRole("button", { name: "저장", exact: true })
+      .click();
+    await page.locator(".sheet[open]").getByRole("alert").waitFor();
+    assert.equal(
+      await page.getByLabel("제목", { exact: true }).inputValue(),
+      "저장 전 초안",
+    );
+    await app.evaluate(({ ipcMain }) => {
+      ipcMain.removeHandler("save");
+      ipcMain.handle("save", globalThis.__parkOriginalSaveHandler);
+      delete globalThis.__parkOriginalSaveHandler;
+    });
+    await page
+      .locator(".sheet[open]")
+      .getByRole("button", { name: "취소", exact: true })
+      .click();
+    assert.equal(
+      (await page.evaluate(() => window.workdesk.load())).notes.length,
+      0,
+    );
+    await add("메모 추가");
     await page.getByLabel("제목", { exact: true }).fill("보존할 업무 메모");
     await page.getByLabel("내용", { exact: true }).fill("새 버전에서도 유지");
     await page.getByRole("button", { name: "저장", exact: true }).click();
     await page.getByRole("heading", { name: "보존할 업무 메모" }).waitFor();
     await nav("전화메모");
+    await add("전화메모 추가");
     await page.getByLabel("제목", { exact: true }).fill("안내 전화");
     await page.getByLabel("전화번호").fill("000-0000");
     await page.getByLabel("전달 내용").fill("문의 처리 기록");
@@ -52,6 +168,7 @@ const path = require("node:path");
       .getByRole("button", { name: "미처리로 변경", exact: true })
       .waitFor();
     await nav("현장 순찰");
+    await add("순찰 기록 추가");
     await page.getByLabel("기록 제목").fill("오전 탐방로 순찰");
     await page.getByLabel("순찰 구간").fill("안내소 → 전망대");
     await page.getByLabel("기록자").fill("시험 담당");
@@ -101,10 +218,7 @@ const path = require("node:path");
         .coordinates,
       { latitude: 37.5, longitude: 127.25 },
     );
-    assert.equal(
-      await page.getByLabel("위도 (DD)", { exact: true }).inputValue(),
-      "",
-    );
+    assert.equal(await page.locator(".sheet[open]").count(), 0);
     // Navigation remains accessible when pending counts are displayed.
     await page.keyboard.press("Control+k");
     assert.equal(
@@ -121,7 +235,7 @@ const path = require("node:path");
     await page.getByLabel("순찰 검색").fill("N 37° 30′");
     assert.equal(await page.locator(".record").count(), 1);
     await page.getByLabel("순찰 검색").fill("");
-    await page.getByLabel("기록 통합 검색").fill("127.25");
+    await search("127.25");
     await page.locator(".search-result").click();
     await page
       .getByRole("heading", { name: "순찰 기록 수정", exact: true })
@@ -130,7 +244,7 @@ const path = require("node:path");
       await page.getByLabel("위도 (DD)", { exact: true }).inputValue(),
       "37.5",
     );
-    await page.getByRole("button", { name: "수정 취소", exact: true }).click();
+    await page.getByRole("button", { name: "취소", exact: true }).click();
     await page
       .getByRole("button", { name: "인수인계로 연결", exact: true })
       .click();
@@ -157,6 +271,7 @@ const path = require("node:path");
       .getByRole("heading", { name: "이어받을 업무", exact: true })
       .waitFor();
     await nav("제출 기한");
+    await add("제출 기한 추가");
     await page.getByLabel("업무 제목").fill("주간 실적 제출");
     await page.getByLabel("담당자", { exact: true }).fill("서무 담당");
     await page.getByLabel("제출처").fill("관리부");
@@ -164,6 +279,7 @@ const path = require("node:path");
     await page.getByRole("button", { name: "업무 등록", exact: true }).click();
     await page.getByRole("heading", { name: "주간 실적 제출" }).waitFor();
     await nav("월간 일정");
+    await add("일정 추가");
     await page.getByLabel("일정 제목").fill("현장 회의");
     await page.getByLabel("일정 일시").fill("2030-10-16T10:00");
     await page.getByRole("button", { name: "일정 저장", exact: true }).click();
@@ -174,9 +290,13 @@ const path = require("node:path");
     await page.waitForFunction(
       () => document.querySelector('[aria-label="현장 회의 완료"]').checked,
     );
-    await page.getByLabel("기록 통합 검색").fill("안내판 후속");
+    await search("안내판 후속");
     await page.locator(".search-result").click();
     await page.getByRole("heading", { name: "업무 수정" }).waitFor();
+    await page
+      .locator(".sheet[open]")
+      .getByRole("button", { name: "취소", exact: true })
+      .click();
     await page.getByRole("button", { name: "조치 완료", exact: true }).click();
     await page.getByRole("button", { name: "완료", exact: true }).click();
     await page
@@ -193,8 +313,7 @@ const path = require("node:path");
     await app.evaluate(({ dialog }, file) => {
       dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
     }, backup);
-    await page.getByRole("button", { name: "백업", exact: true }).click();
-    await page.getByRole("button", { name: "백업", exact: true }).isEnabled();
+    await manage("백업");
     for (let n = 0; !fs.existsSync(backup) && n < 100; n++)
       await new Promise((r) => setTimeout(r, 50));
     data = JSON.parse(fs.readFileSync(backup, "utf8"));
@@ -214,7 +333,7 @@ const path = require("node:path");
       });
       dialog.showMessageBox = async () => ({ response: 1 });
     }, backup);
-    await page.getByRole("button", { name: "복원", exact: true }).click();
+    await manage("복원");
     await page
       .getByRole("heading", { name: "업무 브리핑", exact: true })
       .waitFor();
@@ -222,7 +341,7 @@ const path = require("node:path");
     await page.getByRole("heading", { name: "복원 확인 메모" }).waitFor();
     // Broken references must be rejected before overwriting current data.
     fs.writeFileSync(backup, JSON.stringify({ ...data, patrols: [] }));
-    await page.getByRole("button", { name: "복원", exact: true }).click();
+    await manage("복원");
     await page.getByRole("alert").waitFor();
     assert.equal(
       (await page.evaluate(() => window.workdesk.load())).patrols.length,
@@ -291,6 +410,7 @@ const path = require("node:path");
     }
     // Optional coordinates: legacy-shaped record, valid zero pair, explicit clearing.
     await nav("현장 순찰");
+    await add("순찰 기록 추가");
     await page.getByLabel("기록 제목").fill("좌표 없는 순찰");
     await page.getByLabel("순찰 구간").fill("관리 거점");
     await page.getByLabel("기록자").fill("시험 담당");
@@ -309,6 +429,7 @@ const path = require("node:path");
     await page.getByLabel("위도 (DD)", { exact: true }).fill("0");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("0");
     await page.getByRole("button", { name: "변경 저장", exact: true }).click();
+    await optional.locator(".record-details > summary").click();
     await optional.getByText("위도 0°, 경도 0°", { exact: false }).waitFor();
     assert.deepEqual(
       (await page.evaluate(() => window.workdesk.load())).patrols[1]
@@ -320,9 +441,7 @@ const path = require("node:path");
       .getByRole("button", { name: "좌표 지우기", exact: true })
       .click();
     await page.getByRole("button", { name: "변경 저장", exact: true }).click();
-    await page
-      .getByRole("heading", { name: "순찰 기록 등록", exact: true })
-      .waitFor();
+    await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     assert.equal(
       (await page.evaluate(() => window.workdesk.load())).patrols[1]
         .coordinates,
@@ -343,6 +462,7 @@ const path = require("node:path");
       })
       .waitFor();
     await page.getByRole("tab", { name: "조직 관리", exact: false }).click();
+    await add("조직 추가");
     await page.getByLabel("조직 코드", { exact: true }).fill("PARK");
     await page.getByLabel("조직 이름", { exact: true }).fill("시험 사무소");
     await page.getByRole("button", { name: "조직 저장", exact: true }).click();
@@ -350,6 +470,7 @@ const path = require("node:path");
       .getByRole("heading", { name: "시험 사무소", exact: true })
       .waitFor();
     await page.getByRole("tab", { name: "직원 관리", exact: false }).click();
+    await add("직원 추가");
     await page.getByLabel("직원번호", { exact: true }).fill("E001");
     await page.getByLabel("직원 이름", { exact: true }).fill("시험 직원");
     await page.getByLabel("직위·담당", { exact: true }).fill("시설 담당");
@@ -358,6 +479,7 @@ const path = require("node:path");
       .getByRole("heading", { name: "시험 직원", exact: true })
       .waitFor();
     await page.getByRole("tab", { name: "거점 관리", exact: false }).click();
+    await add("거점 추가");
     await page.getByLabel("거점 코드", { exact: true }).fill("B01");
     await page.getByLabel("거점 이름", { exact: true }).fill("시험 탐방센터");
     await page.getByRole("button", { name: "거점 저장", exact: true }).click();
@@ -481,7 +603,7 @@ const path = require("node:path");
     await app.evaluate(({ dialog }, file) => {
       dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
     }, finalBackup);
-    await page.getByRole("button", { name: "백업", exact: true }).click();
+    await manage("백업");
     for (let n = 0; !fs.existsSync(finalBackup) && n < 100; n++)
       await new Promise((r) => setTimeout(r, 50));
     const officeBackup = JSON.parse(fs.readFileSync(finalBackup, "utf8"));
@@ -495,7 +617,7 @@ const path = require("node:path");
       });
       dialog.showMessageBox = async () => ({ response: 1 });
     }, finalBackup);
-    await page.getByRole("button", { name: "복원", exact: true }).click();
+    await manage("복원");
     await page
       .getByRole("heading", { name: "업무 브리핑", exact: true })
       .waitFor();
@@ -533,8 +655,15 @@ const path = require("node:path");
     console.log(
       "PASS: 조직·직원·거점·일/주간 근무표·CSV 반입·백업·복원, DD/DMS 좌표 입력·검증·수정·검색·지우기·브리핑, 순찰→인수인계, 제출·달력 연계, 검색, 완료 기록, 백업·복원/잘못된 백업 거부, 브리핑 출력, 재실행 보존, 폴더 등록",
     );
+  } catch (error) {
+    failed = true;
+    console.error(error);
+    throw error;
   } finally {
-    if (app) await app.close();
+    if (app) {
+      if (failed) await app.evaluate(({ app }) => app.exit(1)).catch(() => {});
+      else await app.close();
+    }
     fs.rmSync(dir, { recursive: true, force: true });
   }
 })().catch((error) => {

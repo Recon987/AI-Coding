@@ -1,3 +1,4 @@
+import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useState } from "react";
 import type { Data, Save } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
@@ -18,11 +19,13 @@ export function OfficeDirectory({
   save,
   busy,
   kind,
+  initialId,
 }: {
   data: Data;
   save: Save;
   busy: boolean;
   kind: Kind;
+  initialId?: string;
 }) {
   const blank = (): Draft => ({
     id: "",
@@ -33,13 +36,18 @@ export function OfficeDirectory({
     position: "",
     active: true,
   });
-  const [draft, setDraft] = useState(blank),
-    [query, setQuery] = useState("");
+  const initial = data[kind].find((row) => row.id === initialId);
+  const editor = useEditorDraft<Draft>(
+    { ...blank(), ...initial },
+    !!initial || initialId === "new",
+  );
+  const { draft, setDraft } = editor;
+  const [query, setQuery] = useState("");
   const label = labels[kind];
   const patch = (value: Partial<Draft>) =>
     setDraft((current) => ({ ...current, ...value }));
   const rows = data[kind].filter((r) =>
-    `${r.name} ${r.code}`.toLowerCase().includes(query.toLowerCase()),
+    `${r.name} ${r.code}`.toLowerCase().includes(query.trim().toLowerCase()),
   );
   const blocked = (id: string) =>
     kind === "employees"
@@ -73,13 +81,28 @@ export function OfficeDirectory({
         ? data[kind].map((r) => (r.id === draft.id ? item : r))
         : [...data[kind], item],
     };
-    if (await save(next as Data)) setDraft(blank());
+    if (await save(next as Data)) editor.finishEditor();
+    else
+      editor.setSaveError(
+        "저장하지 못했습니다. 코드 중복과 조직 연결을 확인한 뒤 다시 시도하세요. 입력 내용은 유지됩니다.",
+      );
   }
   return (
     <div className="workspace-grid directory-workspace">
       <section className="panel records">
         <SectionHead title={`${label} 목록`}>
-          <Tag>{data[kind].length}건</Tag>
+          <div className="editor-header-actions">
+            <Tag>{data[kind].length}건</Tag>
+            <button
+              className="primary"
+              disabled={
+                busy || (kind !== "organizations" && !data.organizations.length)
+              }
+              onClick={() => editor.openEditor(blank())}
+            >
+              {label} 추가
+            </button>
+          </div>
         </SectionHead>
         <input
           aria-label={`${label} 검색`}
@@ -89,9 +112,17 @@ export function OfficeDirectory({
         />
         {!rows.length && (
           <Empty>
-            {kind === "organizations"
-              ? "사무소와 부서를 먼저 등록하세요."
-              : `${label}를 등록하거나 CSV 파일로 반입하세요.`}
+            {query.trim() ? (
+              <>
+                검색 결과가 없습니다.
+                <br />
+                <button onClick={() => setQuery("")}>검색 초기화</button>
+              </>
+            ) : kind === "organizations" ? (
+              "사무소와 부서를 먼저 등록하세요."
+            ) : (
+              `${label}를 등록하거나 CSV 파일로 반입하세요.`
+            )}
           </Empty>
         )}
         {rows.map((row) => (
@@ -127,7 +158,7 @@ export function OfficeDirectory({
               <button
                 disabled={busy}
                 aria-label={`${row.name} 수정`}
-                onClick={() => setDraft({ ...blank(), ...row })}
+                onClick={() => editor.openEditor({ ...blank(), ...row })}
               >
                 수정
               </button>
@@ -148,7 +179,7 @@ export function OfficeDirectory({
                       [kind]: data[kind].filter((r) => r.id !== row.id),
                     }))
                   ) {
-                    if (draft.id === row.id) setDraft(blank());
+                    if (draft.id === row.id) editor.finishEditor();
                   }
                 }}
               >
@@ -158,104 +189,120 @@ export function OfficeDirectory({
           </article>
         ))}
       </section>
-      <form className="panel editor" onSubmit={submit}>
-        <SectionHead title={`${label} ${draft.id ? "수정" : "등록"}`}>
-          <div className="editor-header-actions">
-            <button
-              className="primary"
-              disabled={
-                busy || (kind !== "organizations" && !data.organizations.length)
-              }
-            >
-              {label} 저장
-            </button>
-            {draft.id && (
-              <button type="button" onClick={() => setDraft(blank())}>
+      {editor.isOpen && (
+        <EditorDialog
+          title={`${label} ${draft.id ? "수정" : "등록"}`}
+          busy={busy}
+          dirty={editor.dirty}
+          onClose={editor.finishEditor}
+          error={editor.saveError}
+        >
+          <form className="editor" onSubmit={submit}>
+            <div className="editor-header-actions">
+              <button
+                className="primary"
+                disabled={
+                  busy ||
+                  (kind !== "organizations" && !data.organizations.length)
+                }
+              >
+                {label} 저장
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={editor.closeEditor}
+              >
                 취소
               </button>
-            )}
-          </div>
-        </SectionHead>
-        <p className="editor-intro">
-          {kind === "organizations"
-            ? "조직코드는 ERP의 조직코드와 맞추면 이후 반입 자료를 같은 조직에 연결할 수 있습니다."
-            : kind === "employees"
-              ? "직원번호로 동일 직원을 구분합니다. 동명이인도 서로 다른 직원으로 관리합니다."
-              : "탐방지원센터·분소·현장 근무 거점을 등록하세요."}
-        </p>
-        <Field label={kind === "employees" ? "직원번호" : `${label} 코드`}>
-          <input
-            required
-            maxLength={80}
-            value={draft.code}
-            onChange={(e) => patch({ code: e.target.value })}
-          />
-        </Field>
-        <Field label={kind === "employees" ? "직원 이름" : `${label} 이름`}>
-          <input
-            required
-            maxLength={120}
-            value={draft.name}
-            onChange={(e) => patch({ name: e.target.value })}
-          />
-        </Field>
-        {kind === "organizations" ? (
-          <Field label="상위 조직">
-            <select
-              value={draft.parentId ?? ""}
-              onChange={(e) => patch({ parentId: e.target.value || null })}
-            >
-              <option value="">없음 · 최상위 조직</option>
-              {data.organizations
-                .filter((o) => o.id !== draft.id)
-                .map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.name} ({o.code})
-                  </option>
-                ))}
-            </select>
-          </Field>
-        ) : (
-          <Field label="소속 조직">
-            <select
-              required
-              value={draft.organizationId}
-              onChange={(e) => patch({ organizationId: e.target.value })}
-            >
-              <option value="">조직 선택</option>
-              {data.organizations.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name} ({o.code})
-                </option>
-              ))}
-            </select>
-          </Field>
-        )}
-        {kind === "employees" && (
-          <>
-            <Field label="직위·담당">
+            </div>
+            <p className="editor-intro">
+              {kind === "organizations"
+                ? "조직코드는 ERP의 조직코드와 맞추면 이후 반입 자료를 같은 조직에 연결할 수 있습니다."
+                : kind === "employees"
+                  ? "직원번호로 동일 직원을 구분합니다. 동명이인도 서로 다른 직원으로 관리합니다."
+                  : "탐방지원센터·분소·현장 근무 거점을 등록하세요."}
+            </p>
+            <Field label={kind === "employees" ? "직원번호" : `${label} 코드`}>
               <input
-                maxLength={100}
-                value={draft.position}
-                onChange={(e) => patch({ position: e.target.value })}
+                required
+                maxLength={80}
+                autoFocus
+                value={draft.code}
+                onChange={(e) => patch({ code: e.target.value })}
               />
             </Field>
-            <Field label="직원 사용 상태">
-              <select
-                value={draft.active ? "active" : "inactive"}
-                onChange={(e) => patch({ active: e.target.value === "active" })}
-              >
-                <option value="active">활성 · 근무표에 표시</option>
-                <option value="inactive">비활성 · 기존 근무 기록 보존</option>
-              </select>
+            <Field label={kind === "employees" ? "직원 이름" : `${label} 이름`}>
+              <input
+                required
+                maxLength={120}
+                value={draft.name}
+                onChange={(e) => patch({ name: e.target.value })}
+              />
             </Field>
-            <p className="help">
-              전출·퇴사 직원은 삭제 대신 비활성으로 전환하면 과거 근무 기록을
-              보존합니다.
-            </p>
-          </>
-        )}
-      </form>
+            {kind === "organizations" ? (
+              <Field label="상위 조직">
+                <select
+                  value={draft.parentId ?? ""}
+                  onChange={(e) => patch({ parentId: e.target.value || null })}
+                >
+                  <option value="">없음 · 최상위 조직</option>
+                  {data.organizations
+                    .filter((o) => o.id !== draft.id)
+                    .map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.name} ({o.code})
+                      </option>
+                    ))}
+                </select>
+              </Field>
+            ) : (
+              <Field label="소속 조직">
+                <select
+                  required
+                  value={draft.organizationId}
+                  onChange={(e) => patch({ organizationId: e.target.value })}
+                >
+                  <option value="">조직 선택</option>
+                  {data.organizations.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.name} ({o.code})
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )}
+            {kind === "employees" && (
+              <>
+                <Field label="직위·담당">
+                  <input
+                    maxLength={100}
+                    value={draft.position}
+                    onChange={(e) => patch({ position: e.target.value })}
+                  />
+                </Field>
+                <Field label="직원 사용 상태">
+                  <select
+                    value={draft.active ? "active" : "inactive"}
+                    onChange={(e) =>
+                      patch({ active: e.target.value === "active" })
+                    }
+                  >
+                    <option value="active">활성 · 근무표에 표시</option>
+                    <option value="inactive">
+                      비활성 · 기존 근무 기록 보존
+                    </option>
+                  </select>
+                </Field>
+                <p className="help">
+                  전출·퇴사 직원은 삭제 대신 비활성으로 전환하면 과거 근무
+                  기록을 보존합니다.
+                </p>
+              </>
+            )}
+          </form>
+        </EditorDialog>
+      )}
     </div>
   );
 }

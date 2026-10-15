@@ -1,6 +1,6 @@
 {
   "name": "park-workdesk",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "description": "폐쇄망용 공원 업무 수첩",
   "main": "desktop/main.cjs",
@@ -11,7 +11,8 @@
     "test": "node --test tests/*.test.cjs",
     "package:win": "npm run build && electron-builder --win nsis portable --x64 --publish never",
     "postinstall": "node node_modules/electron/install.js",
-    "test:desktop": "npm run build && node tests/desktop-smoke.cjs"
+    "test:desktop": "npm run build && node tests/desktop-smoke.cjs",
+    "review:ui": "npm run build && node tests/ui-review.cjs"
   },
   "dependencies": {
     "react": "19.3.1",

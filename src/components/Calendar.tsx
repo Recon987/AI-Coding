@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { EditorDialog, useEditorDraft } from "./EditorDialog";
+import { useRef, useState } from "react";
 import {
   calendarItems,
   dayKey,
@@ -21,9 +22,23 @@ export function Calendar({
   initialId?: string;
 }) {
   const initial = data.events.find((e) => e.id === initialId);
-  const [month, setMonth] = useState(() => new Date(initial?.at || Date.now()));
-  const [selected, setSelected] = useState(() =>
-    dayKey(new Date(initial?.at || Date.now())),
+  const requestedDate = initialId?.match(
+    /^(?:new|date):(\d{4}-\d{2}-\d{2})$/,
+  )?.[1];
+  const initialDate =
+    requestedDate &&
+    Number.isFinite(Date.parse(`${requestedDate}T09:00`)) &&
+    dayKey(new Date(`${requestedDate}T09:00`)) === requestedDate
+      ? requestedDate
+      : undefined;
+  const [month, setMonth] = useState(
+    () =>
+      new Date(
+        initial?.at || (initialDate ? `${initialDate}T09:00` : Date.now()),
+      ),
+  );
+  const [selected, setSelected] = useState(
+    () => initialDate || dayKey(new Date(initial?.at || Date.now())),
   );
   const blank = (date = selected): Event => ({
     id: "",
@@ -31,7 +46,11 @@ export function Calendar({
     at: new Date(`${date}T09:00`).toISOString(),
     done: false,
   });
-  const [draft, setDraft] = useState<Event>(() => initial || blank());
+  const editor = useEditorDraft<Event>(
+    initial || blank(),
+    !!initial || initialId === "new" || initialId?.startsWith("new:") === true,
+  );
+  const { draft, setDraft } = editor;
   const year = month.getFullYear(),
     monthIndex = month.getMonth();
   const start = new Date(year, monthIndex, 1);
@@ -53,9 +72,15 @@ export function Calendar({
     (i) => dayKey(new Date(i.at)) === selected,
   );
   const selectedHoliday = holidayName(selected);
+  const agenda = useRef<HTMLElement>(null);
+  const focusAgenda = () => {
+    agenda.current?.scrollIntoView({ block: "start", behavior: "auto" });
+    agenda.current?.focus({ preventScroll: true });
+  };
   function choose(date: string) {
     setSelected(date);
-    setDraft(blank(date));
+    if (window.matchMedia("(max-width: 960px)").matches)
+      requestAnimationFrame(focusAgenda);
   }
   const draftStartDay = dayKey(new Date(draft.at));
   const activeRecurrence = draft.recurrence && draft.recurrence !== "none";
@@ -89,10 +114,13 @@ export function Calendar({
           : [...data.events, row],
       })
     ) {
-      setDraft(blank(dayKey(new Date(row.at))));
+      editor.finishEditor();
       setSelected(dayKey(new Date(row.at)));
       setMonth(new Date(row.at));
-    }
+    } else
+      editor.setSaveError(
+        "저장하지 못했습니다. 입력 내용은 유지됩니다. 다시 시도하세요.",
+      );
   }
   return (
     <div className="calendar-layout">
@@ -102,6 +130,16 @@ export function Calendar({
           title={`${year}년 ${monthIndex + 1}월`}
         >
           <div className="month-controls">
+            <button onClick={focusAgenda}>
+              선택 날짜 기록 {selectedItems.length}건 보기
+            </button>
+            <button
+              className="primary"
+              disabled={busy}
+              onClick={() => editor.openEditor(blank())}
+            >
+              일정 추가
+            </button>
             <button
               aria-label="이전 달"
               onClick={() => setMonth(new Date(year, monthIndex - 1, 1))}
@@ -182,7 +220,12 @@ export function Calendar({
         </p>
       </section>
       <div className="calendar-detail">
-        <section className="panel">
+        <section
+          className="panel calendar-agenda"
+          ref={agenda}
+          tabIndex={-1}
+          aria-label="선택 날짜 기록"
+        >
           <SectionHead
             title={`${selected.slice(5).replace("-", "월 ")}일 기록`}
           >
@@ -201,7 +244,9 @@ export function Calendar({
                   className={`link-button ${i.done ? "done" : ""}`}
                   onClick={() =>
                     i.page === "calendar"
-                      ? setDraft(data.events.find((e) => e.id === i.id)!)
+                      ? editor.openEditor(
+                          data.events.find((e) => e.id === i.id)!,
+                        )
                       : navigate(i.page as Page, i.id)
                   }
                 >
@@ -217,125 +262,162 @@ export function Calendar({
               {i.page === "calendar" && (
                 <input
                   type="checkbox"
-                  aria-label={`${i.title} 완료`}
+                  aria-label={
+                    i.recurrence && i.recurrence !== "none"
+                      ? `${i.title} 전체 반복 일정 ${i.done ? "다시 진행" : "완료"}`
+                      : `${i.title} 완료`
+                  }
+                  title={
+                    i.recurrence && i.recurrence !== "none"
+                      ? "전체 반복 일정의 모든 회차와 알림에 적용합니다."
+                      : "일정 완료 상태 변경"
+                  }
                   checked={i.done}
                   disabled={busy}
-                  onChange={() =>
+                  onChange={() => {
+                    if (
+                      i.recurrence &&
+                      i.recurrence !== "none" &&
+                      !confirm(
+                        i.done
+                          ? "전체 반복 일정을 다시 진행 상태로 바꾸고 알림을 재개할까요? 모든 회차에 적용됩니다."
+                          : "전체 반복 일정의 모든 회차를 완료하고 이후 알림을 중지할까요? 회차별 완료는 지원하지 않습니다.",
+                      )
+                    )
+                      return;
                     save({
                       ...data,
                       events: data.events.map((e) =>
                         e.id === i.id ? { ...e, done: !e.done } : e,
                       ),
-                    })
-                  }
+                    });
+                  }}
                 />
               )}
             </div>
           ))}
         </section>
-        <form className="panel editor" onSubmit={submit}>
-          <SectionHead title={draft.id ? "일정 수정" : "일정 등록"}>
-            <div className="editor-header-actions">
-              <button
-                className="primary"
-                disabled={busy || invalidRepeatUntil}
-              >
-                {draft.id ? "변경 저장" : "일정 저장"}
-              </button>
-              {draft.id && (
-                <>
-                  <button type="button" onClick={() => setDraft(blank())}>
-                    취소
-                  </button>
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={async () => {
-                      if (
-                        confirm("일정을 삭제할까요?") &&
-                        (await save({
-                          ...data,
-                          events: data.events.filter((e) => e.id !== draft.id),
-                        }))
-                      )
-                        setDraft(blank());
-                    }}
-                  >
-                    삭제
-                  </button>
-                </>
-              )}
-            </div>
-          </SectionHead>
-          <Field label="일정 제목">
-            <input
-              required
-              maxLength={500}
-              value={draft.title}
-              onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-            />
-          </Field>
-          <Field label="일정 일시">
-            <input
-              type="datetime-local"
-              required
-              value={localInput(draft.at)}
-              onChange={(e) => {
-                if (e.target.value)
-                  setDraft({
-                    ...draft,
-                    at: new Date(e.target.value).toISOString(),
-                  });
-              }}
-            />
-          </Field>
-          <div className="form-row">
-            <Field label="반복 주기">
-              <select
-                aria-label="반복 주기"
-                value={draft.recurrence || "none"}
-                onChange={(e) => {
-                  const next = e.target.value as EventRecurrence;
-                  setDraft({
-                    ...draft,
-                    recurrence: next,
-                    repeatUntil: next === "none" ? null : draft.repeatUntil,
-                  });
-                }}
-              >
-                {(Object.keys(RECURRENCE_LABEL) as EventRecurrence[]).map(
-                  (k) => (
-                    <option key={k} value={k}>
-                      {RECURRENCE_LABEL[k]}
-                    </option>
-                  ),
+        {editor.isOpen && (
+          <EditorDialog
+            title={draft.id ? "일정 수정" : "일정 등록"}
+            busy={busy}
+            dirty={editor.dirty}
+            onClose={editor.finishEditor}
+            error={editor.saveError}
+          >
+            <form className="editor" onSubmit={submit}>
+              <div className="editor-header-actions">
+                <button
+                  className="primary"
+                  disabled={busy || invalidRepeatUntil}
+                >
+                  {draft.id ? "변경 저장" : "일정 저장"}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={editor.closeEditor}
+                >
+                  취소
+                </button>
+                {draft.id && (
+                  <>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={async () => {
+                        if (
+                          confirm("일정을 삭제할까요?") &&
+                          (await save({
+                            ...data,
+                            events: data.events.filter(
+                              (e) => e.id !== draft.id,
+                            ),
+                          }))
+                        )
+                          editor.finishEditor();
+                      }}
+                    >
+                      삭제
+                    </button>
+                  </>
                 )}
-              </select>
-            </Field>
-            {activeRecurrence && (
-              <Field label="반복 종료일">
+              </div>
+              <Field label="일정 제목">
                 <input
-                  type="date"
-                  aria-label="반복 종료일"
-                  min={draftStartDay}
-                  value={draft.repeatUntil || ""}
+                  required
+                  maxLength={500}
+                  autoFocus
+                  value={draft.title}
                   onChange={(e) =>
-                    setDraft({
-                      ...draft,
-                      repeatUntil: e.target.value || null,
-                    })
+                    setDraft({ ...draft, title: e.target.value })
                   }
                 />
               </Field>
-            )}
-          </div>
-          {invalidRepeatUntil && (
-            <p role="alert" className="error">
-              반복 종료일은 일정 시작일({draftStartDay}) 이후여야 합니다.
-            </p>
-          )}
-          <p className="help">앱 실행 중 예정 시각에 알림을 표시합니다.</p>
-        </form>
+              <Field label="일정 일시">
+                <input
+                  type="datetime-local"
+                  required
+                  value={localInput(draft.at)}
+                  onChange={(e) => {
+                    if (e.target.value)
+                      setDraft({
+                        ...draft,
+                        at: new Date(e.target.value).toISOString(),
+                      });
+                  }}
+                />
+              </Field>
+
+              <div className="form-row">
+                <Field label="반복 주기">
+                  <select
+                    aria-label="반복 주기"
+                    value={draft.recurrence || "none"}
+                    onChange={(e) => {
+                      const next = e.target.value as EventRecurrence;
+                      setDraft({
+                        ...draft,
+                        recurrence: next,
+                        repeatUntil: next === "none" ? null : draft.repeatUntil,
+                      });
+                    }}
+                  >
+                    {(Object.keys(RECURRENCE_LABEL) as EventRecurrence[]).map(
+                      (k) => (
+                        <option key={k} value={k}>
+                          {RECURRENCE_LABEL[k]}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </Field>
+                {activeRecurrence && (
+                  <Field label="반복 종료일">
+                    <input
+                      type="date"
+                      aria-label="반복 종료일"
+                      min={draftStartDay}
+                      value={draft.repeatUntil || ""}
+                      onChange={(e) =>
+                        setDraft({
+                          ...draft,
+                          repeatUntil: e.target.value || null,
+                        })
+                      }
+                    />
+                  </Field>
+                )}
+              </div>
+              {invalidRepeatUntil && (
+                <p role="alert" className="error">
+                  반복 종료일은 일정 시작일({draftStartDay}) 이후여야 합니다.
+                </p>
+              )}
+              <p className="help">앱 실행 중 예정 시각에 알림을 표시합니다.</p>
+            </form>
+          </EditorDialog>
+        )}
       </div>
     </div>
   );
