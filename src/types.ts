@@ -25,14 +25,47 @@ export type Task = Note & {
   done: boolean;
   completedAt: string | null;
 };
+export type Organization = {
+  id: string;
+  code: string;
+  name: string;
+  parentId: string | null;
+};
+export type Employee = {
+  id: string;
+  code: string;
+  name: string;
+  organizationId: string;
+  position: string;
+  active: boolean;
+};
+export type Base = {
+  id: string;
+  code: string;
+  name: string;
+  organizationId: string;
+};
+export type Assignment = {
+  id: string;
+  employeeId: string;
+  date: string;
+  workType: "work" | "off" | "leave" | "trip" | "base";
+  duty: "none" | "day" | "night";
+  baseId: string | null;
+  note: string;
+};
 export type Data = {
-  version: 2;
+  version: 3;
   notes: Note[];
   events: Event[];
   calls: Call[];
   folders: Folder[];
   patrols: Patrol[];
   tasks: Task[];
+  organizations: Organization[];
+  employees: Employee[];
+  bases: Base[];
+  assignments: Assignment[];
 };
 export type Page =
   | "briefing"

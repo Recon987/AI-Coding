@@ -198,7 +198,7 @@ const path = require("node:path");
     for (let n = 0; !fs.existsSync(backup) && n < 100; n++)
       await new Promise((r) => setTimeout(r, 50));
     data = JSON.parse(fs.readFileSync(backup, "utf8"));
-    assert.equal(data.version, 2);
+    assert.equal(data.version, 3);
     assert.equal(data.patrols[0].route, "안내소 → 전망대");
     assert.deepEqual(data.patrols[0].coordinates, {
       latitude: 37.5,

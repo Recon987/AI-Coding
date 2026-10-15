@@ -28,9 +28,9 @@ function migrateFile(file) {
   if (!fs.existsSync(file)) return;
   const original = JSON.parse(fs.readFileSync(file, "utf8"));
   normalize(original);
-  if (original.version === 1) {
+  if ([1, 2].includes(original.version)) {
     // Byte-for-byte original, never replace a prior migration backup.
-    const backup = file + ".v1-backup.json";
+    const backup = file + `.v${original.version}-backup.json`;
     if (!fs.existsSync(backup))
       fs.copyFileSync(file, backup, fs.constants.COPYFILE_EXCL);
     write(file, original);

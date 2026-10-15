@@ -100,12 +100,11 @@ function App() {
           const raw = localStorage.getItem("park-workdesk-demo");
           const parsed = raw ? JSON.parse(raw) : empty();
           const next = normalize(parsed);
-          if (
-            parsed.version === 1 &&
-            raw &&
-            !localStorage.getItem("park-workdesk-demo-v1-backup")
-          )
-            localStorage.setItem("park-workdesk-demo-v1-backup", raw);
+          if ([1, 2].includes(parsed.version) && raw) {
+            const backupKey = `park-workdesk-demo-v${parsed.version}-backup`;
+            if (!localStorage.getItem(backupKey))
+              localStorage.setItem(backupKey, raw);
+          }
           setData(next);
         }
         setReady(true);

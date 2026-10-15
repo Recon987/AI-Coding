@@ -90,7 +90,7 @@ test("v1 최초 전환은 원본 백업을 남기며 반복 실행에 안전", (
     fs.writeFileSync(file, original);
     migrateFile(file);
     const migrated = read(file);
-    assert.equal(migrated.version, 2);
+    assert.equal(migrated.version, 3);
     assert.equal(migrated.notes[0].body, "원본 내용");
     assert.deepEqual(migrated.tasks, []);
     assert.equal(fs.readFileSync(file + ".v1-backup.json", "utf8"), original);
@@ -323,7 +323,7 @@ test("v0.2 순찰 누락/null 좌표와 0도 좌표는 손실 없이 저장·백
       write(file, data);
       assert.deepEqual(read(file), data);
       assert.equal(JSON.stringify(data), before);
-      assert.equal(read(file).version, 2);
+      assert.equal(read(file).version, 3);
     }
     const previous = fs.readFileSync(file, "utf8");
     for (const coordinates of [

@@ -1,4 +1,5 @@
-export const collections = [
+import { officeCollections, validateOffice } from "./office.mjs";
+const personalCollections = [
   "notes",
   "events",
   "calls",
@@ -6,14 +7,19 @@ export const collections = [
   "patrols",
   "tasks",
 ];
+export const collections = [...personalCollections, ...officeCollections];
 export const empty = () => ({
-  version: 2,
+  version: 3,
   notes: [],
   events: [],
   calls: [],
   folders: [],
   patrols: [],
   tasks: [],
+  organizations: [],
+  employees: [],
+  bases: [],
+  assignments: [],
 });
 const string = (v, max = 20000) => typeof v === "string" && v.length <= max;
 const required = (v, max = 500) => string(v, max) && v.trim().length > 0;
@@ -107,17 +113,27 @@ export function formatCoordinates(input, format = "dd") {
     .join(", ");
 }
 
-// v1 -> v2 is additive and returns a new object without modifying the input.
+// v1/v2 -> v3 is additive and returns a new object without modifying the input.
 export function normalize(input) {
   ensure(
-    input && typeof input === "object" && [1, 2].includes(input.version),
+    input && typeof input === "object" && [1, 2, 3].includes(input.version),
     "지원하지 않는 데이터 버전입니다.",
   );
+  const personal =
+    input.version === 1 ? { ...input, patrols: [], tasks: [] } : input;
   const data =
-    input.version === 1
-      ? { ...input, version: 2, patrols: [], tasks: [] }
+    input.version < 3
+      ? {
+          ...personal,
+          version: 3,
+          organizations: [],
+          employees: [],
+          bases: [],
+          assignments: [],
+        }
       : input;
-  for (const key of collections) {
+  validateOffice(data);
+  for (const key of personalCollections) {
     ensure(
       Array.isArray(data[key]) && data[key].length <= 10000,
       "데이터 크기 또는 형식을 확인하세요.",
@@ -198,7 +214,7 @@ export function normalize(input) {
   );
   // Keep only known collections, so unrelated import metadata cannot become application state.
   return {
-    version: 2,
+    version: 3,
     ...Object.fromEntries(collections.map((key) => [key, data[key]])),
   };
 }
