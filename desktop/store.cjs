@@ -1,30 +1,48 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const empty = () => ({version: 1, notes: [], events: [], calls: [], folders: []});
-const text = (v, max=20000) => typeof v === 'string' && v.length <= max;
-function validate(data) {
-  if (!data || data.version !== 1) throw new Error('지원하지 않는 데이터 형식입니다.');
-  for (const key of ['notes','events','calls','folders']) {
-    if (!Array.isArray(data[key]) || data[key].length > 10000) throw new Error('데이터 크기 또는 형식을 확인하세요.');
-    const ids = new Set();
-    for (const row of data[key]) {
-      if (!row || !text(row.id,100) || ids.has(row.id) || !text(row.title,500) || !row.title.trim()) throw new Error('항목을 확인하세요.');
-      ids.add(row.id);
-      if (key === 'notes' && !text(row.body)) throw new Error('메모를 확인하세요.');
-      if (key === 'events' && (!text(row.at,100) || !Number.isFinite(Date.parse(row.at)) || typeof row.done !== 'boolean')) throw new Error('일정 형식을 확인하세요.');
-      if (key === 'calls' && (!text(row.body) || !text(row.phone,100) || typeof row.done !== 'boolean')) throw new Error('전화메모를 확인하세요.');
-      if (key === 'folders' && (!text(row.path,4096) || !path.isAbsolute(row.path))) throw new Error('폴더 경로를 확인하세요.');
-    }
-  }
-  return data;
+const fs = require("node:fs");
+const path = require("node:path");
+const { empty, normalize } = require("../shared/model.mjs");
+const MAX_BYTES = 20 * 1024 * 1024;
+function read(file) {
+  if (!fs.existsSync(file)) return empty();
+  if (fs.statSync(file).size > MAX_BYTES)
+    throw new Error("데이터 파일이 20MB를 초과했습니다.");
+  return normalize(JSON.parse(fs.readFileSync(file, "utf8")));
 }
-function read(file) { return fs.existsSync(file) ? validate(JSON.parse(fs.readFileSync(file,'utf8'))) : empty(); }
 function write(file, data) {
-  validate(data); fs.mkdirSync(path.dirname(file), {recursive:true});
-  const temporary = file + '.tmp';
-  fs.writeFileSync(temporary, JSON.stringify(data,null,2), {mode:0o600}); fs.renameSync(temporary,file);
+  const validated = normalize(data);
+  const payload = JSON.stringify(validated, null, 2);
+  if (Buffer.byteLength(payload) > MAX_BYTES)
+    throw new Error(
+      "저장 한도 20MB를 초과했습니다. 백업 후 기록을 정리하세요.",
+    );
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const temporary = file + ".tmp";
+  try {
+    fs.writeFileSync(temporary, payload, { mode: 0o600 });
+    fs.renameSync(temporary, file);
+  } finally {
+    if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
+  }
+}
+function migrateFile(file) {
+  if (!fs.existsSync(file)) return;
+  const original = JSON.parse(fs.readFileSync(file, "utf8"));
+  normalize(original);
+  if (original.version === 1) {
+    // Byte-for-byte original, never replace a prior migration backup.
+    const backup = file + ".v1-backup.json";
+    if (!fs.existsSync(backup))
+      fs.copyFileSync(file, backup, fs.constants.COPYFILE_EXCL);
+    write(file, original);
+  }
 }
 function due(events, now, seen) {
-  return events.filter(e => !e.done && !seen.has(e.id+e.at) && Date.parse(e.at) <= now && Date.parse(e.at) > now - 60000);
+  return events.filter(
+    (e) =>
+      !e.done &&
+      !seen.has(e.id + e.at) &&
+      Date.parse(e.at) <= now &&
+      Date.parse(e.at) > now - 60000,
+  );
 }
-module.exports = {empty, validate, read, write, due};
+module.exports = { empty, validate: normalize, read, write, migrateFile, due };

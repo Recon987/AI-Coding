@@ -1,0 +1,266 @@
+import { useState } from "react";
+import type { Data, Patrol, Save, Task } from "../types";
+import {
+  Empty,
+  Field,
+  formatTime,
+  localInput,
+  riskNames,
+  SectionHead,
+  Tag,
+} from "../ui";
+export function Patrols({
+  data,
+  save,
+  busy,
+  initialId,
+  openTask,
+}: {
+  data: Data;
+  save: Save;
+  busy: boolean;
+  initialId?: string;
+  openTask: (id: string) => void;
+}) {
+  const blank = (): Patrol => ({
+    id: "",
+    title: "",
+    at: new Date().toISOString(),
+    route: "",
+    observer: "",
+    findings: "",
+    action: "",
+    risk: "normal",
+  });
+  const [draft, setDraft] = useState(
+    () => data.patrols.find((p) => p.id === initialId) || blank(),
+  );
+  const [query, setQuery] = useState("");
+  const patch = (values: Partial<Patrol>) => setDraft({ ...draft, ...values });
+  const rows = [...data.patrols]
+    .filter((p) =>
+      `${p.title} ${p.route} ${p.observer} ${p.findings}`
+        .toLowerCase()
+        .includes(query.toLowerCase()),
+    )
+    .sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const item = {
+      ...draft,
+      id: draft.id || crypto.randomUUID(),
+      title: draft.title.trim(),
+      route: draft.route.trim(),
+      observer: draft.observer.trim(),
+    };
+    if (!item.title || !item.route || !item.observer) return;
+    if (
+      await save({
+        ...data,
+        patrols: draft.id
+          ? data.patrols.map((p) => (p.id === draft.id ? item : p))
+          : [...data.patrols, item],
+      })
+    )
+      setDraft(blank());
+  }
+  async function handover(p: Patrol) {
+    const existing = data.tasks.find((t) => t.patrolId === p.id && !t.done);
+    if (existing) {
+      openTask(existing.id);
+      return;
+    }
+    const t: Task = {
+      id: crypto.randomUUID(),
+      title: `${p.title} 후속 조치`,
+      body: `구간: ${p.route}\n확인 사항: ${p.findings}\n현장 조치: ${p.action}`,
+      kind: "handover",
+      at: new Date(Date.now() + 86400000).toISOString(),
+      assignee: "",
+      destination: "",
+      priority: p.risk === "urgent" ? "high" : "normal",
+      remindMinutes: 60,
+      patrolId: p.id,
+      done: false,
+      completedAt: null,
+    };
+    if (await save({ ...data, tasks: [...data.tasks, t] })) openTask(t.id);
+  }
+  return (
+    <div className="workspace-grid">
+      <section className="panel records">
+        <SectionHead eyebrow="FIELD JOURNAL" title="현장에서 남긴 기록">
+          <Tag>{data.patrols.length}건</Tag>
+        </SectionHead>
+        <input
+          aria-label="순찰 검색"
+          placeholder="구간, 기록자, 확인 사항 검색"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        {!rows.length && (
+          <Empty>순찰 구간과 확인 사항을 남겨 다음 근무에 연결하세요.</Empty>
+        )}
+        {rows.map((p) => (
+          <article className="record" key={p.id}>
+            <div className="record-top">
+              <Tag
+                tone={
+                  p.risk === "urgent"
+                    ? "red"
+                    : p.risk === "attention"
+                      ? "amber"
+                      : ""
+                }
+              >
+                {riskNames[p.risk]}
+              </Tag>
+              <span className="muted">{formatTime(p.at)}</span>
+            </div>
+            <h3>{p.title}</h3>
+            <div className="route-line">
+              <span aria-hidden="true">⌁</span>
+              {p.route}
+            </div>
+            <p className="record-body">{p.findings || "별도 확인 사항 없음"}</p>
+            {p.action && (
+              <p className="action-note">
+                <strong>현장 조치</strong> {p.action}
+              </p>
+            )}
+            <p className="source">기록자 · {p.observer}</p>
+            <div className="record-actions">
+              <button
+                className="primary small"
+                disabled={busy}
+                onClick={() => handover(p)}
+              >
+                {data.tasks.some((t) => t.patrolId === p.id && !t.done)
+                  ? "후속 조치 보기"
+                  : "인수인계로 연결"}
+              </button>
+              <button disabled={busy} onClick={() => setDraft(p)}>
+                수정
+              </button>
+              <button
+                className="text-button danger"
+                disabled={busy}
+                onClick={async () => {
+                  if (
+                    confirm(
+                      "순찰 기록을 삭제할까요? 연결된 인수인계 내용은 유지하고 연결만 해제합니다.",
+                    )
+                  ) {
+                    if (
+                      await save({
+                        ...data,
+                        patrols: data.patrols.filter((x) => x.id !== p.id),
+                        tasks: data.tasks.map((t) =>
+                          t.patrolId === p.id ? { ...t, patrolId: null } : t,
+                        ),
+                      })
+                    ) {
+                      if (draft.id === p.id) setDraft(blank());
+                    }
+                  }
+                }}
+              >
+                삭제
+              </button>
+            </div>
+          </article>
+        ))}
+      </section>
+      <form className="panel editor" onSubmit={submit}>
+        <SectionHead title={draft.id ? "순찰 기록 수정" : "순찰 기록 등록"} />
+        <Field label="기록 제목">
+          <input
+            required
+            maxLength={500}
+            value={draft.title}
+            onChange={(e) => patch({ title: e.target.value })}
+            placeholder="예: 오전 탐방로 순찰"
+          />
+        </Field>
+        <Field label="순찰 구간">
+          <input
+            required
+            maxLength={500}
+            value={draft.route}
+            onChange={(e) => patch({ route: e.target.value })}
+            placeholder="출발 거점 → 점검 구간 → 도착 거점"
+          />
+        </Field>
+        <div className="form-row">
+          <Field label="기록자">
+            <input
+              required
+              maxLength={100}
+              value={draft.observer}
+              onChange={(e) => patch({ observer: e.target.value })}
+            />
+          </Field>
+          <Field label="확인 등급">
+            <select
+              value={draft.risk}
+              onChange={(e) =>
+                patch({ risk: e.target.value as Patrol["risk"] })
+              }
+            >
+              {Object.entries(riskNames).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
+        <Field label="순찰 일시">
+          <input
+            type="datetime-local"
+            required
+            value={localInput(draft.at)}
+            onChange={(e) => {
+              if (e.target.value)
+                patch({ at: new Date(e.target.value).toISOString() });
+            }}
+          />
+        </Field>
+        <Field label="확인 사항">
+          <textarea
+            rows={4}
+            maxLength={20000}
+            value={draft.findings}
+            onChange={(e) => patch({ findings: e.target.value })}
+            placeholder="탐방로, 시설, 탐방객 안내, 자원 보호 등"
+          />
+        </Field>
+        <Field label="현장 조치">
+          <textarea
+            rows={3}
+            maxLength={20000}
+            value={draft.action}
+            onChange={(e) => patch({ action: e.target.value })}
+          />
+        </Field>
+        <p className="help">
+          개인 업무 기록입니다. 긴급 상황은 기관의 보고·대응 절차를 이용하세요.
+        </p>
+        <div className="form-actions">
+          <button className="primary" disabled={busy}>
+            {draft.id ? "변경 저장" : "순찰 저장"}
+          </button>
+          {draft.id && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => setDraft(blank())}
+            >
+              수정 취소
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
+  );
+}

@@ -1,6 +1,6 @@
 {
   "name": "park-workdesk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "폐쇄망용 공원 업무 수첩",
   "main": "desktop/main.cjs",
@@ -37,10 +37,14 @@
     "files": [
       "dist/**/*",
       "desktop/**/*",
-      "package.json"
+      "package.json",
+      "shared/**/*"
     ],
     "win": {
-      "target": "nsis"
+      "target": [
+        "nsis",
+        "portable"
+      ]
     },
     "nsis": {
       "oneClick": false,
