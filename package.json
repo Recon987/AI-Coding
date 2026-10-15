@@ -1,6 +1,6 @@
 {
   "name": "park-workdesk",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": true,
   "description": "폐쇄망용 공원 업무 수첩",
   "main": "desktop/main.cjs",

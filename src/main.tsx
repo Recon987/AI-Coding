@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { empty, normalize, formatCoordinates } from "../shared/model.mjs";
 import type { Data, Page } from "./types";
+import { Office } from "./components/Office";
 import { Briefing } from "./components/Briefing";
 import { Patrols } from "./components/Patrols";
 import { Tasks } from "./components/Tasks";
@@ -18,6 +19,7 @@ const sections: {
     label: "업무 흐름",
     pages: [
       { id: "briefing", label: "업무 브리핑" },
+      { id: "office", label: "사무소 현황" },
       { id: "patrol", label: "현장 순찰" },
       { id: "handover", label: "인수인계" },
       { id: "submission", label: "제출 기한" },
@@ -38,6 +40,7 @@ const pageNames = Object.fromEntries(
   sections.flatMap((s) => s.pages.map((p) => [p.id, p.label])),
 );
 const subtitles: Record<Page, string> = {
+  office: "직원별 근무·휴무·당직·거점 배치를 일별·주간으로 확인합니다.",
   briefing: "순찰에서 사무실까지, 오늘 이어갈 업무를 확인하세요.",
   patrol: "현장의 확인 사항과 조치 내용을 기록하고 다음 업무로 연결합니다.",
   handover: "남은 조치와 담당자, 마감일을 한눈에 확인합니다.",
@@ -279,7 +282,7 @@ function App() {
           <span className="offline-dot" />
           {api ? "내 PC에 저장" : "브라우저 체험 모드"}
           <small>오프라인 개인 업무 공간</small>
-          <span className="version">v0.3.1</span>
+          <span className="version">v0.4.0</span>
         </div>
       </aside>
       <main>
@@ -392,6 +395,9 @@ function App() {
             </section>
           ) : (
             <>
+              {page === "office" && (
+                <Office data={data} save={save} busy={busy} />
+              )}
               {page === "briefing" && (
                 <Briefing data={data} navigate={navigate} busy={busy} />
               )}

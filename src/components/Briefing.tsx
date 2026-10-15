@@ -7,6 +7,7 @@ import {
 } from "../../shared/model.mjs";
 import type { Data, Page } from "../types";
 import { formatTime, SectionHead, Tag } from "../ui";
+import { officeSummary } from "../../shared/office.mjs";
 import { Icon } from "./Icon";
 
 export function Briefing({
@@ -19,6 +20,7 @@ export function Briefing({
   busy: boolean;
 }) {
   const today = dayKey();
+  const office = officeSummary(data, today);
   const [date, setDate] = useState(today);
   const [message, setMessage] = useState("");
   const [showText, setShowText] = useState(false);
@@ -133,6 +135,23 @@ export function Briefing({
           </button>
         ))}
       </div>
+      <section className="home-office-strip">
+        <span className="task-type-icon">
+          <Icon name="office" />
+        </span>
+        <div>
+          <strong>오늘의 사무소 근무</strong>
+          <span>
+            {office.total
+              ? `대상 ${office.total}명 · 근무 등록 ${office.registered}명 · 당직/숙직 ${office.duty}명 · 미등록 ${office.unregistered}명`
+              : "직원과 근무표를 등록해 사무소 현황을 함께 확인하세요."}
+          </span>
+        </div>
+        <button disabled={busy} onClick={() => navigate("office")}>
+          {office.total ? "근무현황판 열기" : "현황판 구성"}
+          <Icon name="arrow" size={15} />
+        </button>
+      </section>
       <div className="briefing-columns">
         <section className="panel task-overview" aria-label="챙겨야 할 업무">
           <SectionHead title="챙겨야 할 업무">

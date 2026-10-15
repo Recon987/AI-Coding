@@ -334,6 +334,175 @@ const path = require("node:path");
         .coordinates,
       { latitude: -37.75, longitude: -127.25 },
     );
+    // Office setup and roster: no assumptions about unregistered staff.
+    await nav("사무소 현황");
+    await page
+      .getByRole("heading", {
+        name: "사무소 근무현황판을 준비하세요",
+        exact: true,
+      })
+      .waitFor();
+    await page.getByRole("tab", { name: "조직 관리", exact: false }).click();
+    await page.getByLabel("조직 코드", { exact: true }).fill("PARK");
+    await page.getByLabel("조직 이름", { exact: true }).fill("시험 사무소");
+    await page.getByRole("button", { name: "조직 저장", exact: true }).click();
+    await page
+      .getByRole("heading", { name: "시험 사무소", exact: true })
+      .waitFor();
+    await page.getByRole("tab", { name: "직원 관리", exact: false }).click();
+    await page.getByLabel("직원번호", { exact: true }).fill("E001");
+    await page.getByLabel("직원 이름", { exact: true }).fill("시험 직원");
+    await page.getByLabel("직위·담당", { exact: true }).fill("시설 담당");
+    await page.getByRole("button", { name: "직원 저장", exact: true }).click();
+    await page
+      .getByRole("heading", { name: "시험 직원", exact: true })
+      .waitFor();
+    await page.getByRole("tab", { name: "거점 관리", exact: false }).click();
+    await page.getByLabel("거점 코드", { exact: true }).fill("B01");
+    await page.getByLabel("거점 이름", { exact: true }).fill("시험 탐방센터");
+    await page.getByRole("button", { name: "거점 저장", exact: true }).click();
+    await page
+      .getByRole("heading", { name: "시험 탐방센터", exact: true })
+      .waitFor();
+    await page.getByRole("tab", { name: "근무현황", exact: true }).click();
+    await page
+      .getByRole("button", { name: "시험 직원 근무 등록", exact: true })
+      .click();
+    await page.getByLabel("기본 근무", { exact: true }).selectOption("base");
+    await page.getByLabel("당직 구분", { exact: true }).selectOption("night");
+    const officeData = await page.evaluate(() => window.workdesk.load());
+    await page
+      .getByLabel("근무 거점", { exact: true })
+      .selectOption(officeData.bases[0].id);
+    await page.getByLabel("근무 비고", { exact: true }).fill("야간 교대 인계");
+    await page.getByRole("button", { name: "근무 저장", exact: true }).click();
+    await page
+      .getByRole("button", { name: "시험 직원 근무 수정", exact: true })
+      .waitFor();
+    const officeRow = page
+      .locator(".roster-table tbody tr")
+      .filter({ hasText: "시험 직원" });
+    assert.match(await officeRow.textContent(), /거점근무/);
+    assert.match(await officeRow.textContent(), /숙직/);
+    assert.match(await officeRow.textContent(), /시험 탐방센터/);
+    await page
+      .getByRole("button", { name: "주간 근무표", exact: true })
+      .click();
+    const officeDate = await page
+      .getByLabel("근무현황 날짜", { exact: true })
+      .inputValue();
+    await page
+      .getByRole("button", {
+        name: `시험 직원 ${officeDate} 근무 편집`,
+        exact: true,
+      })
+      .click();
+    assert.equal(
+      await page.getByLabel("당직 구분", { exact: true }).inputValue(),
+      "night",
+    );
+    await page
+      .getByLabel("근무 비고", { exact: true })
+      .fill("수정된 교대 인계");
+    await page.getByRole("button", { name: "근무 저장", exact: true }).click();
+    await page.getByRole("dialog").waitFor({ state: "hidden" });
+    // CSV file preview must not mutate storage until explicitly applied.
+    await page.getByRole("tab", { name: "파일 반입", exact: true }).click();
+    await page
+      .getByLabel("반입 종류", { exact: true })
+      .selectOption("employees");
+    await page.getByLabel("CSV 파일", { exact: true }).setInputFiles({
+      name: "staff.csv",
+      mimeType: "text/csv",
+      buffer: Buffer.from(
+        "code,name,organizationCode,position,active\nE002,반입 직원,PARK,현장 담당,true",
+        "utf8",
+      ),
+    });
+    await page.waitForFunction(() =>
+      document
+        .querySelector('textarea[placeholder^="CSV 파일"]')
+        .value.includes("E002"),
+    );
+    await page
+      .getByRole("button", { name: "반입 미리보기", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "확인 후 반입 적용", exact: true })
+      .waitFor();
+    assert.equal(
+      (await page.evaluate(() => window.workdesk.load())).employees.length,
+      1,
+    );
+    await page
+      .getByRole("button", { name: "확인 후 반입 적용", exact: true })
+      .click();
+    await page
+      .getByText("직원 1건을 확인하고 반입했습니다.", { exact: true })
+      .waitFor();
+    await page
+      .getByLabel("반입 CSV", { exact: true })
+      .fill(
+        "code,name,organizationCode,position,active\nE003,거부 직원,MISSING,담당,true",
+      );
+    await page
+      .getByRole("button", { name: "반입 미리보기", exact: true })
+      .click();
+    await page.locator(".import-workspace").getByRole("alert").waitFor();
+    assert.equal(
+      (await page.evaluate(() => window.workdesk.load())).employees.length,
+      2,
+    );
+    assert.equal(
+      await page
+        .getByRole("button", { name: "확인 후 반입 적용", exact: true })
+        .count(),
+      0,
+    );
+    await page.getByRole("tab", { name: "근무현황", exact: true }).click();
+    await page.getByRole("button", { name: "일별 현황", exact: true }).click();
+    await page
+      .getByRole("button", { name: "반입 직원 근무 등록", exact: true })
+      .click();
+    await page.getByLabel("기본 근무", { exact: true }).selectOption("off");
+    await page.getByRole("button", { name: "근무 저장", exact: true }).click();
+    await page
+      .getByRole("button", { name: "반입 직원 근무 수정", exact: true })
+      .waitFor();
+    await page.getByRole("tab", { name: "직원 관리", exact: false }).click();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "시험 직원 삭제", exact: true })
+        .isEnabled(),
+      false,
+    );
+    // Office data participates in the same backup and restore, retaining assignment IDs.
+    const finalBackup = path.join(dir, "office-backup.json");
+    await app.evaluate(({ dialog }, file) => {
+      dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
+    }, finalBackup);
+    await page.getByRole("button", { name: "백업", exact: true }).click();
+    for (let n = 0; !fs.existsSync(finalBackup) && n < 100; n++)
+      await new Promise((r) => setTimeout(r, 50));
+    const officeBackup = JSON.parse(fs.readFileSync(finalBackup, "utf8"));
+    assert.equal(officeBackup.employees.length, 2);
+    assert.equal(officeBackup.assignments.length, 2);
+    assert.equal(officeBackup.assignments[0].note, "수정된 교대 인계");
+    await app.evaluate(({ dialog }, file) => {
+      dialog.showOpenDialog = async () => ({
+        canceled: false,
+        filePaths: [file],
+      });
+      dialog.showMessageBox = async () => ({ response: 1 });
+    }, finalBackup);
+    await page.getByRole("button", { name: "복원", exact: true }).click();
+    await page
+      .getByRole("heading", { name: "업무 브리핑", exact: true })
+      .waitFor();
+    assert.deepEqual(
+      (await page.evaluate(() => window.workdesk.load())).assignments,
+      officeBackup.assignments,
+    );
     // Verify actual process restart, not only a renderer reload.
     const saved = await page.evaluate(() => window.workdesk.load());
     await app.close();
@@ -362,7 +531,7 @@ const path = require("node:path");
     await reopened.getByText(dir, { exact: true }).waitFor();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: DD/DMS 좌표 입력·검증·수정·검색·지우기·브리핑, 순찰→인수인계, 제출·달력 연계, 검색, 완료 기록, 백업·복원/잘못된 백업 거부, 브리핑 출력, 재실행 보존, 폴더 등록",
+      "PASS: 조직·직원·거점·일/주간 근무표·CSV 반입·백업·복원, DD/DMS 좌표 입력·검증·수정·검색·지우기·브리핑, 순찰→인수인계, 제출·달력 연계, 검색, 완료 기록, 백업·복원/잘못된 백업 거부, 브리핑 출력, 재실행 보존, 폴더 등록",
     );
   } finally {
     if (app) await app.close();

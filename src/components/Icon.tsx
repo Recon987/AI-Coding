@@ -1,6 +1,12 @@
 import type { CSSProperties } from "react";
 
 const paths: Record<string, string[]> = {
+  office: ["M3 21V5h12v16M15 10h6v11M7 9h4M7 13h4M7 17h4M3 21h18"],
+  people: [
+    "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-3.9",
+    "M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0m3-3.9a4 4 0 0 1 0 7.8",
+  ],
+  organization: ["M9 3h6v5H9zM2 16h6v5H2zM16 16h6v5h-6zM12 8v4M5 16v-4h14v4"],
   briefing: ["M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"],
   patrol: ["M3 20 9 4l4 10 3-6 5 12H3Z", "m7 9 2 2 2-2"],
   handover: ["M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"],

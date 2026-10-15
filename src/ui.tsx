@@ -1,4 +1,10 @@
-import type { ReactNode } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useId,
+  type ReactNode,
+  type ReactElement,
+} from "react";
 export const formatTime = (at: string) =>
   new Date(at).toLocaleString("ko-KR", {
     month: "short",
@@ -39,10 +45,21 @@ export function Field({
   label: string;
   children: ReactNode;
 }) {
+  const generatedId = useId();
+  const control = isValidElement(children)
+    ? (children as ReactElement<{ id?: string; "aria-labelledby"?: string }>)
+    : null;
+  const controlId = control?.props.id || generatedId;
+  const labelId = `${generatedId}-label`;
   return (
-    <label className="field">
-      <span>{label}</span>
-      {children}
+    <label className="field" htmlFor={controlId}>
+      <span id={labelId}>{label}</span>
+      {control
+        ? cloneElement(control, {
+            id: controlId,
+            "aria-labelledby": control.props["aria-labelledby"] || labelId,
+          })
+        : children}
     </label>
   );
 }

@@ -125,3 +125,66 @@ test("비활성 직원의 과거 근무는 보존하고 새 날짜의 현황 대
   assert.equal(officeRows(data, "2026-10-15").length, 2);
   assert.equal(officeRows(data, "2026-10-16").length, 1);
 });
+
+const {
+  parseCsv,
+  previewOfficeImport,
+} = require("../shared/office-import.mjs");
+test("CSV는 BOM·따옴표·줄바꿈을 읽고, 소속 참조를 검증한 전체 반입 미리보기를 만든다", () => {
+  assert.deepEqual(
+    parseCsv('\ufeffcode,name\r\n001,"가,나"\r\n002,"다""라\n마"'),
+    [
+      ["code", "name"],
+      ["001", "가,나"],
+      ["002", '다"라\n마'],
+    ],
+  );
+  assert.throws(() => parseCsv('code,name\n001,"미종료'));
+  const data = fixture(),
+    before = JSON.stringify(data);
+  const p = previewOfficeImport(
+    data,
+    "employees",
+    "code,name,organizationCode,position,active\n001,수정 이름,PARK,주무관,true\n003,추가 직원,PARK,담당,true",
+  );
+  assert.equal(p.updated, 1);
+  assert.equal(p.added, 1);
+  assert.equal(p.data.employees.find((e) => e.code === "001").id, "e1");
+  assert.equal(p.data.assignments[0].employeeId, "e1");
+  assert.equal(JSON.stringify(data), before);
+  const updated = previewOfficeImport(
+    data,
+    "assignments",
+    "employeeCode,date,workType,duty,baseCode,note\n001,2026-10-15,거점근무,숙직,B01,인계 확인",
+  );
+  assert.equal(updated.updated, 1);
+  assert.equal(updated.data.assignments[0].id, "a1");
+  const orgs = previewOfficeImport(
+    empty(),
+    "organizations",
+    "code,name,parentCode\nD,하위,P\nP,상위,",
+  );
+  assert.equal(
+    orgs.data.organizations[0].parentId,
+    orgs.data.organizations[1].id,
+  );
+});
+test("CSV 미리보기에서 중복·깨진 참조·허용하지 않는 상태·잘못된 열을 거부하며 원본을 보존한다", () => {
+  const data = fixture(),
+    before = JSON.stringify(data);
+  for (const source of [
+    "code,name,organizationCode,position,active\n004,직원,missing,담당,true",
+    "code,name,organizationCode,position,active\n004,직원,PARK,담당,yes",
+    "code,name,organizationCode,position,active\n004,직원,PARK,담당,true\n004,다른직원,PARK,담당,true",
+    "code,name\n004,직원",
+  ])
+    assert.throws(() => previewOfficeImport(data, "employees", source));
+  assert.throws(() =>
+    previewOfficeImport(
+      data,
+      "assignments",
+      "employeeCode,date,workType,duty,baseCode,note\n001,2026-10-15,base,night,,비고",
+    ),
+  );
+  assert.equal(JSON.stringify(data), before);
+});

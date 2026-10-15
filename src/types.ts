@@ -68,6 +68,7 @@ export type Data = {
   assignments: Assignment[];
 };
 export type Page =
+  | "office"
   | "briefing"
   | "patrol"
   | "handover"

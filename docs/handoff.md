@@ -55,15 +55,23 @@ Part A Windows CI 성공: https://github.com/Recon987/AI-Coding/actions/runs/387
 
 v1/v2 로드 지원, 파일 전환 시 원본 바이트를 .v1-backup.json 또는 .v2-backup.json에 최초 1회 보존한다. 브라우저도 버전별 원문을 별도 키에 보존한다. 이전 앱은 v3를 거부하므로 새 근무 데이터를 지우지 않는다. 기존 20MB/종류별 10,000건 유지. npm test 17/17, npm run test:desktop 통과.
 
+## TASK-OFFICE-01 Part B 완료
+
+일/주간 근무현황, 조직/직원/거점 관리, 기본근무+당직 편집 시트, 미등록·휴무·당직 필터, CSV 반입 미리보기/전체 검증/적용, 브리핑 사무소 요약 연결. 직원/조직/거점 참조가 있는 자료는 삭제하지 못하며 비활성 직원의 과거 근무를 보존한다. 직원번호 또는 코드로 업데이트해 UUID를 유지한다. UI의 참고 프로젝트/개발 방향 문구를 제거했다.
+
+사용자는 ERP 열·근무 코드·조합·운영 범위를 **미확인**으로 답변했다. docs/erp-integration.md에 표준 CSV 계약과 실제 ERP 매핑 대기 상태를 기록했다. ERP/공용 서버 자동 조회는 구현하지 않았다. 현황은 날짜별 근무 + 현재 직원 소속이며 과거 인사 소속 이력은 미구현이다. 자동 편성·법령/장부·암호화는 별도 백로그다.
+
+npm test 19/19, test:desktop 통과. 1280×800/960×800 화면 확인. Windows v0.4 실행 결과는 푸시 후 확인한다. 앞 단계 모델 푸시 619b7bc53fea0e0886dffd70bf2113c7e5cf81f1.
+
 ## 최신 인계 패킷
 
 해시는 작성 직전 확인한 원격 기준이다. 문서 포함 최종 해시는 응답 패킷/git log -1로 확인한다.
 
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (main)
-- **Latest Pushed Commit**: 39ebb1e285829f0038ec3149afa441d320a0d1d7 - feat: refine daily workspace and editing flow (TASK-UX-01)
-- **Completed Steps & Modified Files**: UX 완료·푸시. OFFICE Part A: shared/{model,office}.mjs, office.d.mts, src/types.ts, desktop/store.cjs, src/main.tsx, tests/{office,store}.test.cjs, desktop-smoke.cjs, AGENTS.md 및 본 문서.
-- **Changed Interfaces / Schema Diff**: Data.version=3, organizations/employees/bases/assignments 배열. officeRows, officeSummary, validateOffice, validDate. v1/v2 백업 전환.
-- **Test Status**: npm test 17/17, npm run test:desktop 통과.
-- **Remaining Work for Gemini**: OFFICE Part B 관리 UI·일/주간 근무현황판·CSV 파일 미리보기 반입. ERP 열 답변 시 반영. Codex 진행 중.
-- **Modified Code Snippets (if uncommitted)**: 완성된 모델 Step 즉시 커밋·푸시. 미완성 코드 없음.
+- **Latest Pushed Commit**: 619b7bc53fea0e0886dffd70bf2113c7e5cf81f1 - feat: add office roster model and v3 backup migration (TASK-OFFICE-01 Part A)
+- **Completed Steps & Modified Files**: UX·OFFICE 모델 푸시 완료. Part B: shared/office-import.*, components/{Office,OfficeDirectory,OfficeImport,Sheet,Briefing,Icon}.tsx, src/{main,types,ui,style}, tests/{office.test,desktop-smoke}.cjs, package*.json, README·architecture·validation·erp-integration·handoff 및 화면 이미지.
+- **Changed Interfaces / Schema Diff**: 앱 0.4.0 / Data v3. previewOfficeImport/parseCsv/importColumns 및 표준 CSV 계약. 새 IPC/외부 의존성 없음. v1/v2 자동 백업 전환 유지.
+- **Test Status**: npm test 19/19, npm run test:desktop 통과. Windows v0.4 확인 예정.
+- **Remaining Work for Gemini**: 실제 ERP 열·코드·근무 조합 매핑(사용자 미확인), 인사 소속 이력/공용 서버·편성 규칙은 별도 설계. 현재 Windows 검증은 Codex 진행 중.
+- **Modified Code Snippets (if uncommitted)**: 완성된 Part B를 즉시 커밋·푸시. 미완성 코드 없음.
