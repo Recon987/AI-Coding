@@ -144,7 +144,18 @@ export function Personal({
                 ? "전화메모 등록"
                 : "메모 작성"
           }
-        />
+        >
+          <div className="editor-header-actions">
+            <button className="primary" disabled={busy}>
+              저장
+            </button>
+            {draft.id && (
+              <button type="button" onClick={() => setDraft(blank())}>
+                취소
+              </button>
+            )}
+          </div>
+        </SectionHead>
         <Field label="제목">
           <input
             required
@@ -170,16 +181,6 @@ export function Personal({
             onChange={(e) => setDraft({ ...draft, body: e.target.value })}
           />
         </Field>
-        <div className="form-actions">
-          <button className="primary" disabled={busy}>
-            저장
-          </button>
-          {draft.id && (
-            <button type="button" onClick={() => setDraft(blank())}>
-              취소
-            </button>
-          )}
-        </div>
       </form>
     </div>
   );

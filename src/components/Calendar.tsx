@@ -186,7 +186,36 @@ export function Calendar({
           ))}
         </section>
         <form className="panel editor" onSubmit={submit}>
-          <SectionHead title={draft.id ? "일정 수정" : "일정 등록"} />
+          <SectionHead title={draft.id ? "일정 수정" : "일정 등록"}>
+            <div className="editor-header-actions">
+              <button className="primary" disabled={busy}>
+                {draft.id ? "변경 저장" : "일정 저장"}
+              </button>
+              {draft.id && (
+                <>
+                  <button type="button" onClick={() => setDraft(blank())}>
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={async () => {
+                      if (
+                        confirm("일정을 삭제할까요?") &&
+                        (await save({
+                          ...data,
+                          events: data.events.filter((e) => e.id !== draft.id),
+                        }))
+                      )
+                        setDraft(blank());
+                    }}
+                  >
+                    삭제
+                  </button>
+                </>
+              )}
+            </div>
+          </SectionHead>
           <Field label="일정 제목">
             <input
               required
@@ -209,34 +238,7 @@ export function Calendar({
               }}
             />
           </Field>
-          <div className="form-actions">
-            <button className="primary" disabled={busy}>
-              {draft.id ? "변경 저장" : "일정 저장"}
-            </button>
-            {draft.id && (
-              <>
-                <button type="button" onClick={() => setDraft(blank())}>
-                  취소
-                </button>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={async () => {
-                    if (
-                      confirm("일정을 삭제할까요?") &&
-                      (await save({
-                        ...data,
-                        events: data.events.filter((e) => e.id !== draft.id),
-                      }))
-                    )
-                      setDraft(blank());
-                  }}
-                >
-                  삭제
-                </button>
-              </>
-            )}
-          </div>
+
           <p className="help">앱 실행 중 예정 시각에 알림을 표시합니다.</p>
         </form>
       </div>

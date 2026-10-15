@@ -41,15 +41,23 @@ Step 3 커밋·푸시 완료: bfc64f135cf4b79021280212cea3a3d9658ecf01.
 Step 3 / Part B 완료: npm test 13/13 및 npm run test:desktop 통과. CoordinateInput의 부분 입력·범위 오류 저장 차단, DD/DMS 실시간 변환, 수정·검색·좌표 제거, 브리핑 화면·TXT, 백업·복원·재실행 검증 완료. 앱 0.3.0 / 자료 v2. README/validation 갱신·푸시 완료. 이번 문서 후속 커밋은 검증 증빙만 추가한다.
 Part A Windows CI 성공: https://github.com/Recon987/AI-Coding/actions/runs/38739135156 . Part B Windows CI도 성공: https://github.com/Recon987/AI-Coding/actions/runs/38740063182 . 단위 테스트 13/13, 소스 및 패키징된 Electron 스모크 통과. 설치형/portable 0.3.0 및 SHA256SUMS: https://github.com/Recon987/AI-Coding/actions/runs/38740063182/artifacts/11976441150 (GitHub 로그인, 보관 14일).
 
+## 진행 중: TASK-UX-01 / TASK-OFFICE-01
+
+사용자 피드백: 전반적 화면·기능 완성도 부족. 제품 안의 참고 프로젝트/개발 설명 제거. 조직·직원·거점·휴무/당직/숙직을 연결한 사무소 현황판 구현 요청.
+
+- UX Step: 브리핑 실무 화면, 빠른 기록, 날짜별 원본 일정/업무, 전화·메모, 입력 상단 저장, 검색 단축키, 접근 가능한 메뉴, 안내문 정리 완료. npm test 13/13, test:desktop 통과. 즉시 푸시.
+- 다음 Step: 조직/직원/거점 등록 및 일자별 기본 근무 + 별도 주간당직/숙직. 구버전 원본 보관 후 새 스키마로 전환, 수동 등록 지원. ERP 열 이름과 기관 구분을 사용자에게 질의했고 기본안으로 진행한다. 자동 ERP 접속이나 기관 공용 서버는 연결하지 않는다.
+- 모델 설계 참고(코드/화면 재사용 없음): Microsoft Shifts의 직원 ID 참조, 근무/휴무·그룹 분리 및 Microsoft To Do의 업무-원본 연결. 출처: https://learn.microsoft.com/en-us/graph/api/resources/schedule?view=graph-rest-1.0 , https://learn.microsoft.com/en-us/graph/api/resources/shift?view=graph-rest-1.0 , https://learn.microsoft.com/en-us/graph/api/resources/todo-overview?view=graph-rest-1.0 . 제품 UI에는 참고 문구를 넣지 않는다.
+
 ## 최신 인계 패킷
 
-문서의 Latest Pushed Commit은 작성 직전 확인한 원격 기준이다. 이 문서를 포함한 Step의 최종 해시는 응답 패킷 및 `git log -1`을 확인한다. 자기참조 해시를 추측해서 넣지 않는다.
+해시는 작성 직전 확인한 원격 기준이다. 이 문서를 포함한 커밋은 응답 패킷과 git log -1로 확인한다.
 
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (main)
-- **Latest Pushed Commit**: bfc64f135cf4b79021280212cea3a3d9658ecf01 - feat: integrate patrol coordinates and briefing (TASK-v0.3-01 Part B)
-- **Completed Steps & Modified Files**: Step 1~3 푸시 완료: shared/model.*, src/types.ts, src/components/{CoordinateInput,Patrols,Briefing}.tsx, src/main.tsx, src/style.css, tests/{store.test,desktop-smoke}.cjs, package*.json, README.md, docs/{validation,handoff}.md.
-- **Changed Interfaces / Schema Diff**: Patrol.coordinates?: Coordinates | null; formatCoordinates(input, format?) 공통 표시 추가. 기존 변환 함수 유지. 새 IPC/의존성 없음. 앱 0.3.0, 자료 v2.
-- **Test Status**: npm test 13/13, npm run test:desktop 통과. Part B Windows에서도 두 검사 통과 및 패키징된 EXE 스모크 통과. 다운로드 업로드 완료.
-- **Remaining Work for Gemini**: 요청한 Step 1~3 및 Windows 검증 완료. 기관 실기기에서 설치/알림/DPI/보안 프로그램 확인 필요. 다음 과제는 위 백로그에서 선택(암호화/트레이/법령 등); EPSG 변환과 혼동하지 말 것.
-- **Modified Code Snippets (if uncommitted)**: 미완성 코드 없음. 이 증빙 갱신은 docs/handoff.md와 docs/validation.md만 변경하여 커밋·푸시한다.
+- **Latest Pushed Commit**: c0b4fcf05ddf1f6eb3d6d73354447047e965f6f8 - docs: record verified Windows v0.3 handoff
+- **Completed Steps & Modified Files**: TASK-UX-01: src/main.tsx, components/{Icon,Briefing,Patrols,Tasks,Personal,Calendar}.tsx, style.css, desktop-smoke.cjs, package*.json, README, validation/handoff 및 화면 이미지.
+- **Changed Interfaces / Schema Diff**: 자료 v2 및 기존 IPC 유지. 앱 0.3.1. 브리핑과 저장 양식·검색 UX 개선.
+- **Test Status**: npm test 13/13, npm run test:desktop 통과. 새 Windows 빌드 확인 예정.
+- **Remaining Work for Gemini**: TASK-OFFICE-01 조직/직원/거점 및 근무현황판 구현. ERP 열/구분 답변이 오면 반영. Codex 진행 중.
+- **Modified Code Snippets (if uncommitted)**: 완성된 UX 파일을 이 문서와 즉시 커밋·푸시. 미완성 코드 없음.

@@ -1,7 +1,14 @@
 import { useState } from "react";
-import { briefing, dayKey, formatCoordinates } from "../../shared/model.mjs";
+import {
+  briefing,
+  calendarItems,
+  dayKey,
+  formatCoordinates,
+} from "../../shared/model.mjs";
 import type { Data, Page } from "../types";
-import { Empty, formatTime, SectionHead, Tag } from "../ui";
+import { formatTime, SectionHead, Tag } from "../ui";
+import { Icon } from "./Icon";
+
 export function Briefing({
   data,
   navigate,
@@ -11,45 +18,64 @@ export function Briefing({
   navigate: (page: Page, id?: string) => void;
   busy: boolean;
 }) {
-  const [date, setDate] = useState(dayKey());
+  const today = dayKey();
+  const [date, setDate] = useState(today);
   const [message, setMessage] = useState("");
   const [showText, setShowText] = useState(false);
+  const [filter, setFilter] = useState("all");
+  const [expanded, setExpanded] = useState(false);
+  const [expandedDay, setExpandedDay] = useState(false);
   const tasks = data.tasks
     .filter((t) => !t.done)
     .sort(
       (a, b) =>
-        Number(b.priority === "high") - Number(a.priority === "high") ||
-        Date.parse(a.at) - Date.parse(b.at),
+        Date.parse(a.at) - Date.parse(b.at) ||
+        Number(b.priority === "high") - Number(a.priority === "high"),
     );
   const overdue = tasks.filter((t) => Date.parse(t.at) < Date.now());
-  const patrols = data.patrols
-    .filter((p) => dayKey(new Date(p.at)) === date)
-    .sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
-  const events = data.events
-    .filter((e) => dayKey(new Date(e.at)) === date)
-    .sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+  const dueToday = tasks.filter((t) => dayKey(new Date(t.at)) === today);
+  const calls = data.calls.filter((c) => !c.done);
+  const rows =
+    filter === "overdue" ? overdue : filter === "today" ? dueToday : tasks;
+  const items = calendarItems(data);
+  const daily = items.filter((i) => dayKey(new Date(i.at)) === date);
+  const weekStart = new Date(`${date}T12:00:00`);
+  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
+  const week = Array.from({ length: 7 }, (_, index) => {
+    const day = new Date(weekStart);
+    day.setDate(day.getDate() + index);
+    return day;
+  });
+  function chooseDate(value: string) {
+    setDate(value);
+    setExpandedDay(false);
+  }
+  function moveDay(offset: number) {
+    const next = new Date(`${date}T12:00:00`);
+    next.setDate(next.getDate() + offset);
+    chooseDate(dayKey(next));
+  }
   return (
     <>
-      <section className="briefing-banner">
+      <section className="quick-capture" aria-label="빠른 기록">
         <div>
-          <p className="eyebrow">FROM FIELD TO OFFICE</p>
-          <h2>
-            현장의 기록을
-            <br />
-            다음 업무로 잇습니다.
-          </h2>
-          <p>순찰에서 확인한 일, 넘겨야 할 일, 놓치지 말아야 할 기한.</p>
-          <div className="banner-actions">
-            <button className="primary" onClick={() => navigate("patrol")}>
-              순찰 기록 남기기 <span aria-hidden="true">↗</span>
-            </button>
-            <button onClick={() => navigate("handover")}>인수인계 등록</button>
-          </div>
+          <strong>빠른 기록</strong>
+          <span>필요한 업무부터 바로 시작하세요.</span>
         </div>
-        <div className="banner-emblem" aria-hidden="true">
-          <span>FIELD</span>
-          <div className="mountain-lines">⌁</div>
-          <span>RECORD / CONNECT / FOLLOW UP</span>
+        <div className="quick-capture-actions">
+          {(
+            [
+              ["calls", "전화메모 남기기"],
+              ["notes", "메모 작성"],
+              ["calendar", "일정 등록"],
+              ["patrol", "순찰 기록 남기기"],
+            ] as [Page, string][]
+          ).map(([page, label]) => (
+            <button key={page} disabled={busy} onClick={() => navigate(page)}>
+              <Icon name={page} />
+              {label}
+            </button>
+          ))}
         </div>
       </section>
       <div className="metrics">
@@ -57,129 +83,227 @@ export function Briefing({
           {
             label: "기한 지난 업무",
             count: overdue.length,
-            page: "handover",
+            icon: "clock",
             tone: "warn",
+            action: () => {
+              setFilter("overdue");
+              setExpanded(false);
+            },
+          },
+          {
+            label: "오늘 마감",
+            count: dueToday.length,
+            icon: "submission",
+            tone: "",
+            action: () => {
+              setFilter("today");
+              setExpanded(false);
+            },
           },
           {
             label: "진행 중 인수인계",
             count: tasks.filter((t) => t.kind === "handover").length,
-            page: "handover",
-          },
-          {
-            label: "남은 제출 업무",
-            count: tasks.filter((t) => t.kind === "submission").length,
-            page: "submission",
+            icon: "handover",
+            tone: "",
+            action: () => navigate("handover"),
           },
           {
             label: "미처리 전화",
-            count: data.calls.filter((c) => !c.done).length,
-            page: "calls",
+            count: calls.length,
+            icon: "calls",
+            tone: "",
+            action: () => navigate("calls"),
           },
-        ].map((m, i) => (
+        ].map((m) => (
           <button
-            className={`metric ${m.tone || ""}`}
+            disabled={busy}
+            className={`metric ${m.tone}`}
             key={m.label}
-            onClick={() =>
-              navigate(
-                (i === 0 && overdue[0] ? overdue[0].kind : m.page) as Page,
-                i === 0 ? overdue[0]?.id : undefined,
-              )
-            }
+            onClick={m.action}
           >
-            <span>{m.label}</span>
+            <span className="metric-label">
+              <Icon name={m.icon} />
+              {m.label}
+            </span>
             <strong>
               {m.count}
               <small>건</small>
             </strong>
-            <span className="metric-index">0{i + 1}</span>
+            <Icon name="arrow" size={16} />
           </button>
         ))}
       </div>
       <div className="briefing-columns">
-        <section className="panel">
-          <SectionHead eyebrow="FOLLOW UP" title="지금 챙겨야 할 일">
-            <Tag>{tasks.length}건 진행 중</Tag>
+        <section className="panel task-overview" aria-label="챙겨야 할 업무">
+          <SectionHead title="챙겨야 할 업무">
+            <button
+              className="text-button"
+              disabled={busy}
+              onClick={() => navigate("submission")}
+            >
+              <Icon name="plus" size={15} />
+              제출 기한 등록
+            </button>
           </SectionHead>
-          {!tasks.length && (
-            <Empty>
-              미완료 업무가 없습니다. 제출 기한이나 인수인계를 등록하면 여기에
-              모입니다.
-            </Empty>
+          <div className="segmented dashboard-filters">
+            {[
+              ["all", "진행 중", tasks.length],
+              ["overdue", "기한 경과", overdue.length],
+              ["today", "오늘 마감", dueToday.length],
+            ].map(([value, label, count]) => (
+              <button
+                key={value}
+                aria-pressed={filter === value}
+                className={filter === value ? "selected" : ""}
+                onClick={() => {
+                  setFilter(String(value));
+                  setExpanded(false);
+                }}
+              >
+                {label}
+                <span>{count}</span>
+              </button>
+            ))}
+          </div>
+          {!rows.length && (
+            <div className="dashboard-empty">
+              <Icon name="check" size={28} />
+              <strong>
+                {filter === "overdue"
+                  ? "기한을 넘긴 업무가 없습니다."
+                  : filter === "today"
+                    ? "오늘 마감할 업무가 없습니다."
+                    : "아직 등록한 업무가 없습니다."}
+              </strong>
+              <p>인수인계와 제출 기한을 등록하면 이곳에 모입니다.</p>
+              <button disabled={busy} onClick={() => navigate("handover")}>
+                <Icon name="plus" size={15} />
+                인수인계 등록
+              </button>
+            </div>
           )}
-          {tasks.slice(0, 6).map((t) => (
+          {(expanded ? rows : rows.slice(0, 5)).map((t) => (
             <button
               className="work-line"
               key={t.id}
+              disabled={busy}
               onClick={() => navigate(t.kind, t.id)}
             >
-              <div
-                className={`work-marker ${t.priority === "high" ? "amber" : ""}`}
-              />
+              <span className={`task-type-icon ${t.kind}`}>
+                <Icon name={t.kind} />
+              </span>
               <div>
                 <span className="work-kind">
                   {t.kind === "submission" ? "제출" : "인수인계"} ·{" "}
                   {t.assignee || "담당 미지정"}
+                  {t.destination ? ` · ${t.destination}` : ""}
                 </span>
                 <strong>{t.title}</strong>
                 <small>{formatTime(t.at)} 마감</small>
               </div>
-              <Tag tone={Date.parse(t.at) < Date.now() ? "red" : ""}>
+              <Tag
+                tone={
+                  Date.parse(t.at) < Date.now()
+                    ? "red"
+                    : dayKey(new Date(t.at)) === today
+                      ? "amber"
+                      : ""
+                }
+              >
                 {Date.parse(t.at) < Date.now()
                   ? "기한 경과"
-                  : t.priority === "high"
-                    ? "우선 처리"
-                    : "진행 중"}
+                  : dayKey(new Date(t.at)) === today
+                    ? "오늘 마감"
+                    : t.priority === "high"
+                      ? "우선 처리"
+                      : "예정"}
               </Tag>
+              <Icon name="arrow" size={15} />
             </button>
           ))}
+          {rows.length > 5 && (
+            <button
+              className="show-more"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? "접기" : `${rows.length - 5}건 더 보기`}
+            </button>
+          )}
         </section>
-        <section className="panel">
-          <SectionHead eyebrow="DAILY BRIEFING" title="하루의 기록">
-            <input
-              className="date-picker"
-              aria-label="브리핑 날짜"
-              type="date"
-              required
-              value={date}
-              onChange={(e) => {
-                if (e.target.value) setDate(e.target.value);
-              }}
-            />
+        <section className="panel daily-overview" aria-label="날짜별 기록">
+          <SectionHead
+            title={date === today ? "오늘의 일정과 기록" : "선택한 날의 기록"}
+          >
+            <div className="daily-controls">
+              <button aria-label="이전 날짜" onClick={() => moveDay(-1)}>
+                ‹
+              </button>
+              <input
+                className="date-picker"
+                aria-label="브리핑 날짜"
+                type="date"
+                required
+                value={date}
+                onChange={(e) => {
+                  if (e.target.value) chooseDate(e.target.value);
+                }}
+              />
+              <button aria-label="다음 날짜" onClick={() => moveDay(1)}>
+                ›
+              </button>
+              <button onClick={() => chooseDate(today)}>오늘</button>
+            </div>
           </SectionHead>
+          <div className="week-strip" aria-label="주간 날짜 선택">
+            {week.map((day) => {
+              const key = dayKey(day);
+              const count = items.filter(
+                (i) => dayKey(new Date(i.at)) === key,
+              ).length;
+              return (
+                <button
+                  key={key}
+                  aria-label={`${key} 기록 ${count}건`}
+                  aria-pressed={date === key}
+                  className={`${date === key ? "selected" : ""} ${today === key ? "is-today" : ""}`}
+                  onClick={() => chooseDate(key)}
+                >
+                  <span>
+                    {day.toLocaleDateString("ko-KR", { weekday: "short" })}
+                  </span>
+                  <strong>{day.getDate()}</strong>
+                  <i className={count ? "has-record" : ""} />
+                </button>
+              );
+            })}
+          </div>
           <div className="day-counts">
             <span>
-              순찰 <b>{patrols.length}</b>
+              일정 <b>{daily.filter((i) => i.category === "일정").length}</b>
             </span>
             <span>
-              일정 <b>{events.length}</b>
+              순찰 <b>{daily.filter((i) => i.category === "순찰").length}</b>
+            </span>
+            <span>
+              인계·제출{" "}
+              <b>
+                {
+                  daily.filter((i) => ["인계", "제출"].includes(i.category))
+                    .length
+                }
+              </b>
             </span>
           </div>
-          {[
-            ...patrols.map((p) => ({
-              id: p.id,
-              title: p.title,
-              at: p.at,
-              label: p.route,
-              coordinates: p.coordinates
-                ? `${formatCoordinates(p.coordinates)} | ${formatCoordinates(p.coordinates, "dms")}`
-                : "",
-              page: "patrol",
-            })),
-            ...events.map((e) => ({
-              id: e.id,
-              title: e.title,
-              at: e.at,
-              coordinates: "",
-              label: e.done ? "완료 일정" : "예정 일정",
-              page: "calendar",
-            })),
-          ]
-            .sort((a, b) => Date.parse(a.at) - Date.parse(b.at))
-            .slice(0, 5)
-            .map((row) => (
+          {(expandedDay ? daily : daily.slice(0, 4)).map((row) => {
+            const coordinates =
+              row.page === "patrol"
+                ? data.patrols.find((p) => p.id === row.id)?.coordinates
+                : null;
+            return (
               <button
                 className="timeline-row"
-                key={row.page + row.id}
+                key={row.key}
+                disabled={busy}
                 onClick={() => navigate(row.page as Page, row.id)}
               >
                 <time>
@@ -190,20 +314,45 @@ export function Briefing({
                   })}
                 </time>
                 <div>
-                  <strong>{row.title}</strong>
-                  <small>{row.label}</small>
-                  {row.coordinates && (
+                  <strong className={row.done ? "done" : ""}>
+                    {row.title}
+                  </strong>
+                  <small>
+                    {row.category}
+                    {row.done ? " · 완료" : ""}
+                  </small>
+                  {coordinates && (
                     <small className="coordinate-summary">
-                      {row.coordinates}
+                      {formatCoordinates(coordinates)} |{" "}
+                      {formatCoordinates(coordinates, "dms")}
                     </small>
                   )}
                 </div>
+                <Icon name="arrow" size={14} />
               </button>
-            ))}
-          {!patrols.length && !events.length && (
-            <p className="muted empty-inline">
-              이 날짜에 등록된 순찰과 일정이 없습니다.
-            </p>
+            );
+          })}
+          {!daily.length && (
+            <div className="daily-empty">
+              <Icon name="calendar" size={24} />
+              <p>이 날짜에 등록된 일정과 기록이 없습니다.</p>
+              <button
+                className="text-button"
+                disabled={busy}
+                onClick={() => navigate("calendar")}
+              >
+                달력에서 일정 등록
+                <Icon name="arrow" size={14} />
+              </button>
+            </div>
+          )}
+          {daily.length > 4 && (
+            <button
+              className="show-more"
+              onClick={() => setExpandedDay(!expandedDay)}
+            >
+              {expandedDay ? "접기" : `${daily.length - 4}건 더 보기`}
+            </button>
           )}
           <div className="report-actions">
             <button onClick={() => setShowText(!showText)}>
@@ -222,53 +371,97 @@ export function Briefing({
                 }
               }}
             >
+              <Icon name="download" size={15} />
               텍스트로 내보내기
             </button>
           </div>
-          {message && (
-            <p role="status" className="help">
-              {message}
-            </p>
-          )}
         </section>
       </div>
+      {message && (
+        <p role="status" className="notice report-message">
+          {message}
+        </p>
+      )}
       {showText && (
         <section className="panel report-preview">
           <h2>업무 브리핑 미리보기</h2>
           <pre>{briefing(data, date)}</pre>
         </section>
       )}
-      <section className="next-step">
-        <div>
-          <p className="eyebrow">ONE CONNECTED WORKFLOW</p>
-          <h2>기록 한 번으로, 다음 담당자까지.</h2>
-          <p>
-            순찰 일지에서 ‘인수인계로 연결’을 누르면 확인 사항과 현장 조치가
-            이어집니다.
-            <br />
-            연결된 업무의 마감은 월간 일정에 함께 표시됩니다.
-          </p>
-        </div>
-        <div className="flow">
-          <span>
-            01
-            <br />
-            <b>순찰 기록</b>
-          </span>
-          <i>→</i>
-          <span>
-            02
-            <br />
-            <b>인수인계</b>
-          </span>
-          <i>→</i>
-          <span>
-            03
-            <br />
-            <b>조치 완료</b>
-          </span>
-        </div>
-      </section>
+      <div className="personal-overview">
+        <section className="panel">
+          <SectionHead title="회신할 전화">
+            <Tag>{calls.length}건</Tag>
+          </SectionHead>
+          {calls.slice(0, 3).map((c) => (
+            <button
+              className="personal-line"
+              key={c.id}
+              disabled={busy}
+              onClick={() => navigate("calls", c.id)}
+            >
+              <span className="task-type-icon">
+                <Icon name="calls" />
+              </span>
+              <div>
+                <strong>{c.title}</strong>
+                <small>
+                  {c.phone || "전화번호 없음"} · {c.body || "전달 내용 없음"}
+                </small>
+              </div>
+              <Icon name="arrow" size={15} />
+            </button>
+          ))}
+          {!calls.length && (
+            <p className="compact-empty">
+              미처리 전화가 없습니다. 통화 중에는 빠른 기록을 이용하세요.
+            </p>
+          )}
+          <button
+            className="text-button overview-link"
+            disabled={busy}
+            onClick={() => navigate("calls")}
+          >
+            전화메모 전체 보기
+            <Icon name="arrow" size={14} />
+          </button>
+        </section>
+        <section className="panel">
+          <SectionHead title="업무 메모">
+            <Tag>{data.notes.length}건</Tag>
+          </SectionHead>
+          {data.notes.slice(0, 3).map((n) => (
+            <button
+              className="personal-line"
+              key={n.id}
+              disabled={busy}
+              onClick={() => navigate("notes", n.id)}
+            >
+              <span className="task-type-icon note">
+                <Icon name="notes" />
+              </span>
+              <div>
+                <strong>{n.title}</strong>
+                <small>{n.body || "내용 없음"}</small>
+              </div>
+              <Icon name="arrow" size={15} />
+            </button>
+          ))}
+          {!data.notes.length && (
+            <p className="compact-empty">
+              확인할 사항과 자주 찾는 내용을 메모해 두세요.
+            </p>
+          )}
+          <button
+            className="text-button overview-link"
+            disabled={busy}
+            onClick={() => navigate("notes")}
+          >
+            업무 메모 전체 보기
+            <Icon name="arrow" size={14} />
+          </button>
+        </section>
+      </div>
     </>
   );
 }

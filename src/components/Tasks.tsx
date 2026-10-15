@@ -188,7 +188,22 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
                 ? "제출 기한 등록"
                 : "인수인계 등록"
           }
-        />
+        >
+          <div className="editor-header-actions">
+            <button className="primary" disabled={busy}>
+              {draft.id ? "변경 저장" : "업무 등록"}
+            </button>
+            {draft.id && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => setDraft(blank())}
+              >
+                수정 취소
+              </button>
+            )}
+          </div>
+        </SectionHead>
         <Field label="업무 제목">
           <input
             required
@@ -267,20 +282,6 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
           앱 실행 중 알림을 표시합니다. 지난 기한은 업무 브리핑에서 확인할 수
           있습니다.
         </p>
-        <div className="form-actions">
-          <button className="primary" disabled={busy}>
-            {draft.id ? "변경 저장" : "업무 등록"}
-          </button>
-          {draft.id && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => setDraft(blank())}
-            >
-              수정 취소
-            </button>
-          )}
-        </div>
       </form>
     </div>
   );

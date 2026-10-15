@@ -190,7 +190,25 @@ export function Patrols({
         ))}
       </section>
       <form className="panel editor" onSubmit={submit}>
-        <SectionHead title={draft.id ? "순찰 기록 수정" : "순찰 기록 등록"} />
+        <SectionHead title={draft.id ? "순찰 기록 수정" : "순찰 기록 등록"}>
+          <div className="editor-header-actions">
+            <button className="primary" disabled={busy || !!coordinateError}>
+              {draft.id ? "변경 저장" : "순찰 저장"}
+            </button>
+            {draft.id && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => resetDraft(blank())}
+              >
+                수정 취소
+              </button>
+            )}
+          </div>
+        </SectionHead>
+        <p className="editor-intro">
+          제목·구간·기록자는 필수입니다. 저장 후 인수인계로 연결할 수 있습니다.
+        </p>
         <Field label="기록 제목">
           <input
             required
@@ -244,15 +262,24 @@ export function Patrols({
             }}
           />
         </Field>
-        <CoordinateInput
-          key={editorKey}
-          initial={draft.coordinates}
-          busy={busy}
-          onChange={(coordinates, error) => {
-            setCoordinateError(error);
-            if (!error) patch({ coordinates });
-          }}
-        />
+        <details
+          className="coordinate-details"
+          key={`details-${editorKey}`}
+          open={draft.coordinates ? true : undefined}
+        >
+          <summary>
+            현장 좌표 <span>선택 · DD / DMS</span>
+          </summary>
+          <CoordinateInput
+            key={editorKey}
+            initial={draft.coordinates}
+            busy={busy}
+            onChange={(coordinates, error) => {
+              setCoordinateError(error);
+              if (!error) patch({ coordinates });
+            }}
+          />
+        </details>
         <Field label="확인 사항">
           <textarea
             rows={4}
@@ -270,23 +297,6 @@ export function Patrols({
             onChange={(e) => patch({ action: e.target.value })}
           />
         </Field>
-        <p className="help">
-          개인 업무 기록입니다. 긴급 상황은 기관의 보고·대응 절차를 이용하세요.
-        </p>
-        <div className="form-actions">
-          <button className="primary" disabled={busy || !!coordinateError}>
-            {draft.id ? "변경 저장" : "순찰 저장"}
-          </button>
-          {draft.id && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => resetDraft(blank())}
-            >
-              수정 취소
-            </button>
-          )}
-        </div>
       </form>
     </div>
   );

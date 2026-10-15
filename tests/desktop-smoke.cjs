@@ -58,6 +58,7 @@ const path = require("node:path");
     await page.getByLabel("확인 사항").fill("안내판 추가 확인");
     await page.getByLabel("현장 조치").fill("통행 상태 확인");
     await page.getByLabel("확인 등급").selectOption("attention");
+    await page.locator(".coordinate-details > summary").click();
     // DD input: partial, malformed and out-of-range values block saving.
     await page.getByLabel("위도 (DD)", { exact: true }).fill("37.5");
     assert.equal(
@@ -104,6 +105,15 @@ const path = require("node:path");
       await page.getByLabel("위도 (DD)", { exact: true }).inputValue(),
       "",
     );
+    // Navigation remains accessible when pending counts are displayed.
+    await page.keyboard.press("Control+k");
+    assert.equal(
+      await page
+        .getByLabel("기록 통합 검색")
+        .evaluate((el) => el === document.activeElement),
+      true,
+    );
+    await page.keyboard.press("Escape");
     await page.getByLabel("순찰 검색").fill("127.25");
     assert.equal(await page.locator(".record").count(), 1);
     await page.getByLabel("순찰 검색").fill("W 127°");
@@ -142,6 +152,10 @@ const path = require("node:path");
       await page.getByLabel("업무 제목").inputValue(),
       "안내판 후속 확인",
     );
+    await nav("인수인계");
+    await page
+      .getByRole("heading", { name: "이어받을 업무", exact: true })
+      .waitFor();
     await nav("제출 기한");
     await page.getByLabel("업무 제목").fill("주간 실적 제출");
     await page.getByLabel("담당자", { exact: true }).fill("서무 담당");
@@ -281,11 +295,9 @@ const path = require("node:path");
     await page.getByLabel("순찰 구간").fill("관리 거점");
     await page.getByLabel("기록자").fill("시험 담당");
     await page.getByRole("button", { name: "순찰 저장", exact: true }).click();
-    const optional = page
-      .locator(".record")
-      .filter({
-        has: page.getByRole("heading", { name: "좌표 없는 순찰", exact: true }),
-      });
+    const optional = page.locator(".record").filter({
+      has: page.getByRole("heading", { name: "좌표 없는 순찰", exact: true }),
+    });
     await optional.waitFor();
     assert.equal(
       (await page.evaluate(() => window.workdesk.load())).patrols[1]
@@ -293,6 +305,7 @@ const path = require("node:path");
       undefined,
     );
     await optional.getByRole("button", { name: "수정", exact: true }).click();
+    await page.locator(".coordinate-details > summary").click();
     await page.getByLabel("위도 (DD)", { exact: true }).fill("0");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("0");
     await page.getByRole("button", { name: "변경 저장", exact: true }).click();

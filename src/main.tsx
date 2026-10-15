@@ -7,29 +7,30 @@ import { Patrols } from "./components/Patrols";
 import { Tasks } from "./components/Tasks";
 import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
+import { Icon } from "./components/Icon";
 import { Empty, SectionHead, Tag } from "./ui";
 import "./style.css";
 const sections: {
   label: string;
-  pages: { id: Page; label: string; icon: string }[];
+  pages: { id: Page; label: string }[];
 }[] = [
   {
     label: "업무 흐름",
     pages: [
-      { id: "briefing", label: "업무 브리핑", icon: "◈" },
-      { id: "patrol", label: "현장 순찰", icon: "⌁" },
-      { id: "handover", label: "인수인계", icon: "⇄" },
-      { id: "submission", label: "제출 기한", icon: "▤" },
-      { id: "calendar", label: "월간 일정", icon: "▦" },
+      { id: "briefing", label: "업무 브리핑" },
+      { id: "patrol", label: "현장 순찰" },
+      { id: "handover", label: "인수인계" },
+      { id: "submission", label: "제출 기한" },
+      { id: "calendar", label: "월간 일정" },
     ],
   },
   {
     label: "나의 기록",
     pages: [
-      { id: "calls", label: "전화메모", icon: "◉" },
-      { id: "notes", label: "업무 메모", icon: "✎" },
-      { id: "folders", label: "바로가기", icon: "▱" },
-      { id: "about", label: "앱 안내", icon: "ⓘ" },
+      { id: "calls", label: "전화메모" },
+      { id: "notes", label: "업무 메모" },
+      { id: "folders", label: "바로가기" },
+      { id: "about", label: "앱 안내" },
     ],
   },
 ];
@@ -45,7 +46,7 @@ const subtitles: Record<Page, string> = {
   calls: "짧게 기록하고, 처리 여부를 남기세요.",
   notes: "업무 중 떠오른 생각과 확인할 내용을 모아둡니다.",
   folders: "자주 사용하는 업무 폴더를 바로 엽니다.",
-  about: "현재 제공하는 기능과 다음 개발 방향을 확인하세요.",
+  about: "저장 위치, 알림과 백업 사용 방법을 확인하세요.",
 };
 function App() {
   const [data, setData] = useState<Data>(empty),
@@ -59,6 +60,35 @@ function App() {
   useEffect(() => {
     const timer = setInterval(() => setClock((t) => t + 1), 30000);
     return () => clearInterval(timer);
+  }, []);
+  const searchInput = useRef<HTMLInputElement>(null);
+  const [feedback, setFeedback] = useState("");
+  useEffect(() => {
+    if (!feedback) return;
+    const timer = setTimeout(() => setFeedback(""), 4500);
+    return () => clearTimeout(timer);
+  }, [feedback]);
+  useEffect(() => {
+    const shortcut = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      const editing = target.matches(
+        "input, textarea, select, [contenteditable=true]",
+      );
+      if (
+        ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") ||
+        (event.key === "/" && !editing)
+      ) {
+        event.preventDefault();
+        searchInput.current?.focus();
+        searchInput.current?.select();
+      }
+      if (event.key === "Escape" && target === searchInput.current) {
+        setQuery("");
+        searchInput.current?.blur();
+      }
+    };
+    window.addEventListener("keydown", shortcut);
+    return () => window.removeEventListener("keydown", shortcut);
   }, []);
   const saving = useRef(false);
   const api = window.workdesk;
@@ -98,6 +128,7 @@ function App() {
           localStorage.setItem("park-workdesk-demo", JSON.stringify(validated));
         setData(validated);
         setError("");
+        setFeedback("변경 사항을 저장했습니다.");
         return true;
       } catch (e) {
         setError(
@@ -118,6 +149,7 @@ function App() {
     setPage(next);
     setFocusId(id);
     setQuery("");
+    window.scrollTo({ top: 0 });
   }
   async function backup(restore = false) {
     if (saving.current) return;
@@ -130,6 +162,7 @@ function App() {
           setData(normalize(next));
           setFocusId(undefined);
           setPage("briefing");
+          setFeedback("백업 자료를 복원했습니다.");
         }
       } else await api?.backup();
       setError("");
@@ -220,21 +253,24 @@ function App() {
                   className={page === p.id ? "active" : ""}
                   aria-current={page === p.id ? "page" : undefined}
                   onClick={() => navigate(p.id)}
+                  aria-label={p.label}
                 >
-                  <span aria-hidden="true">{p.icon}</span>
+                  <Icon name={p.id} />
                   {p.label}
-                  {p.id === "handover" &&
-                    data.tasks.some(
-                      (t) => t.kind === "handover" && !t.done,
-                    ) && (
-                      <small className="nav-count">
-                        {
-                          data.tasks.filter(
-                            (t) => t.kind === "handover" && !t.done,
-                          ).length
-                        }
+                  {(() => {
+                    const count =
+                      p.id === "calls"
+                        ? data.calls.filter((c) => !c.done).length
+                        : ["handover", "submission"].includes(p.id)
+                          ? data.tasks.filter((t) => t.kind === p.id && !t.done)
+                              .length
+                          : 0;
+                    return count ? (
+                      <small className="nav-count" aria-hidden="true">
+                        {count}
                       </small>
-                    )}
+                    ) : null;
+                  })()}
                 </button>
               ))}
             </div>
@@ -243,8 +279,8 @@ function App() {
         <div className="sidebar-bottom">
           <span className="offline-dot" />
           {api ? "내 PC에 저장" : "브라우저 체험 모드"}
-          <small>기록이 다음 업무의 시작이 됩니다.</small>
-          <span className="version">v0.3 · 현장과 사무를 연결</span>
+          <small>오프라인 개인 업무 공간</small>
+          <span className="version">v0.3.1</span>
         </div>
       </aside>
       <main>
@@ -253,12 +289,31 @@ function App() {
             나의 업무 공간 <span>/</span> <strong>{pageNames[page]}</strong>
           </div>
           <div className="top-actions">
-            <input
-              aria-label="기록 통합 검색"
-              placeholder="기록 통합 검색"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+            <span className="save-indicator" role="status">
+              {busy ? (
+                <>
+                  <Icon name="clock" size={14} />
+                  저장 중
+                </>
+              ) : ready ? (
+                <>
+                  <Icon name="check" size={14} />내 PC 저장
+                </>
+              ) : (
+                "불러오는 중"
+              )}
+            </span>
+            <div className="global-search">
+              <Icon name="search" size={16} />
+              <input
+                ref={searchInput}
+                aria-label="기록 통합 검색"
+                placeholder="기록 통합 검색"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              <kbd>Ctrl K</kbd>
+            </div>
             <button disabled={!api || !ready || busy} onClick={() => backup()}>
               백업
             </button>
@@ -273,7 +328,6 @@ function App() {
         <div className="content">
           <div className="page-heading">
             <div>
-              <p className="eyebrow">PARK WORKSPACE / {page.toUpperCase()}</p>
               <h1>{query.trim() ? "통합 검색" : pageNames[page]}</h1>
               <p>
                 {query.trim()
@@ -294,6 +348,12 @@ function App() {
             <div className="notice">
               화면 체험 중입니다. 브라우저 기록은 데스크톱 앱과 별개이며,
               알림·폴더 열기·파일 내보내기는 데스크톱에서 지원합니다.
+            </div>
+          )}
+          {feedback && (
+            <div className="save-feedback" role="status">
+              <Icon name="check" size={16} />
+              {feedback}
             </div>
           )}
           {error && (
@@ -395,8 +455,8 @@ function App() {
                   <div className="folder-grid">
                     {data.folders.map((f) => (
                       <article key={f.id} className="folder-card">
-                        <span className="folder-icon" aria-hidden="true">
-                          ▱
+                        <span className="folder-icon">
+                          <Icon name="folders" size={32} />
                         </span>
                         <h3>{f.title}</h3>
                         <p>{f.path}</p>
@@ -442,18 +502,14 @@ function App() {
                       title="국립공원 업무를 위한 개인 기록 도구"
                     />
                     <p>
-                      현장 순찰, 인수인계, 제출 기한과 개인 일정을 연결하는 개발
-                      시제품입니다. 기록은 이 PC에 저장되며 사무소 공용 서버나
+                      현장 순찰, 인수인계, 제출 기한과 개인 일정을 함께
+                      관리합니다. 기록은 이 PC에 저장되며 사무소 공용 서버나
                       ERP에 전송되지 않습니다.
                     </p>
-                    <p>
-                      기후노트의 오프라인 사용 방식을 참고해 업무 흐름을
-                      설계했습니다. 현재 앱의 화면·코드·아이콘은 별도로
-                      구현했습니다.
-                    </p>
+
                     <div className="notice">
-                      현재 저장 파일과 백업은 암호화되지 않습니다. 기관 자료
-                      보호 기능이 마련되기 전까지 가상 자료로 시험하세요.
+                      저장 파일과 백업은 평문입니다. 민감한 자료는 기관의 보관
+                      정책을 확인하세요.
                     </div>
                     <p className="help">
                       창을 닫으면 앱이 종료됩니다. 알림은 실행 중에만 표시하며
@@ -462,31 +518,23 @@ function App() {
                     </p>
                   </section>
                   <section className="panel">
-                    <SectionHead title="다음 개발 단계" />
-                    {[
-                      [
-                        "법령 자료실",
-                        "인터넷 구간 수집 → 검증된 묶음 반입 → 폐쇄망 검색. 자료 기준일과 시행일을 구분합니다.",
-                      ],
-                      [
-                        "거점표·당직표",
-                        "기관의 실제 편성 기준과 근무 구간을 확인한 뒤 일정과 연결합니다.",
-                      ],
-                      [
-                        "서무 장부",
-                        "예산·급량비·물품은 기관 서식과 계산 기준에 맞춰 설계합니다.",
-                      ],
-                      [
-                        "공유 현황판·ERP",
-                        "조회 권한과 제공 API가 확인되면 읽기 전용 서버를 통해 연동합니다.",
-                      ],
-                    ].map(([title, body]) => (
-                      <article className="roadmap-item" key={title}>
-                        <Tag>설계 단계</Tag>
-                        <h3>{title}</h3>
-                        <p>{body}</p>
-                      </article>
-                    ))}
+                    <SectionHead title="저장과 백업" />
+                    <h3>이 PC에 보관됩니다</h3>
+                    <p>
+                      Windows 저장 위치는 %APPDATA%/park-workdesk/workdesk.json
+                      입니다. PC를 옮길 때는 상단의 백업으로 파일을 만든 뒤 새
+                      PC에서 복원하세요.
+                    </p>
+                    <h3>복원 전에도 자료를 보관합니다</h3>
+                    <p>
+                      복원은 현재 기록을 교체합니다. 교체 전 자료는 같은 저장
+                      폴더에 자동 보관합니다.
+                    </p>
+                    <h3>검색 바로가기</h3>
+                    <p>
+                      Ctrl+K 또는 / 키로 통합 검색을 엽니다. 검색창에서 Esc를
+                      누르면 원래 화면으로 돌아갑니다.
+                    </p>
                   </section>
                 </div>
               )}
@@ -494,7 +542,7 @@ function App() {
           )}
         </div>
         <footer>
-          <span>공원 업무 수첩</span>국립공원 업무를 위한 비공식 개발 시제품
+          <span>공원 업무 수첩</span>오프라인 개인 업무 공간
         </footer>
       </main>
     </div>

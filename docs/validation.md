@@ -1,5 +1,9 @@
 # 검증 결과 — 2026-10-15 (한국 시간)
 
+## v0.3.1 사용 흐름 개선
+
+Node 24 Linux에서 npm test 13/13 및 npm run test:desktop 통과. 기존 데이터·좌표·백업 시나리오에 검색 키보드 단축키와 미완료 건수가 있는 메뉴 이동 검증을 추가했다. 1280×800 실제 Electron 화면에서 브리핑과 입력 양식 배치를 확인했다. Windows 빌드는 이 소스 푸시 후 확인한다.
+
 ## v0.3 / TASK-v0.3-01
 
 - Step 1: 협업 문서 추가, npm test 9/9 및 npm run test:desktop 통과 후 푸시.
