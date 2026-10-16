@@ -164,8 +164,21 @@ function counter(page) {
       return "현장 순찰 화면 상단 '단속·확인 집계'(이번 주)에서 바로 보임";
     });
 
-    await task("T6", "오늘 통제 중인 탐방로 구간 확인", async () => {
-      throw new Error("통제 구간 개념 없음 — 메모·일정 제목에 적어 둔 경우 검색으로만 찾을 수 있음");
+    await task("T6a", "기상특보 통제 등록(구간·사유·시작일, 종료일 비움)", async (t) => {
+      await t.click(nav("탐방로 통제"));
+      await t.click(page.getByRole("button", { name: "통제 등록", exact: true }));
+      await t.fill(page.getByLabel("통제 구간·대상"), "계곡 탐방로 전 구간");
+      await t.select(page.getByLabel("통제 사유"), "weather");
+      await t.click(sheet().getByRole("button", { name: "통제 저장", exact: true }));
+      await sheet().waitFor({ state: "hidden" });
+      return "시작일 기본값 오늘, 종료일 비우면 해제 시까지";
+    });
+
+    await task("T6", "오늘 통제 중인 탐방로 구간 확인", async (t) => {
+      const line = page.getByRole("button", { name: /오늘 통제 1곳/ });
+      await line.waitFor();
+      await page.locator(".timeline-row").filter({ hasText: "계곡 탐방로 전 구간" }).waitFor();
+      return "홈 상단 '오늘 통제 N곳'과 오늘의 기록(종일)에 바로 보임 — 클릭 0";
     });
 
     await task("T7", "전화 메모 회신 처리", async (t) => {

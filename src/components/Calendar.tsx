@@ -7,7 +7,7 @@ import {
   RECURRENCE_LABEL,
 } from "../../shared/model.mjs";
 import type { Data, Event, EventRecurrence, Page, Save } from "../types";
-import { Empty, Field, formatClock, formatDate, localInput, SectionHead, Tag } from "../ui";
+import { categoryTone, Empty, Field, formatDate, itemClock, localInput, SectionHead, Tag } from "../ui";
 import { Icon } from "./Icon";
 import { askConfirm, confirmDelete } from "../confirm";
 export function Calendar({
@@ -169,6 +169,7 @@ export function Calendar({
           <Tag tone="patrol"><Icon name="patrol" size={12} />순찰</Tag>
           <Tag tone="task"><Icon name="handover" size={12} />인계</Tag>
           <Tag tone="task"><Icon name="submission" size={12} />제출</Tag>
+          <Tag tone="control"><Icon name="controls" size={12} />통제</Tag>
           <Tag tone="holiday">공휴일</Tag>
         </div>
         <div className="calendar-week">
@@ -181,13 +182,16 @@ export function Calendar({
             const key = dayKey(date),
               entries = items.filter((i) => dayKey(new Date(i.at)) === key),
               holiday = holidayName(key);
-            const entryDescription = entries.slice(0, 3).map((i) =>
-              `${i.category} ${formatClock(i.at)} ${i.title}${i.done ? " 완료" : ""}`,
+            // Closures can span weeks; they get one marker so work items keep the chip slots.
+            const closures = entries.filter((i) => i.category === "통제");
+            const work = entries.filter((i) => i.category !== "통제");
+            const entryDescription = work.slice(0, 3).map((i) =>
+              `${i.category} ${itemClock(i)} ${i.title}${i.done ? " 완료" : ""}`,
             ).join(", ");
             return (
               <button
                 key={key}
-                aria-label={`${key} ${entries.length}건, ${formatDate(key)}${holiday ? `, ${holiday}` : ""}${entryDescription ? `, ${entryDescription}` : ""}${entries.length > 3 ? `, 그 외 ${entries.length - 3}건. 선택 날짜 기록에서 전체 확인` : ""}`}
+                aria-label={`${key} ${work.length}건, ${formatDate(key)}${holiday ? `, ${holiday}` : ""}${closures.length ? `, 탐방로 통제 ${closures.length}곳` : ""}${entryDescription ? `, ${entryDescription}` : ""}${work.length > 3 ? `, 그 외 ${work.length - 3}건. 선택 날짜 기록에서 전체 확인` : ""}`}
                 aria-pressed={selected === key}
                 aria-current={key === dayKey() ? "date" : undefined}
                 className={`calendar-day ${date.getMonth() !== monthIndex ? "outside" : ""} ${key === selected ? "selected-day" : ""} ${holiday ? "holiday-day" : ""} ${date.getDay() === 0 ? "sunday" : date.getDay() === 6 ? "saturday" : ""}`}
@@ -205,17 +209,26 @@ export function Calendar({
                     </span>
                   )}
                 </div>
-                {entries.slice(0, 3).map((i) => (
+                {work.slice(0, 3).map((i) => (
                   <span
-                    className={`calendar-chip ${i.category === "순찰" ? "patrol" : i.category === "일정" ? "" : "task"} ${i.done ? "done" : ""}`}
+                    className={`calendar-chip ${categoryTone(i.category)} ${i.done ? "done" : ""}`}
                     key={i.key}
-                    title={`${i.category} · ${formatClock(i.at)} · ${i.title}${i.recurrence && i.recurrence !== "none" ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복` : ""}${i.done ? " · 완료" : ""}`}
+                    title={`${i.category} · ${itemClock(i)} · ${i.title}${i.recurrence && i.recurrence !== "none" ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복` : ""}${i.done ? " · 완료" : ""}`}
                   >
                     <Icon name={i.page} size={12} />
                     <span>{i.recurrence && i.recurrence !== "none" ? "↻ " : ""}{i.title}</span>
                   </span>
                 ))}
-                {entries.length > 3 && <small>+{entries.length - 3}건</small>}
+                {work.length > 3 && <small>+{work.length - 3}건</small>}
+                {closures.length > 0 && (
+                  <span
+                    className="calendar-control-mark"
+                    title={`탐방로 통제 · ${closures.map((c) => c.title).join(", ")}`}
+                  >
+                    <Icon name="controls" size={12} />
+                    통제 {closures.length}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -242,7 +255,7 @@ export function Calendar({
           )}
           {selectedItems.map((i) => (
             <div className="agenda-row" key={i.key}>
-              <Tag tone={i.category === "순찰" ? "patrol" : i.category === "일정" ? "" : "task"}>
+              <Tag tone={categoryTone(i.category)}>
                 {i.category}
               </Tag>
               <div>
@@ -259,7 +272,7 @@ export function Calendar({
                   {i.title}
                 </button>
                 <small>
-                  <time dateTime={i.at}>{formatClock(i.at)}</time>
+                  <time dateTime={i.at}>{itemClock(i)}</time>
                   {i.recurrence && i.recurrence !== "none"
                     ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복${i.repeatUntil ? ` (~${i.repeatUntil})` : ""}`
                     : ""}

@@ -11,6 +11,9 @@ import {
   normalize,
   formatCoordinates,
   RECURRENCE_LABEL,
+  activeControls,
+  CONTROL_REASONS,
+  dayKey,
 } from "../shared/model.mjs";
 import type { Data, Page } from "./types";
 import { formatDate } from "../shared/format.mjs";
@@ -19,6 +22,7 @@ import { DesktopSettings } from "./components/DesktopSettings";
 import { Office } from "./components/Office";
 import { Briefing } from "./components/Briefing";
 import { Patrols } from "./components/Patrols";
+import { Controls } from "./components/Controls";
 import { Tasks } from "./components/Tasks";
 import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
@@ -36,6 +40,7 @@ const sections: {
       { id: "briefing", label: "업무 브리핑" },
       { id: "office", label: "사무소 현황" },
       { id: "patrol", label: "현장 순찰" },
+      { id: "controls", label: "탐방로 통제" },
       { id: "handover", label: "인수인계" },
       { id: "submission", label: "제출 기한" },
       { id: "calendar", label: "월간 일정" },
@@ -58,6 +63,7 @@ const subtitles: Record<Page, string> = {
   office: "직원별 근무·휴무·당직·거점 배치를 일별·주간으로 확인합니다.",
   briefing: "순찰에서 사무실까지, 오늘 이어갈 업무를 확인하세요.",
   patrol: "현장의 확인 사항과 조치 내용을 기록하고 다음 업무로 연결합니다.",
+  controls: "산불·기상특보·공사 등으로 통제 중인 구간과 기간을 기록합니다.",
   handover: "남은 조치와 담당자, 마감일을 한눈에 확인합니다.",
   submission: "서류 제출 기한을 일정과 함께 관리합니다.",
   calendar: "일정·순찰·인수인계·제출 기한과 공휴일·반복 일정을 확인합니다.",
@@ -232,6 +238,12 @@ function App() {
       title: p.title,
       text: `${p.route} ${p.observer} ${p.findings} ${p.action} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`,
     })),
+    ...data.controls.map((c) => ({
+      id: c.id,
+      page: "controls" as Page,
+      title: c.title,
+      text: `${c.zone ?? ""} ${CONTROL_REASONS[c.reason]} ${c.start} ${c.end ?? "해제 시까지"} ${c.note}`,
+    })),
     ...data.tasks.map((t) => ({
       id: t.id,
       page: t.kind as Page,
@@ -293,7 +305,9 @@ function App() {
                   {p.label}
                   {(() => {
                     const count =
-                      p.id === "calls"
+                      p.id === "controls"
+                        ? activeControls(data, dayKey()).length
+                        : p.id === "calls"
                         ? data.calls.filter((c) => !c.done).length
                         : ["handover", "submission"].includes(p.id)
                           ? data.tasks.filter((t) => t.kind === p.id && !t.done)
@@ -428,6 +442,15 @@ function App() {
                   busy={busy}
                   initialId={focusId}
                   openTask={(id) => navigate("handover", id)}
+                />
+              )}
+              {page === "controls" && (
+                <Controls
+                  key={page + focusId}
+                  data={data}
+                  save={save}
+                  busy={busy}
+                  initialId={focusId}
                 />
               )}
               {(page === "handover" || page === "submission") && (

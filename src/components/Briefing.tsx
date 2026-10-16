@@ -7,9 +7,10 @@ import {
   holidayName,
   RECURRENCE_LABEL,
   collections,
+  activeControls,
 } from "../../shared/model.mjs";
 import type { Data, Page } from "../types";
-import { formatClock, formatTime, SectionHead, Tag } from "../ui";
+import { formatTime, itemClock, SectionHead, Tag } from "../ui";
 import { officeSummary } from "../../shared/office.mjs";
 import { Icon } from "./Icon";
 
@@ -149,6 +150,13 @@ export function Briefing({
           <strong className={overdue.length ? "text-danger" : ""}>
             {overdue.length}건
           </strong>
+          <span>·</span>
+          <button
+            className="text-button inline-link"
+            onClick={() => navigate("controls")}
+          >
+            오늘 통제 <strong>{activeControls(data, today).length}곳</strong>
+          </button>
         </p>
         <button
           className="text-button daily-jump"
@@ -383,7 +391,7 @@ export function Briefing({
                   disabled={busy}
                   onClick={() => navigate(row.page as Page, row.id)}
                 >
-                  <time>{formatClock(row.at)}</time>
+                  <time>{itemClock(row)}</time>
                   <div>
                     <strong className={row.done ? "done" : ""}>
                       {row.title}

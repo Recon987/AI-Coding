@@ -53,6 +53,8 @@
   --cat-task-bg: var(--teal-soft);
   --cat-holiday: var(--red);
   --cat-holiday-bg: var(--red-soft);
+  --cat-control: var(--slate);
+  --cat-control-bg: var(--slate-soft);
   --work-base: var(--blue);
   --work-base-bg: var(--blue-soft);
   --work-trip: var(--teal);
@@ -197,6 +199,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .tag.warning { color: var(--status-warning); background: var(--status-warning-bg); }
 .tag.task, .calendar-chip.task { color: var(--cat-task); background: var(--cat-task-bg); }
 .tag.duty { color: var(--work-duty); background: var(--work-duty-bg); }
+.tag.control, .calendar-chip.control { color: var(--cat-control); background: var(--cat-control-bg); }
 .tag.danger { color: var(--status-danger); background: var(--status-danger-bg); }
 .tag.holiday { color: var(--cat-holiday); background: var(--cat-holiday-bg); }
 .tag.patrol, .calendar-chip.patrol { color: var(--cat-patrol); background: var(--cat-patrol-bg); }
@@ -670,3 +673,10 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .summary-table th[scope="row"], .summary-table thead th:first-child { text-align: left; font-weight: 600; }
 .summary-table thead th { color: var(--muted); font-weight: 600; background: var(--surface-sunken); }
 .summary-table tfoot th, .summary-table tfoot td { border-bottom: 0; font-weight: 600; }
+
+/* Trail closures (TASK-CONTROL-01). */
+.records > .segmented { width: fit-content; margin: 4px 0 8px; }
+.control-record h3 { margin: 6px 0 4px; }
+.inline-link { min-height: 0; padding: 0; color: inherit; font-size: inherit; }
+.inline-link:hover { background: none; text-decoration: underline; }
+.calendar-control-mark { display: inline-flex; align-items: center; gap: 4px; margin-top: auto; padding: 1px 6px; border-radius: 4px; color: var(--cat-control); background: var(--cat-control-bg); font-size: var(--fs-xs); line-height: 18px; }
