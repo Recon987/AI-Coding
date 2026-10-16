@@ -1,7 +1,7 @@
 ---
 id: TASK-REVIEW-UX-01
 title: 핵심 과업별 조작 수·시간 측정과 사용 흐름 검토
-status: ready
+status: in-progress
 role: verifier
 owner: claude
 verifier: codex
@@ -28,7 +28,7 @@ UI 수정(발견은 카드로 분리).
 - [ ] 3. 결과와 발견 정리
 
 ## 재개 위치
-1단계부터.
+1단계: 과업 정의 중. 측정은 tests/task-flows.cjs(신규) — tests/ui-review.cjs의 Electron 실행·가상 자료 방식 재사용.
 
 ## 테스트 상태
 미실행
