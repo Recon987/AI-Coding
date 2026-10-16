@@ -59,6 +59,16 @@ export type Task = Note & {
   done: boolean;
   completedAt: string | null;
 };
+/** 탐방로 통제: local dates; end null means until lifted. */
+export type Control = {
+  id: string;
+  title: string;
+  zone: string | null;
+  reason: "fire" | "weather" | "construction" | "resource" | "other";
+  start: string;
+  end: string | null;
+  note: string;
+};
 export type Organization = {
   id: string;
   code: string;
@@ -96,6 +106,7 @@ export type Data = {
   folders: Folder[];
   patrols: Patrol[];
   tasks: Task[];
+  controls: Control[];
   organizations: Organization[];
   employees: Employee[];
   bases: Base[];
@@ -105,6 +116,7 @@ export type Page =
   | "office"
   | "briefing"
   | "patrol"
+  | "controls"
   | "handover"
   | "submission"
   | "calendar"

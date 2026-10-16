@@ -4,6 +4,7 @@ import type {
   Event,
   EventRecurrence,
   HolidayEntry,
+  Control,
   Observation,
   PatrolKind,
 } from "../src/types";
@@ -76,3 +77,6 @@ export function formatCoordinates(
   input: Coordinates,
   format?: "dd" | "dms",
 ): string;
+export const CONTROL_REASONS: Record<Control["reason"], string>;
+/** Closures in effect on a local YYYY-MM-DD date, sorted by start. */
+export function activeControls(data: Data, date: string): Control[];

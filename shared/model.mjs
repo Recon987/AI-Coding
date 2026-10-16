@@ -8,7 +8,20 @@ const personalCollections = [
   "patrols",
   "tasks",
 ];
-export const collections = [...personalCollections, ...officeCollections];
+// Added after v3 shipped; files without it load as an empty list (TASK-CONTROL-01).
+const optionalCollections = ["controls"];
+export const collections = [
+  ...personalCollections,
+  ...optionalCollections,
+  ...officeCollections,
+];
+export const CONTROL_REASONS = {
+  fire: "산불 예방",
+  weather: "기상특보",
+  construction: "공사·정비",
+  resource: "자원 보호",
+  other: "기타",
+};
 export const RECURRENCE = ["none", "daily", "weekly", "monthly", "yearly"];
 export const RECURRENCE_LABEL = {
   none: "반복 없음",
@@ -54,6 +67,7 @@ export const empty = () => ({
   folders: [],
   patrols: [],
   tasks: [],
+  controls: [],
   organizations: [],
   employees: [],
   bases: [],
@@ -175,6 +189,27 @@ export function normalize(input) {
         }
       : input;
   validateOffice(data);
+  const controls = data.controls ?? [];
+  ensure(
+    Array.isArray(controls) && controls.length <= 10000,
+    "통제 기록은 10,000건 이하의 목록이어야 합니다.",
+  );
+  const controlIds = new Set();
+  for (const row of controls) {
+    ensure(
+      row && required(row.id, 100) && !controlIds.has(row.id) && required(row.title),
+      "통제 구간과 ID를 확인하세요.",
+    );
+    controlIds.add(row.id);
+    ensure(Object.hasOwn(CONTROL_REASONS, row.reason), "통제 사유를 선택하세요.");
+    ensure(validDate(row.start), "통제 시작일을 확인하세요.");
+    ensure(
+      row.end === null || (validDate(row.end) && row.end >= row.start),
+      "통제 종료일은 시작일 이후여야 합니다.",
+    );
+    ensure(row.zone === null || string(row.zone, 50), "담당구역 번호는 50자 이하로 입력하세요.");
+    ensure(string(row.note, 2000), "통제 메모는 2,000자 이하로 입력하세요.");
+  }
   for (const key of personalCollections) {
     ensure(
       Array.isArray(data[key]) && data[key].length <= 10000,
@@ -313,6 +348,7 @@ export function normalize(input) {
   return {
     version: 3,
     ...Object.fromEntries(collections.map((key) => [key, data[key]])),
+    controls,
   };
 }
 
@@ -634,6 +670,34 @@ export function expandEventOccurrences(event, range = {}) {
   return rows;
 }
 
+/** Closures in effect on a local date (end null = until lifted). */
+export function activeControls(data, date) {
+  ensure(validDate(date), "통제 조회 날짜를 확인하세요.");
+  return (data.controls ?? [])
+    .filter((c) => c.start <= date && (c.end === null || c.end >= date))
+    .sort((a, b) => a.start.localeCompare(b.start) || a.title.localeCompare(b.title, "ko"));
+}
+
+// One derived calendar item per closure day inside the requested range only.
+function controlDays(data, range) {
+  if (!range?.startDate || !range?.endDate) return [];
+  const rows = [];
+  for (const c of data.controls ?? []) {
+    const first = c.start > range.startDate ? c.start : range.startDate;
+    const last = c.end === null || c.end > range.endDate ? range.endDate : c.end;
+    for (let day = parseLocalDate(first); dayKey(day) <= last; day.setDate(day.getDate() + 1))
+      rows.push({
+        ...c,
+        at: new Date(day.getFullYear(), day.getMonth(), day.getDate()).toISOString(),
+        key: `control:${c.id}:${dayKey(day)}`,
+        category: "통제",
+        page: "controls",
+        done: false,
+      });
+  }
+  return rows;
+}
+
 export function calendarItems(data, range) {
   const startFilter = range?.startDate || null;
   const endFilter = range?.endDate || null;
@@ -663,6 +727,7 @@ export function calendarItems(data, range) {
         page: "patrol",
         done: false,
       })),
+    ...controlDays(data, range),
   ].sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
 }
 export function reminderItems(data, now = Date.now()) {
@@ -752,6 +817,7 @@ export function briefing(data, date) {
     (t) => !t.done && dayKey(new Date(t.at)) <= date,
   );
   const patrols = data.patrols.filter((p) => dayKey(new Date(p.at)) === date);
+  const controls = activeControls(data, date);
   const events = calendarItems(data, {
     startDate: date,
     endDate: date,
@@ -759,6 +825,12 @@ export function briefing(data, date) {
   return [
     `공원 업무 수첩 | ${date}${holiday ? ` (${holiday})` : ""} 업무 브리핑`,
     "개인 기록 기준 · 공식 결재/근무현황 자료 아님",
+    "",
+    `탐방로 통제 (${controls.length})`,
+    ...controls.map(
+      (c) =>
+        `- ${c.title}${c.zone ? ` | 담당구역 ${c.zone}` : ""} | ${CONTROL_REASONS[c.reason]} | ${c.start} ~ ${c.end ?? "해제 시까지"}${c.note ? `\n  ${c.note}` : ""}`,
+    ),
     "",
     `일정 (${events.length})`,
     ...events.map(

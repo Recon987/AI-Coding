@@ -1,7 +1,7 @@
 ---
 id: TASK-CONTROL-01
 title: 탐방로 통제 구간 기록과 브리핑 '오늘 통제'
-status: ready
+status: in-progress
 role: builder
 owner: claude
 verifier: codex
@@ -24,14 +24,14 @@ updated: 2026-10-16
 외부 통제 정보 자동 수집.
 
 ## 진행 단계
-- [ ] 1. 설계 메모(필드·화면)를 이 카드에 추가
+- [x] 1. 설계·모델: controls[{id,title,zone|null,reason(fire/weather/construction/resource/other),start,end|null,note}] 현지 날짜, 기존 v3에 없으면 빈 목록(데이터 v3 유지). activeControls, calendarItems 기간 내 통제일 파생, 브리핑 TXT '탐방로 통제' 절. tests/controls.test.cjs
 - [ ] 2. 구현
 - [ ] 3. 테스트·문서
 
 ## 재개 위치
-착수 전.
+2단계 UI: src/components/Controls.tsx(목록: 진행 중/예정/종료, 편집창, 해제·삭제), main.tsx 메뉴·부제·검색·렌더, 홈 브리핑 '오늘 통제', 달력 통제 칩(시각 대신 '종일'). 현재 tsc는 main.tsx subtitles에 controls 누락으로 실패(의도된 중간 상태).
 
 ## 테스트 상태
-미실행
+2026-10-16: TZ=UTC `npm test` 60/60. tsc 실패 1건(UI 미구현). test:desktop 미실행.
 
 ## 검증 기록
