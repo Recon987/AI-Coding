@@ -49,3 +49,7 @@ npm run test:desktop
 [전 측정](../ui-review/loop3/before-measurements.json) · [후 측정](../ui-review/loop3/after-measurements.json). 출력은 /tmp/park-workdesk-review/loop3-after이며 실제 사용자 프로필을 읽지 않는다.
 
 기관 Windows 실기기의 스크린리더, 고배율 글꼴, 날짜 입력 위젯과 실제 절전·토스트는 후속 확인 대상이다. 다음 기능 백로그는 반복 일정 회차별 완료/예외(TASK-CALENDAR-02)다. 이번 검토는 범위 내 종료 승인이고 전체 제품의 완성을 의미하지 않는다.
+
+## Windows 후속 검증
+
+소스 `887ca68b46dba8792f0c944fa7e5f785f8baf97e`의 [Actions38844487365](https://github.com/Recon987/AI-Coding/actions/runs/38844487365)가 성공했다. 37개 검사와 실제 Electron 소스·패키징된 EXE의 확장 스모크, NSIS 설치형·portable 생성·SHA256SUMS·업로드가 통과했다. [v0.6.1 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38844487365/artifacts/12023060736)는 GitHub 로그인 필요, 보관14일이다. OS 스크린리더·실제 알림 노출·실제 절전 검증과는 구분한다.

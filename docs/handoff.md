@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (main)
-- **Latest Pushed Commit**: 47abdd45bc181583910d1f949be7c41e7e5d8979 - docs: record Windows tray validation and v0.6.0 download (TASK-TRAY-01)
+- **Latest Pushed Commit**: 887ca68b46dba8792f0c944fa7e5f785f8baf97e - feat: refine first use and calendar through three-expert review (TASK-UX-03)
 - **Completed Steps & Modified Files**: TASK-UX-03 세 분야 협의·교차 검토 완료. Briefing/Calendar/Office/main/ui/style, shared format·선언 및 model TXT 포맷, 날짜·UI·Electron 검사, README·검토 기록·캡처/측정·validation.
 - **Changed Interfaces / Schema Diff**: 앱0.6.1 / 업무 자료v3 유지. formatDate(string|Date,{year?,weekday?}), formatClock, formatTime 추가. 로컬 날짜/24h 표기. 전 컬렉션이 비었을 때만 시작 안내. 저장·IPC 변경 없음.
-- **Test Status**: npm test37/37, npm run test:desktop 통과. UI134검사/오류0/외부요청0. Windows 검증은 푸시 후 확인.
+- **Test Status**: npm test37/37, npm run test:desktop 통과. UI134검사/오류0/외부요청0. Windows Actions38844487365 소스·패키징된 EXE 스모크·설치형/portable 빌드 통과.
 - **Remaining Work for Gemini**: 다음 TASK-CALENDAR-02. 실제 Windows 스크린리더·날짜 입력·절전·토스트 확인. 칩의 긴 제목은 tooltip/선택 목록 보완을 유지.
-- **Modified Code Snippets (if uncommitted)**: 완성한 단계 검증 완료 후 즉시 커밋·푸시. 미완성 코드 없음. 문서 해시는 작성 직전 원격 기준.
+- **Modified Code Snippets (if uncommitted)**: 소스 모두 커밋·푸시 완료. 이번 후속 변경은 Windows 증빙·다운로드 문서만 갱신. 문서 해시는 작성 직전 원격 기준.
 ```
 
 ## 2. 다음 백로그 우선순위
@@ -52,3 +52,5 @@
 ## TASK-UX-03 협의 기록
 
 [세 분야 제안·협의·보완·교차 승인·전후 화면](review-rounds/TASK-UX-03.md). 현재 스키마·기존 자료와 트레이를 유지했다. 사용자 요청은 이번 개선 루프를 실행하는 것이며, 백그라운드 자동 개선 서비스를 추가하지 않았다.
+
+Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-Coding/actions/runs/38844487365), [v0.6.1 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/38844487365/artifacts/12023060736). 패키징된 EXE도 새 첫 사용·날짜·달력 및 기존 트레이 회귀를 통과했다.
