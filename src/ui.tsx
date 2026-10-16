@@ -5,13 +5,7 @@ import {
   type ReactNode,
   type ReactElement,
 } from "react";
-export const formatTime = (at: string) =>
-  new Date(at).toLocaleString("ko-KR", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+export { formatDate, formatClock, formatTime } from "../shared/format.mjs";
 export function localInput(at = new Date().toISOString()) {
   const d = new Date(at);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;

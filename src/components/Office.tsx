@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { dayKey } from "../../shared/model.mjs";
+import { formatDate } from "../../shared/format.mjs";
 import {
   officeRows,
   officeSummary,
@@ -427,14 +428,7 @@ export function Office({
                                   day === dayKey() ? "today-column" : ""
                                 }
                               >
-                                {new Date(`${day}T12:00:00`).toLocaleDateString(
-                                  "ko-KR",
-                                  {
-                                    month: "numeric",
-                                    day: "numeric",
-                                    weekday: "short",
-                                  },
-                                )}
+{formatDate(day, { year: false })}
                               </th>
                             ))}
                           </tr>

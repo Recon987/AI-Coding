@@ -1,3 +1,4 @@
+import { formatTime } from "./format.mjs";
 import { officeCollections, validateOffice, validDate } from "./office.mjs";
 const personalCollections = [
   "notes",
@@ -638,7 +639,7 @@ export function reminderItems(data, now = Date.now()) {
 export function briefing(data, date) {
   ensure(/^\d{4}-\d{2}-\d{2}$/.test(date), "브리핑 날짜를 확인하세요.");
   const holiday = holidayName(date);
-  const when = (value) => new Date(value).toLocaleString("ko-KR");
+  const when = formatTime;
   const due = data.tasks.filter(
     (t) => !t.done && dayKey(new Date(t.at)) <= date,
   );

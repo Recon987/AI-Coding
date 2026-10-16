@@ -1,6 +1,6 @@
 # AI-Coding 작업 인계장 (`docs/handoff.md`)
 
-**저장소**: `Recon987/AI-Coding` (`main`) · **앱/데이터 버전**: `0.6.0` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
+**저장소**: `Recon987/AI-Coding` (`main`) · **앱/데이터 버전**: `0.6.1` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
 
 이 문서는 **ChatGPT Codex**와 **Gemini**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 쓰는 단일 인계장이다. 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 기록한다.
 
@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (main)
-- **Latest Pushed Commit**: 50f78366a62c67314d3423e023e9b25faae06374 - feat: add opt-in system tray and resume notification recovery (TASK-TRAY-01)
-- **Completed Steps & Modified Files**: TASK-TRAY-01 완료. desktop main/preload/lifecycle/settings/notifications 및 로컬 tray.png, src DesktopSettings/types/main/style, shared model·선언, 정책·Electron·DST 테스트, README·architecture·validation·실기기 체크리스트. Gemini TASK-CALENDAR-01과 독립 UI 개선 유지.
-- **Changed Interfaces / Schema Diff**: 앱 0.6.0 / 자료 v3. getDesktopSettings()/setCloseToTray(boolean) → {version:1,closeToTray,trayAvailable,message}. PC 설정·24시간 알림 이력은 업무 백업 외 별도 JSON. 반복 조회는 요청 구간으로 이동하며 결과 최대 400회차.
-- **Test Status**: Linux npm test 35/35 및 npm run test:desktop 통과. Windows Actions 38827813053 성공: 동일 테스트, 실제 Tray 생성·숨김/복원, NSIS·portable 빌드, 패키징된 EXE 스모크 통과. Notification.show/확인 위젯은 대역. 독립 후속 검토 승인.
-- **Remaining Work for Gemini**: 다음 TASK-CALENDAR-02 회차별 완료/예외. 이후 SECURITY-01·LAW-01·LEDGER-01. 실제 Windows PC의 절전/OS 토스트 표시 확인 필요. UI 후속은 ui-review-loop 참조.
-- **Modified Code Snippets (if uncommitted)**: 소스 모두 푸시 완료. 이번 후속 커밋은 Windows 증빙·다운로드·설명 문서만 갱신. 문서 해시는 작성 직전 원격 기준.
+- **Latest Pushed Commit**: 47abdd45bc181583910d1f949be7c41e7e5d8979 - docs: record Windows tray validation and v0.6.0 download (TASK-TRAY-01)
+- **Completed Steps & Modified Files**: TASK-UX-03 세 분야 협의·교차 검토 완료. Briefing/Calendar/Office/main/ui/style, shared format·선언 및 model TXT 포맷, 날짜·UI·Electron 검사, README·검토 기록·캡처/측정·validation.
+- **Changed Interfaces / Schema Diff**: 앱0.6.1 / 업무 자료v3 유지. formatDate(string|Date,{year?,weekday?}), formatClock, formatTime 추가. 로컬 날짜/24h 표기. 전 컬렉션이 비었을 때만 시작 안내. 저장·IPC 변경 없음.
+- **Test Status**: npm test37/37, npm run test:desktop 통과. UI134검사/오류0/외부요청0. Windows 검증은 푸시 후 확인.
+- **Remaining Work for Gemini**: 다음 TASK-CALENDAR-02. 실제 Windows 스크린리더·날짜 입력·절전·토스트 확인. 칩의 긴 제목은 tooltip/선택 목록 보완을 유지.
+- **Modified Code Snippets (if uncommitted)**: 완성한 단계 검증 완료 후 즉시 커밋·푸시. 미완성 코드 없음. 문서 해시는 작성 직전 원격 기준.
 ```
 
 ## 2. 다음 백로그 우선순위
@@ -48,3 +48,7 @@
 ## TASK-TRAY-01 완료 증빙
 
 소스 50f7836, Windows [검증 실행](https://github.com/Recon987/AI-Coding/actions/runs/38827813053), [v0.6.0 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38827813053/artifacts/12015459007). 상세 범위·위젯 대역·Linux native Tray 미실행 및 Windows 실제 Tray 검사 구분은 validation.md 참조. 실기기 절차는 windows-checklist.md에 있다.
+
+## TASK-UX-03 협의 기록
+
+[세 분야 제안·협의·보완·교차 승인·전후 화면](review-rounds/TASK-UX-03.md). 현재 스키마·기존 자료와 트레이를 유지했다. 사용자 요청은 이번 개선 루프를 실행하는 것이며, 백그라운드 자동 개선 서비스를 추가하지 않았다.

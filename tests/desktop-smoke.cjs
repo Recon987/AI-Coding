@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const { empty } = require("../shared/model.mjs");
 (async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "park-desktop-test-"));
   const root = path.resolve(__dirname, "..");
@@ -73,6 +74,40 @@ const path = require("node:path");
       .getByRole("heading", { name: "업무 브리핑", exact: true })
       .waitFor();
     assert.ok(await page.evaluate(() => !!window.workdesk));
+    // First use must offer working actions; merely visiting it never adds sample data.
+    const firstUse = page.getByRole("region", { name: "업무 시작 안내", exact: true });
+    await firstUse.waitFor();
+    assert.equal(await firstUse.getByRole("button").count(), 3);
+    for (const [action, title] of [["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
+      await firstUse.getByRole("button", { name: action, exact: true }).click();
+      const dialog = page.getByRole("dialog", { name: title, exact: true });
+      await dialog.waitFor();
+      assert.equal(await dialog.evaluate((element) => element instanceof HTMLDialogElement && element.open && element.contains(document.activeElement)), true);
+      await page.keyboard.press("Escape");
+      await dialog.waitFor({ state: "hidden" });
+      await nav("업무 브리핑");
+    }
+    await firstUse.getByRole("button", { name: "근무현황판 준비", exact: true }).click();
+    await page.getByRole("heading", { name: "사무소 근무현황판을 준비하세요", exact: true }).waitFor();
+    assert.deepEqual(await page.evaluate(() => window.workdesk.load()), empty());
+    const oneNote = empty();
+    oneNote.notes.push({ id: "first-use-note", title: "기존 메모", body: "보존" });
+    const oneCompleted = empty();
+    oneCompleted.events.push({ id: "first-use-event", title: "완료한 일정", at: "2030-01-01T00:00:00+09:00", done: true });
+    const oneStaff = empty();
+    oneStaff.organizations.push({ id: "first-use-org", code: "TEST", name: "가상 조직", parentId: null });
+    oneStaff.employees.push({ id: "first-use-staff", code: "T001", name: "가상 직원", organizationId: "first-use-org", position: "", active: true });
+    for (const partial of [oneNote, oneCompleted, oneStaff]) {
+      await page.evaluate((value) => window.workdesk.save(value), partial);
+      const before = await page.evaluate(() => window.workdesk.load());
+      await page.reload();
+      await page.locator('.save-indicator[data-state="ready"]').waitFor();
+      assert.equal(await firstUse.count(), 0);
+      assert.deepEqual(await page.evaluate(() => window.workdesk.load()), before);
+    }
+    await page.evaluate((value) => window.workdesk.save(value), empty());
+    await page.reload();
+    await firstUse.waitFor();
     await nav("업무 메모");
     await add("메모 추가");
     assert.equal(
@@ -283,9 +318,11 @@ const path = require("node:path");
     await page.getByLabel("일정 제목").fill("현장 회의");
     await page.getByLabel("일정 일시").fill("2030-10-16T10:00");
     await page.getByRole("button", { name: "일정 저장", exact: true }).click();
-    await page
-      .getByRole("button", { name: "2030-10-16 3건", exact: true })
-      .waitFor();
+    const selectedDay = page.locator('.calendar-day[aria-pressed="true"]');
+    await page.waitForFunction(() => document.querySelector('.calendar-day[aria-pressed="true"]')?.getAttribute("aria-label")?.includes("현장 회의"));
+    const selectedName = await selectedDay.getAttribute("aria-label");
+    for (const value of ["2030. 10. 16.", "3건", "현장 회의", "일정", "10:00", "안내판 후속 확인", "09:00", "주간 실적 제출", "17:00"])
+      assert.ok(selectedName.includes(value), `달력 접근 이름에서 ${value} 누락: ${selectedName}`);
     await page.getByRole("checkbox", { name: "현장 회의 완료" }).click();
     await page.waitForFunction(
       () => document.querySelector('[aria-label="현장 회의 완료"]').checked,

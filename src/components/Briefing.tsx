@@ -6,9 +6,10 @@ import {
   formatCoordinates,
   holidayName,
   RECURRENCE_LABEL,
+  collections,
 } from "../../shared/model.mjs";
 import type { Data, Page } from "../types";
-import { formatTime, SectionHead, Tag } from "../ui";
+import { formatClock, formatTime, SectionHead, Tag } from "../ui";
 import { officeSummary } from "../../shared/office.mjs";
 import { Icon } from "./Icon";
 
@@ -63,6 +64,82 @@ export function Briefing({
     next.setDate(next.getDate() + offset);
     chooseDate(dayKey(next));
   }
+  const firstUse = collections.every(
+    (name) => data[name as Exclude<keyof Data, "version">].length === 0,
+  );
+  if (firstUse)
+    return (
+      <section className="start-workspace" aria-label="업무 시작 안내">
+        <div className="start-intro">
+          <span className="start-mark">
+            <Icon name="briefing" size={28} />
+          </span>
+          <p className="eyebrow">나의 업무 공간</p>
+          <h2>오늘의 업무를 시작하세요</h2>
+          <p>
+            일정, 연락, 사무소 근무를 한곳에서 챙기세요.
+            <br />
+            필요한 기록 하나부터 시작하면 됩니다.
+          </p>
+        </div>
+        <div className="start-actions">
+          {(
+            [
+              ["calendar", "일정 등록", "회의와 마감 시간을 놓치지 않도록"],
+              ["calls", "전화메모 작성", "통화 내용과 회신할 일을 빠르게"],
+              [
+                "office",
+                "근무현황판 준비",
+                "조직과 직원을 등록하고 근무표 확인",
+              ],
+            ] as [Page, string, string][]
+          ).map(([page, label, description]) => (
+            <button
+              key={page}
+              aria-labelledby={`start-${page}-label`}
+              aria-describedby={`start-${page}-description`}
+              disabled={busy}
+              onClick={() =>
+                navigate(page, page === "office" ? undefined : "new")
+              }
+            >
+              <span className="start-action-icon">
+                <Icon name={page} size={22} />
+              </span>
+              <strong id={`start-${page}-label`}>{label}</strong>
+              <span id={`start-${page}-description`}>{description}</span>
+              <Icon name="arrow" size={17} />
+            </button>
+          ))}
+        </div>
+        <p className="start-note">
+          이전에 저장한 자료가 있나요? 상단 <strong>자료 관리 → 복원</strong>
+          에서 백업 파일을 불러오세요.
+        </p>
+        <div className="start-features">
+          <section>
+            <Icon name="calendar" size={19} />
+            <div>
+              <h3>오늘의 흐름을 한눈에</h3>
+              <p>
+                등록한 일정과 순찰, 인수인계·제출 기한이 브리핑과 달력에
+                모입니다.
+              </p>
+            </div>
+          </section>
+          <section>
+            <Icon name="search" size={19} />
+            <div>
+              <h3>쌓인 기록도 빠르게</h3>
+              <p>
+                기록 검색이나 <kbd>Ctrl K</kbd>로 메모와 업무 내용을 다시
+                찾으세요.
+              </p>
+            </div>
+          </section>
+        </div>
+      </section>
+    );
   return (
     <>
       <div className="briefing-toolbar">
@@ -306,13 +383,7 @@ export function Briefing({
                   disabled={busy}
                   onClick={() => navigate(row.page as Page, row.id)}
                 >
-                  <time>
-                    {new Date(row.at).toLocaleTimeString("ko-KR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })}
-                  </time>
+                  <time>{formatClock(row.at)}</time>
                   <div>
                     <strong className={row.done ? "done" : ""}>
                       {row.title}

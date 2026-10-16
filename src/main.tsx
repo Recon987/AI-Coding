@@ -13,6 +13,7 @@ import {
   RECURRENCE_LABEL,
 } from "../shared/model.mjs";
 import type { Data, Page } from "./types";
+import { formatDate } from "../shared/format.mjs";
 import { hasDirtyDrafts, subscribeDirty } from "./drafts";
 import { DesktopSettings } from "./components/DesktopSettings";
 import { Office } from "./components/Office";
@@ -312,7 +313,7 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <span className="version">공원 업무 수첩 · v0.6.0</span>
+          <span className="version">공원 업무 수첩 · v0.6.1</span>
         </div>
       </aside>
       <main>
@@ -387,11 +388,7 @@ function App() {
               <p>{subtitles[page]}</p>
             </div>
             <time className="current-date">
-              {new Date().toLocaleDateString("ko-KR", {
-                month: "long",
-                day: "numeric",
-                weekday: "long",
-              })}
+{formatDate(new Date())}
             </time>
           </div>
           {!api && (

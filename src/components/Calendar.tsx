@@ -7,7 +7,8 @@ import {
   RECURRENCE_LABEL,
 } from "../../shared/model.mjs";
 import type { Data, Event, EventRecurrence, Page, Save } from "../types";
-import { Empty, Field, formatTime, localInput, SectionHead, Tag } from "../ui";
+import { Empty, Field, formatClock, formatDate, localInput, SectionHead, Tag } from "../ui";
+import { Icon } from "./Icon";
 export function Calendar({
   data,
   save,
@@ -163,9 +164,10 @@ export function Calendar({
           </div>
         </SectionHead>
         <div className="calendar-legend">
-          <Tag>일정</Tag>
-          <Tag tone="blue">순찰</Tag>
-          <Tag tone="amber">인계·제출</Tag>
+          <Tag><Icon name="calendar" size={12} />일정</Tag>
+          <Tag tone="blue"><Icon name="patrol" size={12} />순찰</Tag>
+          <Tag tone="amber"><Icon name="handover" size={12} />인계</Tag>
+          <Tag tone="amber"><Icon name="submission" size={12} />제출</Tag>
           <Tag tone="red">공휴일</Tag>
         </div>
         <div className="calendar-week">
@@ -178,12 +180,16 @@ export function Calendar({
             const key = dayKey(date),
               entries = items.filter((i) => dayKey(new Date(i.at)) === key),
               holiday = holidayName(key);
+            const entryDescription = entries.slice(0, 3).map((i) =>
+              `${i.category} ${formatClock(i.at)} ${i.title}${i.done ? " 완료" : ""}`,
+            ).join(", ");
             return (
               <button
                 key={key}
-                aria-label={`${key} ${entries.length}건`}
+                aria-label={`${key} ${entries.length}건, ${formatDate(key)}${holiday ? `, ${holiday}` : ""}${entryDescription ? `, ${entryDescription}` : ""}${entries.length > 3 ? `, 그 외 ${entries.length - 3}건. 선택 날짜 기록에서 전체 확인` : ""}`}
                 aria-pressed={selected === key}
-                className={`calendar-day ${date.getMonth() !== monthIndex ? "outside" : ""} ${key === selected ? "selected-day" : ""} ${holiday ? "holiday-day" : ""}`}
+                aria-current={key === dayKey() ? "date" : undefined}
+                className={`calendar-day ${date.getMonth() !== monthIndex ? "outside" : ""} ${key === selected ? "selected-day" : ""} ${holiday ? "holiday-day" : ""} ${date.getDay() === 0 ? "sunday" : date.getDay() === 6 ? "saturday" : ""}`}
                 onClick={() => choose(key)}
               >
                 <div className="day-head">
@@ -202,10 +208,10 @@ export function Calendar({
                   <span
                     className={`calendar-chip ${i.category === "순찰" ? "blue" : i.category === "일정" ? "" : "amber"} ${i.done ? "done" : ""}`}
                     key={i.key}
+                    title={`${i.category} · ${formatClock(i.at)} · ${i.title}${i.recurrence && i.recurrence !== "none" ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복` : ""}${i.done ? " · 완료" : ""}`}
                   >
-                    {i.category} ·{" "}
-                    {i.recurrence && i.recurrence !== "none" ? "↻ " : ""}
-                    {i.title}
+                    <Icon name={i.page} size={12} />
+                    <span>{i.recurrence && i.recurrence !== "none" ? "↻ " : ""}{i.title}</span>
                   </span>
                 ))}
                 {entries.length > 3 && <small>+{entries.length - 3}건</small>}
@@ -226,17 +232,16 @@ export function Calendar({
           tabIndex={-1}
           aria-label="선택 날짜 기록"
         >
-          <SectionHead
-            title={`${selected.slice(5).replace("-", "월 ")}일 기록`}
-          >
+          <SectionHead title={formatDate(selected)}>
             {selectedHoliday && <Tag tone="red">{selectedHoliday}</Tag>}
           </SectionHead>
+          <p className="agenda-caption">선택 날짜 기록 <strong>{selectedItems.length}건</strong></p>
           {selectedItems.length === 0 && (
             <Empty>선택한 날짜에 기록이 없습니다.</Empty>
           )}
           {selectedItems.map((i) => (
             <div className="agenda-row" key={i.key}>
-              <Tag tone={i.category === "순찰" ? "blue" : "amber"}>
+              <Tag tone={i.category === "순찰" ? "blue" : i.category === "일정" ? "" : "amber"}>
                 {i.category}
               </Tag>
               <div>
@@ -253,7 +258,7 @@ export function Calendar({
                   {i.title}
                 </button>
                 <small>
-                  {formatTime(i.at)}
+                  <time dateTime={i.at}>{formatClock(i.at)}</time>
                   {i.recurrence && i.recurrence !== "none"
                     ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복${i.repeatUntil ? ` (~${i.repeatUntil})` : ""}`
                     : ""}

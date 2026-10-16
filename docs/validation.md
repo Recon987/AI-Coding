@@ -1,5 +1,9 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## v0.6.1 / TASK-UX-03
+
+세 분야 독립 검토·직접 협의·상대 교차 검토를 거쳐 첫 사용 흐름·날짜/시간·달력을 개선했다. npm test **37/37**, npm run test:desktop **통과**. 첫 사용3행동·부분자료 보존·달력 접근 이름을 실제 Electron에서 검사했다. 서울/뉴욕 날짜·자정·윤일·연말 변환도 검증했다. UI 검사는 before83개, after134개 통과, 페이지 오류0·외부요청0. 동일 가상 자료/임시프로필/4해상도·확대 조건과 전후 증빙은 [검토 기록](review-rounds/TASK-UX-03.md)에 있다. Windows 소스·패키지 검증은 푸시 후 기록한다.
+
 ## v0.6.0 / TASK-TRAY-01
 
 검증 소스: `50f78366a62c67314d3423e023e9b25faae06374`. [Windows Actions 38827813053](https://github.com/Recon987/AI-Coding/actions/runs/38827813053)는 3분 1초에 성공했다. Node24 잠금 설치, npm test **35/35**, 소스 Electron 스모크, NSIS·portable 생성, 패키징된 win-unpacked EXE의 동일 스모크, SHA256SUMS 생성과 업로드가 모두 통과했다. Windows 두 스모크에서는 실제 Tray 생성·닫기 숨김·복원·설정 재실행 보존을 필수로 실행했다. Native OS 토스트 자체와 실제 PC 절전은 자동 검증하지 않았다.

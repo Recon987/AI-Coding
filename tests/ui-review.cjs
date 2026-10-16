@@ -74,6 +74,16 @@ async function geometry(page) {
       defaultVisibleForms: forms.map((form) => ({ fields: form.querySelectorAll("input,textarea,select").length, rect: rect(form) })),
       openDialogs: [...document.querySelectorAll("dialog[open]")].map((dialog) => ({ label: dialog.getAttribute("aria-label"), rect: rect(dialog), focusedInside: dialog.contains(document.activeElement) })),
       recordCount: document.querySelectorAll(".record").length,
+      firstUse: {
+        surfaces: document.querySelectorAll(".start-workspace").length,
+        primaryActions: document.querySelectorAll(".start-actions > button").length,
+        oldEmptyPanels: document.querySelectorAll(".dashboard-empty,.task-overview,.office-glance,.briefing-side,.briefing-secondary").length,
+      },
+      calendar: {
+        titleChips: document.querySelectorAll(".calendar-chip").length,
+        completeTooltips: [...document.querySelectorAll(".calendar-chip")].filter((chip) => chip.getAttribute("title")?.includes(chip.textContent.trim().replace(/^↻\s*/, ""))).length,
+        selectedRecords: document.querySelectorAll(".calendar-agenda .agenda-row").length,
+      },
       tableScrollAreas: [...document.querySelectorAll(".table-scroll")].map((element) => ({ rect: rect(element), scrollWidth: element.scrollWidth, clientWidth: element.clientWidth })),
     };
   });
@@ -158,6 +168,36 @@ async function geometry(page) {
       ]) {
         await nav(label);
         const metrics = await capture(name);
+        if (name === "calendar") {
+          const chips = await page.locator(".calendar-chip").evaluateAll((elements) => elements.map((element) => ({
+            text: element.textContent.trim(),
+            tooltip: element.getAttribute("title") || "",
+            dayName: element.closest("button")?.getAttribute("aria-label") || "",
+          })));
+          check("calendar: titles lead the visible chip text", chips.length > 0 && chips.every((chip) => !/^(일정|순찰|인계|제출)\s*[·:]/.test(chip.text) && chip.text.includes("가상")), chips);
+          check("calendar: complete titles, type and 24h time remain available", chips.every((chip) => chip.tooltip.includes(chip.text.replace(/^↻\s*/, "")) && /\d{2}:\d{2}/.test(chip.tooltip) && /일정|순찰|인계|제출/.test(chip.tooltip) && chip.dayName.includes(chip.text.replace(/^↻\s*/, ""))), chips);
+          if (date.startsWith("2026-10-")) {
+            const holiday = page.getByRole("button", { name: /^2026-10-03 .*개천절/ });
+            const holidayColor = await holiday.locator(".day-number").evaluate((element) => getComputedStyle(element).color);
+            const fridayHolidayColor = await page.getByRole("button", { name: /^2026-10-09 .*한글날/ }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
+            const saturdayColor = await page.getByRole("button", { name: /^2026-10-10 / }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
+            check("calendar: a Saturday public holiday retains holiday meaning and color", holidayColor === fridayHolidayColor && holidayColor !== saturdayColor, { holidayColor, fridayHolidayColor, saturdayColor });
+          }
+          const dateButton = page.locator(".calendar-day").filter({ has: page.locator(".calendar-chip") }).first();
+          await dateButton.focus();
+          await page.keyboard.press("Enter");
+          check("calendar: keyboard can select a date", await dateButton.getAttribute("aria-pressed") === "true");
+          await page.getByRole("button", { name: /^선택 날짜 기록 \d+건 보기$/ }).click();
+          const agenda = page.getByRole("region", { name: "선택 날짜 기록", exact: true });
+          const categories = await agenda.locator(".agenda-row > .tag").allTextContents();
+          check("calendar: selected records are focused with explicit types", await agenda.evaluate((element) => element === document.activeElement) && categories.length > 0 && categories.every((category) => /일정|순찰|인계|제출/.test(category)), categories);
+          const legendConsistency = await page.evaluate(() => {
+            const legend = new Map([...document.querySelectorAll(".calendar-legend .tag")].map((tag) => [tag.textContent.trim(), tag.className]));
+            return [...document.querySelectorAll(".agenda-row > .tag")].every((tag) => legend.get(tag.textContent.trim()) === tag.className);
+          });
+          check("calendar: agenda categories retain legend labels and colors", legendConsistency);
+          await page.evaluate(() => window.scrollTo(0, 0));
+        }
         check(`${name}: registration form hidden by default`, metrics.defaultVisibleForms.length === 0 && metrics.openDialogs.length === 0, metrics.defaultVisibleForms);
         const button = page.getByRole("button", { name: add, exact: true });
         const exists = await button.count();
@@ -175,7 +215,37 @@ async function geometry(page) {
         }
       }
       await seed(empty());
-      await capture("empty-home");
+      const emptyHome = await capture("empty-home");
+      const start = page.getByRole("region", { name: "업무 시작 안내", exact: true });
+      check("first use: one introduction replaces empty dashboard", await start.count() === 1 && emptyHome.firstUse.primaryActions === 3 && emptyHome.firstUse.oldEmptyPanels === 0, emptyHome.firstUse);
+      for (const [action, dialogName] of [["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
+        const button = start.getByRole("button", { name: action, exact: true });
+        const box = await button.boundingBox();
+        check(`first use: ${action} is visible without scrolling`, box && box.x >= 0 && box.y >= 0 && box.x + box.width <= emptyHome.viewport.width && box.y + box.height <= emptyHome.viewport.height, box);
+        await button.click();
+        const dialog = page.getByRole("dialog", { name: dialogName, exact: true });
+        await dialog.waitFor();
+        check(`first use: ${action} opens focused native dialog`, await dialog.evaluate((element) => element instanceof HTMLDialogElement && element.open && element.contains(document.activeElement)), dialogName);
+        await page.keyboard.press("Escape");
+        await dialog.waitFor({ state: "hidden" });
+        await nav("업무 브리핑");
+      }
+      await start.getByRole("button", { name: "근무현황판 준비", exact: true }).click();
+      check("first use: roster action opens existing office setup", await page.getByRole("heading", { name: "사무소 근무현황판을 준비하세요", exact: true }).count() === 1);
+      if (viewport.width === 1280 && viewport.zoom === 1) {
+        const noteOnly = empty();
+        noteOnly.notes = [{ id: "first-use-note", title: "단일 메모 보존", body: "" }];
+        const completedOnly = empty();
+        completedOnly.events = [{ id: "first-use-completed", title: "완료한 일정 보존", at: `${date}T08:00:00+09:00`, done: true }];
+        const staffOnly = empty();
+        staffOnly.organizations = fixture.organizations;
+        staffOnly.employees = fixture.employees;
+        for (const [name, partial] of [["one memo", noteOnly], ["completed event", completedOnly], ["registered staff", staffOnly]]) {
+          await seed(partial);
+          check(`first use: ${name} suppresses introduction without changing data`, await start.count() === 0 && JSON.stringify(await page.evaluate(() => window.workdesk.load())) === JSON.stringify(partial));
+        }
+        await seed(empty());
+      }
       await nav("사무소 현황");
       await capture("empty-office");
     }
