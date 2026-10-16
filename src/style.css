@@ -721,3 +721,17 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
   .list-row > .record-details > .record-detail-body, .list-row > .record-actions { margin-left: 0; }
 }
 .control-record .row-when { white-space: normal; }
+
+/* Home status strip (TASK-HOME-02): 기한 경과 · 오늘 마감 · 오늘 통제 · 오늘 당직. */
+.today-strip { display: grid; flex: 1; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; min-width: 0; }
+.today-tile { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: baseline; gap: 0 8px; min-width: 0; min-height: 0; padding: 6px 12px; border-radius: 8px; text-align: left; }
+.today-tile > span { color: var(--muted); font-size: var(--fs-xs); }
+.today-tile > strong { font-size: var(--fs-md); line-height: 22px; white-space: nowrap; }
+.today-tile > small { overflow: hidden; color: var(--muted); font-size: var(--fs-xs); line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+.today-tile.danger { border-color: var(--red-line); background: var(--status-danger-bg); }
+.today-tile.danger > strong { color: var(--status-danger); }
+.today-tile.warning { background: var(--status-warning-bg); }
+.today-tile.warning > strong { color: var(--status-warning); }
+.today-tile.control { background: var(--cat-control-bg); }
+.today-tile.control > strong { color: var(--cat-control); }
+@media (max-width: 1100px) { .today-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } }

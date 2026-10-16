@@ -95,12 +95,11 @@ function counter(page) {
       report.tasks.push({ id, name, result, ...t.c, ms: Date.now() - started, note });
     }
 
-    await task("T1", "출근 확인: 기한 경과·오늘 마감과 오늘 당직자 확인", async (t) => {
-      await page.getByText("기한 경과").first().waitFor();
-      await t.click(nav("사무소 현황"));
-      const duty = page.locator("main").getByText(/주간당직|숙직/).first();
-      await duty.waitFor();
-      return "기한·마감은 홈에서 바로 보이나 당직자는 사무소 현황으로 이동해야 보인다";
+    await task("T1", "출근 확인: 기한 경과·오늘 마감과 오늘 당직자 확인", async () => {
+      const strip = page.getByLabel("오늘 상태");
+      await strip.getByRole("button", { name: /^기한 경과/ }).waitFor();
+      await strip.getByRole("button", { name: /^오늘 당직 (주간당직|숙직) / }).waitFor();
+      return "홈 상단 상태 띠(기한 경과·오늘 마감·오늘 통제·오늘 당직)에서 클릭 없이 확인";
     });
 
     await task("T2", "현장 복귀 후 순찰 기록(주의 등급, 구간·확인·조치)", async (t) => {

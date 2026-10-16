@@ -34,6 +34,17 @@ const root = path.resolve(__dirname, "..");
     await page.evaluate((value) => window.workdesk.save(value), data);
     await page.reload();
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
+    // TASK-HOME-02: status strip shows today's duty staff; tiles filter or navigate; week-only date moves.
+    const strip = page.getByLabel("오늘 상태");
+    assert.match(await strip.getByRole("button", { name: /^오늘 당직/ }).getAttribute("aria-label"), /^오늘 당직 (주간당직|숙직) 가상직원/);
+    assert.match(await strip.getByRole("button", { name: /^오늘 통제/ }).getAttribute("aria-label"), /^오늘 통제 2곳: 가상 계곡 탐방로, 가상 능선 탐방로$/);
+    await strip.getByRole("button", { name: /^기한 경과/ }).click();
+    await page.locator(".segmented button.selected", { hasText: "기한 경과" }).waitFor();
+    assert.equal(await page.getByLabel("브리핑 날짜").count(), 0, "날짜 입력칸 없음(주간 띠만)");
+    await page.getByRole("button", { name: "다음 주", exact: true }).click();
+    await page.getByRole("heading", { name: /^10\. 22\. \(목\) 기록$/ }).waitFor();
+    await page.getByRole("button", { name: "오늘", exact: true }).click();
+    await page.getByRole("heading", { name: "오늘의 일정과 기록" }).waitFor();
     const pages = ["현장 순찰", "탐방로 통제", "인수인계", "제출 기한", "전화메모", "업무 메모"];
     for (const name of pages) {
       await page.locator("nav").getByRole("button", { name, exact: true }).click();
@@ -51,7 +62,7 @@ const root = path.resolve(__dirname, "..");
       assert.equal(await rows.nth(0).evaluate((el) => el.parentElement.open), true, `${name}: Enter로 펼침`);
       await page.keyboard.press("Enter");
     }
-    console.log(`PASS: 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
+    console.log(`PASS: 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });
