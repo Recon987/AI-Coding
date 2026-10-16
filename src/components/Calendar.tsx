@@ -10,6 +10,13 @@ import type { Data, Event, EventRecurrence, Page, Save } from "../types";
 import { categoryTone, Empty, Field, formatDate, itemClock, localInput, SectionHead, Tag } from "../ui";
 import { Icon } from "./Icon";
 import { askConfirm, confirmDelete } from "../confirm";
+/** "순찰 2 · 인계 1" for chips that do not fit in a month cell. */
+function overflowByKind(rest: { category: string }[]) {
+  const counts = new Map<string, number>();
+  for (const i of rest) counts.set(i.category, (counts.get(i.category) ?? 0) + 1);
+  return [...counts].map(([category, n]) => `${category} ${n}`).join(" · ");
+}
+
 export function Calendar({
   data,
   save,
@@ -74,6 +81,41 @@ export function Calendar({
     (i) => dayKey(new Date(i.at)) === selected,
   );
   const selectedHoliday = holidayName(selected);
+  // Week (Mon–Sun around the selected day) and 30-day list views (TASK-CALENDAR-03).
+  const [view, setView] = useState<"month" | "week" | "list">("month");
+  const shift = (date: string, days: number) => {
+    const next = new Date(`${date}T12:00:00`);
+    next.setDate(next.getDate() + days);
+    return dayKey(next);
+  };
+  const weekStart = shift(selected, -((new Date(`${selected}T12:00:00`).getDay() + 6) % 7));
+  const weekDays = Array.from({ length: 7 }, (_, n) => shift(weekStart, n));
+  const listEnd = shift(selected, 29);
+  const viewItems =
+    view === "month"
+      ? []
+      : calendarItems(data, {
+          startDate: view === "week" ? weekStart : selected,
+          endDate: view === "week" ? weekDays[6] : listEnd,
+        });
+  const byDay = (key: string) => viewItems.filter((i) => dayKey(new Date(i.at)) === key);
+  function moveView(direction: 1 | -1) {
+    if (view === "month") {
+      setMonth(new Date(year, monthIndex + direction, 1));
+      return;
+    }
+    const next = shift(selected, direction * (view === "week" ? 7 : 30));
+    setSelected(next);
+    setMonth(new Date(`${next}T12:00:00`));
+  }
+  const unit = view === "month" ? "달" : view === "week" ? "주" : "30일";
+  const short = (key: string) => formatDate(key, { year: false, weekday: false });
+  const heading =
+    view === "month"
+      ? `${year}년 ${monthIndex + 1}월`
+      : view === "week"
+        ? `${short(weekStart)} ~ ${short(weekDays[6])} 주간`
+        : `${short(selected)}부터 30일`;
   const agenda = useRef<HTMLElement>(null);
   const focusAgenda = () => {
     agenda.current?.scrollIntoView({ block: "start", behavior: "auto" });
@@ -125,16 +167,18 @@ export function Calendar({
       );
   }
   return (
-    <div className="calendar-layout">
+    <div className={`calendar-layout ${view === "month" ? "" : "wide"}`}>
       <section className="panel">
         <SectionHead
           eyebrow="CONNECTED CALENDAR"
-          title={`${year}년 ${monthIndex + 1}월`}
+          title={heading}
         >
           <div className="month-controls">
-            <button onClick={focusAgenda}>
-              선택 날짜 기록 {selectedItems.length}건 보기
-            </button>
+            {view === "month" && (
+              <button onClick={focusAgenda}>
+                선택 날짜 기록 {selectedItems.length}건 보기
+              </button>
+            )}
             <button
               className="primary"
               disabled={busy}
@@ -142,10 +186,7 @@ export function Calendar({
             >
               일정 추가
             </button>
-            <button
-              aria-label="이전 달"
-              onClick={() => setMonth(new Date(year, monthIndex - 1, 1))}
-            >
+            <button aria-label={`이전 ${unit}`} onClick={() => moveView(-1)}>
               ←
             </button>
             <button
@@ -156,14 +197,93 @@ export function Calendar({
             >
               오늘
             </button>
-            <button
-              aria-label="다음 달"
-              onClick={() => setMonth(new Date(year, monthIndex + 1, 1))}
-            >
+            <button aria-label={`다음 ${unit}`} onClick={() => moveView(1)}>
               →
             </button>
           </div>
         </SectionHead>
+        <div className="segmented calendar-views" role="tablist" aria-label="달력 보기">
+          {(
+            [
+              ["month", "월간"],
+              ["week", "주간"],
+              ["list", "목록"],
+            ] as const
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              role="tab"
+              aria-selected={view === key}
+              className={view === key ? "selected" : ""}
+              onClick={() => setView(key)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {view === "week" && (
+          <div className="week-view">
+            {weekDays.map((key) => {
+              const entries = byDay(key);
+              const closures = entries.filter((i) => i.category === "통제");
+              const holiday = holidayName(key);
+              return (
+                <section key={key} className={`week-column ${key === selected ? "selected-day" : ""} ${key === dayKey() ? "is-today" : ""}`} aria-label={`${formatDate(key)} ${entries.length}건`}>
+                  <button className="week-column-head" aria-pressed={key === selected} onClick={() => choose(key)}>
+                    <span>{formatDate(key, { year: false })}</span>
+                    {holiday && <small className="holiday-label">{holiday}</small>}
+                  </button>
+                  {closures.length > 0 && (
+                    <span className="calendar-control-mark" title={closures.map((c) => c.title).join(", ")}>
+                      <Icon name="controls" size={12} />
+                      통제 {closures.length}
+                    </span>
+                  )}
+                  {entries
+                    .filter((i) => i.category !== "통제")
+                    .map((i) => (
+                      <button
+                        key={i.key}
+                        className={`week-item ${categoryTone(i.category)} ${i.done ? "done" : ""}`}
+                        title={`${i.category} · ${itemClock(i)} · ${i.title}`}
+                        onClick={() => navigate(i.page as Page, i.id)}
+                      >
+                        <time>{itemClock(i)}</time>
+                        <span>
+                          <Icon name={i.page} size={12} /> {i.title}
+                        </span>
+                      </button>
+                    ))}
+                  {entries.length === 0 && <small className="muted">기록 없음</small>}
+                </section>
+              );
+            })}
+          </div>
+        )}
+        {view === "list" && (
+          <div className="list-view">
+            {Array.from({ length: 30 }, (_, n) => shift(selected, n))
+              .filter((key) => byDay(key).length > 0)
+              .map((key) => (
+                <section key={key} className="list-view-day">
+                  <h3>
+                    {formatDate(key)}
+                    {holidayName(key) && <Tag tone="holiday">{holidayName(key)}</Tag>}
+                  </h3>
+                  {byDay(key).map((i) => (
+                    <button key={i.key} className="list-view-row" onClick={() => navigate(i.page as Page, i.id)}>
+                      <time>{itemClock(i)}</time>
+                      <Tag tone={categoryTone(i.category)}>{i.category}</Tag>
+                      <span className={i.done ? "done" : ""}>{i.title}</span>
+                    </button>
+                  ))}
+                </section>
+              ))}
+            {viewItems.length === 0 && <Empty>이 기간에 기록이 없습니다.</Empty>}
+          </div>
+        )}
+        {view === "month" && (
+        <>
         <div className="calendar-legend">
           <Tag><Icon name="calendar" size={12} />일정</Tag>
           <Tag tone="patrol"><Icon name="patrol" size={12} />순찰</Tag>
@@ -219,7 +339,9 @@ export function Calendar({
                     <span>{i.recurrence && i.recurrence !== "none" ? "↻ " : ""}{i.title}</span>
                   </span>
                 ))}
-                {work.length > 3 && <small>+{work.length - 3}건</small>}
+                {work.length > 3 && (
+                  <small title={overflowByKind(work.slice(3))}>+{work.length - 3}건</small>
+                )}
                 {closures.length > 0 && (
                   <span
                     className="calendar-control-mark"
@@ -238,8 +360,10 @@ export function Calendar({
           법정공휴일·대체공휴일(오프라인 음력 공휴일 2025~2035년 포함)과 반복
           일정도 복제 없이 함께 표시합니다.
         </p>
+        </>
+        )}
       </section>
-      <div className="calendar-detail">
+      <div className="calendar-detail" hidden={view !== "month"}>
         <section
           className="panel calendar-agenda"
           ref={agenda}

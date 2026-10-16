@@ -45,6 +45,24 @@ const root = path.resolve(__dirname, "..");
     await page.getByRole("heading", { name: /^10\. 22\. \(목\) 기록$/ }).waitFor();
     await page.getByRole("button", { name: "오늘", exact: true }).click();
     await page.getByRole("heading", { name: "오늘의 일정과 기록" }).waitFor();
+    // TASK-CALENDAR-03: week and list views with week moves and source navigation.
+    await page.locator("nav").getByRole("button", { name: "월간 일정", exact: true }).click();
+    await page.getByRole("tab", { name: "주간" }).click();
+    await page.getByRole("heading", { name: "10. 12. ~ 10. 18. 주간" }).waitFor();
+    assert.equal(await page.locator(".week-column").count(), 7);
+    assert.ok((await page.locator(".week-item").count()) > 0, "주간 기록");
+    await page.getByRole("button", { name: "다음 주", exact: true }).click();
+    await page.getByRole("heading", { name: "10. 19. ~ 10. 25. 주간" }).waitFor();
+    await page.getByRole("button", { name: "이전 주", exact: true }).click();
+    await page.getByRole("tab", { name: "목록" }).click();
+    await page.getByRole("heading", { name: "10. 15.부터 30일" }).waitFor();
+    const patrolRow = page.locator(".list-view-row").filter({ hasText: "순찰" }).first();
+    await patrolRow.click();
+    await page.getByRole("heading", { name: "현장 순찰", level: 1 }).waitFor();
+    // Like the home timeline, opening a record shows its editor; close it unchanged.
+    await page.locator(".sheet[open]").waitFor();
+    await page.keyboard.press("Escape");
+    await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     const pages = ["현장 순찰", "탐방로 통제", "인수인계", "제출 기한", "전화메모", "업무 메모"];
     for (const name of pages) {
       await page.locator("nav").getByRole("button", { name, exact: true }).click();
@@ -62,7 +80,7 @@ const root = path.resolve(__dirname, "..");
       assert.equal(await rows.nth(0).evaluate((el) => el.parentElement.open), true, `${name}: Enter로 펼침`);
       await page.keyboard.press("Enter");
     }
-    console.log(`PASS: 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
+    console.log(`PASS: 달력 주간·목록 보기와 이동, 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });

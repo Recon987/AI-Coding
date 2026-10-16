@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1 열림·미병합)
-- **Task Card**: review 12장 — ORCH-01, REVIEW-DOMAIN/DESIGN/UX-01, DATA-01, CONFIRM-01, DESIGN-TOKENS-01, PATROL-02, CONTROL-01, FORMS-01, LIST-01, HOME-02. FORMS-02 blocked(사용자 피드백). 재개 위치는 각 카드
-- **Latest Pushed Commit**: e8e4951 - feat: scannable record rows with one primary action per screen (TASK-LIST-01) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: 3주기: src/components/ListRow.tsx, Patrols·Tasks·Personal·Controls 목록, Briefing.tsx 상태 띠·주 단위 이동, style.css, tests/desktop-list-smoke.cjs, task-flows T1. 이전 주기 내역은 카드와 git log
+- **Task Card**: review 14장 — ORCH-01, REVIEW-DOMAIN/DESIGN/UX-01, DATA-01, CONFIRM-01, DESIGN-TOKENS-01, PATROL-02, CONTROL-01, FORMS-01, LIST-01, HOME-02, NAV-01, CALENDAR-03. FORMS-02 blocked(사용자 피드백). 재개 위치는 각 카드
+- **Latest Pushed Commit**: b89c7a5 - feat: grouped sidebar and patrol as the first start action (TASK-NAV-01) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: 4주기: main.tsx 메뉴 5묶음+하단, Briefing 첫 사용 4행동, Calendar.tsx 월간/주간/목록 보기, desktop-list-smoke 달력 검사, ui-review 142. 3주기: src/components/ListRow.tsx, Patrols·Tasks·Personal·Controls 목록, Briefing.tsx 상태 띠·주 단위 이동, style.css, tests/desktop-list-smoke.cjs, task-flows T1. 이전 주기 내역은 카드와 git log
 - **Changed Interfaces / Schema Diff**: 데이터 v3 유지(이번 주기 자료 변경 없음). 홈의 '브리핑 날짜' 입력칸·하루 이동 버튼 제거(주간 띠·이전 주/다음 주로 대체). 목록 행 구조 변경(.record/.record-details/h3 유지)
-- **Test Status**: Linux Node 22: npm test 64/64(TZ=UTC 포함), npm run test:desktop 통과(스모크 6종, 트레이 native 미실행), review:ui strict 134·첫 업무 행 293px, review:flows 10/10. Windows Actions는 이 커밋 푸시 후 PR에서 실행
-- **Remaining Work for Gemini**: (웹) 디자인 2차 의견 — docs/ui-review/cycle2 전후 캡처 활용. Codex: 카드 12장 검증 → main 병합. 사용자: 양식 질문 4개, 화면 용어 피드백, 다음 주기 승인(NAV-01, CALENDAR-03 후보)
+- **Test Status**: Linux Node 22: npm test 64/64(TZ=UTC 포함), npm run test:desktop 통과(스모크 6종, 트레이 native 미실행), review:ui strict 142·첫 업무 행 293px, review:flows 10/10. Windows Actions는 이 커밋 푸시 후 PR에서 실행
+- **Remaining Work for Gemini**: (웹) 디자인 2차 의견 — docs/ui-review/cycle2 전후 캡처 활용. Codex: 카드 12장 검증 → main 병합. 사용자: 양식 질문 4개, 화면 용어 피드백, 다음 주기 승인(CALENDAR-02, HOLIDAY-01, SECURITY-01 설계 후보)
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
