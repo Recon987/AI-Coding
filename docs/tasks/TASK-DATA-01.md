@@ -26,15 +26,15 @@ updated: 2026-10-16
 암호화(TASK-SECURITY-01), 복원 보호본 정리(TASK-BACKUP-02), 데이터 형식 v3 변경.
 
 ## 진행 단계
-- [ ] 1. store.write에 fsync 및 last-good 갱신 + 단위 테스트
-- [ ] 2. 시작 실패 분기와 복구 선택(main.cjs) + 손상본 보존
+- [x] 1. store.write에 fsync 및 last-good 갱신 + 단위 테스트
+- [x] 2. 시작 실패 분기와 복구 선택(main.cjs) + 손상본 보존
 - [ ] 3. 데스크톱 스모크에 손상 파일 시나리오
 - [ ] 4. README·architecture·validation 갱신
 
 ## 재개 위치
-1단계 진행 중: `desktop/store.cjs` `write()`에 fsync·last-good 추가, tests/store.test.cjs에 단위 테스트.
+3단계: tests/desktop-smoke.cjs(또는 별도 스모크)에 손상 파일로 실제 Electron 시작 → 복구 대화상자 → 마지막 정상본 시작 시나리오. 시작 전 대화상자는 app.evaluate로 대체할 수 없으므로 NODE_OPTIONS=--require 스텁 방식 검토. 구현: desktop/recovery.cjs openDataFile, desktop/store.cjs durableReplace·write(keepLastGood).
 
 ## 테스트 상태
-미실행
+2026-10-16 Linux Node 22: `npm test` 통과(recovery.test.cjs 7개 추가). 데스크톱 스모크 미실행.
 
 ## 검증 기록

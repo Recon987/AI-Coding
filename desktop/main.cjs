@@ -16,26 +16,22 @@ const store = require("./store.cjs");
 const { briefing, reminderItems } = require("../shared/model.mjs");
 const { createDesktopLifecycle } = require("./lifecycle.cjs");
 const { createNotifier } = require("./notifications.cjs");
+const { openDataFile } = require("./recovery.cjs");
 let win, file, timer;
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
     if (process.platform === "win32")
       app.setAppUserModelId("local.park.workdesk");
     file = path.join(app.getPath("userData"), "workdesk.json");
-    try {
-      store.read(file);
-      store.migrateFile(file);
-    } catch {
-      dialog.showErrorBox(
-        "데이터 읽기 실패",
-        "기존 데이터를 보호하기 위해 시작을 중단합니다. 사용자 데이터 폴더의 workdesk.json을 확인하세요.",
-      );
+    if (!(await openDataFile({ file, store, dialog }))) {
       app.quit();
       return;
     }
     ipcMain.handle("load", () => store.read(file));
-    ipcMain.handle("save", (_, data) => store.write(file, data));
+    ipcMain.handle("save", (_, data) =>
+      store.write(file, data, { keepLastGood: true }),
+    );
     ipcMain.handle("choose-folder", async () => {
       const r = await dialog.showOpenDialog(win, {
         properties: ["openDirectory"],
@@ -91,7 +87,7 @@ else {
         file + ".before-restore-" + Date.now() + ".json",
         store.read(file),
       );
-      store.write(file, data);
+      store.write(file, data, { keepLastGood: true });
       return data;
     });
     win = new BrowserWindow({
