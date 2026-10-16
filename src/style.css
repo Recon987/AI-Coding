@@ -341,7 +341,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .start-intro .eyebrow { color: var(--green); }
 .start-intro h2 { margin-bottom: 8px; font-size: var(--fs-lg); line-height: 34px; letter-spacing: -.5px; }
 .start-intro > p:last-child { margin-bottom: 0; color: var(--muted); font-size: var(--fs-sm); line-height: 23px; }
-.start-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+.start-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
 .start-actions > button { display: grid; grid-template-columns: 1fr auto; align-content: start; gap: 8px; min-height: 140px; padding: 18px; text-align: left; }
 .start-actions > button > .start-action-icon { display: inline-grid; grid-column: 1 / -1; place-items: center; width: 34px; height: 30px; margin-bottom: 4px; color: var(--green); }
 .start-actions > button > strong { font-size: var(--fs-md); line-height: 23px; font-weight: 600; }
@@ -735,3 +735,12 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .today-tile.control { background: var(--cat-control-bg); }
 .today-tile.control > strong { color: var(--cat-control); }
 @media (max-width: 1100px) { .today-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } }
+
+/* Grouped sidebar (TASK-NAV-01): five groups, help pinned at the bottom. */
+.nav-section { margin-top: 6px; }
+.nav-section > p { margin-bottom: 0; }
+.nav-section button { min-height: 34px; padding: 5px 10px; margin: 1px 0; }
+.nav-footer { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--line); }
+.sidebar-bottom { padding-top: 10px; }
+.start-actions > button { min-height: 112px; }
+@media (max-width: 1100px) { .start-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

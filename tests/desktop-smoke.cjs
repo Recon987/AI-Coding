@@ -86,8 +86,8 @@ const { empty } = require("../shared/model.mjs");
     // First use must offer working actions; merely visiting it never adds sample data.
     const firstUse = page.getByRole("region", { name: "업무 시작 안내", exact: true });
     await firstUse.waitFor();
-    assert.equal(await firstUse.getByRole("button").count(), 3);
-    for (const [action, title] of [["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
+    assert.equal(await firstUse.getByRole("button").count(), 4);
+    for (const [action, title] of [["순찰 기록", "순찰 기록 등록"], ["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
       await firstUse.getByRole("button", { name: action, exact: true }).click();
       const dialog = page.getByRole("dialog", { name: title, exact: true });
       await dialog.waitFor();

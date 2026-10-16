@@ -217,8 +217,8 @@ async function geometry(page) {
       await seed(empty());
       const emptyHome = await capture("empty-home");
       const start = page.getByRole("region", { name: "업무 시작 안내", exact: true });
-      check("first use: one introduction replaces empty dashboard", await start.count() === 1 && emptyHome.firstUse.primaryActions === 3 && emptyHome.firstUse.oldEmptyPanels === 0, emptyHome.firstUse);
-      for (const [action, dialogName] of [["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
+      check("first use: one introduction replaces empty dashboard", await start.count() === 1 && emptyHome.firstUse.primaryActions === 4 && emptyHome.firstUse.oldEmptyPanels === 0, emptyHome.firstUse);
+      for (const [action, dialogName] of [["순찰 기록", "순찰 기록 등록"], ["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
         const button = start.getByRole("button", { name: action, exact: true });
         const box = await button.boundingBox();
         check(`first use: ${action} is visible without scrolling`, box && box.x >= 0 && box.y >= 0 && box.x + box.width <= emptyHome.viewport.width && box.y + box.height <= emptyHome.viewport.height, box);

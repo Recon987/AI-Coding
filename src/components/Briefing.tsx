@@ -83,7 +83,7 @@ export function Briefing({
           <p className="eyebrow">나의 업무 공간</p>
           <h2>오늘의 업무를 시작하세요</h2>
           <p>
-            일정, 연락, 사무소 근무를 한곳에서 챙기세요.
+            순찰, 일정, 연락, 사무소 근무를 한곳에서 챙기세요.
             <br />
             필요한 기록 하나부터 시작하면 됩니다.
           </p>
@@ -91,6 +91,7 @@ export function Briefing({
         <div className="start-actions">
           {(
             [
+              ["patrol", "순찰 기록", "현장에서 본 것과 조치를 바로 남기기"],
               ["calendar", "일정 등록", "회의와 마감 시간을 놓치지 않도록"],
               ["calls", "전화메모 작성", "통화 내용과 회신할 일을 빠르게"],
               [

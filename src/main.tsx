@@ -30,31 +30,43 @@ import { Icon } from "./components/Icon";
 import { Empty, SectionHead, Tag } from "./ui";
 import "./style.css";
 import { ConfirmHost, discardChanges, isConfirmOpen } from "./confirm";
+// Five task groups plus help pinned at the bottom (TASK-NAV-01).
 const sections: {
   label: string;
   pages: { id: Page; label: string }[];
+  footer?: boolean;
 }[] = [
   {
-    label: "업무 흐름",
+    label: "오늘",
     pages: [
       { id: "briefing", label: "업무 브리핑" },
-      { id: "office", label: "사무소 현황" },
-      { id: "patrol", label: "현장 순찰" },
-      { id: "controls", label: "탐방로 통제" },
-      { id: "handover", label: "인수인계" },
-      { id: "submission", label: "제출 기한" },
       { id: "calendar", label: "월간 일정" },
     ],
   },
   {
-    label: "나의 기록",
+    label: "현장",
+    pages: [
+      { id: "patrol", label: "현장 순찰" },
+      { id: "controls", label: "탐방로 통제" },
+    ],
+  },
+  {
+    label: "할 일",
+    pages: [
+      { id: "handover", label: "인수인계" },
+      { id: "submission", label: "제출 기한" },
+    ],
+  },
+  { label: "사무소", pages: [{ id: "office", label: "사무소 현황" }] },
+  {
+    label: "기록",
     pages: [
       { id: "calls", label: "전화메모" },
       { id: "notes", label: "업무 메모" },
       { id: "folders", label: "바로가기" },
-      { id: "about", label: "앱 안내" },
     ],
   },
+  { label: "", footer: true, pages: [{ id: "about", label: "앱 안내" }] },
 ];
 const pageNames = Object.fromEntries(
   sections.flatMap((s) => s.pages.map((p) => [p.id, p.label])),
@@ -290,8 +302,11 @@ function App() {
         </div>
         <nav>
           {sections.map((section) => (
-            <div className="nav-section" key={section.label}>
-              <p>{section.label}</p>
+            <div
+              className={`nav-section ${section.footer ? "nav-footer" : ""}`}
+              key={section.label || "footer"}
+            >
+              {section.label && <p>{section.label}</p>}
               {section.pages.map((p) => (
                 <button
                   key={p.id}
