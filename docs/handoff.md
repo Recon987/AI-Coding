@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-calendar-02 / 기반 task/task-review-claude-01 / main·Claude 원 브랜치 미변경)
-- **Task Card**: TASK-CALENDAR-02 review. Claude가 독립 검증 후 PR #3 → PR #2 → PR #1 순으로 통합.
-- **Latest Pushed Commit**: 4a10c2cb4f5dfc1eb7f540b7feb7085218b7908e - feat(TASK-CALENDAR-02): finish per-occurrence state and verified calendar flows (검증 소스, 증빙 문서 커밋 해시는 응답/git log)
-- **Completed Steps & Modified Files**: shared/model·선언·types, Calendar·Briefing·style, 회차 단위/실제 Electron 검사, Windows workflow·package0.7.0, README·architecture·validation·검토 화면/카드. 완료·제외·복원·지연/실패 저장 보호.
-- **Changed Interfaces / Schema Diff**: Event.completedDates?/excludedDates?: string[], v3 유지; setOccurrenceDone/Excluded(event,date,bool):Event. 첫 반복 회차 occurrenceDate 제공, 기존 key/at 유지. 새 IPC 없음.
-- **Test Status**: npm test81/81, npm run test:desktop 전체 통과, UI142·오류0·외부요청0, 업무흐름10/10. 기반 b03d6cf Windows38896149700 성공. 회차 소스4a10c2c Windows38898226246도 성공:81개·소스/패키지 Electron·설치형/portable.
-- **Remaining Work for Gemini**: Claude 최종 검증/통합. 기관 PC 절전·토스트·접근성 및 사용자 양식 피드백은 별도. 다음 백로그는 board/카드 확인.
-- **Modified Code Snippets (if uncommitted)**: 없음(증빙 문서만 이 기록과 즉시 커밋·푸시). main/Claude 원 브랜치 미변경.
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1). Codex의 task/task-review-claude-01(PR #2)·task/task-calendar-02(PR #3)를 fast-forward로 통합함
+- **Task Card**: review 16장(ORCH-01 … CALENDAR-03, REVIEW-CLAUDE-01, CALENDAR-02) — 모두 검증자 승인 기록 있음, main 병합 시 done. FORMS-02 blocked(사용자 피드백), POLISH-01 backlog(Codex 비차단 후속)
+- **Latest Pushed Commit**: 26e3e08 - docs: verify and integrate Codex review fixes and CALENDAR-02 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: Claude가 Codex 수정(b03d6cf)·CALENDAR-02(a932812)를 직접 받아 검증·승인, docs/tasks/TASK-REVIEW-CLAUDE-01·CALENDAR-02 검증 기록, TASK-POLISH-01 신설
+- **Changed Interfaces / Schema Diff**: 데이터 v3. Event.completedDates?/excludedDates?, store.read(file,{required}), write()가 보호본 실패 시 {warning} 반환, save IPC 응답 {warning}. 앱 표시 버전 0.7.0
+- **Test Status**: Linux Node 22: npm test 81/81, npm run test:desktop 전체 통과(트레이 native 미실행), review:ui strict 142·외부 요청 0. Codex Node 24 동일 결과, Windows Actions 38896149700(b03d6cf)·38898226246(4a10c2c) 성공. 26e3e08은 PR #1에서 실행
+- **Remaining Work for Gemini**: 사용자: PR #1 main 병합 승인, PR #2·#3 정리(내용은 PR #1에 포함), 양식 질문 4개·용어 피드백. 다음 후보: HOLIDAY-01, POLISH-01, SECURITY-01 설계
+- **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황
