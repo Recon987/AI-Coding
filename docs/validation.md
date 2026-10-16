@@ -1,5 +1,11 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## TASK-CONFIRM-01 / 앱 안 확인창 (미병합, 2026-10-16)
+
+- 수정 전: 미저장 편집창을 '닫기 ×'·Esc로 닫으면 Linux 헤드리스 Electron이 SIGTRAP으로 종료(브라우저 확인창 경로).
+- 수정 후: `window.confirm` 0곳. Linux Node 22 `npm test` 47/47, `npm run test:desktop` 통과(desktop-confirm-smoke: 닫기×·Esc·취소 × 계속 작성/버리기, 확인창 안 Esc, 삭제 취소/확인, 브라우저 확인창 0, 비정상 종료 0).
+- desktop-smoke는 confirm 대체를 없애고 실제 확인창 버튼을 누른다. Windows 패키지 EXE 검증 단계에 confirm 스모크 추가(미실행).
+
 ## TASK-DATA-01 / 자료 손상 복구 (미병합, 2026-10-16)
 
 - Linux Node 22: `npm test` 47/47 (recovery.test.cjs 7개: 마지막 정상본 갱신 범위, 정상 파일 무변경, 손상·빈 파일·20MB 초과·잘못된 백업·보관 실패), `npm run test:desktop` 통과(신규 desktop-recovery-smoke: 실제 Electron에서 손상 파일 보관 → 복구 대화상자 → 마지막 정상본으로 시작 → 자료 표시).

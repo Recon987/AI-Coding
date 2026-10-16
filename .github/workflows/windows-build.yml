@@ -54,6 +54,7 @@ jobs:
         run: |
           $env:PARK_TEST_EXECUTABLE = (Resolve-Path "release/win-unpacked/공원 업무 수첩.exe").Path
           node tests/desktop-smoke.cjs
+          node tests/desktop-confirm-smoke.cjs
       - name: Calculate checksums
         shell: pwsh
         run: |
