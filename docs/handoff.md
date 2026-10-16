@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (main)
-- **Latest Pushed Commit**: 8af114d89d3c95a6a2caafbcb5311225be238db4 - feat: apply independent UI review loop and integrate calendar relay (TASK-UI-02)
-- **Completed Steps & Modified Files**: TASK-TRAY-01: desktop main/preload, lifecycle/settings/notifications, 로컬 tray.png, DesktopSettings·types/main/style, shared model·선언, 정책/실제Electron 회귀, README·architecture·validation. 기존 Gemini TASK-CALENDAR-01 및 UI 검토 개선 유지.
-- **Changed Interfaces / Schema Diff**: 앱0.6.0 / 자료v3 유지. getDesktopSettings()/setCloseToTray(boolean)→{version:1,closeToTray,trayAvailable,message}. PC설정과24h표시이력은업무백업외 별도JSON. 반복조회 요청구간점프·400결과상한.
-- **Test Status**: npm test35/35, npm run test:desktop 통과. LinuxnativeTray표시검증은미실행; Windows소스/패키지검증은푸시후확인. Notification.show/종료확인위젯은대역.
-- **Remaining Work for Gemini**: CALENDAR-02 회차별완료/예외, SECURITY-01 암호화, LAW-01, LEDGER-01. Windows실기기 실제절전/OS토스트·아이콘표시 확인. UI후속은ui-review-loop 참조.
-- **Modified Code Snippets (if uncommitted)**: 이 단계 검증완료후즉시커밋·푸시; 미완성코드없음. 문서해시는작성직전원격기준.
+- **Latest Pushed Commit**: 50f78366a62c67314d3423e023e9b25faae06374 - feat: add opt-in system tray and resume notification recovery (TASK-TRAY-01)
+- **Completed Steps & Modified Files**: TASK-TRAY-01 완료. desktop main/preload/lifecycle/settings/notifications 및 로컬 tray.png, src DesktopSettings/types/main/style, shared model·선언, 정책·Electron·DST 테스트, README·architecture·validation·실기기 체크리스트. Gemini TASK-CALENDAR-01과 독립 UI 개선 유지.
+- **Changed Interfaces / Schema Diff**: 앱 0.6.0 / 자료 v3. getDesktopSettings()/setCloseToTray(boolean) → {version:1,closeToTray,trayAvailable,message}. PC 설정·24시간 알림 이력은 업무 백업 외 별도 JSON. 반복 조회는 요청 구간으로 이동하며 결과 최대 400회차.
+- **Test Status**: Linux npm test 35/35 및 npm run test:desktop 통과. Windows Actions 38827813053 성공: 동일 테스트, 실제 Tray 생성·숨김/복원, NSIS·portable 빌드, 패키징된 EXE 스모크 통과. Notification.show/확인 위젯은 대역. 독립 후속 검토 승인.
+- **Remaining Work for Gemini**: 다음 TASK-CALENDAR-02 회차별 완료/예외. 이후 SECURITY-01·LAW-01·LEDGER-01. 실제 Windows PC의 절전/OS 토스트 표시 확인 필요. UI 후속은 ui-review-loop 참조.
+- **Modified Code Snippets (if uncommitted)**: 소스 모두 푸시 완료. 이번 후속 커밋은 Windows 증빙·다운로드·설명 문서만 갱신. 문서 해시는 작성 직전 원격 기준.
 ```
 
 ## 2. 다음 백로그 우선순위
@@ -44,3 +44,7 @@
 ## 보존한 Gemini TASK-CALENDAR-01
 
 양력 법정/대체 및2025~2035 음력 공휴일, recurrence/repeatUntil 선택필드, holidaysForYear/holidayName/expandEventOccurrences/calendarItems(range)/reminderItems(now)/briefing 연계를 유지한다. 원본 하나에서회차를파생한다. 기존v3누락필드에임의기본값을쓰지않는다. 기준선 c32d590 npm test22/22·desktop통과. 검토에서발견한400회원본탐색상한은TRAY에서요청구간점프로수정하고장기일간/주간/월말/윤일회귀검증을추가했다.
+
+## TASK-TRAY-01 완료 증빙
+
+소스 50f7836, Windows [검증 실행](https://github.com/Recon987/AI-Coding/actions/runs/38827813053), [v0.6.0 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38827813053/artifacts/12015459007). 상세 범위·위젯 대역·Linux native Tray 미실행 및 Windows 실제 Tray 검사 구분은 validation.md 참조. 실기기 절차는 windows-checklist.md에 있다.
