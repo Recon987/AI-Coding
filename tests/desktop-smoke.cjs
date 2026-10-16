@@ -652,6 +652,9 @@ const path = require("node:path");
       .click();
     await reopened.getByText(dir, { exact: true }).waitFor();
     assert.deepEqual(errors, []);
+    await app.close();
+    app = null;
+    await require("./desktop-tray-smoke.cjs")();
     console.log(
       "PASS: 조직·직원·거점·일/주간 근무표·CSV 반입·백업·복원, DD/DMS 좌표 입력·검증·수정·검색·지우기·브리핑, 순찰→인수인계, 제출·달력 연계, 검색, 완료 기록, 백업·복원/잘못된 백업 거부, 브리핑 출력, 재실행 보존, 폴더 등록",
     );

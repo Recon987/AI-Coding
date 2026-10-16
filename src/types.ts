@@ -1,5 +1,10 @@
 import type { Coordinates } from "../shared/model.mjs";
-export type EventRecurrence = "none" | "daily" | "weekly" | "monthly" | "yearly";
+export type EventRecurrence =
+  | "none"
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "yearly";
 export type Note = { id: string; title: string; body: string };
 export type Event = {
   id: string;
@@ -104,9 +109,17 @@ export type HolidayEntry = {
   name: string;
   substitute: boolean;
 };
+export type DesktopSettings = {
+  version: 1;
+  closeToTray: boolean;
+  trayAvailable: boolean;
+  message?: string;
+};
 declare global {
   interface Window {
     workdesk?: {
+      getDesktopSettings(): Promise<DesktopSettings>;
+      setCloseToTray(enabled: boolean): Promise<DesktopSettings>;
       load(): Promise<Data>;
       save(data: Data): Promise<void>;
       chooseFolder(): Promise<string | null>;

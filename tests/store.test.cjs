@@ -455,3 +455,80 @@ test("오프라인 법정공휴일·대체공휴일(양력 및 2025~2035 음력)
   assert.throws(() => holidaysForYear(1800));
   assert.match(briefing(empty(), "2026-03-01"), /2026-03-01 \(삼일절\) 업무 브리핑/);
 });
+
+test("장기 반복 일정은 첫 400회를 넘어도 요청 날짜에서 조회·알림되고 회차 키를 보존한다", () => {
+  const { expandEventOccurrences } = require("../shared/model.mjs");
+  const make = (recurrence, at) => ({
+    id: "old",
+    title: "장기 점검",
+    done: false,
+    recurrence,
+    at,
+  });
+  const daily = make("daily", "2000-01-01T09:30:00");
+  const before = JSON.stringify(daily);
+  const range = { startDate: "2026-10-15", endDate: "2026-10-17" };
+  assert.throws(() =>
+    expandEventOccurrences(daily, { startDate: "2026-02-30" }),
+  );
+  assert.throws(() => expandEventOccurrences(daily, { endDate: "invalid" }));
+  assert.deepEqual(
+    expandEventOccurrences(daily, {
+      startDate: "2026-10-17",
+      endDate: "2026-10-15",
+    }),
+    [],
+  );
+  const rows = expandEventOccurrences(daily, range);
+  assert.deepEqual(
+    rows.map((r) => dayKey(new Date(r.at))),
+    ["2026-10-15", "2026-10-16", "2026-10-17"],
+  );
+  assert.equal(rows[0].key, "event:old:2026-10-15");
+  assert.equal(new Date(rows[0].at).getHours(), 9);
+  assert.equal(JSON.stringify(daily), before);
+  const now = new Date("2026-10-15T09:30:05").getTime();
+  assert.ok(
+    reminderItems({ ...empty(), events: [daily] }, now).some(
+      (r) => r.id === rows[0].key && r.at === rows[0].at,
+    ),
+  );
+  assert.deepEqual(
+    expandEventOccurrences({ ...daily, repeatUntil: "2020-01-01" }, range),
+    [],
+  );
+  assert.ok(
+    expandEventOccurrences(daily, { startDate: "2026-10-15" }).length >= 365,
+  );
+  const weekly = expandEventOccurrences(
+    make("weekly", "2000-01-01T09:30:00"),
+    range,
+  );
+  assert.deepEqual(
+    weekly.map((r) => dayKey(new Date(r.at))),
+    ["2026-10-17"],
+  );
+  const monthly = expandEventOccurrences(
+    make("monthly", "2000-01-31T09:30:00"),
+    { startDate: "2028-02-01", endDate: "2028-03-31" },
+  );
+  assert.deepEqual(
+    monthly.map((r) => dayKey(new Date(r.at))),
+    ["2028-02-29", "2028-03-31"],
+  );
+  const yearly = expandEventOccurrences(make("yearly", "2000-02-29T09:30:00"), {
+    startDate: "2500-01-01",
+    endDate: "2501-12-31",
+  });
+  assert.deepEqual(
+    yearly.map((r) => dayKey(new Date(r.at))),
+    ["2500-02-28", "2501-02-28"],
+  );
+  assert.equal(
+    expandEventOccurrences(daily, {
+      startDate: "2026-01-01",
+      endDate: "2030-12-31",
+    }).length,
+    400,
+  );
+});

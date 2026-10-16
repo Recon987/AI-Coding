@@ -542,3 +542,5 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
   white-space: nowrap;
   max-width: 100%;
 }
+
+.tray-setting { display: flex; align-items: center; gap: 10px; font-weight: 600; margin: 16px 0; }

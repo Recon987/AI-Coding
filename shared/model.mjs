@@ -498,6 +498,13 @@ export function expandEventOccurrences(event, range = {}) {
   const recurrence = event.recurrence ?? "none";
   const startFilter = range.startDate || null;
   const endFilter = range.endDate || null;
+  ensure(RECURRENCE.includes(recurrence), "반복 주기를 확인하세요.");
+  ensure(
+    Number.isFinite(new Date(event.at).getTime()),
+    "일정 시각을 확인하세요.",
+  );
+  ensure(!startFilter || validDate(startFilter), "조회 시작일을 확인하세요.");
+  ensure(!endFilter || validDate(endFilter), "조회 종료일을 확인하세요.");
   if (recurrence === "none") {
     const dKey = dayKey(new Date(event.at));
     if (startFilter && dKey < startFilter) return [];
@@ -512,10 +519,30 @@ export function expandEventOccurrences(event, range = {}) {
     ];
   }
   const base = new Date(event.at);
+  // Jump near the requested window; a long-running series must not disappear
+  // after its first 400 occurrences. Use calendar days rather than elapsed hours
+  // so daylight-saving transitions do not shift daily/weekly dates.
+  const rangeStart = startFilter ? new Date(`${startFilter}T00:00:00`) : base;
+  const dayNumber = (date) =>
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000;
+  const dayDistance = dayNumber(rangeStart) - dayNumber(base);
+  let firstStep = 0;
+  if (recurrence === "daily") firstStep = Math.floor(dayDistance);
+  if (recurrence === "weekly") firstStep = Math.floor(dayDistance / 7);
+  if (recurrence === "monthly")
+    firstStep =
+      (rangeStart.getFullYear() - base.getFullYear()) * 12 +
+      rangeStart.getMonth() -
+      base.getMonth() -
+      1;
+  if (recurrence === "yearly")
+    firstStep = rangeStart.getFullYear() - base.getFullYear() - 1;
+  firstStep = Math.max(0, firstStep);
+  const horizonStart = rangeStart > base ? rangeStart : base;
   const defaultHorizon = new Date(
-    base.getFullYear() + 1,
-    base.getMonth(),
-    base.getDate(),
+    horizonStart.getFullYear() + 1,
+    horizonStart.getMonth(),
+    horizonStart.getDate(),
   );
   const defaultLimit = dayKey(defaultHorizon);
   const untilLimit = event.repeatUntil || endFilter || defaultLimit;
@@ -526,7 +553,7 @@ export function expandEventOccurrences(event, range = {}) {
         : endFilter
       : untilLimit;
   const rows = [];
-  for (let step = 0; step < 400; step++) {
+  for (let step = firstStep; rows.length < 400; step++) {
     const occ = occurrenceAtStep(base, recurrence, step);
     const occKey = dayKey(occ);
     if (occKey > maxDate) break;

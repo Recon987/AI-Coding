@@ -14,6 +14,7 @@ import {
 } from "../shared/model.mjs";
 import type { Data, Page } from "./types";
 import { hasDirtyDrafts, subscribeDirty } from "./drafts";
+import { DesktopSettings } from "./components/DesktopSettings";
 import { Office } from "./components/Office";
 import { Briefing } from "./components/Briefing";
 import { Patrols } from "./components/Patrols";
@@ -311,7 +312,7 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <span className="version">공원 업무 수첩 · v0.5.1</span>
+          <span className="version">공원 업무 수첩 · v0.6.0</span>
         </div>
       </aside>
       <main>
@@ -524,6 +525,7 @@ function App() {
               )}
               {page === "about" && (
                 <div className="about-grid">
+                  <DesktopSettings />
                   <section className="panel">
                     <SectionHead
                       eyebrow="ABOUT THIS WORKSPACE"
@@ -540,9 +542,8 @@ function App() {
                       정책을 확인하세요.
                     </div>
                     <p className="help">
-                      창을 닫으면 앱이 종료됩니다. 알림은 실행 중에만 표시하며
-                      Windows 알림 허용이 필요합니다. 이 앱은 공식
-                      결재·근태·비상 대응 시스템이 아닙니다.
+                      알림과 창 닫기 동작은 트레이 설정에서 변경할 수
+                      있습니다.
                     </p>
                   </section>
                   <section className="panel">

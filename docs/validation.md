@@ -1,5 +1,15 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## v0.6.0 / TASK-TRAY-01
+
+Gemini 기준 c32d590(v0.5.0/TASK-CALENDAR-01)에서 npm test22/22 및 test:desktop을 먼저 통과시켰다. UI 통합8af114d도 두 검사 및 Windows 소스/패키지 검증을 통과했다([Actions38826904918](https://github.com/Recon987/AI-Coding/actions/runs/38826904918)).
+
+이번 변경의 Linux Node24: npm test **35/35**, npm run test:desktop **통과**(TypeScript/Vite 포함). 설정 검증·손상 보존·저장 실패·트레이 생성 실패·종료 취소/승인·정상60초/resume24시간 경계·중복/완료/미래 제외·요약·표시 실패 재시도를 순수 정책 테스트로 검증했다. 독립검토에서 발견한 오래된 복귀알림 실패의 일반타이머 재시도 누락도 수정했다. 제한된 pending집합은 매번 현재원본·완료·삭제·변경·만료를 검증하고 이전시도의지연실패가새성공을지우지않게한다. DST전환은 별도 America/New_York 자식프로세스에서23/25시간 날짜와09:30현지시각유지를 확인한다. 기존+09:00 고정fixture를 사용한 전체store테스트의 뉴욕탐색실행은 날짜가전일로변해 실패했으며, 제품은PC현지시각계약이다. 실제 Electron에서는 preload설정·엄격bool거부, powerMonitor resume 연결, 오래된 반복과 제출 사전알림, OS표시요청대역, 재실행 후 이력/원본보존, 미저장 종료 취소 후 초안 유지와 승인 종료를 검증했다.
+
+Linux headless에는 화면 서버가 없어 nativeTray생성은 GTK프로세스 중단을 일으킨다. 이를 성공으로 기록하지 않는다. 실제트레이 생성/닫기숨김/두번째실행복원/알림클릭복원/설정영속은 Windows 소스 및 패키지 스모크에서 필수 실행한다. OS Notification.show와 종료 확인 widget은 결정적 테스트 대역이며 실제 토스트 노출·PC절전은 기관 Windows실기기에서 별도 확인한다. Windows 결과는 소스푸시 후 기록한다.
+
+수동 확인: 앱안내에서 트레이를 켠 뒤 미저장 작성 중 X → 창 다시열기에서 초안유지 → 트레이종료에서 계속작성/종료 두 선택 → 재시작 설정유지 → 절전동안 지난일정/제출사전알림 생성 후 복귀·반복복귀 중복없음 → Windows알림센터 확인. 종료중 알림/자동시작은 제공하지 않는다.
+
 ## v0.5.1 / 독립 UI 검토 루프 + 달력 통합
 
 원격 c32d590 (Gemini TASK-CALENDAR-01) 기준선에서 npm test 22/22와 npm run test:desktop 통과 후 진행했다. UI 변경과 공휴일/반복 일정 필드를 통합했으며 자료 v3/기존 IPC를 유지한다. 최종 npm test 22/22, npm run test:desktop 통과. 추가 회귀는 검색 중 초안 보존·초기 입력 focus·닫기 거부·실패 IPC 저장 시 입력 유지다. 파일/확인창 UI만 결정적으로 대체한다.

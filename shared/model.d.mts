@@ -13,6 +13,7 @@ export function normalize(input: unknown): Data;
 export function dayKey(date?: Date): string;
 export function holidaysForYear(year: number): HolidayEntry[];
 export function holidayName(date: string): string | null;
+/** Derives at most 400 occurrences in the requested local-date range without changing the source. */
 export function expandEventOccurrences(
   event: Event,
   range?: { startDate?: string; endDate?: string },

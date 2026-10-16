@@ -5,23 +5,23 @@ const {
   dialog,
   shell,
   Notification,
+  Tray,
+  Menu,
+  nativeImage,
+  powerMonitor,
 } = require("electron");
 const path = require("node:path");
 const fs = require("node:fs");
 const store = require("./store.cjs");
 const { briefing, reminderItems } = require("../shared/model.mjs");
+const { createDesktopLifecycle } = require("./lifecycle.cjs");
+const { createNotifier } = require("./notifications.cjs");
 let win, file, timer;
-const seen = new Set();
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
-  app.on("second-instance", () => {
-    if (win) {
-      if (win.isMinimized()) win.restore();
-      win.show();
-      win.focus();
-    }
-  });
   app.whenReady().then(() => {
+    if (process.platform === "win32")
+      app.setAppUserModelId("local.park.workdesk");
     file = path.join(app.getPath("userData"), "workdesk.json");
     try {
       store.read(file);
@@ -109,26 +109,54 @@ else {
     });
     win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
     win.webContents.on("will-navigate", (e) => e.preventDefault());
+    const lifecycle = createDesktopLifecycle({
+      app,
+      win,
+      Tray,
+      Menu,
+      nativeImage,
+      dialog,
+      settingsFile: path.join(app.getPath("userData"), "desktop-settings.json"),
+      iconFile: path.join(__dirname, "assets/tray.png"),
+    });
+    ipcMain.handle("desktop-settings-get", () => lifecycle.getSettings());
+    ipcMain.handle("desktop-settings-set-tray", (_, value) =>
+      lifecycle.setCloseToTray(value),
+    );
     win.loadFile(path.join(__dirname, "../dist/index.html"));
-    timer = setInterval(() => {
-      try {
-        for (const event of store.due(
-          reminderItems(store.read(file)),
-          Date.now(),
-          seen,
-        )) {
-          if (Notification.isSupported()) {
-            new Notification({
-              title: "공원 업무 수첩 · 일정 알림",
-              body: event.title,
-            }).show();
-            seen.add(event.id + event.at);
-          }
+    const notifications = new Set();
+    const notifier = createNotifier({
+      readItems: (now) => reminderItems(store.read(file), now),
+      file: path.join(app.getPath("userData"), "notification-receipts.json"),
+      supported: () => Notification.isSupported(),
+      show: (options, onFailure) => {
+        const notification = new Notification(options);
+        notifications.add(notification);
+        notification.on("click", () => lifecycle.showWindow());
+        notification.on("close", () => notifications.delete(notification));
+        notification.on("failed", (_, error) => {
+          notifications.delete(notification);
+          onFailure();
+          console.error("일정 알림 표시 실패:", error);
+        });
+        try {
+          notification.show();
+        } catch (error) {
+          notifications.delete(notification);
+          throw error;
         }
-      } catch (error) {
-        console.error("일정 알림 확인 실패:", error.message);
-      }
-    }, 15000);
+      },
+    });
+    notifier.check(); // Startup keeps the normal 60-second window; only resume catches up 24h.
+    timer = setInterval(() => notifier.check(), 15000);
+    const resume = () => notifier.check("resume");
+    powerMonitor.on("resume", resume);
+    app.on("will-quit", () => {
+      clearInterval(timer);
+      powerMonitor.removeListener("resume", resume);
+      for (const notification of notifications) notification.close();
+      notifications.clear();
+    });
   });
   app.on("window-all-closed", () => {
     clearInterval(timer);
