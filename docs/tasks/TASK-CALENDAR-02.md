@@ -29,14 +29,14 @@ updated: 2026-10-16
 - [x] 4. 테스트·문서
 
 ## 재개 위치
-Claude가 `task/task-calendar-02`의 구현·검증 기록을 독립 확인한다. 기반 수정 PR #2 위에 쌓은 PR을 먼저 검토·통합하고 PR #2 → PR #1 순으로 병합한다. main/Claude 원 브랜치에는 직접 쓰지 않았다. Windows 회차 기능은 이 소스 푸시 후 workflow_dispatch로 확인한다.
+Claude가 `task/task-calendar-02`의 구현·검증 기록을 독립 확인한다. 기반 수정 PR #2 위에 쌓은 [PR #3](https://github.com/Recon987/AI-Coding/pull/3)을 먼저 검토·통합하고 PR #2 → PR #1 순으로 병합한다. main/Claude 원 브랜치에는 직접 쓰지 않았다. Windows 회차 기능은 소스 4a10c2c의 Actions38898226246에서 소스/패키지 모두 통과했다.
 
 ## 테스트 상태
 - Node24 `npm test` **81/81**, `npm run test:desktop` 전체 통과(새 회차 스모크 포함).
-- 회차 모델 전용 11개: UTC·Asia/Seoul·America/New_York 통과. 최종 희소 배열·과거 제외일 복원 보완 후 UTC·서울 재검증.
+- 회차 모델 전용 11개: UTC·Asia/Seoul·America/New_York 통과. 최종 희소 배열·과거 제외일 복원 보완 후 세 시간대 모두 재검증.
 - 실제 Electron UI **142개**, 페이지 오류0·외부 요청0; 업무 흐름 **10/10**.
 - 저장 실패/지연 IPC, 브리핑 TXT, 제외/복원과 완료 보존, 전체완료 해제 취소/승인, 백업/복원·재실행을 실제 앱에서 실행.
-- 기반 b03d6cf의 Windows Actions38896149700 성공. 새 회차 기능의 Windows 검증과 구분한다.
+- Windows 소스 `4a10c2cb4f5dfc1eb7f540b7feb7085218b7908e`의 [Actions38898226246](https://github.com/Recon987/AI-Coding/actions/runs/38898226246) 성공: 단위81개·소스 전체 Electron·NSIS/portable·패키징된 EXE 회차/기존 스모크·SHA256SUMS·업로드. 기반 b03d6cf Actions38896149700과 별개. [v0.7.0 시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/38898226246/artifacts/12044503916).
 
 ## 검증 기록
 모델 구현자와 별도의 자료 보존 검토자가 희소 배열 거부와 규칙 변경 후 과거 제외일 제거 계약을 확인·승인했다. UX 검토자는 저장 중 입력 잠금·모달 안 오류·미래 회차 맥락·가시적 완료 표시를 소스/화면으로 교차 승인했다. 최종 승인·병합은 카드 verifier인 Claude가 진행한다. 상세 [검토 기록](../reviews/2026-10-16-calendar02.md).

@@ -11,18 +11,18 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (task/task-calendar-02 / 기반 task/task-review-claude-01 / main·Claude 원 브랜치 미변경)
-- **Task Card**: TASK-CALENDAR-02 review. Claude가 독립 검증 후 회차 PR → PR #2 → PR #1 순으로 통합.
-- **Latest Pushed Commit**: 06060ef51a873a20ef4b776cb2023c8e3d8735e7 - wip(TASK-CALENDAR-02): add occurrence state model and calendar controls (작성 직전 원격 체크포인트, 최종 해시는 응답/git log)
+- **Task Card**: TASK-CALENDAR-02 review. Claude가 독립 검증 후 PR #3 → PR #2 → PR #1 순으로 통합.
+- **Latest Pushed Commit**: 4a10c2cb4f5dfc1eb7f540b7feb7085218b7908e - feat(TASK-CALENDAR-02): finish per-occurrence state and verified calendar flows (검증 소스, 증빙 문서 커밋 해시는 응답/git log)
 - **Completed Steps & Modified Files**: shared/model·선언·types, Calendar·Briefing·style, 회차 단위/실제 Electron 검사, Windows workflow·package0.7.0, README·architecture·validation·검토 화면/카드. 완료·제외·복원·지연/실패 저장 보호.
 - **Changed Interfaces / Schema Diff**: Event.completedDates?/excludedDates?: string[], v3 유지; setOccurrenceDone/Excluded(event,date,bool):Event. 첫 반복 회차 occurrenceDate 제공, 기존 key/at 유지. 새 IPC 없음.
-- **Test Status**: npm test81/81, npm run test:desktop 전체 통과, UI142·오류0·외부요청0, 업무흐름10/10. 기반 b03d6cf Windows38896149700 성공. 새 회차 Windows는 푸시 후 확인.
+- **Test Status**: npm test81/81, npm run test:desktop 전체 통과, UI142·오류0·외부요청0, 업무흐름10/10. 기반 b03d6cf Windows38896149700 성공. 회차 소스4a10c2c Windows38898226246도 성공:81개·소스/패키지 Electron·설치형/portable.
 - **Remaining Work for Gemini**: Claude 최종 검증/통합. 기관 PC 절전·토스트·접근성 및 사용자 양식 피드백은 별도. 다음 백로그는 board/카드 확인.
-- **Modified Code Snippets (if uncommitted)**: 검증 완료 변경은 이 문서와 즉시 커밋·푸시. 작업 원본/main에 직접 쓰지 않음.
+- **Modified Code Snippets (if uncommitted)**: 없음(증빙 문서만 이 기록과 즉시 커밋·푸시). main/Claude 원 브랜치 미변경.
 ```
 
 ## 2. 과제 현황
 
-`npm run board`가 우선순위·담당·재개 위치를 출력한다. 이 문서에 백로그를 따로 적지 않는다(이중 기록 금지). 2026-10-16: Claude의14개 review 카드를 Codex가 검증했다. 원본에서 누락된 오류 경로는 TASK-REVIEW-CLAUDE-01에서 보완했으며 총괄 통합 전 상태를 유지한다. 이후 순서는 보드와 해당 카드의 재개 위치를 따른다.
+`npm run board`가 우선순위·담당·재개 위치를 출력한다. 이 문서에 백로그를 따로 적지 않는다(이중 기록 금지). 2026-10-16: Claude의14개 review 카드를 Codex가 검증했다. 원본에서 누락된 오류 경로는 TASK-REVIEW-CLAUDE-01에서 보완했으며 총괄 통합 전 상태를 유지한다. 후속 TASK-CALENDAR-02도 구현·교차검토·Windows 소스/패키지 검증을 마쳐 review다. PR #3 → #2 → #1 순으로 통합한다. 이후 순서는 보드와 해당 카드의 재개 위치를 따른다.
 
 ## 3. 작업 시작·종료
 
@@ -41,3 +41,7 @@
 [세 분야 제안·협의·보완·교차 승인·전후 화면](review-rounds/TASK-UX-03.md). 현재 스키마·기존 자료와 트레이를 유지했다. 사용자 요청은 이번 개선 루프를 실행하는 것이며, 백그라운드 자동 개선 서비스를 추가하지 않았다.
 
 Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-Coding/actions/runs/38844487365), [v0.6.1 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/38844487365/artifacts/12023060736). 패키징된 EXE도 새 첫 사용·날짜·달력 및 기존 트레이 회귀를 통과했다.
+
+## TASK-CALENDAR-02 검증 브랜치
+
+소스 `4a10c2c`, [PR #3](https://github.com/Recon987/AI-Coding/pull/3), [Windows 성공](https://github.com/Recon987/AI-Coding/actions/runs/38898226246), [v0.7.0 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/38898226246/artifacts/12044503916). [모델 계약·독립 검토·실제 화면](reviews/2026-10-16-calendar02.md). 문서 증빙 후속 커밋은 실행 코드를 바꾸지 않는다.

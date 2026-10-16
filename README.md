@@ -84,7 +84,7 @@ ERP의 실제 열·근무 코드는 아직 미확인입니다. 현재 표준 CSV
 - **전화메모·업무 메모**: 등록, 검색, 수정, 삭제와 전화 처리 상태.
 - **통합 검색**, 폴더 바로가기, 전체 JSON 백업·복원.
 
-법령 반입·검색, ERP 자동 연동·공용 서버, 거점표·당직표 자동 편성, 예산·급량비·물품 장부, EPSG 간 투영좌표 변환 및 반복 회차의 시각·제목 개별 변경는 후속 단계입니다.
+법령 반입·검색, ERP 자동 연동·공용 서버, 거점표·당직표 자동 편성, 예산·급량비·물품 장부, EPSG 간 투영좌표 변환 및 반복 회차의 시각·제목 개별 변경은 후속 단계입니다.
 
 ## v0.3 좌표 입력하기
 
@@ -101,7 +101,7 @@ DD 원본만 저장하고 DMS 초는 소수 6자리까지 계산합니다(자리
 
 ## Windows에서 확인하기
 
-Windows 소스·패키징된 앱 검증 완료: [v0.6.1 설치형·portable 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38844487365/artifacts/12023060736). GitHub 로그인 필요, 보관 14일.
+검증 브랜치 v0.7.0의 Windows 소스·패키징된 앱 검사 완료: [설치형·portable 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38898226246/artifacts/12044503916). GitHub 로그인 필요, 보관 14일. [PR #3](https://github.com/Recon987/AI-Coding/pull/3)의 시험용 빌드이며 main에는 아직 병합하지 않았습니다.
 
 회사 네트워크에서 개발용 패키지를 설치할 필요가 없도록 [Windows 빌드](https://github.com/Recon987/AI-Coding/actions/workflows/windows-build.yml)를 준비했습니다.
 
