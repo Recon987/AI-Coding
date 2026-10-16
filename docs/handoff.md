@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, 미병합)
-- **Task Card**: review(검증자 Codex) — ORCH-01, REVIEW-DOMAIN-01, REVIEW-DESIGN-01, REVIEW-UX-01, DATA-01, CONFIRM-01, DESIGN-TOKENS-01, PATROL-02, CONTROL-01. 재개 위치는 각 카드
-- **Latest Pushed Commit**: 9aec79e - feat: trail closures recorded once and shown in briefing and calendar (TASK-CONTROL-01) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: desktop/store.cjs(durableReplace·keepLastGood), desktop/recovery.cjs, src/confirm.tsx, src/style.css(토큰), src/components/{Observations,Controls}.tsx, Patrols·Calendar·Briefing·Office·main 등, shared/model.mjs(순찰 선택 필드·patrolSummary·controls·activeControls), tests/{recovery,style-tokens,patrol-observations,controls}.test.cjs, tests/desktop-{recovery,confirm}-smoke.cjs
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1 열림·미병합)
+- **Task Card**: review(검증자 Codex) — ORCH-01, REVIEW-DOMAIN-01, REVIEW-DESIGN-01, REVIEW-UX-01, DATA-01, CONFIRM-01, DESIGN-TOKENS-01, PATROL-02, CONTROL-01, FORMS-01. FORMS-02는 사용자 피드백 대기(blocked). 재개 위치는 각 카드
+- **Latest Pushed Commit**: 11d8bea - feat: recommended patrol log and enforcement record export (TASK-FORMS-01) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: desktop/store.cjs(durableReplace·keepLastGood), desktop/recovery.cjs, src/confirm.tsx, src/style.css(토큰), src/components/{Observations,Controls}.tsx, Patrols·Calendar·Briefing·Office·main 등, shared/model.mjs(순찰 선택 필드·patrolSummary·controls·activeControls), tests/{recovery,style-tokens,patrol-observations,controls,forms}.test.cjs, tests/desktop-{recovery,confirm,forms}-smoke.cjs, shared/forms.mjs, src/components/FormExport.tsx, IPC export-form
 - **Changed Interfaces / Schema Diff**: 데이터 v3 유지. 추가: Patrol.kind?/zone?/observations?(선택, 미사용 시 저장 안 함), 최상위 controls(없으면 빈 목록). workdesk.json.last-good·.corrupt-<시각>.json 파일. EditorDialog.openEditor는 Promise<boolean>. window.confirm 제거. 이전 앱 버전으로 되돌려 저장하면 controls 누락 가능.
-- **Test Status**: Linux Node 22: npm test 60/60(TZ=UTC 포함), npm run test:desktop 통과(트레이 native 미실행), review:ui strict 134·외부 요청 0, review:flows 10/10 완료. Windows Actions·실기기 미실행(main 미병합).
-- **Remaining Work for Gemini**: (웹) docs/reviews/2026-10-16-design.md 끝 질문으로 2차 의견. Codex: 카드 9장 검증 → 총괄 병합 → Windows Actions. 사용자: 순찰 종류 7종·단속 유형 10종·통제 사유 5종 용어 피드백, 다음 주기 승인(FORMS-01, LIST-01, HOME-02 후보).
+- **Test Status**: Linux Node 22: npm test 64/64(TZ=UTC 포함), npm run test:desktop 통과(트레이 native 미실행), review:ui strict 134·외부 요청 0, review:flows 10/10 완료. Windows Actions·실기기 미실행(main 미병합).
+- **Remaining Work for Gemini**: (웹) docs/reviews/2026-10-16-design.md 끝 질문으로 2차 의견. Codex: 카드 9장 검증 → 총괄 병합 → Windows Actions. 사용자: 순찰 종류·단속 유형·통제 사유 용어와 docs/research/forms-draft.md 질문 4개 피드백, 다음 주기 승인(LIST-01, HOME-02 후보).
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
