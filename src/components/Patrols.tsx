@@ -7,6 +7,7 @@ import {
 } from "../../shared/model.mjs";
 import { ObservationEditor, PatrolSummary } from "./Observations";
 import { FormExport } from "./FormExport";
+import { ListHeader, ListRow, rowKeys } from "./ListRow";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { CoordinateInput } from "./CoordinateInput";
 import { useState } from "react";
@@ -165,114 +166,93 @@ export function Patrols({
             )}
           </Empty>
         )}
-        {rows.map((p) => (
-          <article className="record" key={p.id}>
-            <details className="record-details">
-              <summary>
-                <div className="record-top">
-                  <Tag
-                    tone={
-                      p.risk === "urgent"
-                        ? "danger"
-                        : p.risk === "attention"
-                          ? "warning"
-                          : ""
-                    }
-                  >
-                    {riskNames[p.risk]}
-                  </Tag>
-                  {p.kind && <Tag tone="patrol">{PATROL_KINDS[p.kind]}</Tag>}
-                  {p.zone && <span className="zone-label">담당구역 {p.zone}</span>}
-                  <span className="muted">{formatTime(p.at)}</span>
-                </div>
-                <h3>{p.title}</h3>
-                <p className="record-preview">
-                  {p.observations?.length
-                    ? `${describeObservations(p.observations)} · `
-                    : ""}
-                  {p.route} · {p.findings || "별도 확인 사항 없음"}
-                </p>
-              </summary>
-              <div className="record-detail-body">
-                <p className="route-line">{p.route}</p>
-                <p className="record-body">
-                  {p.findings || "별도 확인 사항 없음"}
-                </p>
-                {p.action && (
-                  <p className="action-note">
-                    <strong>현장 조치</strong> {p.action}
-                  </p>
-                )}
-                {!!p.observations?.length && (
-                  <ul className="observation-list">
-                    {p.observations.map((o) => (
-                      <li key={o.id}>
-                        <strong>{o.type}</strong> {o.count}건 ·{" "}
-                        {OBSERVATION_OUTCOMES[o.outcome]}
-                        {o.note && ` · ${o.note}`}
-                        {o.coordinates && (
-                          <span className="coordinate-summary">
-                            {formatCoordinates(o.coordinates)}
-                          </span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {p.coordinates && (
-                  <p className="coordinate-summary">
-                    {formatCoordinates(p.coordinates)}
-                    <br />
-                    {formatCoordinates(p.coordinates, "dms")}
-                  </p>
-                )}
-                <p className="source">기록자 · {p.observer}</p>
-              </div>
-            </details>
-            <div className="record-actions">
-              <button
-                className="primary small"
-                disabled={busy}
-                onClick={() => handover(p)}
-              >
-                {data.tasks.some((t) => t.patrolId === p.id && !t.done)
-                  ? "후속 조치 보기"
-                  : "인수인계로 연결"}
-              </button>
-              <button disabled={busy} onClick={() => resetDraft(p)}>
-                수정
-              </button>
-              <button
-                className="text-button danger"
-                disabled={busy}
-                onClick={async () => {
-                  if (
-                    await askConfirm({
-                      message: "순찰 기록을 삭제할까요?",
-                      detail: "연결된 인수인계 내용은 유지하고 연결만 해제합니다.",
-                      confirmLabel: "삭제",
-                      danger: true,
-                    })
-                  ) {
+        {rows.length > 0 && <ListHeader />}
+        <div className="row-list" onKeyDown={rowKeys}>
+          {rows.map((p) => (
+            <ListRow
+              key={p.id}
+              busy={busy}
+              when={formatTime(p.at)}
+              status={
+                <Tag tone={p.risk === "urgent" ? "danger" : p.risk === "attention" ? "warning" : ""}>
+                  {riskNames[p.risk]}
+                </Tag>
+              }
+              kind={
+                <>
+                  {p.kind ? PATROL_KINDS[p.kind] : "순찰"}
+                  {p.zone && <small className="zone-label">구역 {p.zone}</small>}
+                </>
+              }
+              title={p.title}
+              subtitle={`${p.observations?.length ? `${describeObservations(p.observations)} · ` : ""}${p.route}`}
+              owner={p.observer}
+              actions={[
+                {
+                  label: data.tasks.some((t) => t.patrolId === p.id && !t.done)
+                    ? "후속 조치 보기"
+                    : "인수인계로 연결",
+                  onClick: () => handover(p),
+                },
+                { label: "수정", onClick: () => resetDraft(p) },
+                {
+                  label: "삭제",
+                  tone: "danger",
+                  onClick: async () => {
                     if (
-                      await save({
-                        ...data,
-                        patrols: data.patrols.filter((x) => x.id !== p.id),
-                        tasks: data.tasks.map((t) =>
-                          t.patrolId === p.id ? { ...t, patrolId: null } : t,
-                        ),
+                      await askConfirm({
+                        message: "순찰 기록을 삭제할까요?",
+                        detail: "연결된 인수인계 내용은 유지하고 연결만 해제합니다.",
+                        confirmLabel: "삭제",
+                        danger: true,
                       })
                     ) {
-                      if (draft.id === p.id) editor.finishEditor();
+                      if (
+                        await save({
+                          ...data,
+                          patrols: data.patrols.filter((x) => x.id !== p.id),
+                          tasks: data.tasks.map((t) =>
+                            t.patrolId === p.id ? { ...t, patrolId: null } : t,
+                          ),
+                        })
+                      ) {
+                        if (draft.id === p.id) editor.finishEditor();
+                      }
                     }
-                  }
-                }}
-              >
-                삭제
-              </button>
-            </div>
-          </article>
-        ))}
+                  },
+                },
+              ]}
+            >
+              <p className="route-line">{p.route}</p>
+              <p className="record-body">{p.findings || "별도 확인 사항 없음"}</p>
+              {p.action && (
+                <p className="action-note">
+                  <strong>현장 조치</strong> {p.action}
+                </p>
+              )}
+              {!!p.observations?.length && (
+                <ul className="observation-list">
+                  {p.observations.map((o) => (
+                    <li key={o.id}>
+                      <strong>{o.type}</strong> {o.count}건 · {OBSERVATION_OUTCOMES[o.outcome]}
+                      {o.note && ` · ${o.note}`}
+                      {o.coordinates && (
+                        <span className="coordinate-summary">{formatCoordinates(o.coordinates)}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {p.coordinates && (
+                <p className="coordinate-summary">
+                  {formatCoordinates(p.coordinates)}
+                  <br />
+                  {formatCoordinates(p.coordinates, "dms")}
+                </p>
+              )}
+            </ListRow>
+          ))}
+        </div>
       </section>
       {editor.isOpen && (
         <EditorDialog

@@ -4,6 +4,7 @@ import { askConfirm, confirmDelete } from "../confirm";
 import type { Control, Data, Save } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
+import { ListHeader, ListRow, rowKeys } from "./ListRow";
 
 type Filter = "active" | "upcoming" | "ended";
 const state = (c: Control, today: string): Filter =>
@@ -120,39 +121,45 @@ export function Controls({
                 : "종료된 통제가 없습니다."}
           </Empty>
         )}
-        {rows.map((c) => (
-          <article className="record control-record" key={c.id}>
-            <div className="record-top">
-              <Tag tone={c.reason === "weather" || c.reason === "fire" ? "warning" : ""}>
-                {CONTROL_REASONS[c.reason]}
-              </Tag>
-              {c.zone && <span className="zone-label">담당구역 {c.zone}</span>}
-              <span className="muted">{period(c)}</span>
-            </div>
-            <h3>{c.title}</h3>
-            {c.note && <p className="record-body">{c.note}</p>}
-            <div className="record-actions">
-              <button disabled={busy} onClick={() => editor.openEditor(c)}>
-                수정
-              </button>
-              {state(c, today) !== "ended" && (
-                <button disabled={busy} onClick={() => lift(c)}>
-                  오늘 해제
-                </button>
-              )}
-              <button
-                className="text-button danger"
-                disabled={busy}
-                onClick={async () => {
-                  if (await confirmDelete(`${c.title} 통제 기록`))
-                    await save({ ...data, controls: data.controls.filter((x) => x.id !== c.id) });
-                }}
-              >
-                삭제
-              </button>
-            </div>
-          </article>
-        ))}
+        {rows.length > 0 && <ListHeader ownerLabel="담당구역" />}
+        <div className="row-list" onKeyDown={rowKeys}>
+          {rows.map((c) => (
+            <ListRow
+              key={c.id}
+              busy={busy}
+              className="control-record"
+              done={state(c, today) === "ended"}
+              when={period(c)}
+              status={
+                <Tag tone={state(c, today) === "active" ? "control" : ""}>
+                  {{ active: "진행 중", upcoming: "예정", ended: "종료" }[state(c, today)]}
+                </Tag>
+              }
+              kind={CONTROL_REASONS[c.reason]}
+              title={c.title}
+              subtitle={c.note || undefined}
+              owner={c.zone ?? "—"}
+              actions={[
+                { label: "수정", onClick: () => editor.openEditor(c) },
+                ...(state(c, today) !== "ended" ? [{ label: "오늘 해제", onClick: () => lift(c) }] : []),
+                {
+                  label: "삭제",
+                  tone: "danger" as const,
+                  onClick: async () => {
+                    if (await confirmDelete(`${c.title} 통제 기록`))
+                      await save({ ...data, controls: data.controls.filter((x) => x.id !== c.id) });
+                  },
+                },
+              ]}
+            >
+              {c.note && <p className="record-body">{c.note}</p>}
+              <p className="source">
+                {CONTROL_REASONS[c.reason]} · {period(c)}
+                {c.zone && ` · 담당구역 ${c.zone}`}
+              </p>
+            </ListRow>
+          ))}
+        </div>
       </section>
       {editor.isOpen && (
         <EditorDialog
