@@ -96,7 +96,8 @@ function validateOccurrenceMetadata(event) {
       Array.isArray(dates) && dates.length <= 10000,
       "회차별 완료·제외일은 각각 10,000개 이하의 날짜 목록이어야 합니다.",
     );
-    ensure(dates.every(validDate), "회차별 완료·제외일은 실제 날짜여야 합니다.");
+    // Array#every skips holes; JSON serializes those holes as invalid null dates.
+    ensure(Array.from(dates).every(validDate), "회차별 완료·제외일은 실제 날짜여야 합니다.");
     ensure(new Set(dates).size === dates.length, "회차별 완료·제외일에 중복 날짜가 있습니다.");
   }
 }
@@ -700,15 +701,19 @@ function changeOccurrenceDate(event, date, key, enabled) {
   ensure(validDate(date), "변경할 회차 날짜를 확인하세요.");
   ensure(event.recurrence && event.recurrence !== "none", "반복 일정의 회차만 변경할 수 있습니다.");
   validateOccurrenceMetadata(event);
-  // Ignore exclusions only for membership checks so excluded days can be restored.
-  const matches = expandEventOccurrences(
-    { ...event, excludedDates: [] },
-    { startDate: date, endDate: date },
-  );
-  ensure(matches.some((item) => item.occurrenceDate === date), "이 날짜는 현재 반복 일정의 회차가 아닙니다.");
+  const dates = new Set(event[key] ?? []);
+  // Historical dates may survive a rule edit. Removing an existing date is safe
+  // even outside the new rule; adding a date always needs a current occurrence.
+  if (enabled || !dates.has(date)) {
+    // Ignore exclusions for membership checks so excluded days can be restored.
+    const matches = expandEventOccurrences(
+      { ...event, excludedDates: [] },
+      { startDate: date, endDate: date },
+    );
+    ensure(matches.some((item) => item.occurrenceDate === date), "이 날짜는 현재 반복 일정의 회차가 아닙니다.");
+  }
   if (key === "completedDates" && !enabled)
     ensure(!event.done, "전체 완료된 반복 일정입니다. 전체 일정을 먼저 다시 시작하세요.");
-  const dates = new Set(event[key] ?? []);
   if (enabled) dates.add(date);
   else dates.delete(date);
   const next = { ...event, [key]: [...dates].sort() };

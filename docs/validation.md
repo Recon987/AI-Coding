@@ -1,8 +1,12 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## v0.7.0 / TASK-CALENDAR-02 (검증 브랜치, main 미병합)
+
+Node24 npm test **81/81**, npm run test:desktop **전체 통과**. 회차별 완료·제외/복원·다음 회차 알림·브리핑 TXT·기존 전체완료 해제·반복 해제 취소·초안/저장 실패·지연 저장 입력 잠금·백업 복원·재실행을 실제 Electron에서 확인했다. 전용 모델11개 UTC/서울/뉴욕 통과, 최종 희소 배열/과거 제외일 보완 후 UTC/서울 재검증. UI142/오류0/외부요청0, 업무흐름10/10. [교차 검토와 실제 화면](reviews/2026-10-16-calendar02.md). Windows 새 소스는 푸시 후 확인한다.
+
 ## Claude PR #1 독립 검증·보완
 
-기준73c938e: Node24.19 npm test64/64, 전체test:desktop 통과. 실패 경로 재현 후 검증 브랜치에서 자료 복구·보호본 실패 의미·예정 통제 해제·양식 타입·주간/목록 등록 모달을 보완했다. 보완본 npm test70/70, npm run test:desktop 통과(새 회귀 포함), UI142/오류0/외부요청0, 업무흐름10/10. 상세 [검토 기록](reviews/2026-10-16-codex-claude.md). 원본 Windows38889183811과 보완본 후속 Windows 실행을 구분한다. main 미병합.
+기준73c938e: Node24.19 npm test64/64, 전체test:desktop 통과. 실패 경로 재현 후 검증 브랜치에서 자료 복구·보호본 실패 의미·예정 통제 해제·양식 타입·주간/목록 등록 모달을 보완했다. 보완본 npm test70/70, npm run test:desktop 통과(새 회귀 포함), UI142/오류0/외부요청0, 업무흐름10/10. 상세 [검토 기록](reviews/2026-10-16-codex-claude.md). 보완 소스 b03d6cf의 [Windows38896149700](https://github.com/Recon987/AI-Coding/actions/runs/38896149700) 성공: 70개·소스/패키지 Electron·NSIS/portable·SHA256SUMS·업로드. [검증 브랜치 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38896149700/artifacts/12044371028), main 미병합. 원본 Windows38889183811과 구분한다.
 
 ## TASK-CONFIRM-01 / 앱 안 확인창 (미병합, 2026-10-16)
 

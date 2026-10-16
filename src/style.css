@@ -780,3 +780,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .excluded-occurrences > p { margin-top: 12px; }
 .excluded-occurrences ul { list-style: none; padding: 0; margin: 12px 0; }
 .excluded-occurrences li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+
+.occurrence-actions { flex-direction: column; align-items: flex-start; }
+.occurrence-completion { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: var(--fs-xs); white-space: nowrap; }
+.occurrence-editor .occurrence-actions { flex-direction: row; align-items: center; }

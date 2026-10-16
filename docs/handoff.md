@@ -1,6 +1,6 @@
 # AI-Coding 작업 인계장 (`docs/handoff.md`)
 
-**저장소**: `Recon987/AI-Coding` (병합 대상 `main`) · **앱/데이터 버전**: `0.6.1` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
+**저장소**: `Recon987/AI-Coding` (병합 대상 `main`) · **검증 브랜치 앱/데이터 버전**: `0.7.0` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-review-claude-01 / Claude 원 브랜치 claude/zen-cannon-wc1at4 / main 미병합)
-- **Task Card**: TASK-REVIEW-CLAUDE-01 review. Codex가 Claude73c938e의14개카드 독립 검증·오류보완, Claude가 수정 diff 통합 검토.
-- **Latest Pushed Commit**: 5f661cd - wip(TASK-REVIEW-CLAUDE-01): claim review of Claude PR 1 (작성 직전 체크포인트, 최종응답해시 확인)
-- **Completed Steps & Modified Files**: desktop store/recovery/main, shared model/forms, Calendar/Controls/main/types, 회귀 및14개검증카드, 검토기록. 주간/목록 모달·예정해제·백업/보호본실패·양식타입 보완.
-- **Changed Interfaces / Schema Diff**: 자료v3 유지. store.read(file,{required?}), save()→void|{warning:string}. 주파일 확정후 보호본 실패는 자료갱신+경고. 선택백업은필수파일읽기.
-- **Test Status**: 원본64개+Electron통과. 보완본70/70·전체Electron·UI142·업무흐름10/10. Windows수정본은푸시후확인. 73c938e원본Windows성공과구분.
-- **Remaining Work for Gemini**: Claude는보완diff검토/통합. Codex다음TASK-CALENDAR-02. 실제Windows접근성/절전·양식사용자피드백은기존카드.
-- **Modified Code Snippets (if uncommitted)**: 검증완료수정즉시커밋·푸시. 원브랜치/main직접수정없음.
+- **Repository & Branch**: Recon987/AI-Coding (task/task-calendar-02 / 기반 task/task-review-claude-01 / main·Claude 원 브랜치 미변경)
+- **Task Card**: TASK-CALENDAR-02 review. Claude가 독립 검증 후 회차 PR → PR #2 → PR #1 순으로 통합.
+- **Latest Pushed Commit**: 06060ef51a873a20ef4b776cb2023c8e3d8735e7 - wip(TASK-CALENDAR-02): add occurrence state model and calendar controls (작성 직전 원격 체크포인트, 최종 해시는 응답/git log)
+- **Completed Steps & Modified Files**: shared/model·선언·types, Calendar·Briefing·style, 회차 단위/실제 Electron 검사, Windows workflow·package0.7.0, README·architecture·validation·검토 화면/카드. 완료·제외·복원·지연/실패 저장 보호.
+- **Changed Interfaces / Schema Diff**: Event.completedDates?/excludedDates?: string[], v3 유지; setOccurrenceDone/Excluded(event,date,bool):Event. 첫 반복 회차 occurrenceDate 제공, 기존 key/at 유지. 새 IPC 없음.
+- **Test Status**: npm test81/81, npm run test:desktop 전체 통과, UI142·오류0·외부요청0, 업무흐름10/10. 기반 b03d6cf Windows38896149700 성공. 새 회차 Windows는 푸시 후 확인.
+- **Remaining Work for Gemini**: Claude 최종 검증/통합. 기관 PC 절전·토스트·접근성 및 사용자 양식 피드백은 별도. 다음 백로그는 board/카드 확인.
+- **Modified Code Snippets (if uncommitted)**: 검증 완료 변경은 이 문서와 즉시 커밋·푸시. 작업 원본/main에 직접 쓰지 않음.
 ```
 
 ## 2. 과제 현황

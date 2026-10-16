@@ -79,7 +79,7 @@ test("legacy whole-series done stays effective and cannot be silently reopened f
 
 test("metadata must be unique real dates in bounded arrays on recurring events only", () => {
   for (const field of ["completedDates", "excludedDates"]) {
-    for (const bad of [null, {}, "2026-10-15", ["2026-02-30"], ["2026-10-15", "2026-10-15"], [1], ["2026-1-01"]])
+    for (const bad of [null, {}, "2026-10-15", ["2026-02-30"], ["2026-10-15", "2026-10-15"], [1], ["2026-1-01"], Array(1), ["2026-10-15", , "2026-10-17"]])
       assert.throws(() => normalize(withEvent(event({ [field]: bad }))), /회차별/);
     assert.throws(() => normalize(withEvent(event({ recurrence: "none", [field]: [] }))), /반복 일정/);
     const noRecurrence = event({ [field]: [] });
@@ -141,6 +141,14 @@ test("metadata survives rule edits, and immutable actions return sorted idempote
   const edited = { ...initial, recurrence: "weekly", repeatUntil: "2026-10-15" };
   assert.deepEqual(normalize(withEvent(edited)).events[0], edited);
   assert.equal(view(edited).length, 1);
+  assert.deepEqual(setOccurrenceExcluded(edited, "2026-10-16", false).excludedDates, []);
+  assert.deepEqual(setOccurrenceDone(edited, "2026-10-16", false).completedDates, ["2026-10-18"]);
+  for (const change of [setOccurrenceDone, setOccurrenceExcluded])
+    assert.throws(() => change(edited, "2026-10-16", true), /회차/);
+  const globallyDone = { ...edited, done: true };
+  assert.deepEqual(setOccurrenceExcluded(globallyDone, "2026-10-16", false).excludedDates, []);
+  assert.throws(() => setOccurrenceDone(globallyDone, "2026-10-16", false), /전체.*다시 시작/);
+  assert.deepEqual(initial, snapshot);
 });
 
 test("old v3 and new metadata preserve shape across live save, protection copy and backup round-trip", () => {
@@ -170,6 +178,14 @@ test("old v3 and new metadata preserve shape across live save, protection copy a
     const bytes = fs.readFileSync(file);
     assert.throws(() => store.write(file, { ...next, events: [{ ...next.events[0], completedDates: null }] }));
     assert.deepEqual(fs.readFileSync(file), bytes);
+    const protectionBytes = fs.readFileSync(store.lastGoodFile(file));
+    for (const field of ["completedDates", "excludedDates"]) {
+      const sparse = { ...next, events: [{ ...next.events[0], [field]: Array(1) }] };
+      assert.throws(() => store.write(file, sparse, { keepLastGood: true }), /회차별/);
+      assert.deepEqual(fs.readFileSync(file), bytes);
+      assert.deepEqual(fs.readFileSync(store.lastGoodFile(file)), protectionBytes);
+      assert.deepEqual(store.read(file), next);
+    }
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

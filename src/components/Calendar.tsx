@@ -9,14 +9,31 @@ import {
   holidayName,
   RECURRENCE_LABEL,
 } from "../../shared/model.mjs";
-import type { CalendarItem, Data, Event, EventRecurrence, Page, Save } from "../types";
-import { categoryTone, Empty, Field, formatDate, itemClock, localInput, SectionHead, Tag } from "../ui";
+import type {
+  CalendarItem,
+  Data,
+  Event,
+  EventRecurrence,
+  Page,
+  Save,
+} from "../types";
+import {
+  categoryTone,
+  Empty,
+  Field,
+  formatDate,
+  itemClock,
+  localInput,
+  SectionHead,
+  Tag,
+} from "../ui";
 import { Icon } from "./Icon";
 import { askConfirm, confirmDelete } from "../confirm";
 /** "순찰 2 · 인계 1" for chips that do not fit in a month cell. */
 function overflowByKind(rest: { category: string }[]) {
   const counts = new Map<string, number>();
-  for (const i of rest) counts.set(i.category, (counts.get(i.category) ?? 0) + 1);
+  for (const i of rest)
+    counts.set(i.category, (counts.get(i.category) ?? 0) + 1);
   return [...counts].map(([category, n]) => `${category} ${n}`).join(" · ");
 }
 
@@ -33,12 +50,15 @@ export function Calendar({
   navigate: (page: Page, id?: string) => void;
   initialId?: string;
 }) {
-  const occurrenceRequest = initialId?.match(/^occurrence:(\d{4}-\d{2}-\d{2}):(.+)$/);
-  const initial = data.events.find((e) => e.id === initialId) ||
+  const occurrenceRequest = initialId?.match(
+    /^occurrence:(\d{4}-\d{2}-\d{2}):(.+)$/,
+  );
+  const initial =
+    data.events.find((e) => e.id === initialId) ||
     data.events.find((e) => e.id === occurrenceRequest?.[2]);
-  const requestedDate = occurrenceRequest?.[1] || initialId?.match(
-    /^(?:new|date):(\d{4}-\d{2}-\d{2})$/,
-  )?.[1];
+  const requestedDate =
+    occurrenceRequest?.[1] ||
+    initialId?.match(/^(?:new|date):(\d{4}-\d{2}-\d{2})$/)?.[1];
   const initialDate =
     requestedDate &&
     Number.isFinite(Date.parse(`${requestedDate}T09:00`)) &&
@@ -48,7 +68,7 @@ export function Calendar({
   const [month, setMonth] = useState(
     () =>
       new Date(
-        initial?.at || (initialDate ? `${initialDate}T09:00` : Date.now()),
+        initialDate ? `${initialDate}T09:00` : initial?.at || Date.now(),
       ),
   );
   const [selected, setSelected] = useState(
@@ -69,54 +89,107 @@ export function Calendar({
   const [exceptionId, setExceptionId] = useState("");
   const [exceptionLimit, setExceptionLimit] = useState(50);
   const exceptionPanel = useRef<HTMLDetailsElement>(null);
-  const excludedEvents = data.events.filter(e => e.excludedDates?.length);
-  const exceptionEvent = excludedEvents.find(e => e.id === exceptionId) || excludedEvents[0];
-  const exceptionCount = excludedEvents.reduce((n,e) => n + (e.excludedDates?.length || 0), 0);
-  const isRecurring = (event: Event | CalendarItem) => !!event.recurrence && event.recurrence !== "none";
-  const occurrenceDay = (item: CalendarItem) => item.occurrenceDate || dayKey(new Date(item.at));
+  const excludedEvents = data.events.filter((e) => e.excludedDates?.length);
+  const exceptionEvent =
+    excludedEvents.find((e) => e.id === exceptionId) || excludedEvents[0];
+  const exceptionCount = excludedEvents.reduce(
+    (n, e) => n + (e.excludedDates?.length || 0),
+    0,
+  );
+  const isRecurring = (event: Event | CalendarItem) =>
+    !!event.recurrence && event.recurrence !== "none";
+  const occurrenceDay = (item: CalendarItem) =>
+    item.occurrenceDate || dayKey(new Date(item.at));
   async function persistEvent(next: Event) {
     setActionError("");
     if (editor.isOpen && editor.dirty) {
-      editor.setSaveError("작성 중인 변경을 먼저 저장하거나 취소한 뒤 회차를 변경하세요.");
+      editor.setSaveError(
+        "작성 중인 변경을 먼저 저장하거나 취소한 뒤 회차를 변경하세요.",
+      );
       return false;
     }
-    const ok = await save({ ...data, events: data.events.map(e => e.id === next.id ? next : e) });
+    const ok = await save({
+      ...data,
+      events: data.events.map((e) => (e.id === next.id ? next : e)),
+    });
     if (!ok) {
-      setActionError("회차 변경을 저장하지 못했습니다. 기존 상태를 유지합니다.");
+      const message =
+        "회차 변경을 저장하지 못했습니다. 기존 상태를 유지합니다.";
+      setActionError(message);
+      if (editor.isOpen) editor.setSaveError(message);
       return false;
     }
     if (editor.isOpen && draft.id === next.id) await editor.openEditor(next);
     return true;
   }
   async function toggleDone(item: CalendarItem) {
-    const event = data.events.find(e => e.id === item.id);
+    const event = data.events.find((e) => e.id === item.id);
     if (!event || busy) return;
     try {
-      if (!isRecurring(event)) await persistEvent({ ...event, done: !event.done });
+      if (!isRecurring(event))
+        await persistEvent({ ...event, done: !event.done });
       else if (event.done) {
-        if (await askConfirm({ message: "기존 전체 완료 상태를 해제할까요?", detail: "앞으로 회차별로 완료할 수 있습니다. 이미 저장한 회차별 완료 기록은 유지합니다.", confirmLabel: "전체 완료 해제" }))
+        if (
+          await askConfirm({
+            message: "기존 전체 완료 상태를 해제할까요?",
+            detail:
+              "앞으로 회차별로 완료할 수 있습니다. 이미 저장한 회차별 완료 기록은 유지합니다.",
+            confirmLabel: "전체 완료 해제",
+          })
+        )
           await persistEvent({ ...event, done: false });
-      } else await persistEvent(setOccurrenceDone(event, occurrenceDay(item), !item.done));
-    } catch (error) { setActionError(error instanceof Error ? error.message : "회차를 변경하지 못했습니다."); }
+      } else
+        await persistEvent(
+          setOccurrenceDone(event, occurrenceDay(item), !item.done),
+        );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "회차를 변경하지 못했습니다.";
+      setActionError(message);
+      if (editor.isOpen) editor.setSaveError(message);
+    }
   }
-  async function excludeOccurrence(event: Event, date: string, excluded: boolean) {
+  async function excludeOccurrence(
+    event: Event,
+    date: string,
+    excluded: boolean,
+  ) {
     if (busy) return;
     if (editor.isOpen && editor.dirty) {
       editor.setSaveError("작성 중인 변경을 먼저 저장하거나 취소하세요.");
       return;
     }
-    if (excluded && !(await askConfirm({ message: `${formatDate(date)}의 '${event.title}' 회차를 제외할까요?`, detail: "다른 날짜는 유지합니다. 이 날짜의 달력·브리핑·알림에서 빠지며 '제외 회차 관리'에서 되돌릴 수 있습니다.", confirmLabel: "이 회차 제외" }))) return;
+    if (
+      excluded &&
+      !(await askConfirm({
+        message: `${formatDate(date)}의 '${event.title}' 회차를 제외할까요?`,
+        detail:
+          "다른 날짜는 유지합니다. 이 날짜의 달력·브리핑·알림에서 빠지며 '제외 회차 관리'에서 되돌릴 수 있습니다.",
+        confirmLabel: "이 회차 제외",
+      }))
+    )
+      return;
     try {
       if (await persistEvent(setOccurrenceExcluded(event, date, excluded))) {
         setExceptionId(event.id);
         setExceptionLimit(50);
       }
-    } catch (error) { setActionError(error instanceof Error ? error.message : "제외일을 변경하지 못했습니다."); }
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "제외일을 변경하지 못했습니다.";
+      setActionError(message);
+      if (editor.isOpen) editor.setSaveError(message);
+    }
   }
   async function openItem(item: CalendarItem) {
-    if (item.page !== "calendar") { navigate(item.page as Page, item.id); return; }
-    const source = data.events.find(e => e.id === item.id);
-    if (source && await editor.openEditor(source)) {
+    if (item.page !== "calendar") {
+      navigate(item.page as Page, item.id);
+      return;
+    }
+    const source = data.events.find((e) => e.id === item.id);
+    if (source && (await editor.openEditor(source))) {
       const date = occurrenceDay(item);
       setSelected(date);
       setMonth(new Date(`${date}T12:00:00`));
@@ -124,18 +197,50 @@ export function Calendar({
     }
   }
   function completionControls(item: CalendarItem) {
-    const event = data.events.find(e => e.id === item.id);
+    const event = data.events.find((e) => e.id === item.id);
     if (!event) return null;
     const repeating = isRecurring(event);
     const date = occurrenceDay(item);
-    return <span className="occurrence-actions">
-      <input type="checkbox" checked={item.done} disabled={busy || (editor.isOpen && editor.dirty)}
-        aria-label={repeating ? event.done ? `${item.title} 전체 완료 해제` : `${item.title} ${date} 회차 완료` : `${item.title} 완료`}
-        title={repeating ? event.done ? "기존 자료의 전체 완료 상태를 해제합니다." : "이 날짜 회차만 완료하거나 다시 진행합니다." : "일정 완료 상태 변경"}
-        onChange={() => void toggleDone(item)} />
-      {repeating && <button type="button" className="text-button" disabled={busy || (editor.isOpen && editor.dirty)}
-        aria-label={`${item.title} ${date} 회차 제외`} onClick={() => void excludeOccurrence(event, date, true)}>이번 회차 제외</button>}
-    </span>;
+    return (
+      <span className="occurrence-actions">
+        <label className="occurrence-completion">
+          <input
+            type="checkbox"
+            checked={item.done}
+            disabled={busy || (editor.isOpen && editor.dirty)}
+            aria-label={
+              repeating
+                ? event.done
+                  ? `${item.title} 전체 완료 해제`
+                  : `${item.title} ${date} 회차 완료`
+                : `${item.title} 완료`
+            }
+            title={
+              repeating
+                ? event.done
+                  ? "기존 자료의 전체 완료 상태를 해제합니다."
+                  : "이 날짜 회차만 완료하거나 다시 진행합니다."
+                : "일정 완료 상태 변경"
+            }
+            onChange={() => void toggleDone(item)}
+          />
+          <span>
+            {repeating ? (event.done ? "전체 완료" : "회차 완료") : "완료"}
+          </span>
+        </label>
+        {repeating && (
+          <button
+            type="button"
+            className="text-button"
+            disabled={busy || (editor.isOpen && editor.dirty)}
+            aria-label={`${item.title} ${date} 회차 제외`}
+            onClick={() => void excludeOccurrence(event, date, true)}
+          >
+            이번 회차 제외
+          </button>
+        )}
+      </span>
+    );
   }
 
   const year = month.getFullYear(),
@@ -166,7 +271,10 @@ export function Calendar({
     next.setDate(next.getDate() + days);
     return dayKey(next);
   };
-  const weekStart = shift(selected, -((new Date(`${selected}T12:00:00`).getDay() + 6) % 7));
+  const weekStart = shift(
+    selected,
+    -((new Date(`${selected}T12:00:00`).getDay() + 6) % 7),
+  );
   const weekDays = Array.from({ length: 7 }, (_, n) => shift(weekStart, n));
   const listEnd = shift(selected, 29);
   const viewItems =
@@ -176,7 +284,8 @@ export function Calendar({
           startDate: view === "week" ? weekStart : selected,
           endDate: view === "week" ? weekDays[6] : listEnd,
         });
-  const byDay = (key: string) => viewItems.filter((i) => dayKey(new Date(i.at)) === key);
+  const byDay = (key: string) =>
+    viewItems.filter((i) => dayKey(new Date(i.at)) === key);
   function moveView(direction: 1 | -1) {
     if (view === "month") {
       setMonth(new Date(year, monthIndex + direction, 1));
@@ -187,7 +296,8 @@ export function Calendar({
     setMonth(new Date(`${next}T12:00:00`));
   }
   const unit = view === "month" ? "달" : view === "week" ? "주" : "30일";
-  const short = (key: string) => formatDate(key, { year: false, weekday: false });
+  const short = (key: string) =>
+    formatDate(key, { year: false, weekday: false });
   const heading =
     view === "month"
       ? `${year}년 ${monthIndex + 1}월`
@@ -213,16 +323,30 @@ export function Calendar({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (invalidRepeatUntil) return;
-    const existing = data.events.find(e => e.id === draft.id);
-    if (existing && !isRecurring(draft) && (existing.completedDates?.length || existing.excludedDates?.length) &&
-      !(await askConfirm({ message: "반복을 해제하고 단일 일정으로 저장할까요?", detail: "회차별 완료·제외 기록이 제거됩니다. 일정 제목과 시작 시각은 유지합니다.", confirmLabel: "반복 해제" }))) return;
+    const existing = data.events.find((e) => e.id === draft.id);
+    if (
+      existing &&
+      !isRecurring(draft) &&
+      (existing.completedDates?.length || existing.excludedDates?.length) &&
+      !(await askConfirm({
+        message: "반복을 해제하고 단일 일정으로 저장할까요?",
+        detail:
+          "회차별 완료·제외 기록이 제거됩니다. 일정 제목과 시작 시각은 유지합니다.",
+        confirmLabel: "반복 해제",
+      }))
+    )
+      return;
     const recFields =
       draft.recurrence && draft.recurrence !== "none"
         ? {
             recurrence: draft.recurrence,
             repeatUntil: draft.repeatUntil || null,
-            ...(draft.completedDates !== undefined ? { completedDates: draft.completedDates } : {}),
-            ...(draft.excludedDates !== undefined ? { excludedDates: draft.excludedDates } : {}),
+            ...(draft.completedDates !== undefined
+              ? { completedDates: draft.completedDates }
+              : {}),
+            ...(draft.excludedDates !== undefined
+              ? { excludedDates: draft.excludedDates }
+              : {}),
           }
         : {};
     const row: Event = {
@@ -254,14 +378,21 @@ export function Calendar({
   return (
     <div className={`calendar-layout ${view === "month" ? "" : "wide"}`}>
       <section className="panel">
-        <SectionHead
-          eyebrow="CONNECTED CALENDAR"
-          title={heading}
-        >
+        <SectionHead eyebrow="CONNECTED CALENDAR" title={heading}>
           <div className="month-controls">
-            {exceptionCount > 0 && <button type="button" onClick={() => {
-              if (exceptionPanel.current) { exceptionPanel.current.open = true; exceptionPanel.current.scrollIntoView({ block: "start" }); }
-            }}>제외 회차 관리 ({exceptionCount})</button>}
+            {exceptionCount > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (exceptionPanel.current) {
+                    exceptionPanel.current.open = true;
+                    exceptionPanel.current.scrollIntoView({ block: "start" });
+                  }
+                }}
+              >
+                제외 회차 관리 ({exceptionCount})
+              </button>
+            )}
 
             {view === "month" && (
               <button onClick={focusAgenda}>
@@ -291,7 +422,11 @@ export function Calendar({
             </button>
           </div>
         </SectionHead>
-        <div className="segmented calendar-views" role="tablist" aria-label="달력 보기">
+        <div
+          className="segmented calendar-views"
+          role="tablist"
+          aria-label="달력 보기"
+        >
           {(
             [
               ["month", "월간"],
@@ -317,13 +452,26 @@ export function Calendar({
               const closures = entries.filter((i) => i.category === "통제");
               const holiday = holidayName(key);
               return (
-                <section key={key} className={`week-column ${key === selected ? "selected-day" : ""} ${key === dayKey() ? "is-today" : ""}`} aria-label={`${formatDate(key)} ${entries.length}건`}>
-                  <button className="week-column-head" aria-pressed={key === selected} onClick={() => choose(key)}>
+                <section
+                  key={key}
+                  className={`week-column ${key === selected ? "selected-day" : ""} ${key === dayKey() ? "is-today" : ""}`}
+                  aria-label={`${formatDate(key)} ${entries.length}건`}
+                >
+                  <button
+                    className="week-column-head"
+                    aria-pressed={key === selected}
+                    onClick={() => choose(key)}
+                  >
                     <span>{formatDate(key, { year: false })}</span>
-                    {holiday && <small className="holiday-label">{holiday}</small>}
+                    {holiday && (
+                      <small className="holiday-label">{holiday}</small>
+                    )}
                   </button>
                   {closures.length > 0 && (
-                    <span className="calendar-control-mark" title={closures.map((c) => c.title).join(", ")}>
+                    <span
+                      className="calendar-control-mark"
+                      title={closures.map((c) => c.title).join(", ")}
+                    >
                       <Icon name="controls" size={12} />
                       통제 {closures.length}
                     </span>
@@ -343,7 +491,9 @@ export function Calendar({
                         </span>
                       </button>
                     ))}
-                  {entries.length === 0 && <small className="muted">기록 없음</small>}
+                  {entries.length === 0 && (
+                    <small className="muted">기록 없음</small>
+                  )}
                 </section>
               );
             })}
@@ -357,10 +507,16 @@ export function Calendar({
                 <section key={key} className="list-view-day">
                   <h3>
                     {formatDate(key)}
-                    {holidayName(key) && <Tag tone="holiday">{holidayName(key)}</Tag>}
+                    {holidayName(key) && (
+                      <Tag tone="holiday">{holidayName(key)}</Tag>
+                    )}
                   </h3>
                   {byDay(key).map((i) => (
-                    <button key={i.key} className="list-view-row" onClick={() => void openItem(i)}>
+                    <button
+                      key={i.key}
+                      className="list-view-row"
+                      onClick={() => void openItem(i)}
+                    >
                       <time>{itemClock(i)}</time>
                       <Tag tone={categoryTone(i.category)}>{i.category}</Tag>
                       <span className={i.done ? "done" : ""}>{i.title}</span>
@@ -368,88 +524,116 @@ export function Calendar({
                   ))}
                 </section>
               ))}
-            {viewItems.length === 0 && <Empty>이 기간에 기록이 없습니다.</Empty>}
+            {viewItems.length === 0 && (
+              <Empty>이 기간에 기록이 없습니다.</Empty>
+            )}
           </div>
         )}
         {view === "month" && (
-        <>
-        <div className="calendar-legend">
-          <Tag><Icon name="calendar" size={12} />일정</Tag>
-          <Tag tone="patrol"><Icon name="patrol" size={12} />순찰</Tag>
-          <Tag tone="task"><Icon name="handover" size={12} />인계</Tag>
-          <Tag tone="task"><Icon name="submission" size={12} />제출</Tag>
-          <Tag tone="control"><Icon name="controls" size={12} />통제</Tag>
-          <Tag tone="holiday">공휴일</Tag>
-        </div>
-        <div className="calendar-week">
-          {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
-            <span key={d}>{d}</span>
-          ))}
-        </div>
-        <div className="calendar-grid">
-          {days.map((date) => {
-            const key = dayKey(date),
-              entries = items.filter((i) => dayKey(new Date(i.at)) === key),
-              holiday = holidayName(key);
-            // Closures can span weeks; they get one marker so work items keep the chip slots.
-            const closures = entries.filter((i) => i.category === "통제");
-            const work = entries.filter((i) => i.category !== "통제");
-            const entryDescription = work.slice(0, 3).map((i) =>
-              `${i.category} ${itemClock(i)} ${i.title}${i.done ? " 완료" : ""}`,
-            ).join(", ");
-            return (
-              <button
-                key={key}
-                aria-label={`${key} ${work.length}건, ${formatDate(key)}${holiday ? `, ${holiday}` : ""}${closures.length ? `, 탐방로 통제 ${closures.length}곳` : ""}${entryDescription ? `, ${entryDescription}` : ""}${work.length > 3 ? `, 그 외 ${work.length - 3}건. 선택 날짜 기록에서 전체 확인` : ""}`}
-                aria-pressed={selected === key}
-                aria-current={key === dayKey() ? "date" : undefined}
-                className={`calendar-day ${date.getMonth() !== monthIndex ? "outside" : ""} ${key === selected ? "selected-day" : ""} ${holiday ? "holiday-day" : ""} ${date.getDay() === 0 ? "sunday" : date.getDay() === 6 ? "saturday" : ""}`}
-                onClick={() => choose(key)}
-              >
-                <div className="day-head">
-                  <span
-                    className={key === dayKey() ? "today-number" : "day-number"}
+          <>
+            <div className="calendar-legend">
+              <Tag>
+                <Icon name="calendar" size={12} />
+                일정
+              </Tag>
+              <Tag tone="patrol">
+                <Icon name="patrol" size={12} />
+                순찰
+              </Tag>
+              <Tag tone="task">
+                <Icon name="handover" size={12} />
+                인계
+              </Tag>
+              <Tag tone="task">
+                <Icon name="submission" size={12} />
+                제출
+              </Tag>
+              <Tag tone="control">
+                <Icon name="controls" size={12} />
+                통제
+              </Tag>
+              <Tag tone="holiday">공휴일</Tag>
+            </div>
+            <div className="calendar-week">
+              {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
+                <span key={d}>{d}</span>
+              ))}
+            </div>
+            <div className="calendar-grid">
+              {days.map((date) => {
+                const key = dayKey(date),
+                  entries = items.filter((i) => dayKey(new Date(i.at)) === key),
+                  holiday = holidayName(key);
+                // Closures can span weeks; they get one marker so work items keep the chip slots.
+                const closures = entries.filter((i) => i.category === "통제");
+                const work = entries.filter((i) => i.category !== "통제");
+                const entryDescription = work
+                  .slice(0, 3)
+                  .map(
+                    (i) =>
+                      `${i.category} ${itemClock(i)} ${i.title}${i.done ? " 완료" : ""}`,
+                  )
+                  .join(", ");
+                return (
+                  <button
+                    key={key}
+                    aria-label={`${key} ${work.length}건, ${formatDate(key)}${holiday ? `, ${holiday}` : ""}${closures.length ? `, 탐방로 통제 ${closures.length}곳` : ""}${entryDescription ? `, ${entryDescription}` : ""}${work.length > 3 ? `, 그 외 ${work.length - 3}건. 선택 날짜 기록에서 전체 확인` : ""}`}
+                    aria-pressed={selected === key}
+                    aria-current={key === dayKey() ? "date" : undefined}
+                    className={`calendar-day ${date.getMonth() !== monthIndex ? "outside" : ""} ${key === selected ? "selected-day" : ""} ${holiday ? "holiday-day" : ""} ${date.getDay() === 0 ? "sunday" : date.getDay() === 6 ? "saturday" : ""}`}
+                    onClick={() => choose(key)}
                   >
-                    {date.getDate()}
-                  </span>
-                  {holiday && (
-                    <span className="holiday-label" title={holiday}>
-                      {holiday}
-                    </span>
-                  )}
-                </div>
-                {work.slice(0, 3).map((i) => (
-                  <span
-                    className={`calendar-chip ${categoryTone(i.category)} ${i.done ? "done" : ""}`}
-                    key={i.key}
-                    title={`${i.category} · ${itemClock(i)} · ${i.title}${i.recurrence && i.recurrence !== "none" ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복` : ""}${i.done ? " · 완료" : ""}`}
-                  >
-                    <Icon name={i.page} size={12} />
-                    <span>{i.recurrence && i.recurrence !== "none" ? "↻ " : ""}{i.title}</span>
-                  </span>
-                ))}
-                {work.length > 3 && (
-                  <small title={overflowByKind(work.slice(3))}>+{work.length - 3}건</small>
-                )}
-                {closures.length > 0 && (
-                  <span
-                    className="calendar-control-mark"
-                    title={`탐방로 통제 · ${closures.map((c) => c.title).join(", ")}`}
-                  >
-                    <Icon name="controls" size={12} />
-                    통제 {closures.length}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-        <p className="help">
-          순찰과 인계·제출 기한은 원본 기록에서 자동으로 표시됩니다.
-          법정공휴일·대체공휴일(오프라인 음력 공휴일 2025~2035년 포함)과 반복
-          일정도 복제 없이 함께 표시합니다.
-        </p>
-        </>
+                    <div className="day-head">
+                      <span
+                        className={
+                          key === dayKey() ? "today-number" : "day-number"
+                        }
+                      >
+                        {date.getDate()}
+                      </span>
+                      {holiday && (
+                        <span className="holiday-label" title={holiday}>
+                          {holiday}
+                        </span>
+                      )}
+                    </div>
+                    {work.slice(0, 3).map((i) => (
+                      <span
+                        className={`calendar-chip ${categoryTone(i.category)} ${i.done ? "done" : ""}`}
+                        key={i.key}
+                        title={`${i.category} · ${itemClock(i)} · ${i.title}${i.recurrence && i.recurrence !== "none" ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복` : ""}${i.done ? " · 완료" : ""}`}
+                      >
+                        <Icon name={i.page} size={12} />
+                        <span>
+                          {i.recurrence && i.recurrence !== "none" ? "↻ " : ""}
+                          {i.title}
+                        </span>
+                      </span>
+                    ))}
+                    {work.length > 3 && (
+                      <small title={overflowByKind(work.slice(3))}>
+                        +{work.length - 3}건
+                      </small>
+                    )}
+                    {closures.length > 0 && (
+                      <span
+                        className="calendar-control-mark"
+                        title={`탐방로 통제 · ${closures.map((c) => c.title).join(", ")}`}
+                      >
+                        <Icon name="controls" size={12} />
+                        통제 {closures.length}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="help">
+              순찰과 인계·제출 기한은 원본 기록에서 자동으로 표시됩니다.
+              법정공휴일·대체공휴일(오프라인 음력 공휴일 2025~2035년 포함)과
+              반복 일정도 복제 없이 함께 표시합니다.
+            </p>
+          </>
         )}
       </section>
       <div className="calendar-detail" hidden={view !== "month"}>
@@ -462,15 +646,15 @@ export function Calendar({
           <SectionHead title={formatDate(selected)}>
             {selectedHoliday && <Tag tone="holiday">{selectedHoliday}</Tag>}
           </SectionHead>
-          <p className="agenda-caption">선택 날짜 기록 <strong>{selectedItems.length}건</strong></p>
+          <p className="agenda-caption">
+            선택 날짜 기록 <strong>{selectedItems.length}건</strong>
+          </p>
           {selectedItems.length === 0 && (
             <Empty>선택한 날짜에 기록이 없습니다.</Empty>
           )}
           {selectedItems.map((i) => (
             <div className="agenda-row" key={i.key}>
-              <Tag tone={categoryTone(i.category)}>
-                {i.category}
-              </Tag>
+              <Tag tone={categoryTone(i.category)}>{i.category}</Tag>
               <div>
                 <button
                   className={`link-button ${i.done ? "done" : ""}`}
@@ -490,152 +674,223 @@ export function Calendar({
           ))}
         </section>
       </div>
-      {actionError && <p className="error occurrence-notice" role="alert">{actionError}</p>}
-      {exceptionCount > 0 && <details className="panel excluded-occurrences" ref={exceptionPanel}>
-        <summary>제외 회차 관리 ({exceptionCount})</summary>
-        <p className="help">복원하면 해당 날짜의 기록과 알림 대상이 다시 표시됩니다. 이미 완료한 회차는 완료 상태를 유지합니다.</p>
-        <Field label="제외 회차가 있는 일정"><select value={exceptionEvent?.id || ""} onChange={e => { setExceptionId(e.target.value); setExceptionLimit(50); }}>
-          {excludedEvents.map(event => <option key={event.id} value={event.id}>{event.title}</option>)}
-        </select></Field>
-        <ul>{exceptionEvent?.excludedDates?.slice().sort().slice(0, exceptionLimit).map(date => <li key={date}>
-          <time dateTime={date}>{formatDate(date)}</time>
-          <button type="button" disabled={busy} aria-label={`${exceptionEvent.title} ${date} 제외 복원`} onClick={() => void excludeOccurrence(exceptionEvent, date, false)}>제외 복원</button>
-        </li>)}</ul>
-        {(exceptionEvent?.excludedDates?.length || 0) > exceptionLimit && <button type="button" onClick={() => setExceptionLimit(n => n + 50)}>제외 회차 더 보기</button>}
-      </details>}
+      {actionError && (
+        <p className="error occurrence-notice" role="alert">
+          {actionError}
+        </p>
+      )}
+      {exceptionCount > 0 && (
+        <details className="panel excluded-occurrences" ref={exceptionPanel}>
+          <summary>제외 회차 관리 ({exceptionCount})</summary>
+          <p className="help">
+            현재 반복 규칙에 해당하는 날짜는 기록과 알림 대상이 다시 표시됩니다.
+            이미 완료한 회차는 완료 상태를 유지합니다.
+          </p>
+          <Field label="제외 회차가 있는 일정">
+            <select
+              value={exceptionEvent?.id || ""}
+              onChange={(e) => {
+                setExceptionId(e.target.value);
+                setExceptionLimit(50);
+              }}
+            >
+              {excludedEvents.map((event) => (
+                <option key={event.id} value={event.id}>
+                  {event.title}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <ul>
+            {exceptionEvent?.excludedDates
+              ?.slice()
+              .sort()
+              .slice(0, exceptionLimit)
+              .map((date) => (
+                <li key={date}>
+                  <time dateTime={date}>{formatDate(date)}</time>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    aria-label={`${exceptionEvent.title} ${date} 제외 복원`}
+                    onClick={() =>
+                      void excludeOccurrence(exceptionEvent, date, false)
+                    }
+                  >
+                    제외 복원
+                  </button>
+                </li>
+              ))}
+          </ul>
+          {(exceptionEvent?.excludedDates?.length || 0) > exceptionLimit && (
+            <button
+              type="button"
+              onClick={() => setExceptionLimit((n) => n + 50)}
+            >
+              제외 회차 더 보기
+            </button>
+          )}
+        </details>
+      )}
       {editor.isOpen && (
-          <EditorDialog
-            title={draft.id ? "일정 수정" : "일정 등록"}
-            busy={busy}
-            dirty={editor.dirty}
-            onClose={editor.finishEditor}
-            error={editor.saveError}
-          >
-            <form className="editor" onSubmit={submit}>
-              {draft.id && activeRecurrence && (() => {
-                const source = data.events.find(e => e.id === draft.id);
-                const occurrence = source && expandEventOccurrences({ ...source, excludedDates: [] }, { startDate: selected, endDate: selected })[0];
-                return <section className="occurrence-editor" aria-label="반복 회차 관리">
-                  <h3>{formatDate(selected)} 회차</h3>
-                  <p className="help">완료·제외는 이 날짜에만 반영합니다. 아래 제목·일시·반복 주기 변경은 전체 일정에 적용됩니다.</p>
-                  {editor.dirty ? <p className="help">작성 중인 내용을 먼저 저장하거나 취소하세요.</p>
-                    : source?.excludedDates?.includes(selected) ? <p>제외한 회차입니다. 달력의 제외 회차 관리에서 복원할 수 있습니다.</p>
-                    : occurrence ? completionControls(occurrence) : <p className="help">선택 날짜에는 이 반복 일정의 회차가 없습니다.</p>}
-                </section>;
+        <EditorDialog
+          title={draft.id ? "일정 수정" : "일정 등록"}
+          busy={busy}
+          dirty={editor.dirty}
+          onClose={editor.finishEditor}
+          error={editor.saveError}
+        >
+          <form className="editor" onSubmit={submit}>
+            {draft.id &&
+              activeRecurrence &&
+              (() => {
+                const source = data.events.find((e) => e.id === draft.id);
+                const occurrence =
+                  source &&
+                  expandEventOccurrences(
+                    { ...source, excludedDates: [] },
+                    { startDate: selected, endDate: selected },
+                  )[0];
+                return (
+                  <section
+                    className="occurrence-editor"
+                    aria-label="반복 회차 관리"
+                  >
+                    <h3>{formatDate(selected)} 회차</h3>
+                    <p className="help">
+                      완료·제외는 이 날짜에만 반영합니다. 아래 제목·일시·반복
+                      주기 변경은 전체 일정에 적용됩니다.
+                    </p>
+                    {editor.dirty && (
+                      <p className="help">
+                        작성 중인 내용을 먼저 저장하거나 취소하세요.
+                      </p>
+                    )}
+                    {source?.excludedDates?.includes(selected) ? (
+                      <p>
+                        제외한 회차입니다. 달력의 제외 회차 관리에서 복원할 수
+                        있습니다.
+                      </p>
+                    ) : occurrence ? (
+                      completionControls(occurrence)
+                    ) : (
+                      <p className="help">
+                        선택 날짜에는 이 반복 일정의 회차가 없습니다.
+                      </p>
+                    )}
+                  </section>
+                );
               })()}
 
-              <div className="editor-header-actions">
-                <button
-                  className="primary"
-                  disabled={busy || invalidRepeatUntil}
-                >
-                  {draft.id ? "변경 저장" : "일정 저장"}
-                </button>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={editor.closeEditor}
-                >
-                  취소
-                </button>
-                {draft.id && (
-                  <>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={async () => {
-                        if (
-                          (await confirmDelete("일정")) &&
-                          (await save({
-                            ...data,
-                            events: data.events.filter(
-                              (e) => e.id !== draft.id,
-                            ),
-                          }))
-                        )
-                          editor.finishEditor();
-                      }}
-                    >
-                      삭제
-                    </button>
-                  </>
-                )}
-              </div>
-              <Field label="일정 제목">
-                <input
-                  required
-                  maxLength={500}
-                  autoFocus
-                  value={draft.title}
-                  onChange={(e) =>
-                    setDraft({ ...draft, title: e.target.value })
-                  }
-                />
-              </Field>
-              <Field label="일정 일시">
-                <input
-                  type="datetime-local"
-                  required
-                  value={localInput(draft.at)}
-                  onChange={(e) => {
-                    if (e.target.value)
-                      setDraft({
-                        ...draft,
-                        at: new Date(e.target.value).toISOString(),
-                      });
-                  }}
-                />
-              </Field>
-
-              <div className="form-row">
-                <Field label="반복 주기">
-                  <select
-                    aria-label="반복 주기"
-                    value={draft.recurrence || "none"}
-                    onChange={(e) => {
-                      const next = e.target.value as EventRecurrence;
-                      setDraft({
-                        ...draft,
-                        recurrence: next,
-                        repeatUntil: next === "none" ? null : draft.repeatUntil,
-                      });
+            <div className="editor-header-actions">
+              <button className="primary" disabled={busy || invalidRepeatUntil}>
+                {draft.id ? "변경 저장" : "일정 저장"}
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={editor.closeEditor}
+              >
+                취소
+              </button>
+              {draft.id && (
+                <>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={async () => {
+                      if (
+                        (await confirmDelete("일정")) &&
+                        (await save({
+                          ...data,
+                          events: data.events.filter((e) => e.id !== draft.id),
+                        }))
+                      )
+                        editor.finishEditor();
                     }}
                   >
-                    {(Object.keys(RECURRENCE_LABEL) as EventRecurrence[]).map(
-                      (k) => (
-                        <option key={k} value={k}>
-                          {RECURRENCE_LABEL[k]}
-                        </option>
-                      ),
-                    )}
-                  </select>
-                </Field>
-                {activeRecurrence && (
-                  <Field label="반복 종료일">
-                    <input
-                      type="date"
-                      aria-label="반복 종료일"
-                      min={draftStartDay}
-                      value={draft.repeatUntil || ""}
-                      onChange={(e) =>
-                        setDraft({
-                          ...draft,
-                          repeatUntil: e.target.value || null,
-                        })
-                      }
-                    />
-                  </Field>
-                )}
-              </div>
-              {invalidRepeatUntil && (
-                <p role="alert" className="error">
-                  반복 종료일은 일정 시작일({draftStartDay}) 이후여야 합니다.
-                </p>
+                    삭제
+                  </button>
+                </>
               )}
-              <p className="help">앱 실행 중 예정 시각에 알림을 표시합니다.</p>
-            </form>
-          </EditorDialog>
-        )}
+            </div>
+            <Field label="일정 제목">
+              <input
+                required
+                maxLength={500}
+                autoFocus
+                disabled={busy}
+                value={draft.title}
+                onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+              />
+            </Field>
+            <Field label="일정 일시">
+              <input
+                type="datetime-local"
+                required
+                disabled={busy}
+                value={localInput(draft.at)}
+                onChange={(e) => {
+                  if (e.target.value)
+                    setDraft({
+                      ...draft,
+                      at: new Date(e.target.value).toISOString(),
+                    });
+                }}
+              />
+            </Field>
+
+            <div className="form-row">
+              <Field label="반복 주기">
+                <select
+                  aria-label="반복 주기"
+                  disabled={busy}
+                  value={draft.recurrence || "none"}
+                  onChange={(e) => {
+                    const next = e.target.value as EventRecurrence;
+                    setDraft({
+                      ...draft,
+                      recurrence: next,
+                      repeatUntil: next === "none" ? null : draft.repeatUntil,
+                    });
+                  }}
+                >
+                  {(Object.keys(RECURRENCE_LABEL) as EventRecurrence[]).map(
+                    (k) => (
+                      <option key={k} value={k}>
+                        {RECURRENCE_LABEL[k]}
+                      </option>
+                    ),
+                  )}
+                </select>
+              </Field>
+              {activeRecurrence && (
+                <Field label="반복 종료일">
+                  <input
+                    type="date"
+                    aria-label="반복 종료일"
+                    min={draftStartDay}
+                    disabled={busy}
+                    value={draft.repeatUntil || ""}
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        repeatUntil: e.target.value || null,
+                      })
+                    }
+                  />
+                </Field>
+              )}
+            </div>
+            {invalidRepeatUntil && (
+              <p role="alert" className="error">
+                반복 종료일은 일정 시작일({draftStartDay}) 이후여야 합니다.
+              </p>
+            )}
+            <p className="help">앱 실행 중 예정 시각에 알림을 표시합니다.</p>
+          </form>
+        </EditorDialog>
+      )}
     </div>
   );
 }

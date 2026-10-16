@@ -58,4 +58,6 @@ Node24.19.0에서 원본 npm test64/64 및 전체 Electron 스모크가 통과�
 - 역전된 순찰 집계 기간의 명시적 거부.
 - 실제 Windows 스크린리더·토스트·절전 및 사용자 양식·용어 피드백.
 
-Windows 수정본 검증은 이 브랜치 푸시 후 별도 workflow_dispatch로 기록한다. 기존 원본 CI 성공과 구분한다.
+## Windows 보완본 검증
+
+소스 `b03d6cf4bb3c667c78a01e30b8607adb780e98e6`의 [Actions38896149700](https://github.com/Recon987/AI-Coding/actions/runs/38896149700) 성공. Node24 잠금 설치·70개 단위 검사·소스 Electron 전체·NSIS/portable 생성·패키징된 EXE 확장 스모크·SHA256SUMS·업로드를 통과했다. [검증 브랜치 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38896149700/artifacts/12044371028), main 미병합. 원본 Claude73c938e 결과와 별개이며 실제 기관 PC 절전·알림 표시·접근성은 미검증이다. 수정은 [초안 PR #2](https://github.com/Recon987/AI-Coding/pull/2)에서 Claude 검토를 기다린다.
