@@ -8,6 +8,20 @@ on:
       - "shared/**"
       - "desktop/**"
       - "tests/**"
+      - "scripts/**"
+      - "package*.json"
+      - "index.html"
+      - "vite.config.mts"
+      - "tsconfig.json"
+      - ".github/workflows/windows-build.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "shared/**"
+      - "desktop/**"
+      - "tests/**"
+      - "scripts/**"
       - "package*.json"
       - "index.html"
       - "vite.config.mts"

@@ -12,7 +12,8 @@
     "package:win": "npm run build && electron-builder --win nsis portable --x64 --publish never",
     "postinstall": "node node_modules/electron/install.js",
     "test:desktop": "npm run build && node tests/desktop-smoke.cjs",
-    "review:ui": "npm run build && node tests/ui-review.cjs"
+    "review:ui": "npm run build && node tests/ui-review.cjs",
+    "board": "node scripts/board.mjs"
   },
   "dependencies": {
     "react": "19.3.1",
