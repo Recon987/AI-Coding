@@ -8,7 +8,7 @@ Electron의 제한된 preload API로 로컬 파일 저장·폴더 열기·백업
 
 ## 데이터 v3
 
-v1의 notes/events/calls/folders 및 v2의 patrols/tasks를 보존하고 v3에 organizations/employees/bases/assignments를 추가했다. 조직 계층과 직원/거점 소속, 직원+날짜별 근무/당직을 UUID로 연결한다. shared/office.mjs가 참조·중복·날짜·거점·순환을 검증하고 현황을 계산한다. shared/office-import.mjs가 표준 CSV 반입을 전체 검증·미리보기한다. 순찰에는 시각·구간·기록자·확인 사항·현장 조치·확인 등급을 저장한다. 업무에는 handover/submission 구분, 담당자·제출처·마감·알림 시점·완료 시각을 저장한다.
+v1의 notes/events/calls/folders 및 v2의 patrols/tasks를 보존하고 v3에 organizations/employees/bases/assignments를 추가했다. 조직 계층과 직원/거점 소속, 직원+날짜별 근무/당직을 UUID로 연결한다. shared/office.mjs가 참조·중복·날짜·거점·순환을 검증하고 현황을 계산한다. shared/office-import.mjs가 표준 CSV 반입을 전체 검증·미리보기한다. 순찰에는 시각·구간·기록자·확인 사항·현장 조치·확인 등급을 저장하고, 선택 필드로 순찰 종류(`kind`)·담당구역 번호(`zone`)·단속·확인 건(`observations[]`: 유형·건수·조치·메모·선택 위경도, 기록당 50개)을 둔다. 쓰지 않은 선택 필드는 저장하지 않아 기존 기록 모양을 유지한다. `patrolSummary`가 현지 날짜 기간으로 유형·조치별 건수를 합산한다. 업무에는 handover/submission 구분, 담당자·제출처·마감·알림 시점·완료 시각을 저장한다.
 
 순찰과 후속 업무는 UUID로 연결한다. 미완료 연결 업무가 있으면 다시 연다. 순찰 삭제 시 인계 본문을 남기고 연결만 해제한다. 원본이 수정되어도 인계 시점의 본문 요약은 자동 덮지 않는다. 이후의 실시간 원문은 연결된 순찰에서 확인한다.
 

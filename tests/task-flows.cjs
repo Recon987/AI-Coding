@@ -138,11 +138,30 @@ function counter(page) {
       await sheet().waitFor({ state: "hidden" });
     });
 
+    await task("T2b", "순찰 기록에 단속 건 추가(종류·담당구역·유형·건수·위경도)", async (t) => {
+      await t.click(nav("현장 순찰"));
+      const record = page.locator(".record").filter({ has: page.getByRole("heading", { name: "오후 계곡 순찰", exact: true }) });
+      await t.click(record.getByRole("button", { name: "수정", exact: true }));
+      await t.select(page.getByLabel("순찰 종류"), "enforcement");
+      await t.fill(page.getByLabel("담당구역 번호"), "3-2");
+      await t.click(page.getByRole("button", { name: "+ 단속·확인 건 추가" }));
+      const row = page.getByRole("group", { name: "단속·확인 1" });
+      await t.fill(row.getByLabel("유형"), "샛길·출입금지구역 출입");
+      await t.fill(row.getByLabel("건수"), "2");
+      await t.click(row.locator(".observation-location > summary"));
+      await t.fill(row.getByLabel("위도 (DD)", { exact: true }), "37.6512");
+      await t.fill(row.getByLabel("경도 (DD)", { exact: true }), "126.9771");
+      await t.click(sheet().getByRole("button", { name: "변경 저장", exact: true }));
+      await sheet().waitFor({ state: "hidden" });
+      return "유형은 제안 목록에서 고를 수 있음(datalist). 조치 기본값은 계도";
+    });
+
     await task("T5", "이번 주 샛길 출입 단속 건수 집계", async (t) => {
       await t.click(nav("현장 순찰"));
-      await t.fill(page.getByLabel("순찰 검색"), "샛길");
-      const rows = await page.locator(".record").count();
-      throw new Error(`집계 기능 없음 — 검색은 기록 ${rows}건을 찾지만 건수(2명)·유형·기간 합계를 낼 수 없음`);
+      const row = page.locator(".summary-table tbody tr").filter({ hasText: "샛길·출입금지구역 출입" });
+      const count = await row.locator("td").first().textContent();
+      if (count !== "2") throw new Error(`집계 값이 2가 아님: ${count}`);
+      return "현장 순찰 화면 상단 '단속·확인 집계'(이번 주)에서 바로 보임";
     });
 
     await task("T6", "오늘 통제 중인 탐방로 구간 확인", async () => {

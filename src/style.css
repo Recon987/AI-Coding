@@ -647,3 +647,26 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
 .danger-button { background: var(--danger); border-color: var(--danger); color: var(--on-accent); font-weight: 600; }
 .danger-button:hover { background: var(--red-strong); border-color: var(--red-strong); }
+
+/* Patrol kinds, zones and counted observations (TASK-PATROL-02). */
+.zone-label { color: var(--ink-2); font-size: var(--fs-xs); font-weight: 600; }
+.observations { margin: 4px 0 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-sunken); }
+.observations legend { padding: 0 6px; color: var(--green-text); font-size: var(--fs-sm); font-weight: 600; }
+.observations legend span { color: var(--muted); font-weight: 400; }
+.observation-row { display: grid; grid-template-columns: minmax(0, 1fr) 84px 120px auto; gap: 8px 10px; align-items: end; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.observation-row label > span { display: block; margin-bottom: 4px; color: var(--ink-2); font-size: var(--fs-xs); }
+.observation-note { grid-column: 1 / -1; }
+.observation-location { grid-column: 1 / -1; }
+.observation-location > summary { color: var(--green-text); font-size: var(--fs-xs); cursor: pointer; }
+.observations > button { margin-top: 12px; }
+.observation-list { margin: 0 0 12px; padding-left: 18px; }
+.observation-list li { margin-bottom: 4px; }
+.observation-list .coordinate-summary { display: block; margin: 2px 0 0; }
+.patrol-summary .summary-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 12px; }
+.patrol-summary h2 { margin: 0; }
+.patrol-summary select { width: auto; min-height: 32px; padding: 4px 8px; }
+.summary-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+.summary-table th, .summary-table td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: right; }
+.summary-table th[scope="row"], .summary-table thead th:first-child { text-align: left; font-weight: 600; }
+.summary-table thead th { color: var(--muted); font-weight: 600; background: var(--surface-sunken); }
+.summary-table tfoot th, .summary-table tfoot td { border-bottom: 0; font-weight: 600; }
