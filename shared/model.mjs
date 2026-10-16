@@ -17,6 +17,35 @@ export const RECURRENCE_LABEL = {
   monthly: "매월",
   yearly: "매년",
 };
+// Patrol kinds and observation outcomes are optional v3 fields (TASK-PATROL-02).
+export const PATROL_KINDS = {
+  safety: "안전 순찰",
+  resource: "자원보전 순찰",
+  enforcement: "단속",
+  fire: "산불 감시",
+  facility: "시설 점검",
+  incident: "사고 대응",
+  general: "일반 순찰",
+};
+export const OBSERVATION_OUTCOMES = {
+  guidance: "계도",
+  fine: "과태료 부과",
+  other: "기타 조치",
+};
+// Suggestions only: people may type any type; fine amounts are never stored.
+export const DEFAULT_OBSERVATION_TYPES = [
+  "샛길·출입금지구역 출입",
+  "지정 장소 외 취사",
+  "흡연",
+  "지정 장소 외 야영",
+  "음주",
+  "불법 주차",
+  "오물·폐기물 투기",
+  "임산물 채취",
+  "반려동물 동반",
+  "안전시설 파손",
+];
+const MAX_OBSERVATIONS = 50;
 export const empty = () => ({
   version: 3,
   notes: [],
@@ -197,6 +226,39 @@ export function normalize(input) {
       if (key === "patrols") {
         if (row.coordinates !== undefined && row.coordinates !== null)
           validateCoordinates(row.coordinates);
+        if (row.kind !== undefined && row.kind !== null)
+          ensure(Object.hasOwn(PATROL_KINDS, row.kind), "순찰 종류를 확인하세요.");
+        if (row.zone !== undefined && row.zone !== null)
+          ensure(string(row.zone, 50), "담당구역 번호는 50자 이하로 입력하세요.");
+        if (row.observations !== undefined) {
+          ensure(
+            Array.isArray(row.observations) &&
+              row.observations.length <= MAX_OBSERVATIONS,
+            `단속·확인 건은 순찰 기록마다 ${MAX_OBSERVATIONS}개 이하로 입력하세요.`,
+          );
+          const observationIds = new Set();
+          for (const item of row.observations) {
+            ensure(
+              item &&
+                required(item.id, 100) &&
+                !observationIds.has(item.id) &&
+                required(item.type, 50),
+              "단속·확인 건의 유형을 입력하세요.",
+            );
+            observationIds.add(item.id);
+            ensure(
+              Number.isInteger(item.count) && item.count >= 1 && item.count <= 9999,
+              "단속·확인 건수는 1~9999 사이의 정수여야 합니다.",
+            );
+            ensure(
+              Object.hasOwn(OBSERVATION_OUTCOMES, item.outcome),
+              "단속·확인 조치를 선택하세요.",
+            );
+            ensure(string(item.note, 500), "단속·확인 메모는 500자 이하로 입력하세요.");
+            if (item.coordinates !== undefined && item.coordinates !== null)
+              validateCoordinates(item.coordinates);
+          }
+        }
         ensure(
           required(row.route, 500) && required(row.observer, 100),
           "순찰 구간과 기록자를 입력하세요.",
@@ -636,6 +698,52 @@ export function reminderItems(data, now = Date.now()) {
     })),
   ];
 }
+/** Suggested observation types: defaults first, then any type already recorded. */
+export function observationTypes(data) {
+  const used = data.patrols.flatMap((p) => (p.observations ?? []).map((o) => o.type.trim()));
+  return [...new Set([...DEFAULT_OBSERVATION_TYPES, ...used.filter(Boolean)])];
+}
+
+/** Counts patrols and observations whose patrol date (local) is within the range. */
+export function patrolSummary(data, { startDate, endDate }) {
+  ensure(validDate(startDate) && validDate(endDate), "집계 기간을 확인하세요.");
+  const patrols = data.patrols.filter((p) => {
+    const key = dayKey(new Date(p.at));
+    return key >= startDate && key <= endDate;
+  });
+  const byKind = new Map();
+  const byType = new Map();
+  for (const p of patrols) {
+    const kind = p.kind ?? null;
+    byKind.set(kind, (byKind.get(kind) ?? 0) + 1);
+    for (const o of p.observations ?? []) {
+      const type = o.type.trim();
+      const row = byType.get(type) ?? { type, count: 0, entries: 0, guidance: 0, fine: 0, other: 0 };
+      row.count += o.count;
+      row.entries += 1;
+      row[o.outcome] += o.count;
+      byType.set(type, row);
+    }
+  }
+  const observations = [...byType.values()].sort((a, b) => b.count - a.count || a.type.localeCompare(b.type, "ko"));
+  return {
+    patrols: patrols.length,
+    byKind: [...byKind].map(([kind, count]) => ({
+      kind,
+      label: kind ? PATROL_KINDS[kind] : "종류 미지정",
+      count,
+    })).sort((a, b) => b.count - a.count),
+    observations,
+    totalCount: observations.reduce((sum, row) => sum + row.count, 0),
+  };
+}
+
+export function describeObservations(observations = []) {
+  return observations
+    .map((o) => `${o.type} ${o.count}건(${OBSERVATION_OUTCOMES[o.outcome]})`)
+    .join(", ");
+}
+
 export function briefing(data, date) {
   ensure(/^\d{4}-\d{2}-\d{2}$/.test(date), "브리핑 날짜를 확인하세요.");
   const holiday = holidayName(date);
@@ -661,7 +769,7 @@ export function briefing(data, date) {
     `순찰 기록 (${patrols.length})`,
     ...patrols.map(
       (p) =>
-        `- ${p.title} | ${p.route} | ${p.observer}\n  확인: ${p.findings || "없음"}\n  현장 조치: ${p.action || "없음"}${p.coordinates ? `\n  좌표: ${formatCoordinates(p.coordinates)} | ${formatCoordinates(p.coordinates, "dms")}` : ""}`,
+        `- ${p.title} | ${p.route} | ${p.observer}${p.kind ? ` | ${PATROL_KINDS[p.kind]}` : ""}${p.zone ? ` | 담당구역 ${p.zone}` : ""}\n  확인: ${p.findings || "없음"}\n  현장 조치: ${p.action || "없음"}${p.observations?.length ? `\n  단속·확인: ${describeObservations(p.observations)}` : ""}${p.coordinates ? `\n  좌표: ${formatCoordinates(p.coordinates)} | ${formatCoordinates(p.coordinates, "dms")}` : ""}`,
     ),
     "",
     `미완료 인계·제출 (${due.length}, 기준일까지 마감)`,

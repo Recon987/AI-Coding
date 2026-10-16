@@ -16,8 +16,29 @@ export type Event = {
 };
 export type Call = Note & { phone: string; done: boolean };
 export type Folder = { id: string; title: string; path: string };
+export type PatrolKind =
+  | "safety"
+  | "resource"
+  | "enforcement"
+  | "fire"
+  | "facility"
+  | "incident"
+  | "general";
+/** One counted finding (e.g. 샛길 출입 2건). Never holds personal details or fine amounts. */
+export type Observation = {
+  id: string;
+  type: string;
+  count: number;
+  outcome: "guidance" | "fine" | "other";
+  coordinates?: Coordinates | null;
+  note: string;
+};
 export type Patrol = {
   coordinates?: Coordinates | null;
+  kind?: PatrolKind | null;
+  /** 담당구역 번호 */
+  zone?: string | null;
+  observations?: Observation[];
   id: string;
   title: string;
   at: string;

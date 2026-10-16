@@ -4,6 +4,8 @@ import type {
   Event,
   EventRecurrence,
   HolidayEntry,
+  Observation,
+  PatrolKind,
 } from "../src/types";
 export const collections: string[];
 export const RECURRENCE: EventRecurrence[];
@@ -27,6 +29,28 @@ export function reminderItems(
   now?: number,
 ): { id: string; title: string; at: string; done: boolean }[];
 export function briefing(data: Data, date: string): string;
+export const PATROL_KINDS: Record<PatrolKind, string>;
+export const OBSERVATION_OUTCOMES: Record<Observation["outcome"], string>;
+export const DEFAULT_OBSERVATION_TYPES: string[];
+export function observationTypes(data: Data): string[];
+export type ObservationSummaryRow = {
+  type: string;
+  count: number;
+  entries: number;
+  guidance: number;
+  fine: number;
+  other: number;
+};
+export function patrolSummary(
+  data: Data,
+  range: { startDate: string; endDate: string },
+): {
+  patrols: number;
+  byKind: { kind: PatrolKind | null; label: string; count: number }[];
+  observations: ObservationSummaryRow[];
+  totalCount: number;
+};
+export function describeObservations(observations?: Observation[]): string;
 
 export type CoordinateAxis = "latitude" | "longitude";
 export type Coordinates = { latitude: number; longitude: number };

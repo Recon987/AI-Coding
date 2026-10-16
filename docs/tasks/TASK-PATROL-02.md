@@ -1,7 +1,7 @@
 ---
 id: TASK-PATROL-02
 title: 순찰 종류·위반 유형 선택 필드와 기간별 집계
-status: ready
+status: in-progress
 role: builder
 owner: claude
 verifier: codex
@@ -30,14 +30,14 @@ updated: 2026-10-16
 위반자 인적사항(암호화 전 금지), 공식 단속 대장 대체.
 
 ## 진행 단계
-- [ ] 1. 설계 메모(필드·화면)를 이 카드에 추가
+- [x] 1. 설계·모델: Patrol 선택 필드 kind(7종)·zone(≤50자)·observations[](id·type≤50·count 1~9999·outcome guidance/fine/other·coordinates?·note≤500, 기록당 50개). 유형은 자유 입력 + 제안(기본 10종 ∪ 이미 쓴 유형) — 별도 설정 저장소 없이 '쓰면서 늘어나는 목록'. shared/model.mjs patrolSummary·observationTypes·describeObservations, 브리핑 TXT 반영, tests/patrol-observations.test.cjs
 - [ ] 2. 구현
 - [ ] 3. 테스트·문서
 
 ## 재개 위치
-착수 전.
+2단계 UI: src/components/Patrols.tsx 편집창(순찰 종류·담당구역·단속·확인 건 목록 + 건별 위경도), 목록 표시(종류·구역·건 요약), 기간 집계 패널(이번 주/이번 달/최근 30일), 검색 포함.
 
 ## 테스트 상태
-미실행
+2026-10-16: TZ=UTC `npm test` 55/55. UI 미구현.
 
 ## 검증 기록
