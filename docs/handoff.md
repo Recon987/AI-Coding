@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main)
-- **Task Card**: TASK-ORCH-01, review, 재개 위치 = Codex 검증
-- **Latest Pushed Commit**: 8c8d9253d3b6db5aac1819f122db683544af7769 - docs: record three-expert review and Windows v0.6.1 validation (TASK-UX-03) (main 기준, 이 작업 커밋은 응답 패킷 참조)
-- **Completed Steps & Modified Files**: TASK-ORCH-01 운영 체계. docs/orchestration/(README·review-lenses·loop-log), docs/tasks/(TEMPLATE·카드 11개), scripts/board.mjs, tests/board.test.cjs, AGENTS.md, CLAUDE.md, GEMINI.md, package.json(board 스크립트), windows-build.yml(PR 실행).
-- **Changed Interfaces / Schema Diff**: 앱 코드·데이터 v3·IPC 변경 없음. 협업 규칙 변경: main 직접 커밋 금지, 카드 브랜치·체크포인트 커밋·구현자≠검증자.
-- **Test Status**: Linux(Node 22) npm test·npm run test:desktop 통과(트레이 native 미실행). 상세 수치는 응답 패킷.
-- **Remaining Work for Gemini**: TASK-REVIEW-DOMAIN-01, TASK-REVIEW-DESIGN-01 (ready). Codex: TASK-DATA-01(P0) 및 TASK-ORCH-01 검증. Claude: TASK-REVIEW-UX-01.
+- **Task Card**: TASK-ORCH-01, TASK-REVIEW-DOMAIN-01, TASK-REVIEW-DESIGN-01, TASK-REVIEW-UX-01 모두 review(검증자 Codex)
+- **Latest Pushed Commit**: a4c8533 - wip(TASK-REVIEW-DESIGN-01) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: 개선 루프 1주기 검토 완료. docs/research/knps-domain.md, docs/reviews/2026-10-16-{domain,design,ux}.md, ux-flows.json, docs/ui-review/cycle1/*.png, tests/task-flows.cjs(`npm run review:flows`), 신규 backlog 카드 9장, loop-log 1주기.
+- **Changed Interfaces / Schema Diff**: 앱 코드·IPC·데이터 v3 변경 없음. npm 스크립트 review:flows 추가.
+- **Test Status**: Linux Node 22 npm test 40/40, npm run test:desktop 통과(트레이 native 미실행), review:ui 134 통과·외부요청0, review:flows 오류0.
+- **Remaining Work for Gemini**: (웹) docs/reviews/2026-10-16-design.md 끝 질문으로 2차 의견. Codex: 검토 4건 검증, TASK-DATA-01. 사용자: 직무·서식 질문 답변(knps-domain.md 6장), 신규 P1 카드 승인. 주의: U1 편집창 닫기 비정상 종료(Linux 재현, Windows 미확인).
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

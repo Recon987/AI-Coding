@@ -13,7 +13,8 @@
     "postinstall": "node node_modules/electron/install.js",
     "test:desktop": "npm run build && node tests/desktop-smoke.cjs",
     "review:ui": "npm run build && node tests/ui-review.cjs",
-    "board": "node scripts/board.mjs"
+    "board": "node scripts/board.mjs",
+    "review:flows": "npm run build && node tests/task-flows.cjs"
   },
   "dependencies": {
     "react": "19.3.1",
