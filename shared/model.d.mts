@@ -21,6 +21,10 @@ export function expandEventOccurrences(
   event: Event,
   range?: { startDate?: string; endDate?: string },
 ): CalendarItem[];
+/** Returns a copy after validating a real recurring date. Cannot reopen one date of a globally done series. */
+export function setOccurrenceDone(event: Event, date: string, completed: boolean): Event;
+/** Returns a copy; exclusions win over completion but restoring does not erase it. */
+export function setOccurrenceExcluded(event: Event, date: string, excluded: boolean): Event;
 export function calendarItems(
   data: Data,
   range?: { startDate?: string; endDate?: string },

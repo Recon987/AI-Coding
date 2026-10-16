@@ -83,6 +83,24 @@ const ensure = (condition, message) => {
   if (!condition) throw new Error(message);
 };
 
+// Local occurrence dates are additive v3 metadata; do not add defaults to old data.
+function validateOccurrenceMetadata(event) {
+  for (const key of ["completedDates", "excludedDates"]) {
+    if (event[key] === undefined) continue;
+    ensure(
+      event.recurrence && event.recurrence !== "none" && RECURRENCE.includes(event.recurrence),
+      "회차별 완료·제외일은 반복 일정에만 설정할 수 있습니다.",
+    );
+    const dates = event[key];
+    ensure(
+      Array.isArray(dates) && dates.length <= 10000,
+      "회차별 완료·제외일은 각각 10,000개 이하의 날짜 목록이어야 합니다.",
+    );
+    ensure(dates.every(validDate), "회차별 완료·제외일은 실제 날짜여야 합니다.");
+    ensure(new Set(dates).size === dates.length, "회차별 완료·제외일에 중복 날짜가 있습니다.");
+  }
+}
+
 // Angular notation only: no datum/projection transformation or network access.
 function coordinateLimit(axis) {
   ensure(["latitude", "longitude"].includes(axis), "좌표 축을 확인하세요.");
@@ -249,6 +267,9 @@ export function normalize(input) {
             "반복 종료일은 일정 시작일 이후여야 합니다.",
           );
         }
+        // Historical metadata may outlive an edited repeat rule. Keep it intact;
+        // explicit occurrence actions below require membership in the current rule.
+        validateOccurrenceMetadata(row);
       }
       if (key === "calls")
         ensure(string(row.phone, 100), "전화번호를 확인하세요.");
@@ -604,6 +625,7 @@ export function expandEventOccurrences(event, range = {}) {
   );
   ensure(!startFilter || validDate(startFilter), "조회 시작일을 확인하세요.");
   ensure(!endFilter || validDate(endFilter), "조회 종료일을 확인하세요.");
+  validateOccurrenceMetadata(event);
   if (recurrence === "none") {
     const dKey = dayKey(new Date(event.at));
     if (startFilter && dKey < startFilter) return [];
@@ -652,22 +674,56 @@ export function expandEventOccurrences(event, range = {}) {
         : endFilter
       : untilLimit;
   const rows = [];
+  const completedDates = new Set(event.completedDates ?? []);
+  const excludedDates = new Set(event.excludedDates ?? []);
   for (let step = firstStep; rows.length < 400; step++) {
     const occ = occurrenceAtStep(base, recurrence, step);
     const occKey = dayKey(occ);
     if (occKey > maxDate) break;
-    if (!startFilter || occKey >= startFilter) {
+    if ((!startFilter || occKey >= startFilter) && !excludedDates.has(occKey)) {
       rows.push({
         ...event,
         at: step === 0 ? event.at : occ.toISOString(),
         key: step === 0 ? `event:${event.id}` : `event:${event.id}:${occKey}`,
+        done: event.done || completedDates.has(occKey),
         category: "일정",
         page: "calendar",
-        ...(step > 0 ? { occurrenceDate: occKey } : {}),
+        occurrenceDate: occKey,
       });
     }
   }
   return rows;
+}
+
+function changeOccurrenceDate(event, date, key, enabled) {
+  ensure(typeof enabled === "boolean", "회차 상태는 참 또는 거짓이어야 합니다.");
+  ensure(validDate(date), "변경할 회차 날짜를 확인하세요.");
+  ensure(event.recurrence && event.recurrence !== "none", "반복 일정의 회차만 변경할 수 있습니다.");
+  validateOccurrenceMetadata(event);
+  // Ignore exclusions only for membership checks so excluded days can be restored.
+  const matches = expandEventOccurrences(
+    { ...event, excludedDates: [] },
+    { startDate: date, endDate: date },
+  );
+  ensure(matches.some((item) => item.occurrenceDate === date), "이 날짜는 현재 반복 일정의 회차가 아닙니다.");
+  if (key === "completedDates" && !enabled)
+    ensure(!event.done, "전체 완료된 반복 일정입니다. 전체 일정을 먼저 다시 시작하세요.");
+  const dates = new Set(event[key] ?? []);
+  if (enabled) dates.add(date);
+  else dates.delete(date);
+  const next = { ...event, [key]: [...dates].sort() };
+  validateOccurrenceMetadata(next);
+  return next;
+}
+
+/** Marks one real local-date occurrence without changing the legacy whole-series done flag. */
+export function setOccurrenceDone(event, date, completed) {
+  return changeOccurrenceDate(event, date, "completedDates", completed);
+}
+
+/** Excludes/restores one occurrence; its completed state remains available when restored. */
+export function setOccurrenceExcluded(event, date, excluded) {
+  return changeOccurrenceDate(event, date, "excludedDates", excluded);
 }
 
 /** Closures in effect on a local date (end null = until lifted). */

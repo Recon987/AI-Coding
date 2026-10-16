@@ -340,7 +340,7 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <span className="version">공원 업무 수첩 · v0.6.1</span>
+          <span className="version">공원 업무 수첩 · v0.7.0</span>
         </div>
       </aside>
       <main>

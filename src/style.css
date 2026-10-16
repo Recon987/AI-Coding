@@ -769,3 +769,14 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .week-column .calendar-control-mark { margin-top: 0; }
 .calendar-layout.wide { grid-template-columns: minmax(0, 1fr); }
 .calendar-detail[hidden] { display: none; }
+
+/* Recurrence state is derived from the original event; controls are outside the hidden monthly detail. */
+.occurrence-actions { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; flex: 0 0 auto; }
+.occurrence-actions button { font-size: var(--fs-xs); min-height: 30px; padding: 3px 6px; }
+.occurrence-editor { margin-bottom: 18px; padding: 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-hover); }
+.occurrence-editor h3 { margin-bottom: 6px; }
+.occurrence-notice, .excluded-occurrences { grid-column: 1 / -1; }
+.excluded-occurrences > summary { cursor: pointer; font-weight: 600; }
+.excluded-occurrences > p { margin-top: 12px; }
+.excluded-occurrences ul { list-style: none; padding: 0; margin: 12px 0; }
+.excluded-occurrences li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
