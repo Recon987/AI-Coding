@@ -28,7 +28,8 @@ export function Tag({
   tone = "",
 }: {
   children: ReactNode;
-  tone?: string;
+  /** Status (danger/warning), category (patrol/task/holiday) or work status (duty). */
+  tone?: "" | "danger" | "warning" | "patrol" | "task" | "holiday" | "duty";
 }) {
   return <span className={`tag ${tone}`}>{children}</span>;
 }

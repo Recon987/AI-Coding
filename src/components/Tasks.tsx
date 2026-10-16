@@ -146,7 +146,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
             <details className="record-details">
               <summary>
                 <div className="record-top">
-                  <Tag tone={t.priority === "high" ? "amber" : ""}>
+                  <Tag tone={t.priority === "high" ? "warning" : ""}>
                     {t.priority === "high"
                       ? "우선 처리"
                       : isSubmission
@@ -154,7 +154,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
                         : "인수인계"}
                   </Tag>
                   {!t.done && Date.parse(t.at) < Date.now() && (
-                    <Tag tone="red">기한 경과</Tag>
+                    <Tag tone="danger">기한 경과</Tag>
                   )}
                   {t.done && <Tag>완료</Tag>}
                   <span className="muted">

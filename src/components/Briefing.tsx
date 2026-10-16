@@ -274,9 +274,9 @@ export function Briefing({
               <Tag
                 tone={
                   Date.parse(t.at) < Date.now()
-                    ? "red"
+                    ? "danger"
                     : dayKey(new Date(t.at)) === today
-                      ? "amber"
+                      ? "warning"
                       : ""
                 }
               >
@@ -354,7 +354,7 @@ export function Briefing({
               })}
             </div>
             <div className="day-counts">
-              {holiday && <Tag tone="red">{holiday}</Tag>}
+              {holiday && <Tag tone="holiday">{holiday}</Tag>}
               <span>
                 일정 <b>{daily.filter((i) => i.category === "일정").length}</b>
               </span>

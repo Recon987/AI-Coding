@@ -149,9 +149,9 @@ export function Patrols({
                   <Tag
                     tone={
                       p.risk === "urgent"
-                        ? "red"
+                        ? "danger"
                         : p.risk === "attention"
-                          ? "amber"
+                          ? "warning"
                           : ""
                     }
                   >

@@ -166,10 +166,10 @@ export function Calendar({
         </SectionHead>
         <div className="calendar-legend">
           <Tag><Icon name="calendar" size={12} />일정</Tag>
-          <Tag tone="blue"><Icon name="patrol" size={12} />순찰</Tag>
-          <Tag tone="amber"><Icon name="handover" size={12} />인계</Tag>
-          <Tag tone="amber"><Icon name="submission" size={12} />제출</Tag>
-          <Tag tone="red">공휴일</Tag>
+          <Tag tone="patrol"><Icon name="patrol" size={12} />순찰</Tag>
+          <Tag tone="task"><Icon name="handover" size={12} />인계</Tag>
+          <Tag tone="task"><Icon name="submission" size={12} />제출</Tag>
+          <Tag tone="holiday">공휴일</Tag>
         </div>
         <div className="calendar-week">
           {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
@@ -207,7 +207,7 @@ export function Calendar({
                 </div>
                 {entries.slice(0, 3).map((i) => (
                   <span
-                    className={`calendar-chip ${i.category === "순찰" ? "blue" : i.category === "일정" ? "" : "amber"} ${i.done ? "done" : ""}`}
+                    className={`calendar-chip ${i.category === "순찰" ? "patrol" : i.category === "일정" ? "" : "task"} ${i.done ? "done" : ""}`}
                     key={i.key}
                     title={`${i.category} · ${formatClock(i.at)} · ${i.title}${i.recurrence && i.recurrence !== "none" ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복` : ""}${i.done ? " · 완료" : ""}`}
                   >
@@ -234,7 +234,7 @@ export function Calendar({
           aria-label="선택 날짜 기록"
         >
           <SectionHead title={formatDate(selected)}>
-            {selectedHoliday && <Tag tone="red">{selectedHoliday}</Tag>}
+            {selectedHoliday && <Tag tone="holiday">{selectedHoliday}</Tag>}
           </SectionHead>
           <p className="agenda-caption">선택 날짜 기록 <strong>{selectedItems.length}건</strong></p>
           {selectedItems.length === 0 && (
@@ -242,7 +242,7 @@ export function Calendar({
           )}
           {selectedItems.map((i) => (
             <div className="agenda-row" key={i.key}>
-              <Tag tone={i.category === "순찰" ? "blue" : i.category === "일정" ? "" : "amber"}>
+              <Tag tone={i.category === "순찰" ? "patrol" : i.category === "일정" ? "" : "task"}>
                 {i.category}
               </Tag>
               <div>

@@ -383,7 +383,7 @@ export function Office({
                               <td>
                                 {row.assignment?.duty &&
                                 row.assignment.duty !== "none" ? (
-                                  <Tag tone="amber">
+                                  <Tag tone="duty">
                                     {dutyTypes[row.assignment.duty]}
                                   </Tag>
                                 ) : (
@@ -464,10 +464,12 @@ export function Office({
                                           : "—"}
                                       </span>
                                       {entry?.duty && entry.duty !== "none" && (
-                                        <small>{dutyTypes[entry.duty]}</small>
+                                        <small className="duty-line">
+                                          {dutyTypes[entry.duty]}
+                                        </small>
                                       )}
                                       {entry?.baseId && (
-                                        <small>
+                                        <small className="base-line">
                                           {
                                             data.bases.find(
                                               (b) => b.id === entry.baseId,
