@@ -4,7 +4,7 @@
 
 Electron의 제한된 preload API로 로컬 파일 저장·폴더 열기·백업·브리핑 출력을 제공한다. renderer는 Node.js 직접 접근 없이 sandbox/contextIsolation에서 실행하고 외부 탐색과 새 창을 차단한다. 앱은 자동 업데이트나 외부 API를 호출하지 않는다.
 
-`src/components/`는 업무별 화면, `shared/model.mjs`는 브라우저와 Electron이 공유하는 검증·달력·브리핑·알림 계산이다. `desktop/store.cjs`가 JSON의 원자 교체와 v1 원본 보존을 담당한다. 주 프로세스의 단일 인스턴스 잠금으로 동시에 여러 앱이 파일을 쓰는 것을 방지한다. 다중 사용자 또는 서버 DB용 구조는 아니다.
+`src/components/`는 업무별 화면, `shared/model.mjs`는 브라우저와 Electron이 공유하는 검증·달력·브리핑·알림 계산이다. `desktop/store.cjs`가 JSON의 원자 교체(임시 파일 fsync 후 이름 바꾸기)와 v1 원본 보존을 담당한다. 주 파일을 저장할 때마다 같은 내용의 `workdesk.json.last-good`도 원자적으로 갱신한다. `desktop/recovery.cjs`는 시작 시 자료를 읽지 못하면 손상 파일을 `.corrupt-<시각>.json`으로 먼저 보관(삭제하지 않음)한 뒤 마지막 정상본 사용·백업 복원·종료를 묻는다. 보관에 실패하면 아무것도 쓰지 않고 종료한다. 주 프로세스의 단일 인스턴스 잠금으로 동시에 여러 앱이 파일을 쓰는 것을 방지한다. 다중 사용자 또는 서버 DB용 구조는 아니다.
 
 ## 데이터 v3
 

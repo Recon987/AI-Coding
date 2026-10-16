@@ -1,5 +1,11 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## TASK-DATA-01 / 자료 손상 복구 (미병합, 2026-10-16)
+
+- Linux Node 22: `npm test` 47/47 (recovery.test.cjs 7개: 마지막 정상본 갱신 범위, 정상 파일 무변경, 손상·빈 파일·20MB 초과·잘못된 백업·보관 실패), `npm run test:desktop` 통과(신규 desktop-recovery-smoke: 실제 Electron에서 손상 파일 보관 → 복구 대화상자 → 마지막 정상본으로 시작 → 자료 표시).
+- 시작 전 대화상자는 개발용 Electron의 `-r` 옵션으로 테스트 스텁을 주입해 응답한다. 패키징된 EXE에는 이 옵션이 없어 Windows 패키지 스모크는 이 시나리오를 실행하지 않는다.
+- Windows Actions·실기기 정전 시험은 미실행.
+
 ## v0.6.1 / TASK-UX-03
 
 세 분야 독립 검토·직접 협의·상대 교차 검토를 거쳐 첫 사용 흐름·날짜/시간·달력을 개선했다. npm test **37/37**, npm run test:desktop **통과**. 첫 사용3행동·부분자료 보존·달력 접근 이름을 실제 Electron에서 검사했다. 서울/뉴욕 날짜·자정·윤일·연말 변환도 검증했다. UI 검사는 before83개, after134개 통과, 페이지 오류0·외부요청0. 동일 가상 자료/임시프로필/4해상도·확대 조건과 전후 증빙은 [검토 기록](review-rounds/TASK-UX-03.md)에 있다. 소스 `887ca68b46dba8792f0c944fa7e5f785f8baf97e`의 [Windows Actions38844487365](https://github.com/Recon987/AI-Coding/actions/runs/38844487365)는 성공했다. 잠금 설치·37개 검사·소스 Electron·설치형/portable 빌드·패키징된 EXE의 확장 스모크·SHA256SUMS·업로드 모두 통과했다. [v0.6.1 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38844487365/artifacts/12023060736), GitHub 로그인·보관14일. 이번 증빙 후속 커밋은 문서만 수정한다.
