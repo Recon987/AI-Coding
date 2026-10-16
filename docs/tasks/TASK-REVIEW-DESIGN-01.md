@@ -3,9 +3,9 @@ id: TASK-REVIEW-DESIGN-01
 title: 유사 데스크톱 업무 앱·현장 기록 시스템 레퍼런스 조사와 시각·UX 개선안
 status: ready
 role: design
-owner: gemini
-verifier: claude
-branch: task/task-review-design-01
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P1
 updated: 2026-10-16

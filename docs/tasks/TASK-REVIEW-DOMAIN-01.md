@@ -1,11 +1,11 @@
 ---
 id: TASK-REVIEW-DOMAIN-01
 title: 국립공원공단 직무별 실제 업무 흐름 조사와 앱 적합성 검토
-status: ready
+status: in-progress
 role: domain
-owner: gemini
-verifier: claude
-branch: task/task-review-domain-01
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P1
 updated: 2026-10-16
@@ -31,7 +31,7 @@ updated: 2026-10-16
 - [ ] 4. 발견·제안·사용자 질문 정리
 
 ## 재개 위치
-1단계부터.
+1단계: 공개 자료로 직무 분류·출처 수집 중. 결과는 docs/research/knps-domain.md.
 
 ## 테스트 상태
 문서 과제 — 해당 없음(보드 검사만 `npm test`).

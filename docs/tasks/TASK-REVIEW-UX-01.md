@@ -5,7 +5,7 @@ status: ready
 role: verifier
 owner: claude
 verifier: codex
-branch: task/task-review-ux-01
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P1
 updated: 2026-10-16
