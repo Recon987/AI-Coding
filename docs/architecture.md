@@ -16,6 +16,12 @@ v1의 notes/events/calls/folders 및 v2의 patrols/tasks를 보존하고 v3에 o
 
 v1/v2 파일은 최초 시작 시 원본 바이트를 `.v1-backup.json` 또는 `.v2-backup.json`으로 보관한 뒤 v3로 전환한다. 브라우저도 버전별 원문을 별도 localStorage 키에 보관한다. 이전 앱은 v3를 읽지 못하므로 새 근무 자료를 손실시키지 않는다. 사무소 근무표는 개인 달력에 전 직원을 복제하지 않고 별도 현황판에서 원본을 참조한다. 실제 ERP 매핑은 docs/erp-integration.md 참조.
 
+## 반복 회차 상태 (TASK-CALENDAR-02)
+
+개인 일정 `Event`에 선택 필드 `completedDates?: string[]`, `excludedDates?: string[]`를 추가한다. 현지 `YYYY-MM-DD` 배열이며 반복 일정에서만 허용한다. 배열당 10,000개 이하의 실제 날짜·고유값·빈 슬롯 없는 배열을 검증한다. 필드가 없던 기존 v3 기록에는 임의 기본값을 쓰지 않는다. 기존 `done: true`는 전체 완료이고 새 배열은 특정 회차 상태다. 제외가 완료보다 우선하며 제외 복원은 완료 상태를 지우지 않는다.
+
+`setOccurrenceDone(event, date, completed)`와 `setOccurrenceExcluded(event, date, excluded)`는 원본을 복제해 메타데이터만 바꾸는 순수 함수다. 추가할 날짜는 현재 규칙의 실제 회차여야 한다. 규칙 변경으로 범위를 벗어난 기존 메타데이터는 보존하며 기존 날짜의 제거는 허용한다. `expandEventOccurrences`가 제외를 걸러내고 `event.done || completedDates.includes(date)`로 상태를 계산해 달력·브리핑·알림에 함께 전달한다. 첫 회차도 `occurrenceDate`가 있으며 기존 key/at와 알림 중복 방지 키를 유지한다. 브리핑에서 원본을 열 때 `occurrence:YYYY-MM-DD:<id>` 경로로 선택 회차 맥락을 전달한다. 새 IPC·외부 의존성은 없다.
+
 ## 추천 양식
 
 `shared/forms.mjs`가 순찰일지·단속·계도 기록을 TXT/CSV로 만든다(순수 함수). 렌더러는 `export-form` IPC로 양식 종류·기간·형식 네 값만 보내고, 본체가 저장된 자료로 내용을 만들어 저장 대화상자 경로에 BOM과 함께 쓴다. 다른 키가 있으면 거부한다. CSV 텍스트 칸은 `= + - @`로 시작하면 `'`를 붙인다(숫자 칸 제외). 기간은 최대 366일.

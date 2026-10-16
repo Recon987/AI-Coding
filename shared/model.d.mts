@@ -21,6 +21,10 @@ export function expandEventOccurrences(
   event: Event,
   range?: { startDate?: string; endDate?: string },
 ): CalendarItem[];
+/** Adds only real recurring dates; removes existing history after rule edits. Cannot reopen a globally done series. */
+export function setOccurrenceDone(event: Event, date: string, completed: boolean): Event;
+/** Returns a copy; exclusions win over completion. Existing historical dates can be removed after rule edits. */
+export function setOccurrenceExcluded(event: Event, date: string, excluded: boolean): Event;
 export function calendarItems(
   data: Data,
   range?: { startDate?: string; endDate?: string },

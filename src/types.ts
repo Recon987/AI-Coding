@@ -13,6 +13,10 @@ export type Event = {
   done: boolean;
   recurrence?: EventRecurrence;
   repeatUntil?: string | null;
+  /** Completed local dates for individual recurring occurrences; done remains whole-series completion. */
+  completedDates?: string[];
+  /** Excluded local dates; restoring a date preserves any recorded completion. */
+  excludedDates?: string[];
 };
 export type Call = Note & { phone: string; done: boolean };
 export type Folder = { id: string; title: string; path: string };

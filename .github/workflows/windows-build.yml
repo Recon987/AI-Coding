@@ -57,6 +57,7 @@ jobs:
           node tests/desktop-confirm-smoke.cjs
           node tests/desktop-forms-smoke.cjs
           node tests/desktop-list-smoke.cjs
+          node tests/desktop-recurrence-smoke.cjs
       - name: Calculate checksums
         shell: pwsh
         run: |
