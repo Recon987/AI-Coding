@@ -1,7 +1,7 @@
 ---
 id: TASK-REVIEW-DESIGN-01
 title: 유사 데스크톱 업무 앱·현장 기록 시스템 레퍼런스 조사와 시각·UX 개선안
-status: ready
+status: in-progress
 role: design
 owner: claude
 verifier: codex
@@ -30,7 +30,7 @@ UI는 두 차례 내부 검토(시각 2.2→3.9)를 거쳤지만 외부 레퍼�
 - [ ] 3. 개선안과 우선순위
 
 ## 재개 위치
-1단계부터. 화면 캡처는 Claude가 `npm run review:ui`로 만들어 `docs/ui-review/`에 제공할 수 있다.
+1단계: 레퍼런스 수집 중. 현재 화면은 `npm run review:ui`로 캡처.
 
 ## 테스트 상태
 문서 과제 — 해당 없음.
