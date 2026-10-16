@@ -2,6 +2,7 @@ import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useState } from "react";
 import type { Data, Save, Call } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
+import { confirmDelete } from "../confirm";
 export function Personal({
   data,
   save,
@@ -164,7 +165,7 @@ export function Personal({
                 disabled={busy}
                 onClick={async () => {
                   if (
-                    confirm("기록을 삭제할까요?") &&
+                    (await confirmDelete("이 기록")) &&
                     (await save({
                       ...data,
                       [mode]: data[mode].filter((x) => x.id !== n.id),

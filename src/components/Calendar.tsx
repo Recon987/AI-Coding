@@ -9,6 +9,7 @@ import {
 import type { Data, Event, EventRecurrence, Page, Save } from "../types";
 import { Empty, Field, formatClock, formatDate, localInput, SectionHead, Tag } from "../ui";
 import { Icon } from "./Icon";
+import { askConfirm, confirmDelete } from "../confirm";
 export function Calendar({
   data,
   save,
@@ -279,15 +280,23 @@ export function Calendar({
                   }
                   checked={i.done}
                   disabled={busy}
-                  onChange={() => {
+                  onChange={async () => {
                     if (
                       i.recurrence &&
                       i.recurrence !== "none" &&
-                      !confirm(
+                      !(await askConfirm(
                         i.done
-                          ? "전체 반복 일정을 다시 진행 상태로 바꾸고 알림을 재개할까요? 모든 회차에 적용됩니다."
-                          : "전체 반복 일정의 모든 회차를 완료하고 이후 알림을 중지할까요? 회차별 완료는 지원하지 않습니다.",
-                      )
+                          ? {
+                              message: "전체 반복 일정을 다시 진행 상태로 바꾸고 알림을 재개할까요?",
+                              detail: "모든 회차에 적용됩니다.",
+                              confirmLabel: "다시 진행",
+                            }
+                          : {
+                              message: "전체 반복 일정의 모든 회차를 완료하고 이후 알림을 중지할까요?",
+                              detail: "회차별 완료는 지원하지 않습니다.",
+                              confirmLabel: "모두 완료",
+                            },
+                      ))
                     )
                       return;
                     save({
@@ -332,7 +341,7 @@ export function Calendar({
                       disabled={busy}
                       onClick={async () => {
                         if (
-                          confirm("일정을 삭제할까요?") &&
+                          (await confirmDelete("일정")) &&
                           (await save({
                             ...data,
                             events: data.events.filter(

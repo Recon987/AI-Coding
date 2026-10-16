@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 
+import { discardChanges, isConfirmOpen } from "../confirm";
 import { setDraftDirty } from "../drafts";
 
 export function Sheet({
@@ -54,13 +55,9 @@ export function Sheet({
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
-  const requestClose = () => {
-    if (
-      !busy &&
-      (!dirty ||
-        confirm("저장하지 않은 변경 사항이 있습니다. 변경을 버리고 닫을까요?"))
-    )
-      onClose();
+  const requestClose = async () => {
+    if (busy || isConfirmOpen()) return;
+    if (!dirty || (await discardChanges())) onClose();
   };
   return (
     <dialog
@@ -69,7 +66,7 @@ export function Sheet({
       aria-label={title}
       onCancel={(event) => {
         event.preventDefault();
-        requestClose();
+        void requestClose();
       }}
     >
       <header className="sheet-header">

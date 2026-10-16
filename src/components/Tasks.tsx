@@ -2,6 +2,7 @@ import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useState } from "react";
 import type { Data, Save, Task } from "../types";
 import { Empty, Field, formatTime, localInput, SectionHead, Tag } from "../ui";
+import { confirmDelete } from "../confirm";
 type Props = {
   data: Data;
   save: Save;
@@ -202,7 +203,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
                 className="text-button danger"
                 disabled={busy}
                 onClick={async () => {
-                  if (confirm("이 업무를 삭제할까요?")) {
+                  if (await confirmDelete("이 업무")) {
                     if (
                       await save({
                         ...data,

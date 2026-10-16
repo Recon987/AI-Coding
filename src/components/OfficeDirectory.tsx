@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { Data, Save } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
 import { Icon } from "./Icon";
+import { confirmDelete } from "../confirm";
 type Kind = "organizations" | "employees" | "bases";
 const labels = { organizations: "조직", employees: "직원", bases: "거점" };
 type Draft = {
@@ -173,7 +174,7 @@ export function OfficeDirectory({
                 className="text-button danger"
                 onClick={async () => {
                   if (
-                    confirm(`${row.name} ${label}를 삭제할까요?`) &&
+                    (await confirmDelete(`${row.name} ${label}`)) &&
                     (await save({
                       ...data,
                       [kind]: data[kind].filter((r) => r.id !== row.id),

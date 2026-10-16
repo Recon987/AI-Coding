@@ -580,3 +580,11 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 }
 
 .tray-setting { display: flex; align-items: center; gap: 10px; font-weight: 600; margin: 16px 0; }
+
+/* In-app confirmation (replaces window.confirm). Safe choice is focused first. */
+.confirm-dialog { width: min(420px, calc(100vw - 32px)); padding: 24px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: var(--surface); box-shadow: 0 16px 48px rgb(23 43 38 / 22%); }
+.confirm-dialog::backdrop { background: rgb(23 43 38 / 28%); }
+.confirm-message { margin-bottom: 8px; font-size: 15px; line-height: 24px; font-weight: 600; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.danger-button { background: var(--danger); border-color: var(--danger); color: white; font-weight: 600; }
+.danger-button:hover { background: #962f25; border-color: #962f25; }

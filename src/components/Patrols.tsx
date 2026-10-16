@@ -12,6 +12,7 @@ import {
   SectionHead,
   Tag,
 } from "../ui";
+import { askConfirm } from "../confirm";
 export function Patrols({
   data,
   save,
@@ -43,8 +44,8 @@ export function Patrols({
   const { draft, setDraft } = editor;
   const [editorKey, setEditorKey] = useState(0);
   const [coordinateError, setCoordinateError] = useState("");
-  const resetDraft = (value: Patrol) => {
-    if (editor.openEditor(value)) {
+  const resetDraft = async (value: Patrol) => {
+    if (await editor.openEditor(value)) {
       setCoordinateError("");
       setEditorKey((key) => key + 1);
     }
@@ -201,9 +202,12 @@ export function Patrols({
                 disabled={busy}
                 onClick={async () => {
                   if (
-                    confirm(
-                      "순찰 기록을 삭제할까요? 연결된 인수인계 내용은 유지하고 연결만 해제합니다.",
-                    )
+                    await askConfirm({
+                      message: "순찰 기록을 삭제할까요?",
+                      detail: "연결된 인수인계 내용은 유지하고 연결만 해제합니다.",
+                      confirmLabel: "삭제",
+                      danger: true,
+                    })
                   ) {
                     if (
                       await save({

@@ -13,6 +13,7 @@ import { Icon } from "./Icon";
 import { OfficeDirectory } from "./OfficeDirectory";
 import { OfficeImport } from "./OfficeImport";
 import { Sheet } from "./Sheet";
+import { askConfirm, discardChanges } from "../confirm";
 const officeTabs = [
   ["board", "근무현황"],
   ["employees", "직원 관리"],
@@ -120,7 +121,7 @@ export function Office({
     } else
       setFormError("저장하지 못했습니다. 입력값과 저장 위치를 확인하세요.");
   }
-  function closeDraft() {
+  async function closeDraft() {
     if (!draft) return;
     const changed = draft.id
       ? JSON.stringify(draft) !==
@@ -131,7 +132,7 @@ export function Office({
         !!draft.note;
     if (
       changed &&
-      !confirm("저장하지 않은 변경 사항이 있습니다. 내용을 버릴까요?")
+      !(await discardChanges("닫을까요?"))
     )
       return;
     setDraft(null);
@@ -613,9 +614,12 @@ export function Office({
                   className="text-button danger"
                   onClick={async () => {
                     if (
-                      confirm(
-                        "이 날짜의 근무 기록을 지울까요? 미등록으로 표시됩니다.",
-                      ) &&
+                      (await askConfirm({
+                        message: "이 날짜의 근무 기록을 지울까요?",
+                        detail: "미등록으로 표시됩니다.",
+                        confirmLabel: "지우기",
+                        danger: true,
+                      })) &&
                       (await save({
                         ...data,
                         assignments: data.assignments.filter(

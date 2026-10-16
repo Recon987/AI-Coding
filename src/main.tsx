@@ -25,6 +25,7 @@ import { Personal } from "./components/Personal";
 import { Icon } from "./components/Icon";
 import { Empty, SectionHead, Tag } from "./ui";
 import "./style.css";
+import { ConfirmHost, discardChanges, isConfirmOpen } from "./confirm";
 const sections: {
   label: string;
   pages: { id: Page; label: string }[];
@@ -174,13 +175,9 @@ function App() {
     },
     [api],
   );
-  function navigate(next: Page, id?: string) {
-    if (saving.current) return;
-    if (
-      hasDirtyDrafts() &&
-      !confirm("저장하지 않은 변경 사항이 있습니다. 내용을 버리고 이동할까요?")
-    )
-      return;
+  async function navigate(next: Page, id?: string) {
+    if (saving.current || isConfirmOpen()) return;
+    if (hasDirtyDrafts() && !(await discardChanges("이동할까요?"))) return;
     setSearchOpen(false);
     setPage(next);
     setFocusId(id);
@@ -267,6 +264,7 @@ function App() {
   );
   return (
     <div className="app">
+      <ConfirmHost />
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-symbol" aria-hidden="true">
