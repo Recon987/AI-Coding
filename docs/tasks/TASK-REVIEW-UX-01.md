@@ -34,3 +34,8 @@ Codex 검증: Node 24에서 `npm run review:flows` 재실행해 수치 비교, U
 2026-10-16 Linux Node 22: `npm run review:flows` 오류 0(T5·T6은 기능 부재로 '실패' 기록), `npm test`·`npm run test:desktop` 결과는 커밋 메시지 참조.
 
 ## 검증 기록
+
+
+### Codex 검증 (2026-10-16)
+
+기준73c938e 및 task/task-review-claude-01의 보완본 검토. 업무 흐름10/10 재현. 당직명은 aria/title 전체값 기준, 화면에는 일부 생략 가능. Node24 npm test70/70·전체test:desktop·UI142·업무흐름10/10 통과. 상세 재현/제약: [독립 검토 기록](../reviews/2026-10-16-codex-claude.md). main 미병합이므로 status는 review 유지.

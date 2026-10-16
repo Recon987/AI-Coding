@@ -30,6 +30,7 @@ const root = path.resolve(__dirname, "..");
     data.controls = [
       { id: "c1", title: "가상 계곡 탐방로", zone: "3-2", reason: "weather", start: REVIEW_DATE, end: null, note: "" },
       { id: "c2", title: "가상 능선 탐방로", zone: null, reason: "fire", start: REVIEW_DATE, end: null, note: "" },
+      { id: "future-control", title: "가상 예정 통제", zone: null, reason: "weather", start: "2030-11-01", end: null, note: "" },
     ];
     await page.evaluate((value) => window.workdesk.save(value), data);
     await page.reload();
@@ -56,6 +57,20 @@ const root = path.resolve(__dirname, "..");
     await page.getByRole("button", { name: "이전 주", exact: true }).click();
     await page.getByRole("tab", { name: "목록" }).click();
     await page.getByRole("heading", { name: "10. 15.부터 30일" }).waitFor();
+    // A modal inside the hidden month-only detail area used to open at 0x0 and block the app.
+    for (const view of ["주간", "목록"]) {
+      await page.getByRole("tab", { name: view, exact: true }).click();
+      await page.getByRole("button", { name: "일정 추가", exact: true }).click();
+      const editor = page.getByRole("dialog", { name: "일정 등록", exact: true });
+      await editor.waitFor({ state: "visible" });
+      assert.equal(await editor.evaluate(el => !!el.closest("[hidden]")), false);
+      await editor.getByLabel("일정 제목", { exact: true }).fill(`${view} 보기에서 등록`);
+      await editor.getByLabel("일정 일시", { exact: true }).fill(`${REVIEW_DATE}T13:00`);
+      await editor.getByRole("button", { name: "일정 저장", exact: true }).click();
+      await editor.waitFor({ state: "hidden" });
+      assert.ok((await page.evaluate(() => window.workdesk.load())).events.some(e => e.title === `${view} 보기에서 등록`));
+      assert.equal(await page.getByRole("tab", { name: view, exact: true }).getAttribute("aria-selected"), "true");
+    }
     const patrolRow = page.locator(".list-view-row").filter({ hasText: "순찰" }).first();
     await patrolRow.click();
     await page.getByRole("heading", { name: "현장 순찰", level: 1 }).waitFor();
@@ -80,7 +95,43 @@ const root = path.resolve(__dirname, "..");
       assert.equal(await rows.nth(0).evaluate((el) => el.parentElement.open), true, `${name}: Enter로 펼침`);
       await page.keyboard.press("Enter");
     }
-    console.log(`PASS: 달력 주간·목록 보기와 이동, 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
+    // Future closures cannot be 'lifted today' into a still-active future one-day record.
+    await page.locator("nav").getByRole("button", { name: "탐방로 통제", exact: true }).click();
+    await page.getByRole("tab", { name: /^예정/ }).click();
+    const future = page.locator(".control-record").filter({ hasText: "가상 예정 통제" });
+    assert.equal(await future.getByRole("button", { name: "오늘 해제", exact: true }).count(), 0);
+    assert.equal(await future.getByRole("button", { name: "삭제", exact: true }).count(), 1);
+    await page.getByRole("tab", { name: /^진행 중/ }).click();
+    const active = page.locator(".control-record").filter({ hasText: "가상 계곡 탐방로" });
+    await active.getByRole("button", { name: "오늘 해제", exact: true }).click();
+    await page.getByRole("alertdialog").getByRole("button", { name: "오늘 해제", exact: true }).click();
+    await page.waitForFunction(() => window.workdesk.load().then(d => d.controls.find(c => c.id === "c1").end !== null));
+    const savedControls = (await page.evaluate(() => window.workdesk.load())).controls;
+    assert.equal(savedControls.find(c => c.id === "c1").end, REVIEW_DATE);
+    assert.equal(savedControls.find(c => c.id === "future-control").end, null);
+
+    // The primary save may commit while the auxiliary last-good write fails.
+    const liveFile = await app.evaluate(({ app }) => app.getPath("userData") + "/workdesk.json");
+    const previousGood = fs.readFileSync(liveFile + ".last-good", "utf8");
+    fs.mkdirSync(liveFile + ".last-good.tmp");
+    await page.locator("nav").getByRole("button", { name: "업무 메모", exact: true }).click();
+    await page.getByRole("button", { name: "메모 추가", exact: true }).click();
+    await page.getByLabel("제목", { exact: true }).fill("보호본 실패에도 저장된 메모");
+    await page.getByRole("button", { name: "저장", exact: true }).click();
+    await page.locator(".sheet[open]").waitFor({ state: "hidden" });
+    await page.getByRole("alert").filter({ hasText: "자료는 저장했지만" }).waitFor();
+    assert.ok((await page.evaluate(() => window.workdesk.load())).notes.some(n => n.title === "보호본 실패에도 저장된 메모"));
+    await page.getByRole("heading", { name: "보호본 실패에도 저장된 메모", exact: true }).waitFor();
+    assert.equal(fs.readFileSync(liveFile + ".last-good", "utf8"), previousGood);
+    fs.rmdirSync(liveFile + ".last-good.tmp");
+    // A subsequent healthy save keeps that committed record and clears the warning.
+    await page.getByRole("button", { name: "메모 추가", exact: true }).click();
+    await page.getByLabel("제목", { exact: true }).fill("보호본 재시도 후 메모");
+    await page.getByRole("button", { name: "저장", exact: true }).click();
+    await page.locator(".sheet[open]").waitFor({ state: "hidden" });
+    await page.getByRole("alert").waitFor({ state: "hidden" });
+    assert.ok(JSON.parse(fs.readFileSync(liveFile + ".last-good", "utf8")).notes.some(n => n.title === "보호본 실패에도 저장된 메모"));
+    console.log(`PASS: 보호본 실패 저장 경고·실제자료 갱신/재시도, 예정통제 해제 방지·현재통제 해제, 달력 주간·목록 등록·보기와 이동, 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });

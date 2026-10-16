@@ -40,3 +40,8 @@ Codex가 이 브랜치를 받아 `npm run board`, `npm test`를 실행하고 `do
 
 ## 검증 기록
 (검증 대기)
+
+
+### Codex 검증 (2026-10-16)
+
+기준73c938e 및 task/task-review-claude-01의 보완본 검토. 보드·규칙 검증·별도 검증 카드 선점과 체크포인트 푸시 실제 실행. Node24 npm test70/70·전체test:desktop·UI142·업무흐름10/10 통과. 상세 재현/제약: [독립 검토 기록](../reviews/2026-10-16-codex-claude.md). main 미병합이므로 status는 review 유지.

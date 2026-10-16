@@ -89,6 +89,7 @@ const root = path.resolve(__dirname, "..");
         .then(() => "accepted", (error) => error.message),
     );
     assert.match(badRange, /시작일은 종료일보다/);
+    await assert.rejects(page.evaluate(() => window.workdesk.exportForm({ form: ["patrol-log"], startDate: "2026-10-15", endDate: "2026-10-16", format: "txt" })), /양식 종류/);
     console.log("PASS: 양식 출력 미리보기(순찰일지·단속·계도 기록), CSV 저장(BOM·수식 차단·파일명), 잘못된 요청 거부");
   } finally {
     if (app) await app.close().catch(() => {});

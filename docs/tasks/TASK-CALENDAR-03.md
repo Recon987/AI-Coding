@@ -37,3 +37,8 @@ Codex 검증: Calendar.tsx 보기 전환, 주 시작 월요일, 30일 목록, �
 2026-10-16 Linux Node 22: TZ=UTC `npm test` 64/64, `npm run test:desktop` 통과, review:ui strict 142 통과·외부 요청 0, review:flows 10/10.
 
 ## 검증 기록
+
+
+### Codex 검증 (2026-10-16)
+
+기준73c938e 및 task/task-review-claude-01의 보완본 검토. 주간/목록 추가 모달0×0 결함 보완 후 두 보기 실제 등록/저장 승인. 시간격자·월간건수전환은 미구현. Node24 npm test70/70·전체test:desktop·UI142·업무흐름10/10 통과. 상세 재현/제약: [독립 검토 기록](../reviews/2026-10-16-codex-claude.md). main 미병합이므로 status는 review 유지.

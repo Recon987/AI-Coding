@@ -448,7 +448,8 @@ export function Calendar({
             </div>
           ))}
         </section>
-        {editor.isOpen && (
+      </div>
+      {editor.isOpen && (
           <EditorDialog
             title={draft.id ? "일정 수정" : "일정 등록"}
             busy={busy}
@@ -569,7 +570,6 @@ export function Calendar({
             </form>
           </EditorDialog>
         )}
-      </div>
     </div>
   );
 }

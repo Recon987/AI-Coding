@@ -37,3 +37,8 @@ Codex 검증: shared/forms.mjs, desktop/main.cjs export-form(키 화이트리스
 2026-10-16 Linux Node 22: TZ=UTC `npm test` 64/64, `npm run test:desktop` 통과(양식 스모크 포함), review:ui strict 134 통과·외부 요청 0.
 
 ## 검증 기록
+
+
+### Codex 검증 (2026-10-16)
+
+기준73c938e 및 task/task-review-claude-01의 보완본 검토. 양식 키 문자열 거부 보완, 본체 원본 생성·실제 CSV 출력/수식 차단 승인. Node24 npm test70/70·전체test:desktop·UI142·업무흐름10/10 통과. 상세 재현/제약: [독립 검토 기록](../reviews/2026-10-16-codex-claude.md). main 미병합이므로 status는 review 유지.

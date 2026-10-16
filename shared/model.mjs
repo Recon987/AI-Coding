@@ -189,7 +189,7 @@ export function normalize(input) {
         }
       : input;
   validateOffice(data);
-  const controls = data.controls ?? [];
+  const controls = data.controls === undefined ? [] : data.controls;
   ensure(
     Array.isArray(controls) && controls.length <= 10000,
     "통제 기록은 10,000건 이하의 목록이어야 합니다.",

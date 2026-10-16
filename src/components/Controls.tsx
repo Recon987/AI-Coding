@@ -71,6 +71,7 @@ export function Controls({
     } else editor.setSaveError("저장하지 못했습니다. 입력 내용은 유지됩니다. 다시 시도하세요.");
   }
   async function lift(c: Control) {
+    if (state(c, today) !== "active") return;
     const ok = await askConfirm({
       message: `${c.title} 통제를 오늘(${today})로 해제할까요?`,
       detail: "종료일이 오늘로 바뀌고 내일부터 브리핑에 나타나지 않습니다.",
@@ -79,7 +80,7 @@ export function Controls({
     if (ok)
       await save({
         ...data,
-        controls: data.controls.map((x) => (x.id === c.id ? { ...x, end: today < x.start ? x.start : today } : x)),
+        controls: data.controls.map((x) => (x.id === c.id ? { ...x, end: today } : x)),
       });
   }
 
@@ -141,7 +142,7 @@ export function Controls({
               owner={c.zone ?? "—"}
               actions={[
                 { label: "수정", onClick: () => editor.openEditor(c) },
-                ...(state(c, today) !== "ended" ? [{ label: "오늘 해제", onClick: () => lift(c) }] : []),
+                ...(state(c, today) === "active" ? [{ label: "오늘 해제", onClick: () => lift(c) }] : []),
                 {
                   label: "삭제",
                   tone: "danger" as const,

@@ -99,7 +99,7 @@ else {
       if (r.canceled) return null;
       if (fs.statSync(r.filePaths[0]).size > 20 * 1024 * 1024)
         throw new Error("20MB 이하의 백업을 선택하세요.");
-      const data = store.read(r.filePaths[0]);
+      const data = store.read(r.filePaths[0], { required: true });
       const answer = await dialog.showMessageBox(win, {
         type: "question",
         buttons: ["취소", "복원"],
@@ -179,6 +179,9 @@ else {
       for (const notification of notifications) notification.close();
       notifications.clear();
     });
+  }).catch((error) => {
+    dialog.showErrorBox("시작 실패", `업무 자료를 보존한 상태에서 시작을 중단합니다. ${error.message}`);
+    app.quit();
   });
   app.on("window-all-closed", () => {
     clearInterval(timer);

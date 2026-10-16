@@ -36,3 +36,8 @@ Codex 검증: 발견 V1~V11의 근거(캡처·style.css 줄)를 재현 확인. �
 문서 과제. 2026-10-16 `npm run review:ui` 134개 통과·외부 요청 0, `npm test` 통과.
 
 ## 검증 기록
+
+
+### Codex 검증 (2026-10-16)
+
+기준73c938e 및 task/task-review-claude-01의 보완본 검토. 화면/토큰 근거와 참조 범위 대조, 지원 해상도 독립 확인. Node24 npm test70/70·전체test:desktop·UI142·업무흐름10/10 통과. 상세 재현/제약: [독립 검토 기록](../reviews/2026-10-16-codex-claude.md). main 미병합이므로 status는 review 유지.

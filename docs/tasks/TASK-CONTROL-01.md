@@ -35,3 +35,8 @@ Codex 검증: shared/model.mjs controls 검증·activeControls·controlDays·브
 2026-10-16 Linux Node 22: TZ=UTC `npm test` 60/60, `npm run test:desktop` 통과, review:ui strict 134 통과·외부 요청 0, review:flows 10개 과업 모두 완료.
 
 ## 검증 기록
+
+
+### Codex 검증 (2026-10-16)
+
+기준73c938e 및 task/task-review-claude-01의 보완본 검토. 예정 통제 해제 가드와 null 컬렉션 거부 보완 후 실제 Electron 회귀 승인. Node24 npm test70/70·전체test:desktop·UI142·업무흐름10/10 통과. 상세 재현/제약: [독립 검토 기록](../reviews/2026-10-16-codex-claude.md). main 미병합이므로 status는 review 유지.

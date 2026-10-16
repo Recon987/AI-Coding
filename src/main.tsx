@@ -172,11 +172,11 @@ function App() {
       setBusy(true);
       try {
         const validated = normalize(next);
-        if (api) await api.save(validated);
-        else
+        const saved = api ? await api.save(validated) : undefined;
+        if (!api)
           localStorage.setItem("park-workdesk-demo", JSON.stringify(validated));
         setData(validated);
-        setError("");
+        setError(saved ? saved.warning : "");
         setFeedback("변경 사항을 저장했습니다.");
         return true;
       } catch (e) {

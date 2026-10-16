@@ -35,3 +35,8 @@ Codex 검증: src/confirm.tsx, 12곳 비동기 전환(특히 EditorDialog.openEd
 2026-10-16 Linux Node 22: `npm test` 47/47, `npm run test:desktop` 통과(확인창 회귀 포함), review:ui strict 102 통과·외부 요청 0, review:flows 기존과 동일. Windows Actions 미실행.
 
 ## 검증 기록
+
+
+### Codex 검증 (2026-10-16)
+
+기준73c938e 및 task/task-review-claude-01의 보완본 검토. 실제 앱 확인창 닫기/취소/버리기/삭제·안전 포커스·Esc 회귀 승인. Node24 npm test70/70·전체test:desktop·UI142·업무흐름10/10 통과. 상세 재현/제약: [독립 검토 기록](../reviews/2026-10-16-codex-claude.md). main 미병합이므로 status는 review 유지.

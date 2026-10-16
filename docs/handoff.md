@@ -10,19 +10,19 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1 열림·미병합)
-- **Task Card**: review 14장 — ORCH-01, REVIEW-DOMAIN/DESIGN/UX-01, DATA-01, CONFIRM-01, DESIGN-TOKENS-01, PATROL-02, CONTROL-01, FORMS-01, LIST-01, HOME-02, NAV-01, CALENDAR-03. FORMS-02 blocked(사용자 피드백). 재개 위치는 각 카드
-- **Latest Pushed Commit**: b89c7a5 - feat: grouped sidebar and patrol as the first start action (TASK-NAV-01) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: 4주기: main.tsx 메뉴 5묶음+하단, Briefing 첫 사용 4행동, Calendar.tsx 월간/주간/목록 보기, desktop-list-smoke 달력 검사, ui-review 142. 3주기: src/components/ListRow.tsx, Patrols·Tasks·Personal·Controls 목록, Briefing.tsx 상태 띠·주 단위 이동, style.css, tests/desktop-list-smoke.cjs, task-flows T1. 이전 주기 내역은 카드와 git log
-- **Changed Interfaces / Schema Diff**: 데이터 v3 유지(이번 주기 자료 변경 없음). 홈의 '브리핑 날짜' 입력칸·하루 이동 버튼 제거(주간 띠·이전 주/다음 주로 대체). 목록 행 구조 변경(.record/.record-details/h3 유지)
-- **Test Status**: Linux Node 22: npm test 64/64(TZ=UTC 포함), npm run test:desktop 통과(스모크 6종, 트레이 native 미실행), review:ui strict 142·첫 업무 행 293px, review:flows 10/10. Windows Actions는 이 커밋 푸시 후 PR에서 실행
-- **Remaining Work for Gemini**: (웹) 디자인 2차 의견 — docs/ui-review/cycle2 전후 캡처 활용. Codex: 카드 12장 검증 → main 병합. 사용자: 양식 질문 4개, 화면 용어 피드백, 다음 주기 승인(CALENDAR-02, HOLIDAY-01, SECURITY-01 설계 후보)
-- **Modified Code Snippets (if uncommitted)**: 없음
+- **Repository & Branch**: Recon987/AI-Coding (task/task-review-claude-01 / Claude 원 브랜치 claude/zen-cannon-wc1at4 / main 미병합)
+- **Task Card**: TASK-REVIEW-CLAUDE-01 review. Codex가 Claude73c938e의14개카드 독립 검증·오류보완, Claude가 수정 diff 통합 검토.
+- **Latest Pushed Commit**: 5f661cd - wip(TASK-REVIEW-CLAUDE-01): claim review of Claude PR 1 (작성 직전 체크포인트, 최종응답해시 확인)
+- **Completed Steps & Modified Files**: desktop store/recovery/main, shared model/forms, Calendar/Controls/main/types, 회귀 및14개검증카드, 검토기록. 주간/목록 모달·예정해제·백업/보호본실패·양식타입 보완.
+- **Changed Interfaces / Schema Diff**: 자료v3 유지. store.read(file,{required?}), save()→void|{warning:string}. 주파일 확정후 보호본 실패는 자료갱신+경고. 선택백업은필수파일읽기.
+- **Test Status**: 원본64개+Electron통과. 보완본70/70·전체Electron·UI142·업무흐름10/10. Windows수정본은푸시후확인. 73c938e원본Windows성공과구분.
+- **Remaining Work for Gemini**: Claude는보완diff검토/통합. Codex다음TASK-CALENDAR-02. 실제Windows접근성/절전·양식사용자피드백은기존카드.
+- **Modified Code Snippets (if uncommitted)**: 검증완료수정즉시커밋·푸시. 원브랜치/main직접수정없음.
 ```
 
 ## 2. 과제 현황
 
-`npm run board`가 우선순위·담당·재개 위치를 출력한다. 이 문서에 백로그를 따로 적지 않는다(이중 기록 금지). 2026-10-16 기준 요약: P0 TASK-DATA-01(손상 파일 복구), P1 도메인·디자인·UX 검토 3건이 `ready`이며 기능 백로그(CALENDAR-02, SECURITY-01, HOLIDAY-01, BACKUP-02, LAW-01, LEDGER-01)는 검토 결과에 따라 재정렬한다.
+`npm run board`가 우선순위·담당·재개 위치를 출력한다. 이 문서에 백로그를 따로 적지 않는다(이중 기록 금지). 2026-10-16: Claude의14개 review 카드를 Codex가 검증했다. 원본에서 누락된 오류 경로는 TASK-REVIEW-CLAUDE-01에서 보완했으며 총괄 통합 전 상태를 유지한다. 이후 순서는 보드와 해당 카드의 재개 위치를 따른다.
 
 ## 3. 작업 시작·종료
 

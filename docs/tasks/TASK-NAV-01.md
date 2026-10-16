@@ -38,3 +38,8 @@ Codex 검증: 메뉴 묶음 조정 근거(7→5+하단), 첫 사용 4행동, 960
 2026-10-16 Linux Node 22: TZ=UTC `npm test` 64/64, `npm run test:desktop` 통과, review:ui strict 142 통과·외부 요청 0, review:flows 10/10.
 
 ## 검증 기록
+
+
+### Codex 검증 (2026-10-16)
+
+기준73c938e 및 task/task-review-claude-01의 보완본 검토. 메뉴와 처음사용4행동·960/125% 배치 검증 승인. Node24 npm test70/70·전체test:desktop·UI142·업무흐름10/10 통과. 상세 재현/제약: [독립 검토 기록](../reviews/2026-10-16-codex-claude.md). main 미병합이므로 status는 review 유지.

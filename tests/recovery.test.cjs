@@ -134,3 +134,98 @@ test("손상본을 보관하지 못하면 아무것도 쓰지 않고 시작을 �
       fs.copyFileSync = original;
     }
   }));
+
+
+test("선택 백업이 사라지거나 디렉터리이면 빈 자료로 복원하지 않는다", () =>
+  sandbox(async (dir, file) => {
+    fs.writeFileSync(file, "{damaged");
+    for (const selected of [path.join(dir, "missing.json"), dir]) {
+      const dialog = fakeDialog(["백업 파일에서 복원", "종료"], [selected]);
+      assert.equal(await openDataFile({ file, store, dialog, now: () => NOW }), false);
+      assert.match(dialog.seen[1].detail, /사용할 수 없습니다/);
+      assert.equal(fs.readFileSync(file, "utf8"), "{damaged");
+    }
+  }));
+
+test("주파일 저장 후 보호본 실패는 저장 성공과 경고를 반환하고 이전 보호본을 보존한다", () =>
+  sandbox((dir, file) => {
+    store.write(file, sample("이전"), { keepLastGood: true });
+    const rename = fs.renameSync;
+    fs.renameSync = (from, to) => {
+      if (to === store.lastGoodFile(file)) throw new Error("ENOSPC");
+      return rename(from, to);
+    };
+    try {
+      const result = store.write(file, sample("새 기록"), { keepLastGood: true });
+      assert.match(result.warning, /자료는 저장했지만/);
+      assert.deepEqual(store.read(file), sample("새 기록"));
+      assert.deepEqual(store.read(store.lastGoodFile(file)), sample("이전"));
+      assert.deepEqual(fs.readdirSync(dir).filter(f => f.endsWith(".tmp")), []);
+    } finally { fs.renameSync = rename; }
+  }));
+
+test("정상 파일의 보호본 준비 실패는 손상 복구로 보내지 않는다", () =>
+  sandbox(async (dir, file) => {
+    store.write(file, sample("정상"));
+    const rename = fs.renameSync;
+    fs.renameSync = (from, to) => {
+      if (to === store.lastGoodFile(file)) throw new Error("EACCES");
+      return rename(from, to);
+    };
+    try {
+      const dialog = fakeDialog([]);
+      const messages = [];
+      assert.equal(await openDataFile({ file, store, dialog, logger: { warn: (...args) => messages.push(args) } }), true);
+      assert.equal(messages.length, 1);
+      assert.equal(dialog.seen.length, 0);
+      assert.equal(corruptCopies(dir).length, 0);
+      assert.deepEqual(store.read(file), sample("정상"));
+    } finally { fs.renameSync = rename; }
+  }));
+
+test("마지막 정상본 복구 쓰기 실패는 재선택 안내 후 종료할 수 있다", () =>
+  sandbox(async (dir, file) => {
+    store.write(file, sample("보호본"), { keepLastGood: true });
+    fs.writeFileSync(file, "{damaged");
+    const rename = fs.renameSync;
+    fs.renameSync = (from, to) => {
+      if (to === file) throw new Error("ENOSPC");
+      return rename(from, to);
+    };
+    try {
+      const dialog = fakeDialog(["마지막 정상본으로 시작", "종료"]);
+      assert.equal(await openDataFile({ file, store, dialog, now: () => NOW }), false);
+      assert.match(dialog.seen[1].detail, /복구하지 못했습니다.*ENOSPC/);
+      assert.equal(fs.readFileSync(file, "utf8"), "{damaged");
+      assert.deepEqual(store.read(store.lastGoodFile(file)), sample("보호본"));
+    } finally { fs.renameSync = rename; }
+  }));
+
+test("주파일이 없고 정상본만 있으면 빈 시작 대신 복구 선택을 제공한다", () =>
+  sandbox(async (dir, file) => {
+    store.write(store.lastGoodFile(file), sample("보호본"));
+    const dialog = fakeDialog(["마지막 정상본으로 시작"]);
+    assert.equal(await openDataFile({ file, store, dialog }), true);
+    assert.deepEqual(store.read(file), sample("보호본"));
+    assert.equal(dialog.seen.length, 1);
+    assert.equal(corruptCopies(dir).length, 0);
+    assert.throws(() => store.read(path.join(dir, "gone.json"), { required: true }), /ENOENT/);
+    assert.deepEqual(store.read(path.join(dir, "new.json")), store.empty());
+  }));
+
+
+test("주파일 교체 전 실패는 저장 실패이며 이전 주파일·보호본을 모두 유지한다", () =>
+  sandbox((dir, file) => {
+    store.write(file, sample("이전"), { keepLastGood: true });
+    const rename = fs.renameSync;
+    fs.renameSync = (from, to) => {
+      if (to === file) throw new Error("ENOSPC");
+      return rename(from, to);
+    };
+    try {
+      assert.throws(() => store.write(file, sample("미확정"), { keepLastGood: true }), /ENOSPC/);
+      assert.deepEqual(store.read(file), sample("이전"));
+      assert.deepEqual(store.read(store.lastGoodFile(file)), sample("이전"));
+      assert.deepEqual(fs.readdirSync(dir).filter(f => f.endsWith(".tmp")), []);
+    } finally { fs.renameSync = rename; }
+  }));

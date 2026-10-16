@@ -23,7 +23,7 @@ const fail = (message) => {
   throw new Error(message);
 };
 function checkRequest({ form, startDate, endDate, format }) {
-  if (!Object.hasOwn(FORMS, form)) fail("양식 종류를 확인하세요.");
+  if (typeof form !== "string" || !Object.hasOwn(FORMS, form)) fail("양식 종류를 확인하세요.");
   if (!FORM_FORMATS.includes(format)) fail("출력 형식을 확인하세요.");
   if (!validDate(startDate) || !validDate(endDate)) fail("출력 기간을 확인하세요.");
   if (startDate > endDate) fail("출력 시작일은 종료일보다 앞이어야 합니다.");

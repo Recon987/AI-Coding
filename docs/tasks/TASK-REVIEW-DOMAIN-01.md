@@ -37,3 +37,8 @@ Codex 검증: docs/research/knps-domain.md의 [확인] 출처가 실제로 해�
 문서 과제. 2026-10-16 `npm test` 통과(보드 검사 포함).
 
 ## 검증 기록
+
+
+### Codex 검증 (2026-10-16)
+
+기준73c938e 및 task/task-review-claude-01의 보완본 검토. 2011 채용 기사 및 공식 법령목록 본문 표본 확인. 조사/가설 구분 승인, 내부 업무 표준 확정 아님. Node24 npm test70/70·전체test:desktop·UI142·업무흐름10/10 통과. 상세 재현/제약: [독립 검토 기록](../reviews/2026-10-16-codex-claude.md). main 미병합이므로 status는 review 유지.

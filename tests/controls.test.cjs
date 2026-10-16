@@ -49,6 +49,7 @@ test("통제 기록을 검증한다: 사유·날짜 순서·담당구역·메모
   bad({ note: "x".repeat(2001) }, /메모/);
   assert.throws(() => normalize(withControls(control(), control())), /ID/);
   assert.throws(() => normalize({ ...empty(), controls: {} }), /10,000/);
+  assert.throws(() => normalize({ ...empty(), controls: null }), /10,000/);
 });
 
 test("특정 날짜의 유효 통제: 시작·종료일 포함, 종료일 없음은 해제 시까지", () => {

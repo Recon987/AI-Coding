@@ -1,5 +1,9 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## Claude PR #1 독립 검증·보완
+
+기준73c938e: Node24.19 npm test64/64, 전체test:desktop 통과. 실패 경로 재현 후 검증 브랜치에서 자료 복구·보호본 실패 의미·예정 통제 해제·양식 타입·주간/목록 등록 모달을 보완했다. 보완본 npm test70/70, npm run test:desktop 통과(새 회귀 포함), UI142/오류0/외부요청0, 업무흐름10/10. 상세 [검토 기록](reviews/2026-10-16-codex-claude.md). 원본 Windows38889183811과 보완본 후속 Windows 실행을 구분한다. main 미병합.
+
 ## TASK-CONFIRM-01 / 앱 안 확인창 (미병합, 2026-10-16)
 
 - 수정 전: 미저장 편집창을 '닫기 ×'·Esc로 닫으면 Linux 헤드리스 Electron이 SIGTRAP으로 종료(브라우저 확인창 경로).

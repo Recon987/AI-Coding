@@ -3,17 +3,21 @@ const path = require("node:path");
 
 // Opens workdesk.json at startup. A damaged file is copied aside before anything
 // else is written, and is never deleted. Returns false when the app should quit.
-async function openDataFile({ file, store, dialog, now = Date.now }) {
+async function openDataFile({ file, store, dialog, now = Date.now, logger = console }) {
   try {
+    if (!fs.existsSync(file) && fs.existsSync(store.lastGoodFile(file)))
+      throw new Error("업무 자료 파일이 없지만 마지막 정상본이 남아 있습니다.");
     store.read(file);
     store.migrateFile(file);
-    // First run after this feature: seed the last-good copy from a healthy file.
-    if (fs.existsSync(file) && !fs.existsSync(store.lastGoodFile(file)))
-      store.write(store.lastGoodFile(file), store.read(file));
-    return true;
   } catch (error) {
     return recover({ file, store, dialog, now, reason: error });
   }
+  // Failure to seed an auxiliary copy does not make a healthy primary corrupt.
+  try {
+    if (fs.existsSync(file) && !fs.existsSync(store.lastGoodFile(file)))
+      store.write(store.lastGoodFile(file), store.read(file, { required: true }));
+  } catch (error) { logger.warn("자동 보호본 준비 실패:", error.message); }
+  return true;
 }
 
 function preserveDamaged(file, now) {
@@ -29,7 +33,7 @@ function preserveDamaged(file, now) {
 function readLastGood(store, file) {
   try {
     return fs.existsSync(store.lastGoodFile(file))
-      ? store.read(store.lastGoodFile(file))
+      ? store.read(store.lastGoodFile(file), { required: true })
       : null;
   } catch {
     return null;
@@ -79,8 +83,13 @@ async function recover({ file, store, dialog, now, reason }) {
     const choice = options[response]?.id ?? "quit";
     if (choice === "quit") return false;
     if (choice === "last-good") {
-      store.write(file, lastGood, { keepLastGood: true });
-      return true;
+      try {
+        store.write(file, lastGood, { keepLastGood: true });
+        return true;
+      } catch (error) {
+        notice = `마지막 정상본으로 복구하지 못했습니다: ${error.message}`;
+        continue;
+      }
     }
     const picked = await dialog.showOpenDialog({
       properties: ["openFile"],
@@ -91,7 +100,7 @@ async function recover({ file, store, dialog, now, reason }) {
       continue;
     }
     try {
-      const data = store.read(picked.filePaths[0]);
+      const data = store.read(picked.filePaths[0], { required: true });
       store.write(file, data, { keepLastGood: true });
       return true;
     } catch (error) {

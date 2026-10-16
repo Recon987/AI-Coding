@@ -154,7 +154,7 @@ declare global {
       getDesktopSettings(): Promise<DesktopSettings>;
       setCloseToTray(enabled: boolean): Promise<DesktopSettings>;
       load(): Promise<Data>;
-      save(data: Data): Promise<void>;
+      save(data: Data): Promise<void | { warning: string }>;
       chooseFolder(): Promise<string | null>;
       openFolder(id: string): Promise<void>;
       backup(): Promise<void>;

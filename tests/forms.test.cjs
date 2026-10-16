@@ -84,6 +84,7 @@ test("셀 수식 차단 규칙과 요청 검증", () => {
   assert.equal(csvCell(null), `""`);
   const bad = (req, message) => assert.throws(() => buildForm(data(), { form: "patrol-log", format: "txt", ...range, ...req }), message);
   bad({ form: "facility" }, /양식 종류/);
+  for (const form of [["patrol-log"], ["enforcement-log"], {}, null, 1]) bad({ form }, /양식 종류/);
   bad({ format: "pdf" }, /형식/);
   bad({ startDate: "2026-02-30" }, /기간/);
   bad({ startDate: "2026-10-17" }, /앞이어야/);
