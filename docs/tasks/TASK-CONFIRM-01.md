@@ -1,11 +1,11 @@
 ---
 id: TASK-CONFIRM-01
 title: 브라우저 확인창(window.confirm)을 앱 안 확인 UI로 대체하고 편집창 닫기 비정상 종료 해소
-status: backlog
+status: ready
 role: builder
-owner: none
-verifier: claude
-branch: task/task-confirm-01
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends: 
 priority: P1
 updated: 2026-10-16

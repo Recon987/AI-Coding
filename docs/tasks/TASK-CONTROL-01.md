@@ -1,11 +1,11 @@
 ---
 id: TASK-CONTROL-01
 title: 탐방로 통제 구간 기록과 브리핑 '오늘 통제'
-status: backlog
+status: ready
 role: builder
-owner: none
-verifier: claude
-branch: task/task-control-01
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends: 
 priority: P1
 updated: 2026-10-16

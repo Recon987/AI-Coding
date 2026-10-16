@@ -1,11 +1,11 @@
 ---
 id: TASK-DATA-01
 title: 손상된 업무 파일에서 앱을 복구할 수 있게 하고 저장을 디스크에 확정
-status: ready
+status: in-progress
 role: builder
-owner: codex
-verifier: claude
-branch: task/task-data-01
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P0
 updated: 2026-10-16
@@ -32,7 +32,7 @@ updated: 2026-10-16
 - [ ] 4. README·architecture·validation 갱신
 
 ## 재개 위치
-1단계부터. `desktop/store.cjs`의 `write()`.
+1단계 진행 중: `desktop/store.cjs` `write()`에 fsync·last-good 추가, tests/store.test.cjs에 단위 테스트.
 
 ## 테스트 상태
 미실행

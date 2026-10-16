@@ -1,11 +1,11 @@
 ---
 id: TASK-DESIGN-TOKENS-01
 title: 디자인 토큰 정리: 글자 크기 5단계·의미 색·간격
-status: backlog
+status: ready
 role: builder
-owner: none
-verifier: claude
-branch: task/task-design-tokens-01
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends: 
 priority: P1
 updated: 2026-10-16

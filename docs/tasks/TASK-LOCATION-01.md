@@ -1,6 +1,6 @@
 ---
 id: TASK-LOCATION-01
-title: 공원별 탐방로 구간·지점 사전(로컬 반입)과 순찰 선택 입력
+title: 담당구역 번호 목록(로컬 반입)과 순찰 선택 입력
 status: backlog
 role: builder
 owner: none
@@ -15,7 +15,7 @@ updated: 2026-10-16
 [도메인 D4](../reviews/2026-10-16-domain.md), [UX U4](../reviews/2026-10-16-ux.md). 현장 위치 표기 방식은 사용자 확인 필요.
 
 ## 완료 조건
-- [ ] 사용자 답변으로 위치 표기 방식 확정
+- [x] 사용자 답변으로 위치 표기 방식 확정: 담당구역 번호, 단속은 위경도(2026-10-16)
 - [ ] CSV 반입·검증·미리보기(사무소 CSV 반입과 같은 방식)
 - [ ] 순찰 구간 선택 입력과 최근 값
 - [ ] `npm test`, `npm run test:desktop` 통과
