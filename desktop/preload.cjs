@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld("workdesk", {
   setCloseToTray: (value) =>
     ipcRenderer.invoke("desktop-settings-set-tray", value),
   exportBriefing: (date) => ipcRenderer.invoke("export-briefing", date),
+  exportForm: (request) => ipcRenderer.invoke("export-form", request),
   load: () => ipcRenderer.invoke("load"),
   save: (data) => ipcRenderer.invoke("save", data),
   chooseFolder: () => ipcRenderer.invoke("choose-folder"),

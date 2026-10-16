@@ -14,6 +14,7 @@ const path = require("node:path");
 const fs = require("node:fs");
 const store = require("./store.cjs");
 const { briefing, reminderItems } = require("../shared/model.mjs");
+const { buildForm } = require("../shared/forms.mjs");
 const { createDesktopLifecycle } = require("./lifecycle.cjs");
 const { createNotifier } = require("./notifications.cjs");
 const { openDataFile } = require("./recovery.cjs");
@@ -53,6 +54,31 @@ else {
       });
       if (result.canceled || !result.filePath) return false;
       fs.writeFileSync(result.filePath, "\ufeff" + body, {
+        encoding: "utf8",
+        mode: 0o600,
+      });
+      return true;
+    });
+    // The renderer only names the form and period; content comes from stored data.
+    ipcMain.handle("export-form", async (_, request) => {
+      if (
+        !request ||
+        typeof request !== "object" ||
+        Object.keys(request).some(
+          (key) => !["form", "startDate", "endDate", "format"].includes(key),
+        )
+      )
+        throw new Error("양식 출력 요청을 확인하세요.");
+      const { filename, content } = buildForm(store.read(file), request);
+      const result = await dialog.showSaveDialog(win, {
+        defaultPath: filename,
+        filters:
+          request.format === "csv"
+            ? [{ name: "CSV (엑셀)", extensions: ["csv"] }]
+            : [{ name: "텍스트", extensions: ["txt"] }],
+      });
+      if (result.canceled || !result.filePath) return false;
+      fs.writeFileSync(result.filePath, "\ufeff" + content, {
         encoding: "utf8",
         mode: 0o600,
       });

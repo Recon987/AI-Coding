@@ -160,6 +160,9 @@ declare global {
       backup(): Promise<void>;
       restore(): Promise<Data | null>;
       exportBriefing(date: string): Promise<boolean>;
+      exportForm(
+        request: import("../shared/forms.mjs").FormRequest,
+      ): Promise<boolean>;
     };
   }
 }

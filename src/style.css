@@ -680,3 +680,10 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .inline-link { min-height: 0; padding: 0; color: inherit; font-size: inherit; }
 .inline-link:hover { background: none; text-decoration: underline; }
 .calendar-control-mark { display: inline-flex; align-items: center; gap: 4px; margin-top: auto; padding: 1px 6px; border-radius: 4px; color: var(--cat-control); background: var(--cat-control-bg); font-size: var(--fs-xs); line-height: 18px; }
+
+/* Recommended form export (TASK-FORMS-01). */
+.format-choice { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 14px; padding: 0; border: 0; }
+.format-choice legend { margin-bottom: 6px; color: var(--ink-2); font-size: var(--fs-sm); }
+.format-choice label { display: inline-flex; align-items: center; gap: 6px; }
+.format-choice input { width: auto; min-height: 0; accent-color: var(--green); }
+.form-preview { max-height: 340px; margin: 0 0 14px; padding: 12px 14px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-sunken); font-family: Consolas, "D2Coding", monospace; font-size: var(--fs-xs); line-height: 18px; white-space: pre-wrap; }

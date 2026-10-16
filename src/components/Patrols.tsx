@@ -6,6 +6,7 @@ import {
   PATROL_KINDS,
 } from "../../shared/model.mjs";
 import { ObservationEditor, PatrolSummary } from "./Observations";
+import { FormExport } from "./FormExport";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { CoordinateInput } from "./CoordinateInput";
 import { useState } from "react";
@@ -52,6 +53,7 @@ export function Patrols({
   const [editorKey, setEditorKey] = useState(0);
   const [coordinateError, setCoordinateError] = useState("");
   const [observationError, setObservationError] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const resetDraft = async (value: Patrol) => {
     if (await editor.openEditor(value)) {
       setCoordinateError("");
@@ -124,11 +126,17 @@ export function Patrols({
   }
   return (
     <div className="workspace-grid">
+      {exporting && (
+        <FormExport data={data} busy={busy} onClose={() => setExporting(false)} />
+      )}
       <PatrolSummary data={data} />
       <section className="panel records">
         <SectionHead eyebrow="FIELD JOURNAL" title="현장에서 남긴 기록">
           <div className="editor-header-actions">
             <Tag>{data.patrols.length}건</Tag>
+            <button disabled={busy} onClick={() => setExporting(true)}>
+              양식 출력
+            </button>
             <button
               className="primary"
               disabled={busy}
