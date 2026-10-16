@@ -31,9 +31,9 @@ updated: 2026-10-16
 - [ ] 3. 테스트·문서
 
 ## 재개 위치
-2단계: shared/forms.mjs(patrolLog·enforcementLog, TXT/CSV, CSV 수식 차단) + tests/forms.test.cjs, 이후 IPC export-form(본체가 저장 자료로 생성) + 순찰 화면 '양식 출력' 편집창.
+3단계: IPC export-form(desktop/main.cjs, preload.cjs — 본체가 저장 자료로 buildForm, 저장 대화상자, BOM) + 순찰 화면 '양식 출력' 편집창(양식·기간·형식·미리보기) + desktop smoke. shared/forms.mjs·tests/forms.test.cjs 완료.
 
 ## 테스트 상태
-미실행
+2026-10-16: TZ=UTC `npm test` 64/64. UI·IPC 미구현.
 
 ## 검증 기록
