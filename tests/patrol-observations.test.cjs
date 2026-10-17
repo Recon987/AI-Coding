@@ -80,6 +80,9 @@ test("기간 집계는 현지 날짜 기준으로 유형별 건수와 조치를 
   ].sort((a, b) => b.count - a.count || a.type.localeCompare(b.type, "ko")));
   assert.equal(summary.totalCount, 6);
   assert.throws(() => patrolSummary(data, { startDate: "2026-13-01", endDate: "2026-10-18" }), /기간/);
+  // TASK-POLISH-01: a reversed range is an input error, not an empty week.
+  assert.throws(() => patrolSummary(data, { startDate: "2026-10-18", endDate: "2026-10-12" }), /시작일은 종료일보다/);
+  assert.equal(patrolSummary(data, { startDate: "2026-10-15", endDate: "2026-10-15" }).patrols >= 0, true);
 });
 
 test("유형 제안은 기본 목록 뒤에 실제 기록한 새 유형을 덧붙인다", () => {

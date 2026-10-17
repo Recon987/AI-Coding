@@ -39,6 +39,10 @@ const root = path.resolve(__dirname, "..");
     const strip = page.getByLabel("오늘 상태");
     assert.match(await strip.getByRole("button", { name: /^오늘 당직/ }).getAttribute("aria-label"), /^오늘 당직 (주간당직|숙직) 가상직원/);
     assert.match(await strip.getByRole("button", { name: /^오늘 통제/ }).getAttribute("aria-label"), /^오늘 통제 2곳: 가상 계곡 탐방로, 가상 능선 탐방로$/);
+    // TASK-POLISH-01: the strip tile may truncate; the office card lists every name in full.
+    const dutyLine = await page.getByLabel("오늘의 사무소 근무").locator(".office-duty-names").textContent();
+    assert.match(dutyLine, /^오늘 당직: (주간당직|숙직) 가상직원/);
+    assert.equal(await page.locator(".office-duty-names").evaluate((el) => el.scrollWidth <= el.clientWidth), true, "이름 줄 잘림 없음");
     await strip.getByRole("button", { name: /^기한 경과/ }).click();
     await page.locator(".segmented button.selected", { hasText: "기한 경과" }).waitFor();
     assert.equal(await page.getByLabel("브리핑 날짜").count(), 0, "날짜 입력칸 없음(주간 띠만)");

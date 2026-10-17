@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1). Codex의 task/task-review-claude-01(PR #2)·task/task-calendar-02(PR #3)를 fast-forward로 통합함
-- **Task Card**: review 16장(ORCH-01 … CALENDAR-03, REVIEW-CLAUDE-01, CALENDAR-02) — 모두 검증자 승인 기록 있음, main 병합 시 done. FORMS-02 blocked(사용자 피드백), POLISH-01 backlog(Codex 비차단 후속)
-- **Latest Pushed Commit**: 26e3e08 - docs: verify and integrate Codex review fixes and CALENDAR-02 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: Claude가 Codex 수정(b03d6cf)·CALENDAR-02(a932812)를 직접 받아 검증·승인, docs/tasks/TASK-REVIEW-CLAUDE-01·CALENDAR-02 검증 기록, TASK-POLISH-01 신설
-- **Changed Interfaces / Schema Diff**: 데이터 v3. Event.completedDates?/excludedDates?, store.read(file,{required}), write()가 보호본 실패 시 {warning} 반환, save IPC 응답 {warning}. 앱 표시 버전 0.7.0
-- **Test Status**: Linux Node 22: npm test 81/81, npm run test:desktop 전체 통과(트레이 native 미실행), review:ui strict 142·외부 요청 0. Codex Node 24 동일 결과, Windows Actions 38896149700(b03d6cf)·38898226246(4a10c2c) 성공. 26e3e08은 PR #1에서 실행
-- **Remaining Work for Gemini**: 사용자: PR #1 main 병합 승인, PR #2·#3 정리(내용은 PR #1에 포함), 양식 질문 4개·용어 피드백. 다음 후보: HOLIDAY-01, POLISH-01, SECURITY-01 설계
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
+- **Task Card**: TASK-POLISH-01 review(검증자 codex, 재개 위치는 카드). 그 외 review 16장은 검증자 승인 기록 있음, main 병합 시 done. FORMS-02 blocked(사용자 피드백)
+- **Latest Pushed Commit**: 7b93f1c - wip(TASK-POLISH-01): calendar view tabs roving focus and week closure navigation (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: POLISH-01 1~3단계 — desktop/recovery.cjs(notify), desktop/store.cjs(migrateFile 경고 반환), desktop/main.cjs(take-notice, 복원 경고), desktop/preload.cjs(takeNotice), src/main.tsx, src/components/Calendar.tsx(tabKeys·tabpanel·주간 통제 버튼), src/components/Briefing.tsx(office-duty-names), shared/model.mjs(patrolSummary 역순 거부), src/style.css, tests/desktop-notice-smoke.cjs(신규), desktop-list-smoke·recovery.test·patrol-observations.test, package.json·windows-build.yml
+- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. 새 IPC `take-notice` → preload `takeNotice(): Promise<string>`(1회 전달). openDataFile에 선택 인자 `notify(text)`. migrateFile이 `{warning}`을 반환할 수 있음. patrolSummary는 시작일>종료일이면 예외
+- **Test Status**: Linux Node 22: npm test 82/82, npm run test:desktop 8개 스모크 통과, review:ui strict+zoom 142·실패 0·외부 요청 0. Windows Actions는 PR #1 푸시 결과 확인 필요
+- **Remaining Work for Gemini**: Codex: POLISH-01 검증. 사용자: PR #1 main 병합 승인, PR #3 정리, 양식 질문 4개·용어 피드백. 다음 후보: HOLIDAY-01, SECURITY-01 설계
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

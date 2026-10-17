@@ -323,6 +323,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .office-glance strong { font-size: var(--fs-sm); font-weight: 600; }
 .office-glance p { margin: 0; font-size: var(--fs-xs); line-height: 20px; color: var(--muted); }
 .office-glance p button { min-height: 28px; padding: 2px 4px; }
+.office-duty-names { display: block; color: var(--ink); overflow-wrap: anywhere; }
 .office-glance button { white-space: nowrap; font-size: var(--fs-xs); }
 .personal-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
 .personal-line { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 64px; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; text-align: left; }

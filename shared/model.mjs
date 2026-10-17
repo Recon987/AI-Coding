@@ -833,6 +833,7 @@ export function observationTypes(data) {
 /** Counts patrols and observations whose patrol date (local) is within the range. */
 export function patrolSummary(data, { startDate, endDate }) {
   ensure(validDate(startDate) && validDate(endDate), "집계 기간을 확인하세요.");
+  ensure(startDate <= endDate, "집계 시작일은 종료일보다 앞이어야 합니다.");
   const patrols = data.patrols.filter((p) => {
     const key = dayKey(new Date(p.at));
     return key >= startDate && key <= endDate;

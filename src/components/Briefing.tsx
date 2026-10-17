@@ -500,6 +500,14 @@ export function Briefing({
                 <br />
                 당직·숙직 <strong>{office.duty}명</strong> · 미등록{" "}
                 <strong>{office.unregistered}명</strong>
+                {dutyToday.length > 0 && (
+                  <span className="office-duty-names">
+                    오늘 당직:{" "}
+                    {dutyToday
+                      .map((r) => `${dutyTypes[r.assignment!.duty]} ${r.employee.name}`)
+                      .join(" · ")}
+                  </span>
+                )}
               </p>
             ) : (
               <p>
