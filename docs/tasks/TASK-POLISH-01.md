@@ -1,14 +1,14 @@
 ---
 id: TASK-POLISH-01
 title: Codex 검토의 비차단 후속 묶음(보호본 상태 표시·달력 탭 접근성·집계 기간 검증)
-status: backlog
+status: in-progress
 role: builder
-owner: none
+owner: claude
 verifier: codex
-branch: task/task-polish-01
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
-updated: 2026-10-16
+updated: 2026-10-17
 ---
 
 ## 배경
@@ -30,7 +30,7 @@ updated: 2026-10-16
 - [ ] 3. 홈 이름·집계 검증·테스트
 
 ## 재개 위치
-착수 전.
+1단계: desktop/recovery.cjs openDataFile에 notify 콜백 추가, desktop/main.cjs에 take-notice IPC, src/main.tsx 시작·복원 후 경고 표시.
 
 ## 테스트 상태
 미실행
