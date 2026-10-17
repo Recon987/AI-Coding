@@ -29,6 +29,12 @@ import {
 } from "../ui";
 import { Icon } from "./Icon";
 import { askConfirm, confirmDelete } from "../confirm";
+type View = "month" | "week" | "list";
+const VIEWS: [View, string][] = [
+  ["month", "월간"],
+  ["week", "주간"],
+  ["list", "목록"],
+];
 /** "순찰 2 · 인계 1" for chips that do not fit in a month cell. */
 function overflowByKind(rest: { category: string }[]) {
   const counts = new Map<string, number>();
@@ -265,7 +271,28 @@ export function Calendar({
   );
   const selectedHoliday = holidayName(selected);
   // Week (Mon–Sun around the selected day) and 30-day list views (TASK-CALENDAR-03).
-  const [view, setView] = useState<"month" | "week" | "list">("month");
+  const [view, setView] = useState<View>("month");
+  // Arrow/Home/End move between view tabs and select them (roving tabindex).
+  function tabKeys(e: React.KeyboardEvent<HTMLButtonElement>) {
+    const index = VIEWS.findIndex(([key]) => key === view);
+    const target =
+      e.key === "ArrowRight"
+        ? (index + 1) % VIEWS.length
+        : e.key === "ArrowLeft"
+          ? (index + VIEWS.length - 1) % VIEWS.length
+          : e.key === "Home"
+            ? 0
+            : e.key === "End"
+              ? VIEWS.length - 1
+              : -1;
+    if (target < 0) return;
+    e.preventDefault();
+    const next = VIEWS[target][0];
+    setView(next);
+    requestAnimationFrame(() =>
+      document.getElementById(`calendar-tab-${next}`)?.focus(),
+    );
+  }
   const shift = (date: string, days: number) => {
     const next = new Date(`${date}T12:00:00`);
     next.setDate(next.getDate() + days);
@@ -427,26 +454,29 @@ export function Calendar({
           role="tablist"
           aria-label="달력 보기"
         >
-          {(
-            [
-              ["month", "월간"],
-              ["week", "주간"],
-              ["list", "목록"],
-            ] as const
-          ).map(([key, label]) => (
+          {VIEWS.map(([key, label]) => (
             <button
               key={key}
+              id={`calendar-tab-${key}`}
               role="tab"
               aria-selected={view === key}
+              aria-controls={`calendar-panel-${key}`}
+              tabIndex={view === key ? 0 : -1}
               className={view === key ? "selected" : ""}
               onClick={() => setView(key)}
+              onKeyDown={tabKeys}
             >
               {label}
             </button>
           ))}
         </div>
         {view === "week" && (
-          <div className="week-view">
+          <div
+            className="week-view"
+            id="calendar-panel-week"
+            role="tabpanel"
+            aria-labelledby="calendar-tab-week"
+          >
             {weekDays.map((key) => {
               const entries = byDay(key);
               const closures = entries.filter((i) => i.category === "통제");
@@ -467,15 +497,18 @@ export function Calendar({
                       <small className="holiday-label">{holiday}</small>
                     )}
                   </button>
-                  {closures.length > 0 && (
-                    <span
+                  {closures.map((c) => (
+                    <button
+                      key={c.key}
                       className="calendar-control-mark"
-                      title={closures.map((c) => c.title).join(", ")}
+                      title={`탐방로 통제 · ${c.title}`}
+                      aria-label={`탐방로 통제 ${c.title} 원본 열기`}
+                      onClick={() => void openItem(c)}
                     >
                       <Icon name="controls" size={12} />
-                      통제 {closures.length}
-                    </span>
-                  )}
+                      <span>{c.title}</span>
+                    </button>
+                  ))}
                   {entries
                     .filter((i) => i.category !== "통제")
                     .map((i) => (
@@ -500,7 +533,12 @@ export function Calendar({
           </div>
         )}
         {view === "list" && (
-          <div className="list-view">
+          <div
+            className="list-view"
+            id="calendar-panel-list"
+            role="tabpanel"
+            aria-labelledby="calendar-tab-list"
+          >
             {Array.from({ length: 30 }, (_, n) => shift(selected, n))
               .filter((key) => byDay(key).length > 0)
               .map((key) => (
@@ -530,7 +568,11 @@ export function Calendar({
           </div>
         )}
         {view === "month" && (
-          <>
+          <div
+            id="calendar-panel-month"
+            role="tabpanel"
+            aria-labelledby="calendar-tab-month"
+          >
             <div className="calendar-legend">
               <Tag>
                 <Icon name="calendar" size={12} />
@@ -633,7 +675,7 @@ export function Calendar({
               법정공휴일·대체공휴일(오프라인 음력 공휴일 2025~2035년 포함)과
               반복 일정도 복제 없이 함께 표시합니다.
             </p>
-          </>
+          </div>
         )}
       </section>
       <div className="calendar-detail" hidden={view !== "month"}>

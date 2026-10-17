@@ -71,6 +71,29 @@ const root = path.resolve(__dirname, "..");
       assert.ok((await page.evaluate(() => window.workdesk.load())).events.some(e => e.title === `${view} 보기에서 등록`));
       assert.equal(await page.getByRole("tab", { name: view, exact: true }).getAttribute("aria-selected"), "true");
     }
+    // TASK-POLISH-01: view tabs are one Tab stop; arrows/Home/End select and focus.
+    const tab = (name) => page.getByRole("tab", { name, exact: true });
+    const focused = (name) => tab(name).evaluate((el) => el === document.activeElement);
+    assert.deepEqual(await page.locator(".calendar-views [role=tab]").evaluateAll((els) => els.map((el) => el.tabIndex)), [-1, -1, 0]);
+    await tab("목록").focus();
+    await page.keyboard.press("Home");
+    await page.locator("#calendar-panel-month[role=tabpanel]").waitFor();
+    assert.equal(await focused("월간"), true);
+    await page.keyboard.press("ArrowLeft");
+    assert.equal(await tab("목록").getAttribute("aria-selected"), "true");
+    assert.equal(await focused("목록"), true);
+    await page.keyboard.press("ArrowLeft");
+    assert.equal(await tab("주간").getAttribute("aria-controls"), "calendar-panel-week");
+    assert.equal(await page.locator("#calendar-panel-week").getAttribute("aria-labelledby"), "calendar-tab-week");
+    // Week-view closures open their source record instead of being a dead label.
+    await page.getByRole("button", { name: "탐방로 통제 가상 계곡 탐방로 원본 열기" }).first().click();
+    await page.getByRole("heading", { name: "탐방로 통제", level: 1 }).waitFor();
+    const controlEditor = page.getByRole("dialog", { name: "통제 수정", exact: true });
+    assert.equal(await controlEditor.getByLabel("통제 구간·대상").inputValue(), "가상 계곡 탐방로");
+    await page.keyboard.press("Escape");
+    await controlEditor.waitFor({ state: "hidden" });
+    await page.locator("nav").getByRole("button", { name: "월간 일정", exact: true }).click();
+    await tab("목록").click();
     const patrolRow = page.locator(".list-view-row").filter({ hasText: "순찰" }).first();
     await patrolRow.click();
     await page.getByRole("heading", { name: "현장 순찰", level: 1 }).waitFor();
@@ -131,7 +154,7 @@ const root = path.resolve(__dirname, "..");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     await page.getByRole("alert").waitFor({ state: "hidden" });
     assert.ok(JSON.parse(fs.readFileSync(liveFile + ".last-good", "utf8")).notes.some(n => n.title === "보호본 실패에도 저장된 메모"));
-    console.log(`PASS: 보호본 실패 저장 경고·실제자료 갱신/재시도, 예정통제 해제 방지·현재통제 해제, 달력 주간·목록 등록·보기와 이동, 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
+    console.log(`PASS: 보호본 실패 저장 경고·실제자료 갱신/재시도, 예정통제 해제 방지·현재통제 해제, 달력 주간·목록 등록·보기와 이동·보기 탭 키보드(roving)·주간 통제 원본 이동, 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });

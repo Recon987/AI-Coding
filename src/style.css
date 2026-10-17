@@ -766,7 +766,9 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .list-view-row > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .list-view-row > span.done { color: var(--muted); text-decoration: line-through; }
 @media (max-width: 1100px) { .week-view { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.week-column .calendar-control-mark { margin-top: 0; }
+.week-column .calendar-control-mark { justify-content: flex-start; min-width: 0; min-height: 0; margin-top: 0; border: 0; text-align: left; }
+.week-column .calendar-control-mark > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.week-column .calendar-control-mark:hover { background: var(--cat-control-bg); text-decoration: underline; }
 .calendar-layout.wide { grid-template-columns: minmax(0, 1fr); }
 .calendar-detail[hidden] { display: none; }
 
