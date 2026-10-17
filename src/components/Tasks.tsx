@@ -2,6 +2,8 @@ import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useState } from "react";
 import type { Data, Save, Task } from "../types";
 import { Empty, Field, formatTime, localInput, SectionHead, Tag } from "../ui";
+import { confirmDelete } from "../confirm";
+import { ListHeader, ListRow, rowKeys } from "./ListRow";
 type Props = {
   data: Data;
   save: Save;
@@ -140,30 +142,55 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
             )}
           </Empty>
         )}
-        {rows.map((t) => (
-          <article className={`record ${t.done ? "finished" : ""}`} key={t.id}>
-            <details className="record-details">
-              <summary>
-                <div className="record-top">
-                  <Tag tone={t.priority === "high" ? "amber" : ""}>
-                    {t.priority === "high"
-                      ? "우선 처리"
-                      : isSubmission
-                        ? "제출 업무"
-                        : "인수인계"}
-                  </Tag>
-                  {!t.done && Date.parse(t.at) < Date.now() && (
-                    <Tag tone="red">기한 경과</Tag>
-                  )}
-                  {t.done && <Tag>완료</Tag>}
-                  <span className="muted">
-                    {formatTime(t.at)} · {t.assignee || "담당 미지정"}
-                  </span>
-                </div>
-                <h3>{t.title}</h3>
-                <p className="record-preview">{t.body || "상세 내용 없음"}</p>
-              </summary>
-              <div className="record-detail-body">
+        {rows.length > 0 && <ListHeader />}
+        <div className="row-list" onKeyDown={rowKeys}>
+          {rows.map((t) => {
+            const overdue = !t.done && Date.parse(t.at) < Date.now();
+            return (
+              <ListRow
+                key={t.id}
+                busy={busy}
+                done={t.done}
+                when={`${formatTime(t.at)} 마감`}
+                status={
+                  t.done ? (
+                    <Tag>완료</Tag>
+                  ) : overdue ? (
+                    <Tag tone="danger">기한 경과</Tag>
+                  ) : t.priority === "high" ? (
+                    <Tag tone="warning">우선 처리</Tag>
+                  ) : (
+                    <Tag>진행 중</Tag>
+                  )
+                }
+                kind={
+                  <>
+                    {isSubmission ? "제출" : "인수인계"}
+                    {t.destination && <small className="zone-label">{t.destination}</small>}
+                  </>
+                }
+                title={t.title}
+                subtitle={t.body || "상세 내용 없음"}
+                owner={t.assignee || "담당 미지정"}
+                actions={[
+                  {
+                    label: t.done ? "다시 진행" : isSubmission ? "제출 완료" : "조치 완료",
+                    onClick: () => toggle(t),
+                  },
+                  { label: "수정", onClick: () => editor.openEditor(t) },
+                  {
+                    label: "삭제",
+                    tone: "danger",
+                    onClick: async () => {
+                      if (await confirmDelete("이 업무")) {
+                        if (await save({ ...data, tasks: data.tasks.filter((x) => x.id !== t.id) })) {
+                          if (draft.id === t.id) editor.finishEditor();
+                        }
+                      }
+                    },
+                  },
+                ]}
+              >
                 <p className="record-body">{t.body || "상세 내용 없음"}</p>
                 <div className="metadata">
                   <span>담당 · {t.assignee || "미지정"}</span>
@@ -172,53 +199,16 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
                 </div>
                 {t.patrolId && (
                   <p className="source">
-                    연결된 순찰 ·{" "}
-                    {data.patrols.find((p) => p.id === t.patrolId)?.title}
+                    연결된 순찰 · {data.patrols.find((p) => p.id === t.patrolId)?.title}
                   </p>
                 )}
                 {t.done && t.completedAt && (
-                  <p className="source">
-                    완료 기록 · {formatTime(t.completedAt)}
-                  </p>
+                  <p className="source">완료 기록 · {formatTime(t.completedAt)}</p>
                 )}
-              </div>
-            </details>
-            <div className="record-actions">
-              <button
-                className="primary small"
-                disabled={busy}
-                onClick={() => toggle(t)}
-              >
-                {t.done
-                  ? "다시 진행"
-                  : isSubmission
-                    ? "제출 완료"
-                    : "조치 완료"}
-              </button>
-              <button disabled={busy} onClick={() => editor.openEditor(t)}>
-                수정
-              </button>
-              <button
-                className="text-button danger"
-                disabled={busy}
-                onClick={async () => {
-                  if (confirm("이 업무를 삭제할까요?")) {
-                    if (
-                      await save({
-                        ...data,
-                        tasks: data.tasks.filter((x) => x.id !== t.id),
-                      })
-                    ) {
-                      if (draft.id === t.id) editor.finishEditor();
-                    }
-                  }
-                }}
-              >
-                삭제
-              </button>
-            </div>
-          </article>
-        ))}
+              </ListRow>
+            );
+          })}
+        </div>
       </section>
       {editor.isOpen && (
         <EditorDialog

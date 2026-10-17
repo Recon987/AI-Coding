@@ -1,8 +1,6 @@
 import { useState, type ReactNode } from "react";
+import { discardChanges } from "../confirm";
 import { Sheet } from "./Sheet";
-
-const discardMessage =
-  "저장하지 않은 변경 사항이 있습니다. 변경을 버리고 닫을까요?";
 
 export function useEditorDraft<T>(initial: T, initiallyOpen = false) {
   const [draft, setDraft] = useState(initial);
@@ -17,11 +15,11 @@ export function useEditorDraft<T>(initial: T, initiallyOpen = false) {
     setSaveError("");
     setExtraDirty(false);
   };
-  const closeEditor = () => {
-    if (!dirty || confirm(discardMessage)) finishEditor();
+  const closeEditor = async () => {
+    if (!dirty || (await discardChanges())) finishEditor();
   };
-  const openEditor = (value: T) => {
-    if (isOpen && dirty && !confirm(discardMessage)) return false;
+  const openEditor = async (value: T) => {
+    if (isOpen && dirty && !(await discardChanges("새로 열까요?"))) return false;
     setDraft(value);
     setBaseline(JSON.stringify(value));
     setExtraDirty(false);

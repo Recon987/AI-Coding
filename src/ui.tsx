@@ -6,6 +6,18 @@ import {
   type ReactElement,
 } from "react";
 export { formatDate, formatClock, formatTime } from "../shared/format.mjs";
+import { formatClock as clock } from "../shared/format.mjs";
+/** Derived calendar rows: closures span whole days, everything else has a time. */
+export const itemClock = (item: { category: string; at: string }) =>
+  item.category === "통제" ? "종일" : clock(item.at);
+export const categoryTone = (category: string) =>
+  category === "순찰"
+    ? "patrol"
+    : category === "통제"
+      ? "control"
+      : category === "일정"
+        ? ""
+        : "task";
 export function localInput(at = new Date().toISOString()) {
   const d = new Date(at);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
@@ -28,7 +40,8 @@ export function Tag({
   tone = "",
 }: {
   children: ReactNode;
-  tone?: string;
+  /** Status (danger/warning), category (patrol/task/holiday) or work status (duty). */
+  tone?: "" | "danger" | "warning" | "patrol" | "task" | "holiday" | "duty" | "control";
 }) {
   return <span className={`tag ${tone}`}>{children}</span>;
 }

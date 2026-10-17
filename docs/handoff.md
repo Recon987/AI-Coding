@@ -1,8 +1,8 @@
 # AI-Coding 작업 인계장 (`docs/handoff.md`)
 
-**저장소**: `Recon987/AI-Coding` (`main`) · **앱/데이터 버전**: `0.6.1` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
+**저장소**: `Recon987/AI-Coding` (병합 대상 `main`) · **검증 브랜치 앱/데이터 버전**: `0.7.0` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
 
-이 문서는 **ChatGPT Codex**와 **Gemini**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 쓰는 단일 인계장이다. 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 기록한다.
+이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
 ## 1. 최신 인계 패킷
 
@@ -10,36 +10,23 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (main)
-- **Latest Pushed Commit**: 887ca68b46dba8792f0c944fa7e5f785f8baf97e - feat: refine first use and calendar through three-expert review (TASK-UX-03)
-- **Completed Steps & Modified Files**: TASK-UX-03 세 분야 협의·교차 검토 완료. Briefing/Calendar/Office/main/ui/style, shared format·선언 및 model TXT 포맷, 날짜·UI·Electron 검사, README·검토 기록·캡처/측정·validation.
-- **Changed Interfaces / Schema Diff**: 앱0.6.1 / 업무 자료v3 유지. formatDate(string|Date,{year?,weekday?}), formatClock, formatTime 추가. 로컬 날짜/24h 표기. 전 컬렉션이 비었을 때만 시작 안내. 저장·IPC 변경 없음.
-- **Test Status**: npm test37/37, npm run test:desktop 통과. UI134검사/오류0/외부요청0. Windows Actions38844487365 소스·패키징된 EXE 스모크·설치형/portable 빌드 통과.
-- **Remaining Work for Gemini**: 다음 TASK-CALENDAR-02. 실제 Windows 스크린리더·날짜 입력·절전·토스트 확인. 칩의 긴 제목은 tooltip/선택 목록 보완을 유지.
-- **Modified Code Snippets (if uncommitted)**: 소스 모두 커밋·푸시 완료. 이번 후속 변경은 Windows 증빙·다운로드 문서만 갱신. 문서 해시는 작성 직전 원격 기준.
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
+- **Task Card**: TASK-POLISH-01 review(검증자 codex, 재개 위치는 카드). 그 외 review 16장은 검증자 승인 기록 있음, main 병합 시 done. FORMS-02 blocked(사용자 피드백)
+- **Latest Pushed Commit**: 7b93f1c - wip(TASK-POLISH-01): calendar view tabs roving focus and week closure navigation (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: POLISH-01 1~3단계 — desktop/recovery.cjs(notify), desktop/store.cjs(migrateFile 경고 반환), desktop/main.cjs(take-notice, 복원 경고), desktop/preload.cjs(takeNotice), src/main.tsx, src/components/Calendar.tsx(tabKeys·tabpanel·주간 통제 버튼), src/components/Briefing.tsx(office-duty-names), shared/model.mjs(patrolSummary 역순 거부), src/style.css, tests/desktop-notice-smoke.cjs(신규), desktop-list-smoke·recovery.test·patrol-observations.test, package.json·windows-build.yml
+- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. 새 IPC `take-notice` → preload `takeNotice(): Promise<string>`(1회 전달). openDataFile에 선택 인자 `notify(text)`. migrateFile이 `{warning}`을 반환할 수 있음. patrolSummary는 시작일>종료일이면 예외
+- **Test Status**: Linux Node 22: npm test 82/82, npm run test:desktop 8개 스모크 통과, review:ui strict+zoom 142·실패 0·외부 요청 0. Windows Actions는 PR #1 푸시 결과 확인 필요
+- **Remaining Work for Gemini**: Codex: POLISH-01 검증. 사용자: PR #1 main 병합 승인, PR #3 정리, 양식 질문 4개·용어 피드백. 다음 후보: HOLIDAY-01, SECURITY-01 설계
+- **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
-## 2. 다음 백로그 우선순위
+## 2. 과제 현황
 
-1. **TASK-TRAY-01 완료**: 옵트인 상주·종료 보호·resume24h 점검·지속 이력. 실제PC 절전/토스트 확인은 필요.
-2. **TASK-CALENDAR-02 (반복 일정 예외/회차별 완료)**: 반복 일정 중 특정 날짜만 제외(`excludedDates`)하거나 특정 회차만 완료 처리하는 모델 확장.
-3. **TASK-SECURITY-01 (저장·백업 암호화)**: Windows DPAPI/`safeStorage` 검토, 백업 암호키 분실·복구 정책, 대용량 파일 성능 검증.
-4. **TASK-LAW-01 (법령·지침 오프라인 검색)**: 허용된 로컬 JSON/CSV/TXT 반입 및 조문·키워드 검색.
-5. **TASK-LEDGER-01 (행정 장부)**: 예산·급량비·물품 장부 데이터 모델 및 집계.
+`npm run board`가 우선순위·담당·재개 위치를 출력한다. 이 문서에 백로그를 따로 적지 않는다(이중 기록 금지). 2026-10-16: Claude의14개 review 카드를 Codex가 검증했다. 원본에서 누락된 오류 경로는 TASK-REVIEW-CLAUDE-01에서 보완했으며 총괄 통합 전 상태를 유지한다. 후속 TASK-CALENDAR-02도 구현·교차검토·Windows 소스/패키지 검증을 마쳐 review다. PR #3 → #2 → #1 순으로 통합한다. 이후 순서는 보드와 해당 카드의 재개 위치를 따른다.
 
-## 3. 작업 시작·종료 체크리스트
+## 3. 작업 시작·종료
 
-### 시작할 때
-
-1. `git status -sb`와 최신 커밋을 확인한다.
-2. 이 문서의 최신 패킷에서 완료 범위, 미완료 작업, 건드리면 안 되는 제약을 읽는다.
-3. 데이터 스키마·IPC·빌드 설정을 바꿀 계획이면 기존 백업 호환성과 테스트 영향을 먼저 적는다.
-
-### 멈추거나 인계할 때
-
-1. 실행한 검증 명령과 통과 여부를 사실대로 적는다.
-2. 커밋하지 못한 변경이 있으면 `git diff` 핵심 요약을 패킷에 남긴다.
-3. 문서를 갱신하고 같은 형식으로 다음 담당 에이전트가 바로 이어받을 수 있게 한다.
+[운영 절차 4~5장](orchestration/README.md#4-작업-순서-한-과제)을 따른다. 요약: `git fetch` → `npm run board` → 자기 `in-progress` 카드의 재개 위치부터 → 단계마다 체크포인트 푸시 → `review` → 다른 에이전트 검증 → 총괄이 `main` 병합.
 
 ## 보존한 Gemini TASK-CALENDAR-01
 
@@ -54,3 +41,7 @@
 [세 분야 제안·협의·보완·교차 승인·전후 화면](review-rounds/TASK-UX-03.md). 현재 스키마·기존 자료와 트레이를 유지했다. 사용자 요청은 이번 개선 루프를 실행하는 것이며, 백그라운드 자동 개선 서비스를 추가하지 않았다.
 
 Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-Coding/actions/runs/38844487365), [v0.6.1 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/38844487365/artifacts/12023060736). 패키징된 EXE도 새 첫 사용·날짜·달력 및 기존 트레이 회귀를 통과했다.
+
+## TASK-CALENDAR-02 검증 브랜치
+
+소스 `4a10c2c`, [PR #3](https://github.com/Recon987/AI-Coding/pull/3), [Windows 성공](https://github.com/Recon987/AI-Coding/actions/runs/38898226246), [v0.7.0 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/38898226246/artifacts/12044503916). [모델 계약·독립 검토·실제 화면](reviews/2026-10-16-calendar02.md). 문서 증빙 후속 커밋은 실행 코드를 바꾸지 않는다.

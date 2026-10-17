@@ -9,6 +9,7 @@ const paths: Record<string, string[]> = {
   organization: ["M9 3h6v5H9zM2 16h6v5H2zM16 16h6v5h-6zM12 8v4M5 16v-4h14v4"],
   briefing: ["M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"],
   patrol: ["M3 20 9 4l4 10 3-6 5 12H3Z", "m7 9 2 2 2-2"],
+  controls: ["M3 9h18v5H3z", "m7 9 4 5m2-5 4 5", "M5 14v6m14-6v6M5 9V5m14 4V5"],
   handover: ["M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"],
   submission: ["M7 3h10l3 3v15H4V3h3Z", "M8 10h8M8 14h8M8 18h5"],
   calendar: ["M4 5h16v16H4zM8 3v4m8-4v4M4 10h16M8 14h2m4 0h2m-8 4h2"],

@@ -2,6 +2,8 @@ import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useState } from "react";
 import type { Data, Save, Call } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
+import { confirmDelete } from "../confirm";
+import { ListHeader, ListRow, rowKeys } from "./ListRow";
 export function Personal({
   data,
   save,
@@ -110,75 +112,55 @@ export function Personal({
             )}
           </Empty>
         )}
-        {rows.map((n) => (
-          <article className="record" key={n.id}>
-            <details className="record-details">
-              <summary>
-                <h3 className={mode === "calls" && n.done ? "done" : ""}>
-                  {n.title}
-                </h3>
-                {mode === "calls" && (
-                  <div className="record-top">
-                    <Tag>{n.done ? "처리 완료" : "미처리"}</Tag>
-                    <span className="muted">{n.phone || "전화번호 없음"}</span>
-                  </div>
-                )}
-                <p className="record-preview">{n.body || "내용 없음"}</p>
-              </summary>
-              <div className="record-detail-body">
-                <p className="record-body">{n.body || "내용 없음"}</p>
-                {mode === "calls" && (
-                  <p className="source">전화번호 · {n.phone || "없음"}</p>
-                )}
-              </div>
-            </details>
-            <div className="record-actions">
-              {mode === "calls" && (
-                <button
-                  className="primary small"
-                  disabled={busy}
-                  onClick={async () => {
+        {rows.length > 0 && <ListHeader compact ownerLabel={mode === "calls" ? "전화번호" : ""} />}
+        <div className="row-list compact" onKeyDown={rowKeys}>
+          {rows.map((n) => (
+            <ListRow
+              key={n.id}
+              busy={busy}
+              done={mode === "calls" && n.done}
+              status={mode === "calls" ? <Tag tone={n.done ? "" : "warning"}>{n.done ? "처리 완료" : "미처리"}</Tag> : <Tag>메모</Tag>}
+              title={n.title}
+              subtitle={n.body || "내용 없음"}
+              owner={mode === "calls" ? n.phone || "번호 없음" : ""}
+              actions={[
+                ...(mode === "calls"
+                  ? [
+                      {
+                        label: n.done ? "미처리로 변경" : "처리 완료",
+                        onClick: async () => {
+                          if (
+                            (await save({
+                              ...data,
+                              calls: data.calls.map((c) => (c.id === n.id ? { ...c, done: !c.done } : c)),
+                            })) &&
+                            draft.id === n.id
+                          )
+                            editor.finishEditor();
+                        },
+                      },
+                    ]
+                  : []),
+                { label: "수정", onClick: () => editor.openEditor({ ...blank(), ...n }) },
+                {
+                  label: "삭제",
+                  tone: "danger" as const,
+                  onClick: async () => {
                     if (
-                      (await save({
-                        ...data,
-                        calls: data.calls.map((c) =>
-                          c.id === n.id ? { ...c, done: !c.done } : c,
-                        ),
-                      })) &&
-                      draft.id === n.id
-                    )
-                      editor.finishEditor();
-                  }}
-                >
-                  {n.done ? "미처리로 변경" : "처리 완료"}
-                </button>
-              )}
-              <button
-                disabled={busy}
-                onClick={() => editor.openEditor({ ...blank(), ...n })}
-              >
-                수정
-              </button>
-              <button
-                className="text-button danger"
-                disabled={busy}
-                onClick={async () => {
-                  if (
-                    confirm("기록을 삭제할까요?") &&
-                    (await save({
-                      ...data,
-                      [mode]: data[mode].filter((x) => x.id !== n.id),
-                    }))
-                  ) {
-                    if (draft.id === n.id) editor.finishEditor();
-                  }
-                }}
-              >
-                삭제
-              </button>
-            </div>
-          </article>
-        ))}
+                      (await confirmDelete("이 기록")) &&
+                      (await save({ ...data, [mode]: data[mode].filter((x) => x.id !== n.id) }))
+                    ) {
+                      if (draft.id === n.id) editor.finishEditor();
+                    }
+                  },
+                },
+              ]}
+            >
+              <p className="record-body">{n.body || "내용 없음"}</p>
+              {mode === "calls" && <p className="source">전화번호 · {n.phone || "없음"}</p>}
+            </ListRow>
+          ))}
+        </div>
       </section>
       {editor.isOpen && (
         <EditorDialog

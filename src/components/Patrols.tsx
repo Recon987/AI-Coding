@@ -1,8 +1,17 @@
-import { formatCoordinates } from "../../shared/model.mjs";
+import {
+  describeObservations,
+  formatCoordinates,
+  OBSERVATION_OUTCOMES,
+  observationTypes,
+  PATROL_KINDS,
+} from "../../shared/model.mjs";
+import { ObservationEditor, PatrolSummary } from "./Observations";
+import { FormExport } from "./FormExport";
+import { ListHeader, ListRow, rowKeys } from "./ListRow";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { CoordinateInput } from "./CoordinateInput";
 import { useState } from "react";
-import type { Data, Patrol, Save, Task } from "../types";
+import type { Data, Patrol, PatrolKind, Save, Task } from "../types";
 import {
   Empty,
   Field,
@@ -12,6 +21,7 @@ import {
   SectionHead,
   Tag,
 } from "../ui";
+import { askConfirm } from "../confirm";
 export function Patrols({
   data,
   save,
@@ -43,9 +53,12 @@ export function Patrols({
   const { draft, setDraft } = editor;
   const [editorKey, setEditorKey] = useState(0);
   const [coordinateError, setCoordinateError] = useState("");
-  const resetDraft = (value: Patrol) => {
-    if (editor.openEditor(value)) {
+  const [observationError, setObservationError] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const resetDraft = async (value: Patrol) => {
+    if (await editor.openEditor(value)) {
       setCoordinateError("");
+      setObservationError(false);
       setEditorKey((key) => key + 1);
     }
   };
@@ -54,21 +67,27 @@ export function Patrols({
     setDraft((current) => ({ ...current, ...values }));
   const rows = [...data.patrols]
     .filter((p) =>
-      `${p.title} ${p.route} ${p.observer} ${p.findings} ${p.action} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`
+      `${p.title} ${p.route} ${p.observer} ${p.findings} ${p.action} ${p.zone ?? ""} ${p.kind ? PATROL_KINDS[p.kind] : ""} ${(p.observations ?? []).map((o) => `${o.type} ${o.note}`).join(" ")} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`
         .toLowerCase()
         .includes(query.trim().toLowerCase()),
     )
     .sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (coordinateError) return;
-    const item = {
+    if (coordinateError || observationError) return;
+    const item: Patrol = {
       ...draft,
       id: draft.id || crypto.randomUUID(),
       title: draft.title.trim(),
       route: draft.route.trim(),
       observer: draft.observer.trim(),
+      zone: draft.zone?.trim(),
+      observations: draft.observations?.map((o) => ({ ...o, type: o.type.trim(), note: o.note.trim() })),
     };
+    // Optional fields stay absent when unused, so older records keep their shape.
+    if (!item.kind) delete item.kind;
+    if (!item.zone) delete item.zone;
+    if (!item.observations?.length) delete item.observations;
     if (!item.title || !item.route || !item.observer) return;
     if (
       await save({
@@ -108,10 +127,17 @@ export function Patrols({
   }
   return (
     <div className="workspace-grid">
+      {exporting && (
+        <FormExport data={data} busy={busy} onClose={() => setExporting(false)} />
+      )}
+      <PatrolSummary data={data} />
       <section className="panel records">
         <SectionHead eyebrow="FIELD JOURNAL" title="현장에서 남긴 기록">
           <div className="editor-header-actions">
             <Tag>{data.patrols.length}건</Tag>
+            <button disabled={busy} onClick={() => setExporting(true)}>
+              양식 출력
+            </button>
             <button
               className="primary"
               disabled={busy}
@@ -140,90 +166,93 @@ export function Patrols({
             )}
           </Empty>
         )}
-        {rows.map((p) => (
-          <article className="record" key={p.id}>
-            <details className="record-details">
-              <summary>
-                <div className="record-top">
-                  <Tag
-                    tone={
-                      p.risk === "urgent"
-                        ? "red"
-                        : p.risk === "attention"
-                          ? "amber"
-                          : ""
-                    }
-                  >
-                    {riskNames[p.risk]}
-                  </Tag>
-                  <span className="muted">{formatTime(p.at)}</span>
-                </div>
-                <h3>{p.title}</h3>
-                <p className="record-preview">
-                  {p.route} · {p.findings || "별도 확인 사항 없음"}
-                </p>
-              </summary>
-              <div className="record-detail-body">
-                <p className="route-line">{p.route}</p>
-                <p className="record-body">
-                  {p.findings || "별도 확인 사항 없음"}
-                </p>
-                {p.action && (
-                  <p className="action-note">
-                    <strong>현장 조치</strong> {p.action}
-                  </p>
-                )}
-                {p.coordinates && (
-                  <p className="coordinate-summary">
-                    {formatCoordinates(p.coordinates)}
-                    <br />
-                    {formatCoordinates(p.coordinates, "dms")}
-                  </p>
-                )}
-                <p className="source">기록자 · {p.observer}</p>
-              </div>
-            </details>
-            <div className="record-actions">
-              <button
-                className="primary small"
-                disabled={busy}
-                onClick={() => handover(p)}
-              >
-                {data.tasks.some((t) => t.patrolId === p.id && !t.done)
-                  ? "후속 조치 보기"
-                  : "인수인계로 연결"}
-              </button>
-              <button disabled={busy} onClick={() => resetDraft(p)}>
-                수정
-              </button>
-              <button
-                className="text-button danger"
-                disabled={busy}
-                onClick={async () => {
-                  if (
-                    confirm(
-                      "순찰 기록을 삭제할까요? 연결된 인수인계 내용은 유지하고 연결만 해제합니다.",
-                    )
-                  ) {
+        {rows.length > 0 && <ListHeader />}
+        <div className="row-list" onKeyDown={rowKeys}>
+          {rows.map((p) => (
+            <ListRow
+              key={p.id}
+              busy={busy}
+              when={formatTime(p.at)}
+              status={
+                <Tag tone={p.risk === "urgent" ? "danger" : p.risk === "attention" ? "warning" : ""}>
+                  {riskNames[p.risk]}
+                </Tag>
+              }
+              kind={
+                <>
+                  {p.kind ? PATROL_KINDS[p.kind] : "순찰"}
+                  {p.zone && <small className="zone-label">구역 {p.zone}</small>}
+                </>
+              }
+              title={p.title}
+              subtitle={`${p.observations?.length ? `${describeObservations(p.observations)} · ` : ""}${p.route}`}
+              owner={p.observer}
+              actions={[
+                {
+                  label: data.tasks.some((t) => t.patrolId === p.id && !t.done)
+                    ? "후속 조치 보기"
+                    : "인수인계로 연결",
+                  onClick: () => handover(p),
+                },
+                { label: "수정", onClick: () => resetDraft(p) },
+                {
+                  label: "삭제",
+                  tone: "danger",
+                  onClick: async () => {
                     if (
-                      await save({
-                        ...data,
-                        patrols: data.patrols.filter((x) => x.id !== p.id),
-                        tasks: data.tasks.map((t) =>
-                          t.patrolId === p.id ? { ...t, patrolId: null } : t,
-                        ),
+                      await askConfirm({
+                        message: "순찰 기록을 삭제할까요?",
+                        detail: "연결된 인수인계 내용은 유지하고 연결만 해제합니다.",
+                        confirmLabel: "삭제",
+                        danger: true,
                       })
                     ) {
-                      if (draft.id === p.id) editor.finishEditor();
+                      if (
+                        await save({
+                          ...data,
+                          patrols: data.patrols.filter((x) => x.id !== p.id),
+                          tasks: data.tasks.map((t) =>
+                            t.patrolId === p.id ? { ...t, patrolId: null } : t,
+                          ),
+                        })
+                      ) {
+                        if (draft.id === p.id) editor.finishEditor();
+                      }
                     }
-                  }
-                }}
-              >
-                삭제
-              </button>
-            </div>
-          </article>
-        ))}
+                  },
+                },
+              ]}
+            >
+              <p className="route-line">{p.route}</p>
+              <p className="record-body">{p.findings || "별도 확인 사항 없음"}</p>
+              {p.action && (
+                <p className="action-note">
+                  <strong>현장 조치</strong> {p.action}
+                </p>
+              )}
+              {!!p.observations?.length && (
+                <ul className="observation-list">
+                  {p.observations.map((o) => (
+                    <li key={o.id}>
+                      <strong>{o.type}</strong> {o.count}건 · {OBSERVATION_OUTCOMES[o.outcome]}
+                      {o.note && ` · ${o.note}`}
+                      {o.coordinates && (
+                        <span className="coordinate-summary">{formatCoordinates(o.coordinates)}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {p.coordinates && (
+                <p className="coordinate-summary">
+                  {formatCoordinates(p.coordinates)}
+                  <br />
+                  {formatCoordinates(p.coordinates, "dms")}
+                </p>
+              )}
+            </ListRow>
+          ))}
+        </div>
       </section>
       {editor.isOpen && (
         <EditorDialog
@@ -235,7 +264,10 @@ export function Patrols({
         >
           <form className="editor" onSubmit={submit}>
             <div className="editor-header-actions">
-              <button className="primary" disabled={busy || !!coordinateError}>
+              <button
+                className="primary"
+                disabled={busy || !!coordinateError || observationError}
+              >
                 {draft.id ? "변경 저장" : "순찰 저장"}
               </button>
               <button
@@ -293,6 +325,31 @@ export function Patrols({
                 </select>
               </Field>
             </div>
+            <div className="form-row">
+              <Field label="순찰 종류">
+                <select
+                  value={draft.kind ?? ""}
+                  onChange={(e) =>
+                    patch({ kind: (e.target.value || null) as PatrolKind | null })
+                  }
+                >
+                  <option value="">선택 안 함</option>
+                  {Object.entries(PATROL_KINDS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="담당구역 번호">
+                <input
+                  maxLength={50}
+                  value={draft.zone ?? ""}
+                  onChange={(e) => patch({ zone: e.target.value })}
+                  placeholder="선택 · 예: 3-2"
+                />
+              </Field>
+            </div>
             <Field label="순찰 일시">
               <input
                 type="datetime-local"
@@ -340,6 +397,17 @@ export function Patrols({
                 onChange={(e) => patch({ action: e.target.value })}
               />
             </Field>
+            <ObservationEditor
+              key={`observations-${editorKey}`}
+              value={draft.observations ?? []}
+              suggestions={observationTypes(data)}
+              busy={busy}
+              onChange={(observations) => patch({ observations })}
+              onErrorChange={(hasError) => {
+                setObservationError(hasError);
+                editor.setExtraDirty(hasError);
+              }}
+            />
           </form>
         </EditorDialog>
       )}

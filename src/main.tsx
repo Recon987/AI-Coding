@@ -11,6 +11,9 @@ import {
   normalize,
   formatCoordinates,
   RECURRENCE_LABEL,
+  activeControls,
+  CONTROL_REASONS,
+  dayKey,
 } from "../shared/model.mjs";
 import type { Data, Page } from "./types";
 import { formatDate } from "../shared/format.mjs";
@@ -19,36 +22,51 @@ import { DesktopSettings } from "./components/DesktopSettings";
 import { Office } from "./components/Office";
 import { Briefing } from "./components/Briefing";
 import { Patrols } from "./components/Patrols";
+import { Controls } from "./components/Controls";
 import { Tasks } from "./components/Tasks";
 import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
 import { Icon } from "./components/Icon";
 import { Empty, SectionHead, Tag } from "./ui";
 import "./style.css";
+import { ConfirmHost, discardChanges, isConfirmOpen } from "./confirm";
+// Five task groups plus help pinned at the bottom (TASK-NAV-01).
 const sections: {
   label: string;
   pages: { id: Page; label: string }[];
+  footer?: boolean;
 }[] = [
   {
-    label: "업무 흐름",
+    label: "오늘",
     pages: [
       { id: "briefing", label: "업무 브리핑" },
-      { id: "office", label: "사무소 현황" },
-      { id: "patrol", label: "현장 순찰" },
-      { id: "handover", label: "인수인계" },
-      { id: "submission", label: "제출 기한" },
       { id: "calendar", label: "월간 일정" },
     ],
   },
   {
-    label: "나의 기록",
+    label: "현장",
+    pages: [
+      { id: "patrol", label: "현장 순찰" },
+      { id: "controls", label: "탐방로 통제" },
+    ],
+  },
+  {
+    label: "할 일",
+    pages: [
+      { id: "handover", label: "인수인계" },
+      { id: "submission", label: "제출 기한" },
+    ],
+  },
+  { label: "사무소", pages: [{ id: "office", label: "사무소 현황" }] },
+  {
+    label: "기록",
     pages: [
       { id: "calls", label: "전화메모" },
       { id: "notes", label: "업무 메모" },
       { id: "folders", label: "바로가기" },
-      { id: "about", label: "앱 안내" },
     ],
   },
+  { label: "", footer: true, pages: [{ id: "about", label: "앱 안내" }] },
 ];
 const pageNames = Object.fromEntries(
   sections.flatMap((s) => s.pages.map((p) => [p.id, p.label])),
@@ -57,6 +75,7 @@ const subtitles: Record<Page, string> = {
   office: "직원별 근무·휴무·당직·거점 배치를 일별·주간으로 확인합니다.",
   briefing: "순찰에서 사무실까지, 오늘 이어갈 업무를 확인하세요.",
   patrol: "현장의 확인 사항과 조치 내용을 기록하고 다음 업무로 연결합니다.",
+  controls: "산불·기상특보·공사 등으로 통제 중인 구간과 기간을 기록합니다.",
   handover: "남은 조치와 담당자, 마감일을 한눈에 확인합니다.",
   submission: "서류 제출 기한을 일정과 함께 관리합니다.",
   calendar: "일정·순찰·인수인계·제출 기한과 공휴일·반복 일정을 확인합니다.",
@@ -126,7 +145,11 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        if (api) setData(normalize(await api.load()));
+        if (api) {
+          setData(normalize(await api.load()));
+          const notice = await api.takeNotice();
+          if (notice) setError(notice);
+        }
         else {
           const raw = localStorage.getItem("park-workdesk-demo");
           const parsed = raw ? JSON.parse(raw) : empty();
@@ -153,11 +176,11 @@ function App() {
       setBusy(true);
       try {
         const validated = normalize(next);
-        if (api) await api.save(validated);
-        else
+        const saved = api ? await api.save(validated) : undefined;
+        if (!api)
           localStorage.setItem("park-workdesk-demo", JSON.stringify(validated));
         setData(validated);
-        setError("");
+        setError(saved ? saved.warning : "");
         setFeedback("변경 사항을 저장했습니다.");
         return true;
       } catch (e) {
@@ -174,13 +197,9 @@ function App() {
     },
     [api],
   );
-  function navigate(next: Page, id?: string) {
-    if (saving.current) return;
-    if (
-      hasDirtyDrafts() &&
-      !confirm("저장하지 않은 변경 사항이 있습니다. 내용을 버리고 이동할까요?")
-    )
-      return;
+  async function navigate(next: Page, id?: string) {
+    if (saving.current || isConfirmOpen()) return;
+    if (hasDirtyDrafts() && !(await discardChanges("이동할까요?"))) return;
     setSearchOpen(false);
     setPage(next);
     setFocusId(id);
@@ -200,8 +219,11 @@ function App() {
           setPage("briefing");
           setFeedback("백업 자료를 복원했습니다.");
         }
-      } else await api?.backup();
-      setError("");
+        setError((await api?.takeNotice()) ?? "");
+      } else {
+        await api?.backup();
+        setError("");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "백업 작업에 실패했습니다.");
     } finally {
@@ -235,6 +257,12 @@ function App() {
       title: p.title,
       text: `${p.route} ${p.observer} ${p.findings} ${p.action} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`,
     })),
+    ...data.controls.map((c) => ({
+      id: c.id,
+      page: "controls" as Page,
+      title: c.title,
+      text: `${c.zone ?? ""} ${CONTROL_REASONS[c.reason]} ${c.start} ${c.end ?? "해제 시까지"} ${c.note}`,
+    })),
     ...data.tasks.map((t) => ({
       id: t.id,
       page: t.kind as Page,
@@ -267,6 +295,7 @@ function App() {
   );
   return (
     <div className="app">
+      <ConfirmHost />
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-symbol" aria-hidden="true">
@@ -280,8 +309,11 @@ function App() {
         </div>
         <nav>
           {sections.map((section) => (
-            <div className="nav-section" key={section.label}>
-              <p>{section.label}</p>
+            <div
+              className={`nav-section ${section.footer ? "nav-footer" : ""}`}
+              key={section.label || "footer"}
+            >
+              {section.label && <p>{section.label}</p>}
               {section.pages.map((p) => (
                 <button
                   key={p.id}
@@ -295,7 +327,9 @@ function App() {
                   {p.label}
                   {(() => {
                     const count =
-                      p.id === "calls"
+                      p.id === "controls"
+                        ? activeControls(data, dayKey()).length
+                        : p.id === "calls"
                         ? data.calls.filter((c) => !c.done).length
                         : ["handover", "submission"].includes(p.id)
                           ? data.tasks.filter((t) => t.kind === p.id && !t.done)
@@ -313,7 +347,7 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <span className="version">공원 업무 수첩 · v0.6.1</span>
+          <span className="version">공원 업무 수첩 · v0.7.0</span>
         </div>
       </aside>
       <main>
@@ -430,6 +464,15 @@ function App() {
                   busy={busy}
                   initialId={focusId}
                   openTask={(id) => navigate("handover", id)}
+                />
+              )}
+              {page === "controls" && (
+                <Controls
+                  key={page + focusId}
+                  data={data}
+                  save={save}
+                  busy={busy}
+                  initialId={focusId}
                 />
               )}
               {(page === "handover" || page === "submission") && (

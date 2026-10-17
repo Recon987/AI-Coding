@@ -4,17 +4,27 @@
 
 Electron의 제한된 preload API로 로컬 파일 저장·폴더 열기·백업·브리핑 출력을 제공한다. renderer는 Node.js 직접 접근 없이 sandbox/contextIsolation에서 실행하고 외부 탐색과 새 창을 차단한다. 앱은 자동 업데이트나 외부 API를 호출하지 않는다.
 
-`src/components/`는 업무별 화면, `shared/model.mjs`는 브라우저와 Electron이 공유하는 검증·달력·브리핑·알림 계산이다. `desktop/store.cjs`가 JSON의 원자 교체와 v1 원본 보존을 담당한다. 주 프로세스의 단일 인스턴스 잠금으로 동시에 여러 앱이 파일을 쓰는 것을 방지한다. 다중 사용자 또는 서버 DB용 구조는 아니다.
+`src/components/`는 업무별 화면, `shared/model.mjs`는 브라우저와 Electron이 공유하는 검증·달력·브리핑·알림 계산이다. `desktop/store.cjs`가 JSON의 원자 교체(임시 파일 fsync 후 이름 바꾸기)와 v1 원본 보존을 담당한다. 주 파일을 저장할 때마다 같은 내용의 `workdesk.json.last-good`도 원자적으로 갱신한다. `desktop/recovery.cjs`는 시작 시 자료를 읽지 못하면 손상 파일을 `.corrupt-<시각>.json`으로 먼저 보관(삭제하지 않음)한 뒤 마지막 정상본 사용·백업 복원·종료를 묻는다. 보관에 실패하면 아무것도 쓰지 않고 종료한다. 주 프로세스의 단일 인스턴스 잠금으로 동시에 여러 앱이 파일을 쓰는 것을 방지한다. 다중 사용자 또는 서버 DB용 구조는 아니다.
 
 ## 데이터 v3
 
-v1의 notes/events/calls/folders 및 v2의 patrols/tasks를 보존하고 v3에 organizations/employees/bases/assignments를 추가했다. 조직 계층과 직원/거점 소속, 직원+날짜별 근무/당직을 UUID로 연결한다. shared/office.mjs가 참조·중복·날짜·거점·순환을 검증하고 현황을 계산한다. shared/office-import.mjs가 표준 CSV 반입을 전체 검증·미리보기한다. 순찰에는 시각·구간·기록자·확인 사항·현장 조치·확인 등급을 저장한다. 업무에는 handover/submission 구분, 담당자·제출처·마감·알림 시점·완료 시각을 저장한다.
+v1의 notes/events/calls/folders 및 v2의 patrols/tasks를 보존하고 v3에 organizations/employees/bases/assignments를 추가했다. 조직 계층과 직원/거점 소속, 직원+날짜별 근무/당직을 UUID로 연결한다. shared/office.mjs가 참조·중복·날짜·거점·순환을 검증하고 현황을 계산한다. shared/office-import.mjs가 표준 CSV 반입을 전체 검증·미리보기한다. 순찰에는 시각·구간·기록자·확인 사항·현장 조치·확인 등급을 저장하고, 선택 필드로 순찰 종류(`kind`)·담당구역 번호(`zone`)·단속·확인 건(`observations[]`: 유형·건수·조치·메모·선택 위경도, 기록당 50개)을 둔다. 쓰지 않은 선택 필드는 저장하지 않아 기존 기록 모양을 유지한다. `patrolSummary`가 현지 날짜 기간으로 유형·조치별 건수를 합산한다. 업무에는 handover/submission 구분, 담당자·제출처·마감·알림 시점·완료 시각을 저장한다.
 
 순찰과 후속 업무는 UUID로 연결한다. 미완료 연결 업무가 있으면 다시 연다. 순찰 삭제 시 인계 본문을 남기고 연결만 해제한다. 원본이 수정되어도 인계 시점의 본문 요약은 자동 덮지 않는다. 이후의 실시간 원문은 연결된 순찰에서 확인한다.
 
-달력 항목은 순찰/업무/개인 일정에서 매번 계산한다. 업무를 일정으로 복제하지 않으므로 수정·완료·삭제가 바로 반영된다. 모든 원본은 전체 백업 대상이며 복원 전에 자료 버전, 형식, 순찰 참조, 완료 상태, 알림 범위를 검증한다. 20MB 및 종류별 10,000건 제한이 있다.
+달력 항목은 순찰/업무/개인 일정/탐방로 통제에서 매번 계산한다. 통제(`controls`: 구간·담당구역·사유·시작일·종료일|null·메모, 현지 날짜)는 v3 이후 추가된 선택 컬렉션이라 없는 파일은 빈 목록으로 읽는다. 이 컬렉션을 모르는 이전 앱 버전으로 되돌려 저장하면 통제 기록이 빠질 수 있으므로 버전을 되돌릴 때는 먼저 백업한다. 월간 달력은 통제를 날마다 칩 대신 '통제 N' 표시로 보여준다. 업무를 일정으로 복제하지 않으므로 수정·완료·삭제가 바로 반영된다. 모든 원본은 전체 백업 대상이며 복원 전에 자료 버전, 형식, 순찰 참조, 완료 상태, 알림 범위를 검증한다. 20MB 및 종류별 10,000건 제한이 있다.
 
 v1/v2 파일은 최초 시작 시 원본 바이트를 `.v1-backup.json` 또는 `.v2-backup.json`으로 보관한 뒤 v3로 전환한다. 브라우저도 버전별 원문을 별도 localStorage 키에 보관한다. 이전 앱은 v3를 읽지 못하므로 새 근무 자료를 손실시키지 않는다. 사무소 근무표는 개인 달력에 전 직원을 복제하지 않고 별도 현황판에서 원본을 참조한다. 실제 ERP 매핑은 docs/erp-integration.md 참조.
+
+## 반복 회차 상태 (TASK-CALENDAR-02)
+
+개인 일정 `Event`에 선택 필드 `completedDates?: string[]`, `excludedDates?: string[]`를 추가한다. 현지 `YYYY-MM-DD` 배열이며 반복 일정에서만 허용한다. 배열당 10,000개 이하의 실제 날짜·고유값·빈 슬롯 없는 배열을 검증한다. 필드가 없던 기존 v3 기록에는 임의 기본값을 쓰지 않는다. 기존 `done: true`는 전체 완료이고 새 배열은 특정 회차 상태다. 제외가 완료보다 우선하며 제외 복원은 완료 상태를 지우지 않는다.
+
+`setOccurrenceDone(event, date, completed)`와 `setOccurrenceExcluded(event, date, excluded)`는 원본을 복제해 메타데이터만 바꾸는 순수 함수다. 추가할 날짜는 현재 규칙의 실제 회차여야 한다. 규칙 변경으로 범위를 벗어난 기존 메타데이터는 보존하며 기존 날짜의 제거는 허용한다. `expandEventOccurrences`가 제외를 걸러내고 `event.done || completedDates.includes(date)`로 상태를 계산해 달력·브리핑·알림에 함께 전달한다. 첫 회차도 `occurrenceDate`가 있으며 기존 key/at와 알림 중복 방지 키를 유지한다. 브리핑에서 원본을 열 때 `occurrence:YYYY-MM-DD:<id>` 경로로 선택 회차 맥락을 전달한다. 새 IPC·외부 의존성은 없다.
+
+## 추천 양식
+
+`shared/forms.mjs`가 순찰일지·단속·계도 기록을 TXT/CSV로 만든다(순수 함수). 렌더러는 `export-form` IPC로 양식 종류·기간·형식 네 값만 보내고, 본체가 저장된 자료로 내용을 만들어 저장 대화상자 경로에 BOM과 함께 쓴다. 다른 키가 있으면 거부한다. CSV 텍스트 칸은 `= + - @`로 시작하면 `'`를 붙인다(숫자 칸 제외). 기간은 최대 366일.
 
 ## 알림과 브리핑
 

@@ -41,13 +41,22 @@ const { empty } = require("../shared/model.mjs");
       }
     };
     page.on("dialog", acceptDialogs);
-    // Confirmation widgets are native UI in Electron; keep choices deterministic.
-    await page.addInitScript(() => {
-      window.confirm = () => true;
-    });
-    await page.evaluate(() => {
-      window.confirm = () => true;
-    });
+    // The in-app confirmation dialog really renders; this only presses its button
+    // (confirm by default, cancel when __parkConfirmAnswer is false) and counts prompts.
+    const autoConfirm = () => {
+      window.__parkConfirmAnswer = true;
+      window.__parkConfirmCount = 0;
+      new MutationObserver(() => {
+        const dialog = document.querySelector("dialog.confirm-dialog[open]");
+        if (!dialog || dialog.dataset.parkAnswered || window.__parkConfirmManual) return;
+        dialog.dataset.parkAnswered = "1";
+        window.__parkConfirmCount++;
+        const [cancel, accept] = dialog.querySelectorAll(".confirm-actions button");
+        setTimeout(() => (window.__parkConfirmAnswer ? accept : cancel).click());
+      }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
+    };
+    await page.addInitScript(autoConfirm);
+    await page.evaluate(autoConfirm);
     const nav = async (name) => {
       const editor = page.locator(".sheet[open]");
       if (await editor.count())
@@ -77,8 +86,8 @@ const { empty } = require("../shared/model.mjs");
     // First use must offer working actions; merely visiting it never adds sample data.
     const firstUse = page.getByRole("region", { name: "업무 시작 안내", exact: true });
     await firstUse.waitFor();
-    assert.equal(await firstUse.getByRole("button").count(), 3);
-    for (const [action, title] of [["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
+    assert.equal(await firstUse.getByRole("button").count(), 4);
+    for (const [action, title] of [["순찰 기록", "순찰 기록 등록"], ["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
       await firstUse.getByRole("button", { name: action, exact: true }).click();
       const dialog = page.getByRole("dialog", { name: title, exact: true });
       await dialog.waitFor();
@@ -134,21 +143,19 @@ const { empty } = require("../shared/model.mjs");
       await page.getByLabel("내용", { exact: true }).inputValue(),
       "검색 후에도 유지할 내용",
     );
-    // Stub only the confirmation widget; actual dirty/cancel code runs unchanged.
+    // Choose "계속 작성" in the real confirmation dialog; the draft must stay.
     await page.evaluate(() => {
-      window.__parkPromptCount = 0;
-      window.confirm = () => {
-        window.__parkPromptCount++;
-        return false;
-      };
+      window.__parkConfirmCount = 0;
+      window.__parkConfirmAnswer = false;
     });
     await page
       .locator(".sheet[open]")
       .getByRole("button", { name: "취소", exact: true })
       .click();
-    assert.equal(await page.evaluate(() => window.__parkPromptCount), 1);
+    await page.waitForFunction(() => window.__parkConfirmCount === 1);
+    await page.getByRole("alertdialog").waitFor({ state: "hidden" });
     await page.evaluate(() => {
-      window.confirm = () => true;
+      window.__parkConfirmAnswer = true;
     });
     assert.equal(
       await page.getByLabel("제목", { exact: true }).inputValue(),

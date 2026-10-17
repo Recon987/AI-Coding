@@ -1,4 +1,4 @@
-// Real Electron lifecycle/IPC/storage; only OS notification and confirmation widgets are doubled.
+// Real Electron lifecycle/IPC/storage; only OS notification and quit-confirmation widgets are doubled.
 const { _electron: electron } = require("playwright");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");

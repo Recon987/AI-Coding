@@ -8,6 +8,20 @@ on:
       - "shared/**"
       - "desktop/**"
       - "tests/**"
+      - "scripts/**"
+      - "package*.json"
+      - "index.html"
+      - "vite.config.mts"
+      - "tsconfig.json"
+      - ".github/workflows/windows-build.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "shared/**"
+      - "desktop/**"
+      - "tests/**"
+      - "scripts/**"
       - "package*.json"
       - "index.html"
       - "vite.config.mts"
@@ -40,6 +54,11 @@ jobs:
         run: |
           $env:PARK_TEST_EXECUTABLE = (Resolve-Path "release/win-unpacked/공원 업무 수첩.exe").Path
           node tests/desktop-smoke.cjs
+          node tests/desktop-confirm-smoke.cjs
+          node tests/desktop-forms-smoke.cjs
+          node tests/desktop-list-smoke.cjs
+          node tests/desktop-recurrence-smoke.cjs
+          node tests/desktop-notice-smoke.cjs
       - name: Calculate checksums
         shell: pwsh
         run: |
