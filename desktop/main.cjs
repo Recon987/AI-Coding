@@ -19,17 +19,25 @@ const { createDesktopLifecycle } = require("./lifecycle.cjs");
 const { createNotifier } = require("./notifications.cjs");
 const { openDataFile } = require("./recovery.cjs");
 let win, file, timer;
+// A warning raised outside a renderer call (startup, restore), shown once after load.
+let pendingNotice = "";
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
   app.whenReady().then(async () => {
     if (process.platform === "win32")
       app.setAppUserModelId("local.park.workdesk");
     file = path.join(app.getPath("userData"), "workdesk.json");
-    if (!(await openDataFile({ file, store, dialog }))) {
+    const notify = (text) => (pendingNotice = text);
+    if (!(await openDataFile({ file, store, dialog, notify }))) {
       app.quit();
       return;
     }
     ipcMain.handle("load", () => store.read(file));
+    ipcMain.handle("take-notice", () => {
+      const text = pendingNotice;
+      pendingNotice = "";
+      return text;
+    });
     ipcMain.handle("save", (_, data) =>
       store.write(file, data, { keepLastGood: true }),
     );
@@ -113,7 +121,8 @@ else {
         file + ".before-restore-" + Date.now() + ".json",
         store.read(file),
       );
-      store.write(file, data, { keepLastGood: true });
+      const saved = store.write(file, data, { keepLastGood: true });
+      if (saved?.warning) notify(saved.warning);
       return data;
     });
     win = new BrowserWindow({

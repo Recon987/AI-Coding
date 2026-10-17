@@ -175,8 +175,12 @@ test("정상 파일의 보호본 준비 실패는 손상 복구로 보내지 않
     try {
       const dialog = fakeDialog([]);
       const messages = [];
-      assert.equal(await openDataFile({ file, store, dialog, logger: { warn: (...args) => messages.push(args) } }), true);
+      const notices = [];
+      assert.equal(await openDataFile({ file, store, dialog, logger: { warn: (...args) => messages.push(args) }, notify: (text) => notices.push(text) }), true);
       assert.equal(messages.length, 1);
+      // TASK-POLISH-01: the renderer shows this instead of it living only in a log.
+      assert.equal(notices.length, 1);
+      assert.match(notices[0], /마지막 정상본.*만들지 못했습니다.*EACCES/);
       assert.equal(dialog.seen.length, 0);
       assert.equal(corruptCopies(dir).length, 0);
       assert.deepEqual(store.read(file), sample("정상"));
@@ -227,5 +231,25 @@ test("주파일 교체 전 실패는 저장 실패이며 이전 주파일·보�
       assert.deepEqual(store.read(file), sample("이전"));
       assert.deepEqual(store.read(store.lastGoodFile(file)), sample("이전"));
       assert.deepEqual(fs.readdirSync(dir).filter(f => f.endsWith(".tmp")), []);
+    } finally { fs.renameSync = rename; }
+  }));
+
+test("복구 후 보호본 갱신 실패는 시작은 하되 화면 경고로 전달한다", () =>
+  sandbox(async (dir, file) => {
+    fs.writeFileSync(file, "{damaged");
+    const backup = path.join(dir, "backup.json");
+    store.write(backup, sample("백업 자료"));
+    const rename = fs.renameSync;
+    fs.renameSync = (from, to) => {
+      if (to === store.lastGoodFile(file)) throw new Error("ENOSPC");
+      return rename(from, to);
+    };
+    try {
+      const notices = [];
+      const dialog = fakeDialog(["백업 파일에서 복원"], [backup]);
+      assert.equal(await openDataFile({ file, store, dialog, now: () => NOW, notify: (t) => notices.push(t) }), true);
+      assert.deepEqual(store.read(file), sample("백업 자료"));
+      assert.equal(notices.length, 1);
+      assert.match(notices[0], /자료는 저장했지만/);
     } finally { fs.renameSync = rename; }
   }));

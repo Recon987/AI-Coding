@@ -145,7 +145,11 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        if (api) setData(normalize(await api.load()));
+        if (api) {
+          setData(normalize(await api.load()));
+          const notice = await api.takeNotice();
+          if (notice) setError(notice);
+        }
         else {
           const raw = localStorage.getItem("park-workdesk-demo");
           const parsed = raw ? JSON.parse(raw) : empty();
@@ -215,8 +219,11 @@ function App() {
           setPage("briefing");
           setFeedback("백업 자료를 복원했습니다.");
         }
-      } else await api?.backup();
-      setError("");
+        setError((await api?.takeNotice()) ?? "");
+      } else {
+        await api?.backup();
+        setError("");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "백업 작업에 실패했습니다.");
     } finally {

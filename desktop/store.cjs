@@ -75,7 +75,7 @@ function migrateFile(file) {
     const backup = file + `.v${original.version}-backup.json`;
     if (!fs.existsSync(backup))
       fs.copyFileSync(file, backup, fs.constants.COPYFILE_EXCL);
-    write(file, original, { keepLastGood: true });
+    return write(file, original, { keepLastGood: true });
   }
 }
 function due(events, now, seen) {

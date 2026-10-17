@@ -3,20 +3,26 @@ const path = require("node:path");
 
 // Opens workdesk.json at startup. A damaged file is copied aside before anything
 // else is written, and is never deleted. Returns false when the app should quit.
-async function openDataFile({ file, store, dialog, now = Date.now, logger = console }) {
+// notify(text) receives warnings the renderer should show once it has loaded.
+const SEED_FAILED = "마지막 정상본(자동 보호본)을 만들지 못했습니다. 업무 자료는 정상이며 다음 저장 때 다시 시도합니다. 저장 공간과 권한을 확인하고 수동 백업을 만드세요.";
+async function openDataFile({ file, store, dialog, now = Date.now, logger = console, notify = () => {} }) {
   try {
     if (!fs.existsSync(file) && fs.existsSync(store.lastGoodFile(file)))
       throw new Error("업무 자료 파일이 없지만 마지막 정상본이 남아 있습니다.");
     store.read(file);
-    store.migrateFile(file);
+    const migrated = store.migrateFile(file);
+    if (migrated?.warning) notify(migrated.warning);
   } catch (error) {
-    return recover({ file, store, dialog, now, reason: error });
+    return recover({ file, store, dialog, now, notify, reason: error });
   }
   // Failure to seed an auxiliary copy does not make a healthy primary corrupt.
   try {
     if (fs.existsSync(file) && !fs.existsSync(store.lastGoodFile(file)))
       store.write(store.lastGoodFile(file), store.read(file, { required: true }));
-  } catch (error) { logger.warn("자동 보호본 준비 실패:", error.message); }
+  } catch (error) {
+    logger.warn("자동 보호본 준비 실패:", error.message);
+    notify(`${SEED_FAILED} (${error.message})`);
+  }
   return true;
 }
 
@@ -40,7 +46,7 @@ function readLastGood(store, file) {
   }
 }
 
-async function recover({ file, store, dialog, now, reason }) {
+async function recover({ file, store, dialog, now, notify, reason }) {
   let preserved;
   try {
     preserved = preserveDamaged(file, now);
@@ -84,7 +90,8 @@ async function recover({ file, store, dialog, now, reason }) {
     if (choice === "quit") return false;
     if (choice === "last-good") {
       try {
-        store.write(file, lastGood, { keepLastGood: true });
+        const saved = store.write(file, lastGood, { keepLastGood: true });
+        if (saved?.warning) notify(saved.warning);
         return true;
       } catch (error) {
         notice = `마지막 정상본으로 복구하지 못했습니다: ${error.message}`;
@@ -101,7 +108,8 @@ async function recover({ file, store, dialog, now, reason }) {
     }
     try {
       const data = store.read(picked.filePaths[0], { required: true });
-      store.write(file, data, { keepLastGood: true });
+      const saved = store.write(file, data, { keepLastGood: true });
+      if (saved?.warning) notify(saved.warning);
       return true;
     } catch (error) {
       notice = `선택한 백업을 사용할 수 없습니다: ${error.message}`;
