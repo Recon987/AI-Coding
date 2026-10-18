@@ -57,9 +57,10 @@ export function Personal({
         : {
             ...data,
             notes: draft.id
-              ? data.notes.map((n) =>
+              ? // Keep fields this version does not edit (e.g. added by a newer app).
+                data.notes.map((n) =>
                   n.id === draft.id
-                    ? { id: row.id, title: row.title, body: row.body }
+                    ? { ...n, title: row.title, body: row.body }
                     : n,
                 )
               : [

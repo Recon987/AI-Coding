@@ -376,7 +376,16 @@ export function Calendar({
               : {}),
           }
         : {};
+    // Keep fields this editor does not own; repeat fields come only from recFields.
+    const {
+      recurrence: _recurrence,
+      repeatUntil: _repeatUntil,
+      completedDates: _completedDates,
+      excludedDates: _excludedDates,
+      ...kept
+    } = existing ?? {};
     const row: Event = {
+      ...kept,
       id: draft.id || crypto.randomUUID(),
       title: draft.title.trim(),
       at: draft.at,

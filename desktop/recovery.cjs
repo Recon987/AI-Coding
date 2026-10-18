@@ -4,8 +4,28 @@ const path = require("node:path");
 // Opens workdesk.json at startup. A damaged file is copied aside before anything
 // else is written, and is never deleted. Returns false when the app should quit.
 // notify(text) receives warnings the renderer should show once it has loaded.
+const LOCKED = new Set(["EPERM", "EBUSY", "EACCES"]);
 const SEED_FAILED = "마지막 정상본(자동 보호본)을 만들지 못했습니다. 업무 자료는 정상이며 다음 저장 때 다시 시도합니다. 저장 공간과 권한을 확인하고 수동 백업을 만드세요.";
 async function openDataFile({ file, store, dialog, now = Date.now, logger = console, notify = () => {} }) {
+  // A file held by another program is not damaged: offer a retry instead of recovery.
+  for (;;) {
+    try {
+      store.read(file);
+      break;
+    } catch (error) {
+      if (!LOCKED.has(error?.code)) break;
+      const { response } = await dialog.showMessageBox({
+        type: "warning",
+        buttons: ["다시 시도", "종료"],
+        defaultId: 0,
+        cancelId: 1,
+        noLink: true,
+        message: "업무 자료 파일을 다른 프로그램이 사용 중입니다.",
+        detail: `백신 검사·동기화(OneDrive 등)가 끝난 뒤 다시 시도하세요. 파일은 바꾸지 않았습니다.\n원인: ${error.message}`,
+      });
+      if (response !== 0) return false;
+    }
+  }
   try {
     if (!fs.existsSync(file) && fs.existsSync(store.lastGoodFile(file)))
       throw new Error("업무 자료 파일이 없지만 마지막 정상본이 남아 있습니다.");

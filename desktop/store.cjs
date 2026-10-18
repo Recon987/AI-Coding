@@ -2,6 +2,19 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { empty, normalize } = require("../shared/model.mjs");
 const MAX_BYTES = 20 * 1024 * 1024;
+// Antivirus, indexing or sync tools on Windows can hold a file for a moment.
+const TRANSIENT = new Set(["EPERM", "EBUSY", "EACCES"]);
+const RETRY_MS = [50, 100, 200, 400];
+function withRetry(action, wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms)) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return action();
+    } catch (error) {
+      if (!TRANSIENT.has(error?.code) || attempt >= RETRY_MS.length) throw error;
+      wait(RETRY_MS[attempt]);
+    }
+  }
+}
 function read(file, { required = false } = {}) {
   let stat;
   try { stat = fs.statSync(file); }
@@ -11,7 +24,7 @@ function read(file, { required = false } = {}) {
   }
   if (!stat.isFile()) throw new Error("정상 JSON 파일을 선택하세요.");
   if (stat.size > MAX_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
-  const bytes = fs.readFileSync(file);
+  const bytes = withRetry(() => fs.readFileSync(file));
   if (bytes.length > MAX_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
   return normalize(JSON.parse(bytes.toString("utf8")));
 }
@@ -29,7 +42,7 @@ function durableReplace(file, payload) {
     } finally {
       fs.closeSync(fd);
     }
-    fs.renameSync(temporary, file);
+    withRetry(() => fs.renameSync(temporary, file));
   } finally {
     if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
   }
@@ -72,9 +85,11 @@ function migrateFile(file) {
   normalize(original);
   if ([1, 2].includes(original.version)) {
     // Byte-for-byte original, never replace a prior migration backup.
-    const backup = file + `.v${original.version}-backup.json`;
-    if (!fs.existsSync(backup))
-      fs.copyFileSync(file, backup, fs.constants.COPYFILE_EXCL);
+    // A later v1/v2 file gets its own copy instead of reusing an older backup name.
+    let backup = file + `.v${original.version}-backup.json`;
+    for (let n = 2; fs.existsSync(backup); n++)
+      backup = file + `.v${original.version}-backup-${n}.json`;
+    fs.copyFileSync(file, backup, fs.constants.COPYFILE_EXCL);
     return write(file, original, { keepLastGood: true });
   }
 }

@@ -253,3 +253,50 @@ test("복구 후 보호본 갱신 실패는 시작은 하되 화면 경고로 �
       assert.match(notices[0], /자료는 저장했지만/);
     } finally { fs.renameSync = rename; }
   }));
+
+test("다른 프로그램이 잠근 파일은 손상으로 보관하지 않고 다시 시도를 묻는다", () =>
+  sandbox(async (dir, file) => {
+    store.write(file, sample("잠긴 자료"), { keepLastGood: true });
+    const read = fs.readFileSync;
+    let locked = 6; // more than the store's own short retries
+    fs.readFileSync = (target, ...rest) => {
+      if (target === file && locked-- > 0) throw Object.assign(new Error("EBUSY: resource busy"), { code: "EBUSY" });
+      return read(target, ...rest);
+    };
+    try {
+      const dialog = fakeDialog(["다시 시도"]);
+      assert.equal(await openDataFile({ file, store, dialog, now: () => NOW }), true);
+      assert.equal(dialog.seen.length, 1);
+      assert.match(dialog.seen[0].message, /다른 프로그램이 사용 중/);
+      assert.equal(corruptCopies(dir).length, 0);
+      assert.deepEqual(store.read(file), sample("잠긴 자료"));
+      locked = 99;
+      assert.equal(await openDataFile({ file, store, dialog: fakeDialog(["종료"]), now: () => NOW }), false);
+      assert.equal(corruptCopies(dir).length, 0);
+    } finally {
+      fs.readFileSync = read;
+    }
+  }));
+
+test("저장 교체가 잠깐 잠기면 재시도해 성공하고, v1/v2 백업 이름이 있으면 새 이름으로 원본을 남긴다", () =>
+  sandbox((dir, file) => {
+    const rename = fs.renameSync;
+    let busy = 2;
+    fs.renameSync = (from, to) => {
+      if (to === file && busy-- > 0) throw Object.assign(new Error("EPERM"), { code: "EPERM" });
+      return rename(from, to);
+    };
+    try {
+      store.write(file, sample("재시도 저장"));
+    } finally {
+      fs.renameSync = rename;
+    }
+    assert.equal(busy, -1, "두 번 실패 후 성공");
+    assert.deepEqual(store.read(file), sample("재시도 저장"));
+    const v2 = JSON.stringify({ ...sample("두 번째 v2"), version: 2 });
+    fs.writeFileSync(file + ".v2-backup.json", "earlier v2 original");
+    fs.writeFileSync(file, v2);
+    store.migrateFile(file);
+    assert.equal(fs.readFileSync(file + ".v2-backup.json", "utf8"), "earlier v2 original");
+    assert.equal(fs.readFileSync(file + ".v2-backup-2.json", "utf8"), v2);
+  }));
