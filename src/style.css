@@ -12,6 +12,8 @@
   --subtle: #687771;
   --line: #e1e6e3;
   --line-strong: #cbd5d0;
+  /* Input borders only: ≥3:1 on --surface (3.39) and --page (3.14), WCAG 1.4.11 (TASK-A11Y-02). */
+  --input-line: #7f8f88;
   --line-hover: #b9c8c1;
   --surface: #ffffff;
   --surface-sunken: #f8faf8;
@@ -100,7 +102,7 @@ input, textarea, select {
   min-width: 0;
   min-height: 38px;
   padding: 7px 10px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--input-line);
   border-radius: 6px;
   background: var(--surface);
   color: var(--ink);
@@ -167,8 +169,8 @@ main { margin-left: 192px; width: calc(100% - 192px); min-width: 0; }
 .workspace-title { color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; }
 .top-actions { display: flex; align-items: center; justify-content: flex-end; flex: 1; gap: 12px; min-width: 0; }
 .top-actions > button { font-size: var(--fs-xs); white-space: nowrap; }
-.global-search { display: flex; align-items: center; gap: 8px; width: min(320px, 30vw); height: 34px; padding: 0 10px; border: 1px solid var(--line); background: var(--page); border-radius: 6px; color: var(--subtle); }
-.global-search:focus-within { border-color: var(--green); background: var(--surface); }
+.global-search { display: flex; align-items: center; gap: 8px; width: min(320px, 30vw); height: 34px; padding: 0 10px; border: 1px solid var(--input-line); background: var(--page); border-radius: 6px; color: var(--subtle); }
+.global-search:focus-within { border-color: var(--green); background: var(--surface); outline: 2px solid var(--green); outline-offset: 2px; }
 .global-search > span { flex: 1; text-align: left; font-size: var(--fs-xs); }
 .global-search input { width: 100%; min-height: 30px; padding: 4px 0; border: 0; border-radius: 0; background: transparent; outline: none; font-size: var(--fs-xs); }
 kbd { padding: 0 4px; border: 1px solid var(--line-strong); border-radius: 3px; color: var(--muted); font: 12px/18px "Segoe UI", sans-serif; white-space: nowrap; }
@@ -562,7 +564,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 /* Search stays above the current page; returning restores its context. */
 .search-dialog { width: 680px; max-width: calc(100vw - 48px); max-height: min(720px, 82vh); margin: 9vh auto auto; padding: 0; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: var(--surface); box-shadow: 0 18px 60px var(--overlay-strong); overflow-y: auto; }
 .search-dialog-header { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
-.search-dialog-header input { flex: 1; border: 0; padding-left: 0; font-size: var(--fs-md); outline: none; }
+.search-dialog-header input { flex: 1; border: 0; padding-left: 0; font-size: var(--fs-md); }
 .search-dialog-header button { font-size: var(--fs-xs); }
 .search-dialog > .help, .search-dialog > p { margin: 12px 20px; }
 .search-results { padding: 0 20px; }
@@ -818,3 +820,17 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .occurrence-actions { flex-direction: column; align-items: flex-start; }
 .occurrence-completion { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: var(--fs-xs); white-space: nowrap; }
 .occurrence-editor .occurrence-actions { flex-direction: row; align-items: center; }
+
+/* TASK-A11Y-02 A4: Windows high-contrast (forced colors) drops backgrounds and shadows,
+   so selected/current states and field edges get system-colour outlines instead. */
+@media (forced-colors: active) {
+  input, textarea, select, .global-search { border: 1px solid CanvasText; }
+  nav button.active, .segmented .selected, .segmented [aria-selected="true"],
+  [aria-pressed="true"], .selected-day, .week-strip .selected, .calendar-cell[aria-selected="true"] .calendar-day {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  .today-number, [aria-current="date"] { outline: 2px solid CanvasText; outline-offset: -2px; }
+  .tag, .calendar-chip, .calendar-control-mark, .week-item { border: 1px solid CanvasText; }
+  button:disabled, [aria-disabled="true"] { color: GrayText; border-color: GrayText; opacity: 1; }
+}
