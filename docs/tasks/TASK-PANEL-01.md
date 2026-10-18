@@ -34,9 +34,9 @@ updated: 2026-10-18
 - [ ] 5. 기록(loop-log 5주기, handoff)
 
 ## 재개 위치
-3단계 C1부터: shared/search.mjs에 기록별 검색 텍스트 순수 함수(담당구역·순찰 종류·단속 유형 포함), src/main.tsx 전역 검색과 Patrols.tsx 화면 검색이 같은 함수를 쓰게, tests/search.test.cjs. S1·S4·S6·S2(메모·일정 편집 시 기존 필드 보존) 완료. 편집 필드 보존 데스크톱 검사는 A1 단계의 desktop-list-smoke에 추가 예정.
+3단계 A1부터: src/components/ListRow.tsx 행 동작 버튼 이름을 "<제목> <동작>"으로 자동 생성(보이는 글자로 시작), src/components/Office.tsx 주간 근무표 셀 aria-label이 보이는 근무 내용을 덮어쓰지 않게, 스모크 선택자(desktop-smoke·confirm·list·task-flows의 name "수정"/"삭제" exact) 갱신, desktop-list-smoke에 편집 필드 보존 검사 추가. S1·S4·S6·S2·C1 완료.
 
 ## 테스트 상태
-S4·S6·S2 후: `npm test` 85/85 통과. S1 후: 83/83(32ad74f 시점 store.test 1건 실패 → 다음 커밋에서 기대값 조정: 읽기 검증은 시간대 여유 하루, 편집기는 지역 날짜 엄격 검사 유지). 데스크톱 스모크 미실행.
+C1 후: `npm test` 87/87 통과. S4·S6·S2 후: 85/85. S1 후: 83/83(32ad74f 시점 store.test 1건 실패 → 다음 커밋에서 기대값 조정: 읽기 검증은 시간대 여유 하루, 편집기는 지역 날짜 엄격 검사 유지). 데스크톱 스모크 미실행.
 
 ## 검증 기록

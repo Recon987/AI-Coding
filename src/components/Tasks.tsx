@@ -1,3 +1,4 @@
+import { matches, searchText } from "../../shared/search.mjs";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useState } from "react";
 import type { Data, Save, Task } from "../types";
@@ -41,9 +42,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
     .filter(
       (t) =>
         (filter === "all" || (filter === "done" ? t.done : !t.done)) &&
-        `${t.title} ${t.body} ${t.assignee} ${t.destination}`
-          .toLowerCase()
-          .includes(query.trim().toLowerCase()),
+        matches(searchText.task(t), query),
     )
     .sort(
       (a, b) =>

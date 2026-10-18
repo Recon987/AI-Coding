@@ -1,3 +1,4 @@
+import { matches, searchText } from "../../shared/search.mjs";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useState } from "react";
 import type { Data, Save, Call } from "../types";
@@ -34,9 +35,7 @@ export function Personal({
   const rows = data[mode]
     .map((n) => ({ ...blank(), ...n }))
     .filter((n) =>
-      `${n.title} ${n.body} ${mode === "calls" ? n.phone : ""}`
-        .toLowerCase()
-        .includes(query.trim().toLowerCase()),
+      matches(mode === "calls" ? searchText.call(n as Call) : searchText.note(n), query),
     );
   async function submit(e: React.FormEvent) {
     e.preventDefault();

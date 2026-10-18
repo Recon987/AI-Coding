@@ -9,14 +9,12 @@ import { createRoot } from "react-dom/client";
 import {
   empty,
   normalize,
-  formatCoordinates,
-  RECURRENCE_LABEL,
   activeControls,
-  CONTROL_REASONS,
   dayKey,
 } from "../shared/model.mjs";
 import type { Data, Page } from "./types";
 import { formatDate } from "../shared/format.mjs";
+import { searchRecords } from "../shared/search.mjs";
 import { hasDirtyDrafts, subscribeDirty } from "./drafts";
 import { DesktopSettings } from "./components/DesktopSettings";
 import { Office } from "./components/Office";
@@ -250,49 +248,7 @@ function App() {
       setError("폴더를 선택하지 못했습니다.");
     }
   }
-  const searchRows = [
-    ...data.patrols.map((p) => ({
-      id: p.id,
-      page: "patrol" as Page,
-      title: p.title,
-      text: `${p.route} ${p.observer} ${p.findings} ${p.action} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`,
-    })),
-    ...data.controls.map((c) => ({
-      id: c.id,
-      page: "controls" as Page,
-      title: c.title,
-      text: `${c.zone ?? ""} ${CONTROL_REASONS[c.reason]} ${c.start} ${c.end ?? "해제 시까지"} ${c.note}`,
-    })),
-    ...data.tasks.map((t) => ({
-      id: t.id,
-      page: t.kind as Page,
-      title: t.title,
-      text: `${t.body} ${t.assignee} ${t.destination}`,
-    })),
-    ...data.events.map((e) => ({
-      id: e.id,
-      page: "calendar" as Page,
-      title: e.title,
-      text:
-        e.recurrence && e.recurrence !== "none"
-          ? `${RECURRENCE_LABEL[e.recurrence]} 반복 ${e.repeatUntil || ""}`
-          : "",
-    })),
-    ...data.notes.map((n) => ({
-      id: n.id,
-      page: "notes" as Page,
-      title: n.title,
-      text: n.body,
-    })),
-    ...data.calls.map((c) => ({
-      id: c.id,
-      page: "calls" as Page,
-      title: c.title,
-      text: `${c.body} ${c.phone}`,
-    })),
-  ].filter((r) =>
-    `${r.title} ${r.text}`.toLowerCase().includes(query.trim().toLowerCase()),
-  );
+  const searchRows = searchRecords(data, query);
   return (
     <div className="app">
       <ConfirmHost />

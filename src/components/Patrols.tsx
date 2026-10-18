@@ -1,3 +1,4 @@
+import { matches, searchText } from "../../shared/search.mjs";
 import {
   describeObservations,
   formatCoordinates,
@@ -66,11 +67,7 @@ export function Patrols({
   const patch = (values: Partial<Patrol>) =>
     setDraft((current) => ({ ...current, ...values }));
   const rows = [...data.patrols]
-    .filter((p) =>
-      `${p.title} ${p.route} ${p.observer} ${p.findings} ${p.action} ${p.zone ?? ""} ${p.kind ? PATROL_KINDS[p.kind] : ""} ${(p.observations ?? []).map((o) => `${o.type} ${o.note}`).join(" ")} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`
-        .toLowerCase()
-        .includes(query.trim().toLowerCase()),
-    )
+    .filter((p) => matches(searchText.patrol(p), query))
     .sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
   async function submit(e: React.FormEvent) {
     e.preventDefault();
