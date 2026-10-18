@@ -23,6 +23,9 @@ const script = `
   assert.deepEqual(d.periodRange("week", "2026-10-18"), { startDate: "2026-10-12", endDate: "2026-10-18" });
   assert.deepEqual(d.periodRange("month", "2028-02-10"), { startDate: "2028-02-01", endDate: "2028-02-29" });
   assert.deepEqual(d.periodRange("month", "2026-12-31"), { startDate: "2026-12-01", endDate: "2026-12-31" });
+  // Date.UTC가 0~99년을 1900~1999년으로 바꿔도 유효한 날짜 키의 연도는 보존해야 한다.
+  for (const [key, end] of [["0000-02-10", "0000-02-29"], ["0001-12-10", "0001-12-31"], ["0099-02-10", "0099-02-28"], ["0100-02-10", "0100-02-28"]])
+    assert.deepEqual(d.periodRange("month", key), { startDate: key.slice(0, 8) + "01", endDate: end });
   assert.deepEqual(d.periodRange("30days", "2026-03-01"), { startDate: "2026-01-31", endDate: "2026-03-01" });
   assert.equal(d.validDateKey("2026-02-30"), false);
   assert.equal(d.validDateKey("2026-2-3"), false);

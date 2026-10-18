@@ -48,8 +48,9 @@ export function periodRange(period, today) {
   }
   if (period === "month") {
     const date = toUtc(today);
-    const last = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0, 12));
-    return { startDate: `${today.slice(0, 8)}01`, endDate: toKey(last) };
+    // Date.UTC의 0~99년 보정 없이 입력 날짜의 연도를 그대로 유지한다.
+    date.setUTCMonth(date.getUTCMonth() + 1, 0);
+    return { startDate: `${today.slice(0, 8)}01`, endDate: toKey(date) };
   }
   if (period === "30days") return { startDate: addDays(today, -29), endDate: today };
   throw new Error("집계 기간을 확인하세요.");

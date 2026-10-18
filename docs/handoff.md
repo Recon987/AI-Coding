@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
-- **Task Card**: TASK-DATES-01 review(검증자 codex, 재개 위치는 카드). EDITOR-01·02는 Codex 보완·승인 후 Claude 통합 완료(eba443d). 다음: TASK-CALENDAR-04
-- **Latest Pushed Commit**: aae6dd0 - wip(TASK-DATES-01): 카드 착수와 달력 화면 개편(CALENDAR-04) 분리 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: shared/dates.mjs·dates.d.mts(신규), shared/model.mjs·office.mjs·forms.mjs, src/components/{Briefing,Office,Calendar,FormExport,Observations}.tsx, tests/dates.test.cjs(신규), tests/store.test.cjs·office.test.cjs 자료 시각. 한국어 기록 docs/work-log/2026-10-18-claude-2.md
-- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. 새 모듈 shared/dates.mjs. office.validDate는 dates.validDateKey와 같은 함수. 읽기 검증: 시간대 표시 없는 시각의 반복 종료일은 적힌 날짜 기준(엄격), 있는 시각은 UTC 날짜-1일까지 허용
-- **Test Status**: Linux Node 22: npm test 91/91(시간대 5종), npm run test:desktop 8개 진입점 통과, 화면 검사 142·실패 0, 업무 흐름 11/11
-- **Remaining Work for Gemini**: Codex: DATES-01 검증. 사용자: PR #1 병합 승인, '추가/등록', 주말 합계, SCHEMA-01, 양식 질문, PR #3·#4·#5 정리
-- **Modified Code Snippets (if uncommitted)**: 없음
+- **Repository & Branch**: Recon987/AI-Coding (task/task-review-dates-01 / 기준 Claude75f04e9 / main 미병합)
+- **Task Card**: TASK-REVIEW-DATES-01 in-progress. DATES-01 독립 검증 승인·0~99년 월말P3 보완. 다음은 보완본 Windows 확인.
+- **Latest Pushed Commit**: 45fdc57 - wip(TASK-REVIEW-DATES-01): 날짜 계산과 시간대 경계 검증 착수 (작성 직전 원격, 최종 해시는 응답/git log)
+- **Completed Steps & Modified Files**: shared/dates.mjs 월말 연도 보존, tests/dates.test.cjs 5TZ 회귀, DATES/검증 카드·검토/검증/한국어 기록·handoff.
+- **Changed Interfaces / Schema Diff**: 기존 함수 시그니처·자료v3·IPC 유지. periodRange의 허용한 낮은 연도 결과만 보완.
+- **Test Status**: Node24 npm test91/91을5TZ 각각·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 독립 자료1800·현대경계2412·정상600·보완경계132 통과. 원본 Windows39107140819 성공, 보완본은 푸시 후 확인.
+- **Remaining Work for Gemini**: Windows 후 증빙 통합. Claude는 DATES-01과 이 보완을 함께 통합. 다음 CALENDAR-04. 기관 PC·정책 결정 별도.
+- **Modified Code Snippets (if uncommitted)**: 보완·증빙은 이 문서와 즉시 커밋/푸시. 원 브랜치/main 직접 수정 없음.
 ```
 
 ## 2. 과제 현황
