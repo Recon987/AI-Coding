@@ -52,6 +52,14 @@ const root = path.resolve(__dirname, "..");
 
     // A5: the status region exists before any message; the toast stays 8 s and can be closed.
     const live = page.locator('.sr-only[role="status"]');
+    // Record every change of the announcement region with the app's clock, for diagnosis.
+    await page.evaluate(() => {
+      const region = document.querySelector('.sr-only[role="status"]');
+      window.__liveLog = [];
+      new MutationObserver(() =>
+        window.__liveLog.push([Date.now(), region.innerHTML]),
+      ).observe(region, { childList: true, subtree: true, characterData: true });
+    });
     assert.equal(await live.count(), 1);
     assert.equal((await live.textContent()).trim(), "");
     await nav("업무 메모");
@@ -74,7 +82,14 @@ const root = path.resolve(__dirname, "..");
     await page.getByLabel("제목", { exact: true }).fill("가상 낭독 확인 메모 2");
     await page.keyboard.press("Control+Enter");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
-    await page.waitForFunction((before) => document.querySelector('.sr-only[role="status"] [data-sequence]')?.getAttribute("data-sequence") !== before, first);
+    // Wait for the *next* announcement itself (a cleared region must not count).
+    const next = String(Number(first) + 1);
+    await page
+      .waitForFunction((n) => document.querySelector(`.sr-only[role="status"] [data-sequence="${n}"]`), next)
+      .catch(async (error) => {
+        console.error("다음 안내 없음:", await page.evaluate(() => window.__liveLog));
+        throw error;
+      });
     await page.clock.runFor(4000);
     if (!(await toast.isVisible())) {
       // Diagnose on the runner that fails: what does the app hold right now?
@@ -83,6 +98,7 @@ const root = path.resolve(__dirname, "..");
         toast: document.querySelector(".save-feedback")?.outerHTML ?? null,
         active: document.activeElement?.outerHTML.slice(0, 120),
         now: Date.now(),
+        log: window.__liveLog,
       })));
       assert.fail("같은 문구 재저장 후 타이머 다시 시작(첫 저장 후 9초 이상)");
     }
