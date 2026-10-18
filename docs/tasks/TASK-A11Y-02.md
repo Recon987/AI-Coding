@@ -1,11 +1,11 @@
 ---
 id: TASK-A11Y-02
 title: 입력 테두리 대비·고대비 모드(A4)·상시 라이브 영역(A5)·좁은 폭 2줄(A6)·단축키(A8)
-status: backlog
+status: in-progress
 role: builder
-owner: none
-verifier: claude
-branch: task/task-a11y-02
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
 updated: 2026-10-18
@@ -27,10 +27,15 @@ updated: 2026-10-18
 합의안의 보류·기각 항목.
 
 ## 진행 단계
-- [ ] 1. 착수 시 검토 문서의 해당 발견과 2차 조건을 다시 읽고 단계를 나눈다
+- [x] 1. 검토 문서 A4·A5·A6·A8과 2·3차 조건 재확인(UX: 테두리 강화는 입력칸만, 2줄은 1200px 이하·목록 행은 1줄 유지 / 안전: '/' 단축키는 설정 추가보다 제거 권장)
+- [ ] 2. A4: 입력칸 테두리 대비 3:1, forced-colors, 검색 포커스 표시
+- [ ] 3. A5: 상시 라이브 영역·알림 8초+닫기, 검색 결과 건수 낭독, 오늘 상태 띠 group
+- [ ] 4. A1 잔여: 주간 띠·월간 칸 이름을 보이는 글자로 시작
+- [ ] 5. A6 좁은 폭 2줄, A8 '/' 단축키 제거(Ctrl+K 유지)
+- [ ] 6. 검사·기록
 
 ## 재개 위치
-착수 전.
+2단계: src/style.css에 입력칸 전용 테두리 토큰(흰 바탕·페이지 바탕 모두 3:1 이상)과 @media (forced-colors: active) 블록, 통합 검색 입력 포커스 표시.
 
 ## 테스트 상태
 미실행
