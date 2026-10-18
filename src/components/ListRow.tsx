@@ -55,12 +55,16 @@ export function ListRow({
       <div className="record-actions">
         {actions.map((action, index) => (
           <button
-            key={action.label}
+            // Index key: a toggled label ("처리 완료" → "미처리로 변경") keeps the same button and focus.
+            key={index}
             type="button"
-            disabled={busy}
+            // aria-disabled keeps keyboard focus on the button while a save runs (TASK-EDITOR-02).
+            aria-disabled={busy || undefined}
             aria-label={action.ariaLabel}
             className={action.tone === "danger" ? "text-button danger" : index === 0 ? "" : "text-button"}
-            onClick={action.onClick}
+            onClick={() => {
+              if (!busy) action.onClick();
+            }}
           >
             {action.label}
             {/* Screen readers hear which record ("삭제 · 오전 순찰"); the visible label stays first. */}

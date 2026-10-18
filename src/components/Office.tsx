@@ -168,7 +168,6 @@ export function Office({
               document.getElementById(`office-tab-${next}`)?.focus();
             }}
             key={value}
-            disabled={busy}
             onClick={() => setTab(value)}
             className={tab === value ? "selected" : ""}
           >
@@ -453,9 +452,11 @@ export function Office({
                                     }
                                   >
                                     <button
-                                      disabled={busy}
+                                      aria-disabled={busy || undefined}
                                       className={`week-cell ${entry?.workType ?? "missing"}`}
-                                      onClick={() => edit(row.employee.id, day)}
+                                      onClick={() => {
+                                        if (!busy) edit(row.employee.id, day);
+                                      }}
                                     >
                                       {/* The visible shift is read first; who/when follow (TASK-PANEL-01 A1). */}
                                       <span>

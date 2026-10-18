@@ -189,6 +189,40 @@ const root = path.resolve(__dirname, "..");
     await page.keyboard.press("Escape");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
 
+    // TASK-EDITOR-02 A2: a keyboard toggle keeps focus on the same button through the save.
+    await page.locator("nav").getByRole("button", { name: "전화메모", exact: true }).click();
+    const firstToggle = page.locator(".row-list .record-actions button").first();
+    const toggleLabel = (await firstToggle.textContent()).split(" · ")[0];
+    await firstToggle.focus();
+    await page.keyboard.press("Enter");
+    await page.waitForFunction((before) => {
+      const el = document.activeElement;
+      return el?.closest(".record-actions") && !el.textContent.startsWith(before);
+    }, toggleLabel);
+    await page.keyboard.press("Enter");
+    await page.waitForFunction((before) => document.activeElement?.textContent.startsWith(before), toggleLabel);
+    // A3: an invalid end date is shown under its field, linked, and focused on save.
+    await page.locator("nav").getByRole("button", { name: "탐방로 통제", exact: true }).click();
+    await page.getByRole("button", { name: "통제 등록", exact: true }).click();
+    const controlSheet = page.locator(".sheet[open]");
+    assert.match(await controlSheet.locator(".field", { hasText: "통제 구간·대상" }).locator(".required-mark").textContent(), /필수/);
+    await page.getByLabel("통제 구간·대상").fill("가상 오류 확인 구간");
+    await page.getByLabel("시작일").fill("2030-11-05");
+    await page.getByLabel("종료일").fill("2030-11-01");
+    const endInput = page.getByLabel("종료일");
+    assert.equal(await endInput.getAttribute("aria-invalid"), "true");
+    const errorText = await page.evaluate(() => {
+      const input = document.activeElement?.closest(".sheet")?.querySelector('[aria-invalid="true"]');
+      return (input?.getAttribute("aria-describedby") ?? "").split(" ").map((id) => document.getElementById(id)?.textContent).join(" | ");
+    });
+    assert.match(errorText, /종료일은 시작일과 같거나 이후/);
+    await page.getByRole("button", { name: "통제 저장", exact: true }).click();
+    await page.waitForFunction(() => document.activeElement?.getAttribute("aria-invalid") === "true");
+    assert.ok(!(await page.evaluate(() => window.workdesk.load())).controls.some((c) => c.title === "가상 오류 확인 구간"));
+    await page.keyboard.press("Escape");
+    await page.getByRole("alertdialog").getByRole("button", { name: "변경 버리기", exact: true }).click();
+    await controlSheet.waitFor({ state: "hidden" });
+
     // TASK-PANEL-01 S2: editing keeps fields this version does not know (e.g. from a newer app).
     const withExtras = await page.evaluate(() => window.workdesk.load());
     withExtras.notes.push({ id: "future-note", title: "미래 필드 메모", body: "본문", tags: ["가상"] });
@@ -213,7 +247,7 @@ const root = path.resolve(__dirname, "..");
     const editedEvent = afterEdit.events.find((e) => e.id === "future-event");
     assert.equal(editedEvent.title, "미래 필드 일정 수정");
     assert.equal(editedEvent.color, "green");
-    console.log(`PASS: 순찰 복사(출처·채운 칸 안내·자동 제목·단속 건 제외), 편집 시 모르는 필드 보존(메모·일정), 행 동작 이름에 기록 제목, 보호본 실패 저장 경고·실제자료 갱신/재시도, 예정통제 해제 방지·현재통제 해제, 달력 주간·목록 등록·보기와 이동·보기 탭 키보드(roving)·주간 통제 원본 이동, 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
+    console.log(`PASS: 저장 중 키보드 포커스 유지·통제 종료일 오류 칸 연결·필수 표시, 순찰 복사(출처·채운 칸 안내·자동 제목·단속 건 제외), 편집 시 모르는 필드 보존(메모·일정), 행 동작 이름에 기록 제목, 보호본 실패 저장 경고·실제자료 갱신/재시도, 예정통제 해제 방지·현재통제 해제, 달력 주간·목록 등록·보기와 이동·보기 탭 키보드(roving)·주간 통제 원본 이동, 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });

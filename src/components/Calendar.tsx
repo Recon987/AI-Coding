@@ -214,7 +214,8 @@ export function Calendar({
           <input
             type="checkbox"
             checked={item.done}
-            disabled={busy || (editor.isOpen && editor.dirty)}
+            disabled={editor.isOpen && editor.dirty}
+            aria-disabled={busy || undefined}
             aria-label={
               repeating
                 ? event.done
@@ -229,7 +230,9 @@ export function Calendar({
                   : "이 날짜 회차만 완료하거나 다시 진행합니다."
                 : "일정 완료 상태 변경"
             }
-            onChange={() => void toggleDone(item)}
+            onChange={() => {
+              if (!busy) void toggleDone(item);
+            }}
           />
           <span>
             {repeating ? (event.done ? "전체 완료" : "회차 완료") : "완료"}
@@ -239,9 +242,12 @@ export function Calendar({
           <button
             type="button"
             className="text-button"
-            disabled={busy || (editor.isOpen && editor.dirty)}
+            disabled={editor.isOpen && editor.dirty}
+            aria-disabled={busy || undefined}
             aria-label={`${item.title} ${date} 회차 제외`}
-            onClick={() => void excludeOccurrence(event, date, true)}
+            onClick={() => {
+              if (!busy) void excludeOccurrence(event, date, true);
+            }}
           >
             이번 회차 제외
           </button>

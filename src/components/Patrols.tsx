@@ -305,7 +305,7 @@ export function Patrols({
               </button>
             </div>
             <p className="editor-intro">
-              구간·기록자는 필수입니다. 저장 후 인수인계로 연결할 수 있습니다.
+              저장 후 인수인계로 연결할 수 있습니다.
             </p>
             {!draft.id && prefill && (
               <p id={prefillHint} className="editor-hint">

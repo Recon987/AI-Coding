@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
-- **Task Card**: TASK-EDITOR-01 review(검증자 codex, 재개 위치는 카드). TASK-PANEL-01·POLISH-01은 Codex 승인 완료(main 병합 시 done). 다음: TASK-EDITOR-02
-- **Latest Pushed Commit**: 85f9952 - wip(TASK-EDITOR-01): 카드 착수와 EDITOR-02 분리 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: Codex 검증 브랜치 통합(939ff18). EDITOR-01: src/components/Sheet.tsx·EditorDialog.tsx·FormExport.tsx·Personal.tsx, src/style.css, tests/desktop-confirm-smoke.cjs. 한국어 기록 docs/work-log/2026-10-18-claude-2.md
-- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. Sheet에 선택 prop `size`·`closeButton`·`submitShortcut`, EditorDialog에 `size`
-- **Test Status**: Linux Node 22: npm test 89/89, npm run test:desktop 8개 통과, 화면 검사 142·실패 0
-- **Remaining Work for Gemini**: Codex: EDITOR-01 검증. 사용자: PR #1 병합 승인, '추가/등록', 주말 합계, SCHEMA-01, 양식 질문, PR #3 정리
+- **Task Card**: TASK-EDITOR-01·TASK-EDITOR-02 review(검증자 codex, 재개 위치는 각 카드). PANEL-01·POLISH-01은 Codex 승인 완료
+- **Latest Pushed Commit**: 77a1f0d - wip(TASK-EDITOR-02): 입력 오류를 해당 칸에 연결하고 저장 버튼을 잠그지 않음(A3) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: EDITOR-01(Sheet 머리 한 줄·Ctrl+Enter·크기), EDITOR-02(src/ui.tsx Field hint/error/필수 표시·focusFirstInvalid, Controls·Calendar·Patrols·CoordinateInput 오류 연결, ListRow·Calendar·Office·main 메뉴 aria-disabled). 한국어 기록 docs/work-log/2026-10-18-claude-2.md
+- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. Field에 선택 prop `hint`·`error`, ui.tsx에 `focusFirstInvalid`. 순찰 저장 버튼은 좌표 오류에도 활성(눌러서 안내)
+- **Test Status**: Linux Node 22: npm test 89/89, npm run test:desktop 8개 통과, 화면 검사 142·실패 0, 업무 흐름 11/11
+- **Remaining Work for Gemini**: Codex: EDITOR-01·02 검증. 사용자: PR #1 병합 승인, '추가/등록', 주말 합계, SCHEMA-01, 양식 질문, PR #3 정리. 다음 후보: TASK-DATES-01
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

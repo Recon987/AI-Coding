@@ -273,7 +273,7 @@ function App() {
               {section.pages.map((p) => (
                 <button
                   key={p.id}
-                  disabled={busy}
+                  aria-disabled={busy || undefined}
                   className={page === p.id ? "active" : ""}
                   aria-current={page === p.id ? "page" : undefined}
                   onClick={() => navigate(p.id)}
