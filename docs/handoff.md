@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
-- **Task Card**: TASK-POLISH-01 review(검증자 codex, 재개 위치는 카드). 그 외 review 16장은 검증자 승인 기록 있음, main 병합 시 done. FORMS-02 blocked(사용자 피드백)
-- **Latest Pushed Commit**: 7b93f1c - wip(TASK-POLISH-01): calendar view tabs roving focus and week closure navigation (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: POLISH-01 1~3단계 — desktop/recovery.cjs(notify), desktop/store.cjs(migrateFile 경고 반환), desktop/main.cjs(take-notice, 복원 경고), desktop/preload.cjs(takeNotice), src/main.tsx, src/components/Calendar.tsx(tabKeys·tabpanel·주간 통제 버튼), src/components/Briefing.tsx(office-duty-names), shared/model.mjs(patrolSummary 역순 거부), src/style.css, tests/desktop-notice-smoke.cjs(신규), desktop-list-smoke·recovery.test·patrol-observations.test, package.json·windows-build.yml
-- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. 새 IPC `take-notice` → preload `takeNotice(): Promise<string>`(1회 전달). openDataFile에 선택 인자 `notify(text)`. migrateFile이 `{warning}`을 반환할 수 있음. patrolSummary는 시작일>종료일이면 예외
-- **Test Status**: Linux Node 22: npm test 82/82, npm run test:desktop 8개 스모크 통과, review:ui strict+zoom 142·실패 0·외부 요청 0. Windows Actions는 PR #1 푸시 결과 확인 필요
-- **Remaining Work for Gemini**: Codex: POLISH-01 검증. 사용자: PR #1 main 병합 승인, PR #3 정리, 양식 질문 4개·용어 피드백. 다음 후보: HOLIDAY-01, SECURITY-01 설계
+- **Task Card**: TASK-PANEL-01 review(검증자 codex) — 5개 역할 교차 검토 5주기. TASK-POLISH-01 review(codex). 그 외 review 16장 승인 기록 있음. 다음 주기 backlog: EDITOR-01(P1)·SCHEMA-01(P1, 사용자 승인 필요)·DATES-01·LABELS-01·A11Y-02·LIST-02
+- **Latest Pushed Commit**: 12e7b62 - fix(TASK-PANEL-01): code-review fixes (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: [검토 문서](reviews/2026-10-18-panel.md) 1차 40건·2차 교차·합의·3차 재검토. 구현: shared/model.mjs(utcDayBefore, briefing 근무·당직/전날 단속, patrolAutoTitle, newPatrolDraft), shared/search.mjs(신규), desktop/store.cjs(withRetry·isTransientLock·retry, 백업 새 이름), desktop/recovery.cjs(잠금 다시 시도, 단일 읽기 경로), src/components/{ListRow,Office,Patrols,Personal,Calendar,Tasks}.tsx, src/main.tsx, src/style.css, tests(search·recovery·recurrence-timezone·office·patrol-observations·store·desktop-list/smoke/confirm·task-flows T2c)
+- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. 읽기 검증의 반복 종료일은 시작 UTC 날짜-1일까지 허용(편집기는 지역 날짜 엄격). store 모듈 export에 isTransientLock·retry 추가. 메모·일정 편집이 모르는 필드를 보존. 브리핑 TXT에 '근무·당직'(당직자 이름만)·'전날 단속·확인' 절 추가
+- **Test Status**: Linux Node 22: npm test 89/89, npm run test:desktop 8개 통과, review:flows 11개 완료, review:ui strict+zoom 142·실패 0. Windows Actions는 PR #1 최신 head에서 확인 필요(32ad74f 실패는 547d746에서 수정)
+- **Remaining Work for Gemini**: Codex: PANEL-01·POLISH-01 검증. 사용자: PR #1 main 병합 승인, '추가/등록' 용어, 월요일 브리핑 주말 합계 여부, SCHEMA-01(minReader) 승인, 양식 질문 4개
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

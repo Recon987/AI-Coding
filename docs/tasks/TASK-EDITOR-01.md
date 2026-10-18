@@ -15,7 +15,9 @@ updated: 2026-10-18
 [5개 역할 교차 검토 합의안](../reviews/2026-10-18-panel.md#합의안-총괄-정리-2026-10-18) 다음 주기 카드.
 
 ## 완료 조건
-- [ ] 시트 머리 한 줄 [제목 … 취소|저장], 보이는 닫기 경로 유지, Ctrl+Enter 저장(aria-keyshortcuts·힌트)
+- [ ] 시트 머리 한 줄 [제목 … 취소|저장]: 글자 '닫기 ×' 제거, 닫기는 취소(또는 × 아이콘)와 Esc, sticky 둘째 줄 삭제(머리 128px → 약 68px), Ctrl+Enter 저장(aria-keyshortcuts·힌트)
+- [ ] 시트 크기 sm(480px)/md(600px), 양식 출력 시트도 같은 머리 배치
+- [ ] `[aria-disabled=true]`에 `button:disabled`와 같은 시각 스타일, '(필수)'는 흐린 작은 글씨, hint 자리는 순찰 기본값 출처 안내와 공유
 - [ ] Field에 required/error/hint: 레이블 '(필수)' 글자, aria-invalid·aria-describedby, 실패 시 첫 오류 필드 포커스, 저장 버튼 비활성화 대신 오류 안내
 - [ ] 저장 중 즉시 동작 컨트롤은 aria-disabled+가드로 포커스 유지
 - [ ] desktop-confirm-smoke의 '닫기' 경로를 Esc·취소로 대체해 회귀 유지
