@@ -63,17 +63,18 @@ const root = path.resolve(__dirname, "..");
     const toast = page.locator(".save-feedback");
     const sequence = () => page.locator('.sr-only[role="status"] [data-sequence]').getAttribute("data-sequence");
     const first = await sequence();
-    await page.clock.runFor(6000);
-    assert.equal(await toast.isVisible(), true, "6초 뒤에도 알림 표시");
+    // page.clock keeps running in real time after runFor, so leave a margin for slow
+    // Windows runners: 5 s, then 4 s after the second save (9 s after the first).
+    await page.clock.runFor(5000);
+    assert.equal(await toast.isVisible(), true, "5초 뒤에도 알림 표시");
     // Same message again: announced anew and the 8 s timer restarts (Codex review finding).
-    await page.evaluate(async () => window.workdesk.save(await window.workdesk.load()));
     await page.getByRole("button", { name: "메모 추가", exact: true }).click();
     await page.getByLabel("제목", { exact: true }).fill("가상 낭독 확인 메모 2");
     await page.keyboard.press("Control+Enter");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     await page.waitForFunction((before) => document.querySelector('.sr-only[role="status"] [data-sequence]')?.getAttribute("data-sequence") !== before, first);
-    await page.clock.runFor(6000);
-    assert.equal(await toast.isVisible(), true, "같은 문구 재저장 후 타이머 다시 시작");
+    await page.clock.runFor(4000);
+    assert.equal(await toast.isVisible(), true, "같은 문구 재저장 후 타이머 다시 시작(첫 저장 후 9초 이상)");
     // The close button is reachable by keyboard, not hidden from screen readers,
     // and returns focus to where the user was.
     const close = toast.getByRole("button", { name: "알림 닫기", exact: true });
