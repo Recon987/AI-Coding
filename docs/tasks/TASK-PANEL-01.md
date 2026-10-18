@@ -37,6 +37,6 @@ updated: 2026-10-18
 3단계 S4+S6+S2부터: desktop/store.cjs durableReplace의 rename에 EPERM/EBUSY/EACCES 짧은 재시도, migrateFile v1/v2 백업 이름 충돌 시 새 이름, src/components/Personal.tsx 메모 편집 시 기존 필드 보존. S1 완료(model.mjs utcDayBefore).
 
 ## 테스트 상태
-미실행
+S1 후: `npm test` 83/83 통과(32ad74f 시점 store.test 1건 실패 → 다음 커밋에서 기대값 조정: 읽기 검증은 시간대 여유 하루, 편집기는 지역 날짜 엄격 검사 유지). 데스크톱 스모크 미실행.
 
 ## 검증 기록

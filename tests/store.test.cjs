@@ -418,7 +418,8 @@ test("잘못된 반복 주기와 시작일 이전 종료일·비반복 종료일
     { ...baseEvent, recurrence: "hourly" },
     { ...baseEvent, repeatUntil: "2026-10-20" },
     { ...baseEvent, recurrence: "none", repeatUntil: "2026-10-20" },
-    { ...baseEvent, recurrence: "weekly", repeatUntil: "2026-10-14" },
+    // Reading allows one day of zone slack (TASK-PANEL-01 S1); the editor checks the local day.
+    { ...baseEvent, recurrence: "weekly", repeatUntil: "2026-10-13" },
     { ...baseEvent, recurrence: "weekly", repeatUntil: "2026-02-30" },
   ]) {
     assert.throws(() => normalize({ ...empty(), events: [invalid] }));
