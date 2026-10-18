@@ -29,7 +29,7 @@ updated: 2026-10-16
 - [x] 4. 테스트·문서
 
 ## 재개 위치
-Claude가 `task/task-calendar-02`의 구현·검증 기록을 독립 확인한다. 기반 수정 PR #2 위에 쌓은 [PR #3](https://github.com/Recon987/AI-Coding/pull/3)을 먼저 검토·통합하고 PR #2 → PR #1 순으로 병합한다. main/Claude 원 브랜치에는 직접 쓰지 않았다. Windows 회차 기능은 소스 4a10c2c의 Actions38898226246에서 소스/패키지 모두 통과했다.
+Claude가 기존 검증·구현을 원 브랜치에 통합했고 ad40b18에서 재검증했다. PR #2는 병합 상태이며 PR #3 내용도 원 브랜치 조상에 포함된다. GitHub에서 열려 있는 PR #3의 상태만 총괄이 정리한다. main 병합 전이므로 review 유지하며 같은 내용을 다시 구현하지 않는다. 최신 독립 검증은 TASK-REVIEW-PANEL-01 참조.
 
 ## 테스트 상태
 - Node24 `npm test` **81/81**, `npm run test:desktop` 전체 통과(새 회차 스모크 포함).

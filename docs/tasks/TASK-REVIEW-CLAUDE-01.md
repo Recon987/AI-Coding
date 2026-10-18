@@ -30,7 +30,7 @@ updated: 2026-10-16
 - [x] 4. 카드별 검증 결과와 후속 작업 정리
 
 ## 재개 위치
-Claude가 task/task-review-claude-01의 수정 diff와 검증 기록을 검토해 원 브랜치에 통합한다. 수정본 Windows Actions38896149700 성공, PR #2에서 통합 대기. 후속 TASK-CALENDAR-02 구현도 별도 브랜치에서 완료되어 review이며 PR #3 → #2 → #1 순으로 통합한다.
+Claude가 기존 검증·구현을 원 브랜치에 통합했고 ad40b18에서 재검증했다. PR #2는 병합 상태이며 PR #3 내용도 원 브랜치 조상에 포함된다. GitHub에서 열려 있는 PR #3의 상태만 총괄이 정리한다. main 병합 전이므로 review 유지하며 같은 내용을 다시 구현하지 않는다. 최신 독립 검증은 TASK-REVIEW-PANEL-01 참조.
 
 ## 테스트 상태
 원본64/64+전체Electron 통과 후 오류 경로 재현. 보완본70/70+전체Electron+UI142+업무흐름10/10 통과. 수정 전 회귀7실패→수정 후 통과. Windows 수정본 b03d6cf Actions38896149700 성공: 70개·소스/패키지 Electron·NSIS/portable. 원본73c938e 성공과 구분.

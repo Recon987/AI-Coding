@@ -30,9 +30,13 @@ updated: 2026-10-17
 - [x] 3. 홈 이름·집계 검증·테스트 — Briefing.tsx 사무소 근무 카드에 `office-duty-names`(전체 이름, 줄바꿈), model.mjs patrolSummary 역순 기간 거부. 검사: patrol-observations.test, desktop-list-smoke
 
 ## 재개 위치
-Codex 검증: (1) desktop/recovery.cjs `notify`·desktop/main.cjs `take-notice`(전달 후 비움)·src/main.tsx 시작/복원 후 경고와 tests/desktop-notice-smoke.cjs(패키지 EXE 단계에도 추가), (2) Calendar.tsx `tabKeys`·tabpanel 연결·주간 통제 버튼, (3) Briefing.tsx `office-duty-names`, model.mjs patrolSummary 역순 거부. Windows에서 `.last-good.tmp` 디렉터리 방식으로 보호본 실패가 재현되는지(패키지 단계) 확인.
+2026-10-18 Codex가 기준 ad40b18에서 독립 검증 승인. [독립 검토 기록](../reviews/2026-10-18-codex-panel.md)과 TASK-REVIEW-PANEL-01 브랜치의 증빙 문서를 통합한다. main 병합 전이므로 review 유지. 다음 구현 후보는 TASK-EDITOR-01이다.
 
 ## 테스트 상태
 Linux Node 22(2026-10-17): `npm test` 82/82 통과, `npm run test:desktop` 8개 스모크 전체 통과(새 desktop-notice-smoke 포함), `PARK_REVIEW_ZOOM=1 PARK_REVIEW_STRICT=1 node tests/ui-review.cjs` 142 검사 실패 0·외부 요청 0. Node 24·Windows Actions는 PR #1에서 확인 필요.
 
 ## 검증 기록
+
+### Codex 독립 검증 — 2026-10-18
+
+기준 `ad40b1863ec5373f3fb9de92c94e625b3c777f71`, Node24.19.0. npm test89/89, test:desktop 전체7진입점(콘솔8시나리오) 통과, UI142·오류0·외부요청0, 업무흐름11/11. 세 분야 독립 검토와 오류 주입/시간대/실제 앱 검사를 거쳐 완료 조건 승인. [Windows39102593618](https://github.com/Recon987/AI-Coding/actions/runs/39102593618)의 동일 소스·패키지 각 PASS도 확인. 새 차단 결함 없음. 이전 Node22·중간 실패 기록은 당시 증빙으로 보존하며 현재 판정은 이 기록을 따른다.

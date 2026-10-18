@@ -114,7 +114,7 @@ function counter(page) {
       await t.fill(page.getByLabel("현장 조치"), "출입금지 안내");
       await t.click(sheet().getByRole("button", { name: "순찰 저장", exact: true }));
       await page.getByRole("heading", { name: "오후 계곡 순찰", exact: true }).waitFor();
-      return "구간·기록자를 매번 직접 입력. 순찰 종류·위반 유형 선택지가 없어 '샛길 계도'는 자유 텍스트로만 남음";
+      return "제목·구간·기록자 등을 직접 입력하는 비교 기준. 기본값·단속 유형 선택·복사 입력은 T2b/T2c에서 별도 확인";
     });
 
     await task("T3", "방금 순찰에서 인수인계 만들기(담당·마감)", async (t) => {

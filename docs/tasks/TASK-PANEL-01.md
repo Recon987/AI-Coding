@@ -34,10 +34,14 @@ updated: 2026-10-18
 - [x] 5. 기록(loop-log 5주기, handoff, 다음 주기 카드 6장: EDITOR-01·DATES-01·LABELS-01·SCHEMA-01·A11Y-02·LIST-02)
 
 ## 재개 위치
-Codex 검증: docs/reviews/2026-10-18-panel.md '합의안'·'3차' 표와 커밋 32ad74f~12e7b62 대조. 핵심 확인: (1) shared/model.mjs `utcDayBefore` 읽기 여유 하루와 Calendar 편집기 엄격 검사, (2) desktop/store.cjs `withRetry`·`isTransientLock`·`retry.wait`와 desktop/recovery.cjs 잠금 다시 시도(Windows 실기기 미검증), (3) shared/search.mjs, (4) ListRow sr-only 이름·Office 근무표 셀, (5) briefing 근무·당직/전날 단속 절, (6) Patrols.tsx `prefillOf`·`newPatrolDraft`·`patrolAutoTitle`. Node 24에서 npm test·test:desktop 재실행.
+2026-10-18 Codex가 기준 ad40b18에서 독립 검증 승인. [독립 검토 기록](../reviews/2026-10-18-codex-panel.md)과 TASK-REVIEW-PANEL-01 브랜치의 증빙 문서를 통합한다. main 병합 전이므로 review 유지. 다음 구현 후보는 TASK-EDITOR-01이다.
 
 ## 테스트 상태
 12e7b62 기준 Linux Node 22: `npm test` 89/89, `npm run test:desktop` 8개 스모크 통과, review:flows 11개 완료(T2c 복사 입력 3클릭·1칸·5자 vs T2 5·6·39), review:ui strict+zoom 142·실패 0(0a958a2 기준). Windows Actions: 32ad74f 실패(store 테스트 기대값, 547d746에서 수정), 547d746~a2d81e3 성공, 12e7b62 실패(desktop-list-smoke 달력 탭 포커스 확인이 requestAnimationFrame 전에 실행된 경합 — 기능 결함 아님, 대기형 확인으로 수정), 이후는 PR #1에서 확인.
 
 ## 검증 기록
 - 2026-10-18 역할 내 교차 재검토(3차, 구현자와 다른 역할 에이전트): 안전 5/5 승인, 접근성 A1 승인·D2 수정, 현장 D1 승인·D2 수정, UX 4 승인·4 수정, 코드 3 승인·3 수정 → a2d81e3·12e7b62에서 반영. **카드 검증자(Codex) 검증은 아직 없음.**
+
+### Codex 독립 검증 — 2026-10-18
+
+기준 `ad40b1863ec5373f3fb9de92c94e625b3c777f71`, Node24.19.0. npm test89/89, test:desktop 전체7진입점(콘솔8시나리오) 통과, UI142·오류0·외부요청0, 업무흐름11/11. 세 분야 독립 검토와 오류 주입/시간대/실제 앱 검사를 거쳐 완료 조건 승인. [Windows39102593618](https://github.com/Recon987/AI-Coding/actions/runs/39102593618)의 동일 소스·패키지 각 PASS도 확인. 새 차단 결함 없음. 이전 Node22·중간 실패 기록은 당시 증빙으로 보존하며 현재 판정은 이 기록을 따른다.

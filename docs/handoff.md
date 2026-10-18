@@ -10,19 +10,19 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
-- **Task Card**: TASK-PANEL-01 review(검증자 codex) — 5개 역할 교차 검토 5주기. TASK-POLISH-01 review(codex). 그 외 review 16장 승인 기록 있음. 다음 주기 backlog: EDITOR-01(P1)·SCHEMA-01(P1, 사용자 승인 필요)·DATES-01·LABELS-01·A11Y-02·LIST-02
-- **Latest Pushed Commit**: 12e7b62 - fix(TASK-PANEL-01): code-review fixes (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: [검토 문서](reviews/2026-10-18-panel.md) 1차 40건·2차 교차·합의·3차 재검토. 구현: shared/model.mjs(utcDayBefore, briefing 근무·당직/전날 단속, patrolAutoTitle, newPatrolDraft), shared/search.mjs(신규), desktop/store.cjs(withRetry·isTransientLock·retry, 백업 새 이름), desktop/recovery.cjs(잠금 다시 시도, 단일 읽기 경로), src/components/{ListRow,Office,Patrols,Personal,Calendar,Tasks}.tsx, src/main.tsx, src/style.css, tests(search·recovery·recurrence-timezone·office·patrol-observations·store·desktop-list/smoke/confirm·task-flows T2c)
-- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. 읽기 검증의 반복 종료일은 시작 UTC 날짜-1일까지 허용(편집기는 지역 날짜 엄격). store 모듈 export에 isTransientLock·retry 추가. 메모·일정 편집이 모르는 필드를 보존. 브리핑 TXT에 '근무·당직'(당직자 이름만)·'전날 단속·확인' 절 추가
-- **Test Status**: Linux Node 22: npm test 89/89, npm run test:desktop 8개 통과, review:flows 11개 완료, review:ui strict+zoom 142·실패 0. Windows Actions는 PR #1 최신 head에서 확인 필요(32ad74f 실패는 547d746에서 수정)
-- **Remaining Work for Gemini**: 한국어 작업 기록은 docs/work-log/2026-10-17-18-claude.md. Codex: PANEL-01·POLISH-01 검증. 사용자: PR #1 main 병합 승인, '추가/등록' 용어, 월요일 브리핑 주말 합계 여부, SCHEMA-01(minReader) 승인, 양식 질문 4개
-- **Modified Code Snippets (if uncommitted)**: 없음
+- **Repository & Branch**: Recon987/AI-Coding (task/task-review-panel-01 / 기준 Claude ad40b18 / main 미병합)
+- **Task Card**: TASK-REVIEW-PANEL-01 review. TASK-PANEL-01·POLISH-01은 Codex 독립 검증 승인. 총괄이 증빙을 통합.
+- **Latest Pushed Commit**: 1773bae - wip(TASK-REVIEW-PANEL-01): Claude 최신 개선 검증 착수 (작성 직전 원격, 최종 해시는 응답/git log)
+- **Completed Steps & Modified Files**: 두 원 카드·기존 통합 카드 재개 위치, 검토 기록·검증·한국어 작업 기록·README·화면 증빙. task-flows의 오래된 해설 정정. 앱 코드는 ad40b18과 동일.
+- **Changed Interfaces / Schema Diff**: 이번 검증 변경 없음. 기존 v3·IPC·오프라인/격리 유지.
+- **Test Status**: Node24 npm test89/89·test:desktop7진입점·UI142/오류0/외부요청0·흐름11/11. 독립 자료33·모델17·정상자료600시간대조합 통과. 동일 소스 Windows39102593618 성공·각 PASS 확인.
+- **Remaining Work for Gemini**: Claude가 검증 증빙 PR 통합 및 원 PR #1 병합 절차 진행. PR #2 병합됨, #3 내용도 원본 포함(열린 상태 정리). 다음 후보 EDITOR-01. 기관 PC·스키마/암호화·서식 결정 별도.
+- **Modified Code Snippets (if uncommitted)**: 검증 증빙과 해설 수정은 즉시 커밋·푸시. 앱 실행 코드 변경 없음.
 ```
 
 ## 2. 과제 현황
 
-`npm run board`가 우선순위·담당·재개 위치를 출력한다. 이 문서에 백로그를 따로 적지 않는다(이중 기록 금지). 2026-10-16: Claude의14개 review 카드를 Codex가 검증했다. 원본에서 누락된 오류 경로는 TASK-REVIEW-CLAUDE-01에서 보완했으며 총괄 통합 전 상태를 유지한다. 후속 TASK-CALENDAR-02도 구현·교차검토·Windows 소스/패키지 검증을 마쳐 review다. PR #3 → #2 → #1 순으로 통합한다. 이후 순서는 보드와 해당 카드의 재개 위치를 따른다.
+`npm run board`가 우선순위·담당·재개 위치를 출력한다. 이 문서에 백로그를 복제하지 않는다. 2026-10-18: 기존 검증·회차 관리는 Claude 원 브랜치에 통합됐다(PR #2 병합, PR #3 내용 포함). Claude의 POLISH-01·PANEL-01도 Codex가 ad40b18에서 독립 검증 승인했다. main 병합 전이므로 review 상태 유지. 최신 재개 위치는 TASK-REVIEW-PANEL-01 및 두 원 카드 참조.
 
 ## 3. 작업 시작·종료
 
@@ -45,3 +45,7 @@ Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-
 ## TASK-CALENDAR-02 검증 브랜치
 
 소스 `4a10c2c`, [PR #3](https://github.com/Recon987/AI-Coding/pull/3), [Windows 성공](https://github.com/Recon987/AI-Coding/actions/runs/38898226246), [v0.7.0 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/38898226246/artifacts/12044503916). [모델 계약·독립 검토·실제 화면](reviews/2026-10-16-calendar02.md). 문서 증빙 후속 커밋은 실행 코드를 바꾸지 않는다.
+
+## Claude 최신 개선 독립 검증
+
+기준 ad40b18, [Windows 성공](https://github.com/Recon987/AI-Coding/actions/runs/39102593618), [최신 검증 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39102593618/artifacts/12127536294). [세 분야 검토·화면](reviews/2026-10-18-codex-panel.md), [한국어 작업 기록](work-log/2026-10-18-codex.md).

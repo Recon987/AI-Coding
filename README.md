@@ -10,6 +10,12 @@
 
 Codex·Gemini·Claude가 역할을 나눠 과제 카드 단위로 작업합니다. 현황은 `npm run board`, 절차는 [에이전트 운영 체계](docs/orchestration/README.md)를 확인하세요.
 
+## 최근 개선과 독립 검증 (2026-10-18)
+
+순찰은 마지막 추가 기록의 기록자·종류·담당구역을 기본값으로 가져오며 출처를 표시합니다. **이 기록으로 새 순찰**은 구간도 이어받고 확인 사항·조치·좌표·단속 건은 비워 둡니다. 제목을 비우면 종류·구역·시각으로 만듭니다. 검색은 화면과 통합 검색에서 같은 기준을 사용합니다.
+
+브리핑 TXT에는 당직자와 근무 인원, 전날 단속 집계를 포함합니다. 보호본 생성 실패는 화면에서 안내하고, 달력 보기 탭은 방향키로 이동할 수 있습니다. [세 분야 독립 검토와 실제 화면](docs/reviews/2026-10-18-codex-panel.md)을 확인하세요.
+
 ## 반복 일정 회차 관리 (`TASK-CALENDAR-02`)
 
 달력의 월간·주간·목록 보기에서 **회차 완료**를 누르면 선택한 날짜만 완료하고 다음 회차의 알림은 유지합니다. **이번 회차 제외**는 해당 날짜를 달력·브리핑·알림에서 빼며, 달력 위 **제외 회차 관리**에서 복원할 수 있습니다. 완료했던 회차를 제외했다 복원하면 완료 상태를 유지합니다. 제목·시각·반복 규칙 수정은 전체 반복 일정에 적용됩니다.
@@ -101,7 +107,7 @@ DD 원본만 저장하고 DMS 초는 소수 6자리까지 계산합니다(자리
 
 ## Windows에서 확인하기
 
-검증 브랜치 v0.7.0의 Windows 소스·패키징된 앱 검사 완료: [설치형·portable 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38898226246/artifacts/12044503916). GitHub 로그인 필요, 보관 14일. [PR #3](https://github.com/Recon987/AI-Coding/pull/3)의 시험용 빌드이며 main에는 아직 병합하지 않았습니다.
+검증 브랜치 v0.7.0의 Windows 소스·패키징된 앱 검사 완료: [설치형·portable 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/39102593618/artifacts/12127536294). GitHub 로그인 필요, 보관 14일. Claude [PR #1](https://github.com/Recon987/AI-Coding/pull/1)의 ad40b18 검증 빌드이며 main에는 아직 병합하지 않았습니다.
 
 회사 네트워크에서 개발용 패키지를 설치할 필요가 없도록 [Windows 빌드](https://github.com/Recon987/AI-Coding/actions/workflows/windows-build.yml)를 준비했습니다.
 

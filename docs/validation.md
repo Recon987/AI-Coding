@@ -1,5 +1,11 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## TASK-POLISH-01·TASK-PANEL-01 / Codex 최신 독립 검증
+
+Claude ad40b18을 Node24.19.0에서 재검증했다. npm test **89/89**, npm run test:desktop 전체7진입점(콘솔8시나리오), 화면142개/오류0/외부요청0, 업무흐름11/11 모두 통과. 자료33개·모델17개·정상자료600개 시간대 교차·별도 실제 Electron의 입력/초안/달력 탭 검토도 승인. [상세 검토·화면·제약](reviews/2026-10-18-codex-panel.md).
+
+동일 ad40b18의 [Windows39102593618](https://github.com/Recon987/AI-Coding/actions/runs/39102593618) 성공과 각 소스/패키지 스모크 PASS를 로그로 확인했다. 단위89·NSIS/portable·SHA256SUMS·업로드 포함. [v0.7.0 최신 검증 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39102593618/artifacts/12127536294). 이 검증 브랜치는 앱 코드를 바꾸지 않으며 카드·증빙·과업 해설만 수정한다. main은 아직 미병합.
+
 ## v0.7.0 / TASK-CALENDAR-02 (검증 브랜치, main 미병합)
 
 Node24 npm test **81/81**, npm run test:desktop **전체 통과**. 회차별 완료·제외/복원·다음 회차 알림·브리핑 TXT·기존 전체완료 해제·반복 해제 취소·초안/저장 실패·지연 저장 입력 잠금·백업 복원·재실행을 실제 Electron에서 확인했다. 전용 모델11개 UTC/서울/뉴욕 통과, 최종 희소 배열/과거 제외일 보완 후 세 시간대 모두 재검증. UI142/오류0/외부요청0, 업무흐름10/10. [교차 검토와 실제 화면](reviews/2026-10-16-calendar02.md). Windows 소스 `4a10c2cb4f5dfc1eb7f540b7feb7085218b7908e`의 [Actions38898226246](https://github.com/Recon987/AI-Coding/actions/runs/38898226246) 성공(2분47초): 81개·소스 Electron 전체·NSIS/portable 생성·패키징된 EXE 회차/기존 스모크·SHA256SUMS·업로드. 각 스모크 PASS를 로그에서 확인했다. 시작 복구는 소스 검사에 포함되며 패키징 EXE에서는 -r 주입 미지원으로 제외한다. [v0.7.0 시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/38898226246/artifacts/12044503916), GitHub 로그인·보관14일. 이 결과를 기록하는 후속 커밋은 문서만 바꾼다.
