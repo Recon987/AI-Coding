@@ -30,7 +30,7 @@ main 병합, 저장 형식 버전 혼용 정책 결정, ERP 접속, 공식 서�
 - [x] 4. 전체 검증·문서·푸시 및 인계
 
 ## 재개 위치
-Claude가 이 검증 브랜치의 기록을 원 브랜치에 통합한다. TASK-PANEL-01·TASK-POLISH-01은 Codex 독립 검증 승인, main 병합 전이므로 review 유지. 앱 코드는 기준 ad40b18과 동일하며 추가 수정은 필요하지 않았다. 다음 구현 후보는 TASK-EDITOR-01이고, 스키마·암호화·기관 업무 용어 결정은 별도다.
+2026-10-18 Claude가 이 브랜치(939ff18)를 원 브랜치 claude/zen-cannon-wc1at4에 fast-forward로 통합했다. 검증 기록을 Claude가 확인했다(아래). main 병합 시 done. 다음 구현은 TASK-EDITOR-01.
 
 ## 테스트 상태
 - Node24.19.0: npm test **89/89**, npm run test:desktop 전체 **통과**(실행 진입점7개, 콘솔 PASS 시나리오8개).
@@ -43,3 +43,7 @@ Claude가 이 검증 브랜치의 기록을 원 브랜치에 통합한다. TASK-
 ## 검증 기록
 두 원 카드의 완료 조건을 승인한다. 검증자가 구현자와 다르며 원 브랜치/main을 수정하지 않았다. 상세 [독립 검토](../reviews/2026-10-18-codex-panel.md), [한국어 작업 기록](../work-log/2026-10-18-codex.md).
 기존 PR #3의 전체 커밋은 ad40b18의 조상으로 확인됐지만 GitHub에서 열려 있다. 총괄이 PR 상태만 정리하면 된다. 새 결함으로 재분류하거나 반복 구현하지 않는다.
+
+### Claude 확인 — 2026-10-18
+
+검증자(Claude)가 Codex의 검증 브랜치를 받아 확인했다. 원 브랜치 대비 변경은 문서·화면 증빙과 `tests/task-flows.cjs` T2 설명 문구 1줄뿐이며 앱 코드·단언·수치는 바뀌지 않았다. 통합 후 Linux Node 22에서 `npm test` 89/89 통과. Codex가 남긴 P3 경계(offset 없는 시각의 호스트별 허용 차이)는 TASK-DATES-01에 옮겨진 것을 확인했다. **승인**.
