@@ -10,19 +10,19 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-calendar-04 / 기반 task/task-review-dates-01 PR #6)
-- **Task Card**: TASK-CALENDAR-04 in-progress. 1~3단계 구현, 다음 최종 화면/Windows 검증.
-- **Latest Pushed Commit**: efb5458 - feat(TASK-CALENDAR-04): 달력 툴바와 날짜 격자 키보드 탐색 (작성 직전 원격)
-- **Completed Steps & Modified Files**: Calendar·calendar/MonthGrid/WeekView/ListView 분리, 전체 폭 툴바·900 CSS px 두 열·격자 키보드, style.css, desktop-calendar-smoke 및 npm/Windows 검사 연결, 앱0.8.0 표시.
-- **Changed Interfaces / Schema Diff**: MonthGrid 내부 focusDate/focusRequest/onFocusDate/onMoveDate/onChoose(date,focusRecords?) props. 데이터v3·IPC 변경 없음.
-- **Test Status**: npm test91/91·test:desktop9진입점 통과. UI150/오류0/외부요청0·업무흐름11/11 통과. 최종 압축 소스 Windows는 다음 단계.
-- **Remaining Work for Gemini**: 새 소스 Windows 소스/패키지 로그·다운로드 확인 및 최종 증빙. PR #7(기반 #6) 초안 작성. 독립 검증자는 Claude. 분담 에이전트 크레딧 부족 중단으로 최종 승인 미실행.
-- **Modified Code Snippets (if uncommitted)**: 구현·카드 기록은 즉시 커밋/푸시, 후속 변경은 git status 확인.
+- **Repository & Branch**: Recon987/AI-Coding (task/task-calendar-04 / 기반 PR #6, PR #7)
+- **Task Card**: TASK-CALENDAR-04 review, verifier claude. 구현·자동 검사 완료, 독립 검증부터 재개.
+- **Latest Pushed Commit**: 86bd62c - fix(TASK-CALENDAR-04): 달력 툴바 중복 줄을 줄이고 화면 검사 통과 (작성 직전 원격, 최종 증빙 해시는 응답/git log)
+- **Completed Steps & Modified Files**: Calendar·calendar/MonthGrid/WeekView/ListView 분리, 전체 폭 툴바·900 CSS px 두 열·격자 로빙/날짜 탐색/Enter·Space 기록 포커스, style.css, desktop-calendar-smoke 및 npm/Windows 검사 연결, 앱0.8.0·README/validation/검토·작업기록·전후 캡처.
+- **Changed Interfaces / Schema Diff**: MonthGrid 내부 focusDate/focusRequest/onFocusDate/onMoveDate/onChoose(date,focusRecords?) props. 데이터v3·외부IPC 변경 없음. 격자42일·선택일1일을 원본에서 각각 조회.
+- **Test Status**: npm test91/91·test:desktop9·UI150/실패0/오류0/외부요청0·업무흐름11/11 통과. 소스86bd62c Windows39128793988 성공, 소스9/패키지8 각 PASS, 단위91·NSIS/portable·SHA256SUMS·업로드. artifact12136379775.
+- **Remaining Work for Gemini**: Claude가 PR #7 독립 검증, #7→#6→#1 통합. 분담 에이전트는 크레딧 부족으로 중단되어 최종 독립 승인 미실행. 기관 실기기 화면낭독기/실제 절전/토스트 별도. 기존 사용자 정책 결정은 미확정 유지.
+- **Modified Code Snippets (if uncommitted)**: 없음. 증빙 파일은 즉시 커밋·푸시하며 최종 상태는 git status 확인.
 ```
 
 ## 2. 과제 현황
 
-`npm run board`가 우선순위·담당·재개 위치를 출력한다. 백로그를 중복 기록하지 않는다. 기존 EDITOR-01·02 보완은 Claude 원 브랜치에 통합됐다. 최신 DATES-01도 Codex가 독립 검증했고 월말 경계/Windows 검사 신뢰성을 PR #6에서 보완했다. 최종928e78e의 Windows39110892545 소스/패키지 각 PASS 확인. 최초39110532993은 중간 실패가 덮인 실행이므로 전체 통과 증빙에서 제외한다. main 병합 전 review 유지, 다음 후보 CALENDAR-04.
+`npm run board`가 우선순위·담당·재개 위치를 출력한다. 백로그를 중복 기록하지 않는다. 기존 EDITOR-01·02 보완은 Claude 원 브랜치에 통합됐다. 최신 DATES-01도 Codex가 독립 검증했고 월말 경계/Windows 검사 신뢰성을 PR #6에서 보완했다. 최종928e78e의 Windows39110892545 소스/패키지 각 PASS 확인. 최초39110532993은 중간 실패가 덮인 실행이므로 전체 통과 증빙에서 제외한다. main 병합 전 review 유지. 후속 CALENDAR-04는 Codex가 PR #7에서 구현·Linux/Windows 자동 검사를 마쳐 Claude 독립 검증 대기다.
 
 ## 3. 작업 시작·종료
 
@@ -57,3 +57,7 @@ Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-
 ## DATES-01 최종 검증
 
 소스928e78e, [PR #6](https://github.com/Recon987/AI-Coding/pull/6), [Windows 성공](https://github.com/Recon987/AI-Coding/actions/runs/39110892545), [설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39110892545/artifacts/12129919918). [독립 검토·검사 신뢰성 보완](reviews/2026-10-18-codex-dates.md), [한국어 작업 기록](work-log/2026-10-18-codex-dates.md).
+
+## CALENDAR-04 검증 요청
+
+최종 소스86bd62c, [PR #7](https://github.com/Recon987/AI-Coding/pull/7), [Windows39128793988](https://github.com/Recon987/AI-Coding/actions/runs/39128793988), [v0.8.0 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39128793988/artifacts/12136379775). [초기 협의·직접 검사·전후 화면·독립 검증 상태](reviews/2026-10-18-codex-calendar04.md), [한국어 작업 기록](work-log/2026-10-18-codex-calendar04.md). Claude가 #7→#6→#1 순서로 검증·통합하며 main 병합 전 review를 유지한다.

@@ -1,5 +1,12 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## v0.8.0 / TASK-CALENDAR-04 (검증 브랜치, main 미병합)
+
+최종 소스86bd62c, [PR #7](https://github.com/Recon987/AI-Coding/pull/7). Linux Node24.19의 단위91/91, desktop9진입점, 화면150/실패0/오류0/외부요청0, 업무 흐름11/11 통과. 월/주/목록 표시 분리 후 기존 회귀부터 통과시켰고 툴바 압축 후 실제 화면/전체 desktop을 다시 검사했다. 새 달력 검사는 윤년·월말·연도·18개월 이동, 이동/선택 구분, Enter/Space 기록 포커스와 Shift+Tab 복귀, 탭·편집 취소, CSS 폭 기준2열/1열·실제125% 확대와 자료 불변을 확인한다.
+
+최종 소스86bd62c의 [Windows39128793988](https://github.com/Recon987/AI-Coding/actions/runs/39128793988) 성공. 단위91·소스9진입점·패키지8진입점의 각 PASS와 예외0을 로그로 확인했고 NSIS/portable·SHA256SUMS·업로드도 완료했다. [v0.8.0 시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39128793988/artifacts/12136379775)(GitHub 로그인·보관14일). 시작 복구는 소스에서만 실행한다. 증빙 후속 커밋은 실행 코드를 바꾸지 않는다. [역할 분담·중단 범위·전후 캡처·검토 상태](reviews/2026-10-18-codex-calendar04.md), [작업 기록](work-log/2026-10-18-codex-calendar04.md). 최종 독립 검증자는 Claude이며 에이전트 크레딧 부족으로 중단된 후속 검토를 승인으로 기록하지 않는다. 소스/자동 검사와 기관 실기기 화면낭독기·절전·OS 토스트는 구분한다.
+
+
 ## DATES-01 / Codex 날짜 계산 독립 검증
 
 기준75f04e9와 작은 월말 보완을 Node24에서 검증했다. 단위91/91을5TZ 각각, desktop8진입점·UI142/오류0/외부요청0·업무흐름11/11 통과. 독립 자료1800회 교차 읽기/원문 보존, 현대 날짜2412개, 정상 자료600개, 실제 서울/뉴욕 DST·월경계 화면 연동 승인. 0~99년 월말P3 회귀는 수정 전 실패→후 통과, 별도132개 경계 재승인. [검토 기록](reviews/2026-10-18-codex-dates.md). 원본75f04e9 Windows39107140819 성공 조회. 최초 보완39110532993은 API상 success이나 중간 패키지 검사 실패가 덮여 전체 통과로 채택하지 않았다. 각 검사 종료 코드 즉시 실패와 임시 폴더 제한 재시도/최초 오류 로깅을 보완했다. 최종928e78e의 [Windows39110892545](https://github.com/Recon987/AI-Coding/actions/runs/39110892545) 성공(2분46초): 단위91·소스8진입점·패키지7진입점 모두 각 PASS/예외0, NSIS/portable·SHA256SUMS·업로드 확인. [검증 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39110892545/artifacts/12129919918). 최종 증빙 커밋은 문서만 수정한다.

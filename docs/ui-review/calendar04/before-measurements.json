@@ -1,0 +1,2740 @@
+{
+  "stage": "dates-verified",
+  "date": "2026-10-15",
+  "fixture": {
+    "fictional": true,
+    "employees": 14,
+    "unregisteredOnReferenceDay": 2,
+    "organizations": 2,
+    "bases": 2
+  },
+  "note": "All names, records and organizations are fictional. Screenshots use a temporary profile; table-internal horizontal scrolling is allowed. Layout measurements are a review aid, not an aesthetic score.",
+  "runs": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "zoom": 1
+      },
+      "pages": {
+        "home": {
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "devicePixelRatio": 1
+          },
+          "heading": "업무 브리핑",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": {
+            "x": 241,
+            "top": 292,
+            "right": 763,
+            "bottom": 384,
+            "width": 522,
+            "height": 92
+          },
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 2
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "office-day": {
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": {
+            "x": 237,
+            "top": 299,
+            "right": 1220,
+            "bottom": 339,
+            "width": 983,
+            "height": 40
+          },
+          "employeeRows": 14,
+          "visibleEmployeeRows": 8,
+          "rowHeights": [
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52
+          ],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": [
+            {
+              "rect": {
+                "x": 237,
+                "top": 299,
+                "right": 1220,
+                "bottom": 1067,
+                "width": 983,
+                "height": 769
+              },
+              "scrollWidth": 983,
+              "clientWidth": 983
+            }
+          ]
+        },
+        "office-week": {
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": {
+            "x": 237,
+            "top": 325,
+            "right": 1220,
+            "bottom": 365,
+            "width": 983,
+            "height": 40
+          },
+          "employeeRows": 14,
+          "visibleEmployeeRows": 8,
+          "rowHeights": [
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53
+          ],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": [
+            {
+              "rect": {
+                "x": 237,
+                "top": 325,
+                "right": 1220,
+                "bottom": 1107,
+                "width": 983,
+                "height": 782
+              },
+              "scrollWidth": 983,
+              "clientWidth": 983
+            }
+          ]
+        },
+        "office-directory": {
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "patrol": {
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "devicePixelRatio": 1
+          },
+          "heading": "현장 순찰",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 6,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "notes": {
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "devicePixelRatio": 1
+          },
+          "heading": "업무 메모",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 5,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "calendar": {
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "devicePixelRatio": 1
+          },
+          "heading": "월간 일정",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 10,
+            "completeTooltips": 10,
+            "selectedRecords": 8
+          },
+          "tableScrollAreas": []
+        },
+        "empty-home": {
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "devicePixelRatio": 1
+          },
+          "heading": "업무 브리핑",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 1,
+            "primaryActions": 4,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "empty-office": {
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        }
+      },
+      "checks": [
+        {
+          "name": "home: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "home: first real work row starts at or above 300px",
+          "passed": true,
+          "details": {
+            "x": 241,
+            "top": 292,
+            "right": 763,
+            "bottom": 384,
+            "width": 522,
+            "height": 92
+          }
+        },
+        {
+          "name": "office-day: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office: table header starts at or above 330px",
+          "passed": true,
+          "details": {
+            "x": 237,
+            "top": 299,
+            "right": 1220,
+            "bottom": 339,
+            "width": 983,
+            "height": 40
+          }
+        },
+        {
+          "name": "office: at least eight full employee rows visible",
+          "passed": true,
+          "details": 8
+        },
+        {
+          "name": "office: all fictional staff retained",
+          "passed": true,
+          "details": 14
+        },
+        {
+          "name": "office-week: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office-directory: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office directory: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "patrol: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "patrol: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "patrol: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "patrol: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "순찰 기록 등록",
+              "rect": {
+                "x": 665,
+                "top": 0,
+                "right": 1265,
+                "bottom": 800,
+                "width": 600,
+                "height": 800
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "notes: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "notes: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "notes: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "notes: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "메모 작성",
+              "rect": {
+                "x": 785,
+                "top": 0,
+                "right": 1265,
+                "bottom": 800,
+                "width": 480,
+                "height": 800
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "calendar: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "calendar: titles lead the visible chip text",
+          "passed": true,
+          "details": [
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 11:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 12:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방지원센터 주변 시설 확인",
+              "tooltip": "순찰 · 13:00 · 가상 탐방지원센터 주변 시설 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 08:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 09:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 현장 안전점검 회의",
+              "tooltip": "일정 · 10:00 · 가상 현장 안전점검 회의",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방해설 프로그램 준비",
+              "tooltip": "일정 · 09:00 · 가상 탐방해설 프로그램 준비",
+              "dayName": "2026-10-16 1건, 2026. 10. 16. (금), 일정 09:00 가상 탐방해설 프로그램 준비"
+            },
+            {
+              "text": "가상 다음 주 현장지원 인력 배치 확인",
+              "tooltip": "인계 · 15:00 · 가상 다음 주 현장지원 인력 배치 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 행정자료 제출 기한 확인",
+              "tooltip": "제출 · 16:00 · 가상 행정자료 제출 기한 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 탐방안전 협의회 후속 사항 인계",
+              "tooltip": "제출 · 17:00 · 가상 탐방안전 협의회 후속 사항 인계",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            }
+          ]
+        },
+        {
+          "name": "calendar: complete titles, type and 24h time remain available",
+          "passed": true,
+          "details": [
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 11:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 12:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방지원센터 주변 시설 확인",
+              "tooltip": "순찰 · 13:00 · 가상 탐방지원센터 주변 시설 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 08:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 09:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 현장 안전점검 회의",
+              "tooltip": "일정 · 10:00 · 가상 현장 안전점검 회의",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방해설 프로그램 준비",
+              "tooltip": "일정 · 09:00 · 가상 탐방해설 프로그램 준비",
+              "dayName": "2026-10-16 1건, 2026. 10. 16. (금), 일정 09:00 가상 탐방해설 프로그램 준비"
+            },
+            {
+              "text": "가상 다음 주 현장지원 인력 배치 확인",
+              "tooltip": "인계 · 15:00 · 가상 다음 주 현장지원 인력 배치 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 행정자료 제출 기한 확인",
+              "tooltip": "제출 · 16:00 · 가상 행정자료 제출 기한 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 탐방안전 협의회 후속 사항 인계",
+              "tooltip": "제출 · 17:00 · 가상 탐방안전 협의회 후속 사항 인계",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            }
+          ]
+        },
+        {
+          "name": "calendar: a Saturday public holiday retains holiday meaning and color",
+          "passed": true,
+          "details": {
+            "holidayColor": "rgb(150, 47, 37)",
+            "fridayHolidayColor": "rgb(150, 47, 37)",
+            "saturdayColor": "rgb(52, 97, 124)"
+          }
+        },
+        {
+          "name": "calendar: keyboard can select a date",
+          "passed": true
+        },
+        {
+          "name": "calendar: selected records are focused with explicit types",
+          "passed": true,
+          "details": [
+            "순찰",
+            "순찰",
+            "순찰",
+            "인계",
+            "제출"
+          ]
+        },
+        {
+          "name": "calendar: agenda categories retain legend labels and colors",
+          "passed": true
+        },
+        {
+          "name": "calendar: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "calendar: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "calendar: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "일정 등록",
+              "rect": {
+                "x": 665,
+                "top": 0,
+                "right": 1265,
+                "bottom": 800,
+                "width": 600,
+                "height": 800
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "empty-home: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "first use: one introduction replaces empty dashboard",
+          "passed": true,
+          "details": {
+            "surfaces": 1,
+            "primaryActions": 4,
+            "oldEmptyPanels": 0
+          }
+        },
+        {
+          "name": "first use: 순찰 기록 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 253,
+            "y": 359.828125,
+            "width": 228.75,
+            "height": 153
+          }
+        },
+        {
+          "name": "first use: 순찰 기록 opens focused native dialog",
+          "passed": true,
+          "details": "순찰 기록 등록"
+        },
+        {
+          "name": "first use: 일정 등록 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 493.75,
+            "y": 359.828125,
+            "width": 228.75,
+            "height": 153
+          }
+        },
+        {
+          "name": "first use: 일정 등록 opens focused native dialog",
+          "passed": true,
+          "details": "일정 등록"
+        },
+        {
+          "name": "first use: 전화메모 작성 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 734.5,
+            "y": 359.828125,
+            "width": 228.75,
+            "height": 153
+          }
+        },
+        {
+          "name": "first use: 전화메모 작성 opens focused native dialog",
+          "passed": true,
+          "details": "전화메모 등록"
+        },
+        {
+          "name": "first use: roster action opens existing office setup",
+          "passed": true
+        },
+        {
+          "name": "first use: one memo suppresses introduction without changing data",
+          "passed": true
+        },
+        {
+          "name": "first use: completed event suppresses introduction without changing data",
+          "passed": true
+        },
+        {
+          "name": "first use: registered staff suppresses introduction without changing data",
+          "passed": true
+        },
+        {
+          "name": "empty-office: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1360,
+        "height": 900,
+        "zoom": 1
+      },
+      "pages": {
+        "home": {
+          "viewport": {
+            "width": 1360,
+            "height": 900,
+            "devicePixelRatio": 1
+          },
+          "heading": "업무 브리핑",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": {
+            "x": 241,
+            "top": 292,
+            "right": 808,
+            "bottom": 384,
+            "width": 567,
+            "height": 92
+          },
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 2
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "office-day": {
+          "viewport": {
+            "width": 1360,
+            "height": 900,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": {
+            "x": 237,
+            "top": 299,
+            "right": 1300,
+            "bottom": 339,
+            "width": 1063,
+            "height": 40
+          },
+          "employeeRows": 14,
+          "visibleEmployeeRows": 10,
+          "rowHeights": [
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52
+          ],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": [
+            {
+              "rect": {
+                "x": 237,
+                "top": 299,
+                "right": 1300,
+                "bottom": 1067,
+                "width": 1063,
+                "height": 769
+              },
+              "scrollWidth": 1063,
+              "clientWidth": 1063
+            }
+          ]
+        },
+        "office-week": {
+          "viewport": {
+            "width": 1360,
+            "height": 900,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": {
+            "x": 237,
+            "top": 325,
+            "right": 1300,
+            "bottom": 365,
+            "width": 1063,
+            "height": 40
+          },
+          "employeeRows": 14,
+          "visibleEmployeeRows": 10,
+          "rowHeights": [
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53
+          ],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": [
+            {
+              "rect": {
+                "x": 237,
+                "top": 325,
+                "right": 1300,
+                "bottom": 1107,
+                "width": 1063,
+                "height": 782
+              },
+              "scrollWidth": 1063,
+              "clientWidth": 1063
+            }
+          ]
+        },
+        "office-directory": {
+          "viewport": {
+            "width": 1360,
+            "height": 900,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "patrol": {
+          "viewport": {
+            "width": 1360,
+            "height": 900,
+            "devicePixelRatio": 1
+          },
+          "heading": "현장 순찰",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 6,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "notes": {
+          "viewport": {
+            "width": 1360,
+            "height": 900,
+            "devicePixelRatio": 1
+          },
+          "heading": "업무 메모",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 5,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "calendar": {
+          "viewport": {
+            "width": 1360,
+            "height": 900,
+            "devicePixelRatio": 1
+          },
+          "heading": "월간 일정",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 10,
+            "completeTooltips": 10,
+            "selectedRecords": 8
+          },
+          "tableScrollAreas": []
+        },
+        "empty-home": {
+          "viewport": {
+            "width": 1360,
+            "height": 900,
+            "devicePixelRatio": 1
+          },
+          "heading": "업무 브리핑",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 1,
+            "primaryActions": 4,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "empty-office": {
+          "viewport": {
+            "width": 1360,
+            "height": 900,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        }
+      },
+      "checks": [
+        {
+          "name": "home: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office-day: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office: all fictional staff retained",
+          "passed": true,
+          "details": 14
+        },
+        {
+          "name": "office-week: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office-directory: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office directory: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "patrol: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "patrol: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "patrol: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "patrol: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "순찰 기록 등록",
+              "rect": {
+                "x": 745,
+                "top": 0,
+                "right": 1345,
+                "bottom": 900,
+                "width": 600,
+                "height": 900
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "notes: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "notes: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "notes: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "notes: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "메모 작성",
+              "rect": {
+                "x": 865,
+                "top": 0,
+                "right": 1345,
+                "bottom": 900,
+                "width": 480,
+                "height": 900
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "calendar: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "calendar: titles lead the visible chip text",
+          "passed": true,
+          "details": [
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 11:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 12:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방지원센터 주변 시설 확인",
+              "tooltip": "순찰 · 13:00 · 가상 탐방지원센터 주변 시설 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 08:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 09:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 현장 안전점검 회의",
+              "tooltip": "일정 · 10:00 · 가상 현장 안전점검 회의",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방해설 프로그램 준비",
+              "tooltip": "일정 · 09:00 · 가상 탐방해설 프로그램 준비",
+              "dayName": "2026-10-16 1건, 2026. 10. 16. (금), 일정 09:00 가상 탐방해설 프로그램 준비"
+            },
+            {
+              "text": "가상 다음 주 현장지원 인력 배치 확인",
+              "tooltip": "인계 · 15:00 · 가상 다음 주 현장지원 인력 배치 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 행정자료 제출 기한 확인",
+              "tooltip": "제출 · 16:00 · 가상 행정자료 제출 기한 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 탐방안전 협의회 후속 사항 인계",
+              "tooltip": "제출 · 17:00 · 가상 탐방안전 협의회 후속 사항 인계",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            }
+          ]
+        },
+        {
+          "name": "calendar: complete titles, type and 24h time remain available",
+          "passed": true,
+          "details": [
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 11:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 12:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방지원센터 주변 시설 확인",
+              "tooltip": "순찰 · 13:00 · 가상 탐방지원센터 주변 시설 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 08:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 09:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 현장 안전점검 회의",
+              "tooltip": "일정 · 10:00 · 가상 현장 안전점검 회의",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방해설 프로그램 준비",
+              "tooltip": "일정 · 09:00 · 가상 탐방해설 프로그램 준비",
+              "dayName": "2026-10-16 1건, 2026. 10. 16. (금), 일정 09:00 가상 탐방해설 프로그램 준비"
+            },
+            {
+              "text": "가상 다음 주 현장지원 인력 배치 확인",
+              "tooltip": "인계 · 15:00 · 가상 다음 주 현장지원 인력 배치 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 행정자료 제출 기한 확인",
+              "tooltip": "제출 · 16:00 · 가상 행정자료 제출 기한 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 탐방안전 협의회 후속 사항 인계",
+              "tooltip": "제출 · 17:00 · 가상 탐방안전 협의회 후속 사항 인계",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            }
+          ]
+        },
+        {
+          "name": "calendar: a Saturday public holiday retains holiday meaning and color",
+          "passed": true,
+          "details": {
+            "holidayColor": "rgb(150, 47, 37)",
+            "fridayHolidayColor": "rgb(150, 47, 37)",
+            "saturdayColor": "rgb(52, 97, 124)"
+          }
+        },
+        {
+          "name": "calendar: keyboard can select a date",
+          "passed": true
+        },
+        {
+          "name": "calendar: selected records are focused with explicit types",
+          "passed": true,
+          "details": [
+            "순찰",
+            "순찰",
+            "순찰",
+            "인계",
+            "제출"
+          ]
+        },
+        {
+          "name": "calendar: agenda categories retain legend labels and colors",
+          "passed": true
+        },
+        {
+          "name": "calendar: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "calendar: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "calendar: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "일정 등록",
+              "rect": {
+                "x": 745,
+                "top": 0,
+                "right": 1345,
+                "bottom": 900,
+                "width": 600,
+                "height": 900
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "empty-home: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "first use: one introduction replaces empty dashboard",
+          "passed": true,
+          "details": {
+            "surfaces": 1,
+            "primaryActions": 4,
+            "oldEmptyPanels": 0
+          }
+        },
+        {
+          "name": "first use: 순찰 기록 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 253,
+            "y": 359.828125,
+            "width": 248.75,
+            "height": 153
+          }
+        },
+        {
+          "name": "first use: 순찰 기록 opens focused native dialog",
+          "passed": true,
+          "details": "순찰 기록 등록"
+        },
+        {
+          "name": "first use: 일정 등록 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 513.75,
+            "y": 359.828125,
+            "width": 248.75,
+            "height": 153
+          }
+        },
+        {
+          "name": "first use: 일정 등록 opens focused native dialog",
+          "passed": true,
+          "details": "일정 등록"
+        },
+        {
+          "name": "first use: 전화메모 작성 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 774.5,
+            "y": 359.828125,
+            "width": 248.75,
+            "height": 153
+          }
+        },
+        {
+          "name": "first use: 전화메모 작성 opens focused native dialog",
+          "passed": true,
+          "details": "전화메모 등록"
+        },
+        {
+          "name": "first use: roster action opens existing office setup",
+          "passed": true
+        },
+        {
+          "name": "empty-office: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 960,
+        "height": 680,
+        "zoom": 1
+      },
+      "pages": {
+        "home": {
+          "viewport": {
+            "width": 960,
+            "height": 680,
+            "devicePixelRatio": 1
+          },
+          "heading": "업무 브리핑",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": {
+            "x": 229,
+            "top": 335,
+            "right": 900,
+            "bottom": 427,
+            "width": 671,
+            "height": 92
+          },
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 2
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "office-day": {
+          "viewport": {
+            "width": 960,
+            "height": 680,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": {
+            "x": 225,
+            "top": 347,
+            "right": 985,
+            "bottom": 387,
+            "width": 760,
+            "height": 40
+          },
+          "employeeRows": 14,
+          "visibleEmployeeRows": 5,
+          "rowHeights": [
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52
+          ],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": [
+            {
+              "rect": {
+                "x": 225,
+                "top": 347,
+                "right": 904,
+                "bottom": 1125,
+                "width": 679,
+                "height": 779
+              },
+              "scrollWidth": 760,
+              "clientWidth": 679
+            }
+          ]
+        },
+        "office-week": {
+          "viewport": {
+            "width": 960,
+            "height": 680,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": {
+            "x": 225,
+            "top": 373,
+            "right": 1025,
+            "bottom": 413,
+            "width": 800,
+            "height": 40
+          },
+          "employeeRows": 14,
+          "visibleEmployeeRows": 5,
+          "rowHeights": [
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53
+          ],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": [
+            {
+              "rect": {
+                "x": 225,
+                "top": 373,
+                "right": 904,
+                "bottom": 1165,
+                "width": 679,
+                "height": 792
+              },
+              "scrollWidth": 800,
+              "clientWidth": 679
+            }
+          ]
+        },
+        "office-directory": {
+          "viewport": {
+            "width": 960,
+            "height": 680,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "patrol": {
+          "viewport": {
+            "width": 960,
+            "height": 680,
+            "devicePixelRatio": 1
+          },
+          "heading": "현장 순찰",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 6,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "notes": {
+          "viewport": {
+            "width": 960,
+            "height": 680,
+            "devicePixelRatio": 1
+          },
+          "heading": "업무 메모",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 5,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "calendar": {
+          "viewport": {
+            "width": 960,
+            "height": 680,
+            "devicePixelRatio": 1
+          },
+          "heading": "월간 일정",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 10,
+            "completeTooltips": 10,
+            "selectedRecords": 8
+          },
+          "tableScrollAreas": []
+        },
+        "empty-home": {
+          "viewport": {
+            "width": 960,
+            "height": 680,
+            "devicePixelRatio": 1
+          },
+          "heading": "업무 브리핑",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 1,
+            "primaryActions": 4,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "empty-office": {
+          "viewport": {
+            "width": 960,
+            "height": 680,
+            "devicePixelRatio": 1
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        }
+      },
+      "checks": [
+        {
+          "name": "home: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office-day: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office: all fictional staff retained",
+          "passed": true,
+          "details": 14
+        },
+        {
+          "name": "office-week: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office-directory: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office directory: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "patrol: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "patrol: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "patrol: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "patrol: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "순찰 기록 등록",
+              "rect": {
+                "x": 345,
+                "top": 0,
+                "right": 945,
+                "bottom": 680,
+                "width": 600,
+                "height": 680
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "notes: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "notes: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "notes: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "notes: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "메모 작성",
+              "rect": {
+                "x": 465,
+                "top": 0,
+                "right": 945,
+                "bottom": 680,
+                "width": 480,
+                "height": 680
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "calendar: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "calendar: titles lead the visible chip text",
+          "passed": true,
+          "details": [
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 11:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 12:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방지원센터 주변 시설 확인",
+              "tooltip": "순찰 · 13:00 · 가상 탐방지원센터 주변 시설 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 08:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 09:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 현장 안전점검 회의",
+              "tooltip": "일정 · 10:00 · 가상 현장 안전점검 회의",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방해설 프로그램 준비",
+              "tooltip": "일정 · 09:00 · 가상 탐방해설 프로그램 준비",
+              "dayName": "2026-10-16 1건, 2026. 10. 16. (금), 일정 09:00 가상 탐방해설 프로그램 준비"
+            },
+            {
+              "text": "가상 다음 주 현장지원 인력 배치 확인",
+              "tooltip": "인계 · 15:00 · 가상 다음 주 현장지원 인력 배치 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 행정자료 제출 기한 확인",
+              "tooltip": "제출 · 16:00 · 가상 행정자료 제출 기한 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 탐방안전 협의회 후속 사항 인계",
+              "tooltip": "제출 · 17:00 · 가상 탐방안전 협의회 후속 사항 인계",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            }
+          ]
+        },
+        {
+          "name": "calendar: complete titles, type and 24h time remain available",
+          "passed": true,
+          "details": [
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 11:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 12:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방지원센터 주변 시설 확인",
+              "tooltip": "순찰 · 13:00 · 가상 탐방지원센터 주변 시설 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 08:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 09:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 현장 안전점검 회의",
+              "tooltip": "일정 · 10:00 · 가상 현장 안전점검 회의",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방해설 프로그램 준비",
+              "tooltip": "일정 · 09:00 · 가상 탐방해설 프로그램 준비",
+              "dayName": "2026-10-16 1건, 2026. 10. 16. (금), 일정 09:00 가상 탐방해설 프로그램 준비"
+            },
+            {
+              "text": "가상 다음 주 현장지원 인력 배치 확인",
+              "tooltip": "인계 · 15:00 · 가상 다음 주 현장지원 인력 배치 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 행정자료 제출 기한 확인",
+              "tooltip": "제출 · 16:00 · 가상 행정자료 제출 기한 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 탐방안전 협의회 후속 사항 인계",
+              "tooltip": "제출 · 17:00 · 가상 탐방안전 협의회 후속 사항 인계",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            }
+          ]
+        },
+        {
+          "name": "calendar: a Saturday public holiday retains holiday meaning and color",
+          "passed": true,
+          "details": {
+            "holidayColor": "rgb(150, 47, 37)",
+            "fridayHolidayColor": "rgb(150, 47, 37)",
+            "saturdayColor": "rgb(52, 97, 124)"
+          }
+        },
+        {
+          "name": "calendar: keyboard can select a date",
+          "passed": true
+        },
+        {
+          "name": "calendar: selected records are focused with explicit types",
+          "passed": true,
+          "details": [
+            "순찰",
+            "순찰",
+            "순찰",
+            "인계",
+            "제출"
+          ]
+        },
+        {
+          "name": "calendar: agenda categories retain legend labels and colors",
+          "passed": true
+        },
+        {
+          "name": "calendar: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "calendar: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "calendar: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "일정 등록",
+              "rect": {
+                "x": 345,
+                "top": 0,
+                "right": 945,
+                "bottom": 680,
+                "width": 600,
+                "height": 680
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "empty-home: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "first use: one introduction replaces empty dashboard",
+          "passed": true,
+          "details": {
+            "surfaces": 1,
+            "primaryActions": 4,
+            "oldEmptyPanels": 0
+          }
+        },
+        {
+          "name": "first use: 순찰 기록 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 241,
+            "y": 357.828125,
+            "width": 317.5,
+            "height": 132
+          }
+        },
+        {
+          "name": "first use: 순찰 기록 opens focused native dialog",
+          "passed": true,
+          "details": "순찰 기록 등록"
+        },
+        {
+          "name": "first use: 일정 등록 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 570.5,
+            "y": 357.828125,
+            "width": 317.5,
+            "height": 132
+          }
+        },
+        {
+          "name": "first use: 일정 등록 opens focused native dialog",
+          "passed": true,
+          "details": "일정 등록"
+        },
+        {
+          "name": "first use: 전화메모 작성 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 241,
+            "y": 501.828125,
+            "width": 317.5,
+            "height": 132
+          }
+        },
+        {
+          "name": "first use: 전화메모 작성 opens focused native dialog",
+          "passed": true,
+          "details": "전화메모 등록"
+        },
+        {
+          "name": "first use: roster action opens existing office setup",
+          "passed": true
+        },
+        {
+          "name": "empty-office: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "zoom": 1.25
+      },
+      "pages": {
+        "home": {
+          "viewport": {
+            "width": 1024,
+            "height": 640,
+            "devicePixelRatio": 1.25
+          },
+          "heading": "업무 브리핑",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": {
+            "x": 237,
+            "top": 333,
+            "right": 620,
+            "bottom": 448,
+            "width": 383,
+            "height": 115
+          },
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 2
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "office-day": {
+          "viewport": {
+            "width": 1024,
+            "height": 640,
+            "devicePixelRatio": 1.25
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": {
+            "x": 233,
+            "top": 295,
+            "right": 993,
+            "bottom": 335,
+            "width": 760,
+            "height": 40
+          },
+          "employeeRows": 14,
+          "visibleEmployeeRows": 5,
+          "rowHeights": [
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52,
+            52
+          ],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": [
+            {
+              "rect": {
+                "x": 233,
+                "top": 295,
+                "right": 971,
+                "bottom": 1071,
+                "width": 738,
+                "height": 776
+              },
+              "scrollWidth": 760,
+              "clientWidth": 738
+            }
+          ]
+        },
+        "office-week": {
+          "viewport": {
+            "width": 1024,
+            "height": 640,
+            "devicePixelRatio": 1.25
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": {
+            "x": 233,
+            "top": 321,
+            "right": 1033,
+            "bottom": 361,
+            "width": 800,
+            "height": 40
+          },
+          "employeeRows": 14,
+          "visibleEmployeeRows": 5,
+          "rowHeights": [
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53,
+            53
+          ],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": [
+            {
+              "rect": {
+                "x": 233,
+                "top": 321,
+                "right": 971,
+                "bottom": 1108,
+                "width": 738,
+                "height": 787
+              },
+              "scrollWidth": 800,
+              "clientWidth": 738
+            }
+          ]
+        },
+        "office-directory": {
+          "viewport": {
+            "width": 1024,
+            "height": 640,
+            "devicePixelRatio": 1.25
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "patrol": {
+          "viewport": {
+            "width": 1024,
+            "height": 640,
+            "devicePixelRatio": 1.25
+          },
+          "heading": "현장 순찰",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 6,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "notes": {
+          "viewport": {
+            "width": 1024,
+            "height": 640,
+            "devicePixelRatio": 1.25
+          },
+          "heading": "업무 메모",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 5,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "calendar": {
+          "viewport": {
+            "width": 1024,
+            "height": 640,
+            "devicePixelRatio": 1.25
+          },
+          "heading": "월간 일정",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 10,
+            "completeTooltips": 10,
+            "selectedRecords": 8
+          },
+          "tableScrollAreas": []
+        },
+        "empty-home": {
+          "viewport": {
+            "width": 1024,
+            "height": 640,
+            "devicePixelRatio": 1.25
+          },
+          "heading": "업무 브리핑",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 1,
+            "primaryActions": 4,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        },
+        "empty-office": {
+          "viewport": {
+            "width": 1024,
+            "height": 640,
+            "devicePixelRatio": 1.25
+          },
+          "heading": "사무소 현황",
+          "pageHorizontalOverflow": 0,
+          "firstWorkRow": null,
+          "tableHeader": null,
+          "employeeRows": 0,
+          "visibleEmployeeRows": 0,
+          "rowHeights": [],
+          "defaultVisibleForms": [],
+          "openDialogs": [],
+          "recordCount": 0,
+          "firstUse": {
+            "surfaces": 0,
+            "primaryActions": 0,
+            "oldEmptyPanels": 0
+          },
+          "calendar": {
+            "titleChips": 0,
+            "completeTooltips": 0,
+            "selectedRecords": 0
+          },
+          "tableScrollAreas": []
+        }
+      },
+      "checks": [
+        {
+          "name": "home: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office-day: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office: all fictional staff retained",
+          "passed": true,
+          "details": 14
+        },
+        {
+          "name": "office-week: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office-directory: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "office directory: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "patrol: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "patrol: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "patrol: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "patrol: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "순찰 기록 등록",
+              "rect": {
+                "x": 412,
+                "top": 0,
+                "right": 1012,
+                "bottom": 640,
+                "width": 600,
+                "height": 640
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "notes: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "notes: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "notes: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "notes: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "메모 작성",
+              "rect": {
+                "x": 532,
+                "top": 0,
+                "right": 1012,
+                "bottom": 640,
+                "width": 480,
+                "height": 640
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "calendar: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "calendar: titles lead the visible chip text",
+          "passed": true,
+          "details": [
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 11:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 12:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방지원센터 주변 시설 확인",
+              "tooltip": "순찰 · 13:00 · 가상 탐방지원센터 주변 시설 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 08:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 09:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 현장 안전점검 회의",
+              "tooltip": "일정 · 10:00 · 가상 현장 안전점검 회의",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방해설 프로그램 준비",
+              "tooltip": "일정 · 09:00 · 가상 탐방해설 프로그램 준비",
+              "dayName": "2026-10-16 1건, 2026. 10. 16. (금), 일정 09:00 가상 탐방해설 프로그램 준비"
+            },
+            {
+              "text": "가상 다음 주 현장지원 인력 배치 확인",
+              "tooltip": "인계 · 15:00 · 가상 다음 주 현장지원 인력 배치 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 행정자료 제출 기한 확인",
+              "tooltip": "제출 · 16:00 · 가상 행정자료 제출 기한 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 탐방안전 협의회 후속 사항 인계",
+              "tooltip": "제출 · 17:00 · 가상 탐방안전 협의회 후속 사항 인계",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            }
+          ]
+        },
+        {
+          "name": "calendar: complete titles, type and 24h time remain available",
+          "passed": true,
+          "details": [
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 11:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 12:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방지원센터 주변 시설 확인",
+              "tooltip": "순찰 · 13:00 · 가상 탐방지원센터 주변 시설 확인",
+              "dayName": "2026-10-14 5건, 2026. 10. 14. (수), 순찰 11:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 12:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 순찰 13:00 가상 탐방지원센터 주변 시설 확인, 그 외 2건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "tooltip": "순찰 · 08:00 · 가상 북쪽탐방로 안전난간 보수 구간 확인",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "tooltip": "순찰 · 09:00 · 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 현장 안전점검 회의",
+              "tooltip": "일정 · 10:00 · 가상 현장 안전점검 회의",
+              "dayName": "2026-10-15 8건, 2026. 10. 15. (목), 순찰 08:00 가상 북쪽탐방로 안전난간 보수 구간 확인, 순찰 09:00 가상 계곡 탐방객 통행 상태 및 우천 시 통제 안내 점검, 일정 10:00 가상 현장 안전점검 회의, 그 외 5건. 선택 날짜 기록에서 전체 확인"
+            },
+            {
+              "text": "가상 탐방해설 프로그램 준비",
+              "tooltip": "일정 · 09:00 · 가상 탐방해설 프로그램 준비",
+              "dayName": "2026-10-16 1건, 2026. 10. 16. (금), 일정 09:00 가상 탐방해설 프로그램 준비"
+            },
+            {
+              "text": "가상 다음 주 현장지원 인력 배치 확인",
+              "tooltip": "인계 · 15:00 · 가상 다음 주 현장지원 인력 배치 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 행정자료 제출 기한 확인",
+              "tooltip": "제출 · 16:00 · 가상 행정자료 제출 기한 확인",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            },
+            {
+              "text": "가상 탐방안전 협의회 후속 사항 인계",
+              "tooltip": "제출 · 17:00 · 가상 탐방안전 협의회 후속 사항 인계",
+              "dayName": "2026-10-17 3건, 2026. 10. 17. (토), 인계 15:00 가상 다음 주 현장지원 인력 배치 확인, 제출 16:00 가상 행정자료 제출 기한 확인, 제출 17:00 가상 탐방안전 협의회 후속 사항 인계"
+            }
+          ]
+        },
+        {
+          "name": "calendar: a Saturday public holiday retains holiday meaning and color",
+          "passed": true,
+          "details": {
+            "holidayColor": "rgb(150, 47, 37)",
+            "fridayHolidayColor": "rgb(150, 47, 37)",
+            "saturdayColor": "rgb(52, 97, 124)"
+          }
+        },
+        {
+          "name": "calendar: keyboard can select a date",
+          "passed": true
+        },
+        {
+          "name": "calendar: selected records are focused with explicit types",
+          "passed": true,
+          "details": [
+            "순찰",
+            "순찰",
+            "순찰",
+            "인계",
+            "제출"
+          ]
+        },
+        {
+          "name": "calendar: agenda categories retain legend labels and colors",
+          "passed": true
+        },
+        {
+          "name": "calendar: registration form hidden by default",
+          "passed": true,
+          "details": []
+        },
+        {
+          "name": "calendar: dedicated add action exists",
+          "passed": true,
+          "details": 1
+        },
+        {
+          "name": "calendar: add action opens a focused dialog",
+          "passed": true,
+          "details": [
+            {
+              "label": "일정 등록",
+              "rect": {
+                "x": 412,
+                "top": 0,
+                "right": 1012,
+                "bottom": 640,
+                "width": 600,
+                "height": 640
+              },
+              "focusedInside": true
+            }
+          ]
+        },
+        {
+          "name": "empty-home: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        },
+        {
+          "name": "first use: one introduction replaces empty dashboard",
+          "passed": true,
+          "details": {
+            "surfaces": 1,
+            "primaryActions": 4,
+            "oldEmptyPanels": 0
+          }
+        },
+        {
+          "name": "first use: 순찰 기록 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 248.8000030517578,
+            "y": 357.63751220703125,
+            "width": 347.1999969482422,
+            "height": 131.60000610351562
+          }
+        },
+        {
+          "name": "first use: 순찰 기록 opens focused native dialog",
+          "passed": true,
+          "details": "순찰 기록 등록"
+        },
+        {
+          "name": "first use: 일정 등록 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 608,
+            "y": 357.63751220703125,
+            "width": 347.20001220703125,
+            "height": 131.60000610351562
+          }
+        },
+        {
+          "name": "first use: 일정 등록 opens focused native dialog",
+          "passed": true,
+          "details": "일정 등록"
+        },
+        {
+          "name": "first use: 전화메모 작성 is visible without scrolling",
+          "passed": true,
+          "details": {
+            "x": 248.8000030517578,
+            "y": 501.2375183105469,
+            "width": 347.1999969482422,
+            "height": 131.60000610351562
+          }
+        },
+        {
+          "name": "first use: 전화메모 작성 opens focused native dialog",
+          "passed": true,
+          "details": "전화메모 등록"
+        },
+        {
+          "name": "first use: roster action opens existing office setup",
+          "passed": true
+        },
+        {
+          "name": "empty-office: page has no horizontal overflow",
+          "passed": true,
+          "details": 0
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "summary": {
+    "screenshotsDirectory": "/tmp/park-workdesk-review/dates-verified",
+    "checks": 142,
+    "failures": [],
+    "errors": 0,
+    "externalRequests": 0
+  }
+}
