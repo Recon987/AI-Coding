@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-review-dates-01 / 기준 Claude75f04e9 / main 미병합)
-- **Task Card**: TASK-REVIEW-DATES-01 review. DATES-01 독립 검증 승인·월말P3/CI 신뢰성 보완. Claude PR #6 통합 대기.
-- **Latest Pushed Commit**: 928e78e5113df5ab45d32d3c86ff6434a1d7cd3e - fix(TASK-REVIEW-DATES-01): Windows 검사 중간 실패 감지와 정리 재시도 (검증 소스, 최종 증빙 해시는 응답/git log)
-- **Completed Steps & Modified Files**: shared/dates.mjs 월말 연도 보존·5TZ 회귀, workflow 종료 코드 가드·tray/desktop 정리 제한 재시도/원 오류 로깅, 카드·검토/검증/한국어 기록·README/architecture/handoff.
-- **Changed Interfaces / Schema Diff**: 기존 함수 시그니처·자료v3·IPC 유지. periodRange의 허용한 낮은 연도 결과만 보완.
-- **Test Status**: Node24 npm test91/91을5TZ 각각·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 독립 자료1800·현대경계2412·정상600·보완경계132 통과. 최종 Windows39110892545(928e78e) 소스/패키지 각 PASS·예외0 확인. 첫39110532993의 success는 전체 통과 증빙에서 제외.
-- **Remaining Work for Gemini**: Claude는 DATES-01과 PR #6 보완/증빙을 함께 통합. 다음 CALENDAR-04. 기관 PC·정책 결정 별도.
-- **Modified Code Snippets (if uncommitted)**: 없음(최종 증빙 문서만 이 기록과 즉시 커밋/푸시). 원 브랜치/main 직접 수정 없음.
+- **Repository & Branch**: Recon987/AI-Coding (task/task-calendar-04 / 기반 task/task-review-dates-01 PR #6)
+- **Task Card**: TASK-CALENDAR-04 in-progress. 1·2단계 완료, 다음 툴바·2열·날짜 격자 키보드.
+- **Latest Pushed Commit**: e099a8b - wip(TASK-CALENDAR-04): 달력 화면과 키보드 개선 착수 (작성 직전 원격, 최종 해시는 응답/git log)
+- **Completed Steps & Modified Files**: Calendar.tsx 표시211줄을 calendar/MonthGrid.tsx·WeekView.tsx·ListView.tsx로 분리. 원본·편집·저장·회차 상태는 부모 유지.
+- **Changed Interfaces / Schema Diff**: 내부 표시 props 분리, 데이터v3·외부IPC 변경 없음.
+- **Test Status**: 분리 단계 npm test91/91·test:desktop8진입점·UI142/오류0/외부요청0 통과. 새UX 미구현/미검증.
+- **Remaining Work for Gemini**: CALENDAR-04 3·4단계. 툴바·900px 이상2열·grid roving/arrow/Home/End/PageUpDown·Enter기록focus·실제 앱/화면/Windows 검증. 분담 에이전트 크레딧 부족 중단, 검토 완료로 가정 금지.
+- **Modified Code Snippets (if uncommitted)**: 분리·기록은 즉시 커밋/푸시, 후속 변경은 git status 확인.
 ```
 
 ## 2. 과제 현황
