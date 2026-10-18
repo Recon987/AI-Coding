@@ -453,6 +453,28 @@ export function Calendar({
           </button>
         </div>
         <h2 id="calendar-heading">{heading}</h2>
+        <div className="calendar-actions">
+          {exceptionCount > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                if (exceptionPanel.current) {
+                  exceptionPanel.current.open = true;
+                  exceptionPanel.current.scrollIntoView({ block: "start" });
+                }
+              }}
+            >
+              제외 회차 관리 ({exceptionCount})
+            </button>
+          )}
+          <button
+            className="primary"
+            disabled={busy}
+            onClick={() => editor.openEditor(blank())}
+          >
+            일정 추가
+          </button>
+        </div>
         <div
           className="segmented calendar-views"
           role="tablist"
@@ -475,29 +497,6 @@ export function Calendar({
           ))}
         </div>
       </header>
-      <div className="calendar-actions">
-        <p>순찰·인계·제출 기한을 한 달력에서 확인하세요.</p>
-        {exceptionCount > 0 && (
-          <button
-            type="button"
-            onClick={() => {
-              if (exceptionPanel.current) {
-                exceptionPanel.current.open = true;
-                exceptionPanel.current.scrollIntoView({ block: "start" });
-              }
-            }}
-          >
-            제외 회차 관리 ({exceptionCount})
-          </button>
-        )}
-        <button
-          className="primary"
-          disabled={busy}
-          onClick={() => editor.openEditor(blank())}
-        >
-          일정 추가
-        </button>
-      </div>
       <section className="panel calendar-view-panel">
         {view === "week" && (
           <WeekView

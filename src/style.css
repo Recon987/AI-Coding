@@ -513,8 +513,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .calendar-navigation { display: flex; gap: 4px; }
 .calendar-navigation button { min-height: 34px; min-width: 34px; padding: 4px 10px; }
 .calendar-toolbar .calendar-views { margin: 0; }
-.calendar-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: -8px; }
-.calendar-actions p { flex: 1; margin: 0; color: var(--muted); font-size: var(--fs-xs); }
+.calendar-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .calendar-actions button { min-height: 32px; padding: 4px 12px; font-size: var(--fs-sm); }
 .calendar-view-panel { min-width: 0; padding: 16px; }
 .calendar-detail { min-width: 0; }

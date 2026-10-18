@@ -12,11 +12,11 @@
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (task/task-calendar-04 / 기반 task/task-review-dates-01 PR #6)
 - **Task Card**: TASK-CALENDAR-04 in-progress. 1~3단계 구현, 다음 최종 화면/Windows 검증.
-- **Latest Pushed Commit**: 5f7773b - wip(TASK-CALENDAR-04): 표시 컴포넌트 분리와 기존 회귀 통과 (작성 직전 원격)
+- **Latest Pushed Commit**: efb5458 - feat(TASK-CALENDAR-04): 달력 툴바와 날짜 격자 키보드 탐색 (작성 직전 원격)
 - **Completed Steps & Modified Files**: Calendar·calendar/MonthGrid/WeekView/ListView 분리, 전체 폭 툴바·900 CSS px 두 열·격자 키보드, style.css, desktop-calendar-smoke 및 npm/Windows 검사 연결, 앱0.8.0 표시.
 - **Changed Interfaces / Schema Diff**: MonthGrid 내부 focusDate/focusRequest/onFocusDate/onMoveDate/onChoose(date,focusRecords?) props. 데이터v3·IPC 변경 없음.
-- **Test Status**: npm test91/91·test:desktop9진입점 통과. 최종 UI150/업무흐름·새 Windows는 다음 단계.
-- **Remaining Work for Gemini**: 새 소스 Windows 소스/패키지 로그·다운로드 확인, 최종 화면/업무흐름 및 증빙·PR. 독립 검증자는 Claude. 분담 에이전트 크레딧 부족 중단으로 최종 승인 미실행.
+- **Test Status**: npm test91/91·test:desktop9진입점 통과. UI150/오류0/외부요청0·업무흐름11/11 통과. 최종 압축 소스 Windows는 다음 단계.
+- **Remaining Work for Gemini**: 새 소스 Windows 소스/패키지 로그·다운로드 확인 및 최종 증빙. PR #7(기반 #6) 초안 작성. 독립 검증자는 Claude. 분담 에이전트 크레딧 부족 중단으로 최종 승인 미실행.
 - **Modified Code Snippets (if uncommitted)**: 구현·카드 기록은 즉시 커밋/푸시, 후속 변경은 git status 확인.
 ```
 
