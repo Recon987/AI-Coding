@@ -34,7 +34,7 @@ updated: 2026-10-18
 - [ ] 5. 기록(loop-log 5주기, handoff)
 
 ## 재개 위치
-3단계 S1부터: shared/model.mjs normalize의 repeatUntil 비교(약 258행)를 지역 시간대 비의존으로, tests에 TZ 3종 회귀 테스트. 순서와 조건은 docs/reviews/2026-10-18-panel.md '합의안'.
+3단계 S4+S6+S2부터: desktop/store.cjs durableReplace의 rename에 EPERM/EBUSY/EACCES 짧은 재시도, migrateFile v1/v2 백업 이름 충돌 시 새 이름, src/components/Personal.tsx 메모 편집 시 기존 필드 보존. S1 완료(model.mjs utcDayBefore).
 
 ## 테스트 상태
 미실행
