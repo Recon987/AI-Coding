@@ -1,5 +1,6 @@
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useRef, useState } from "react";
+import { addDays, weekDays as weekOf } from "../../shared/dates.mjs";
 import {
   calendarItems,
   expandEventOccurrences,
@@ -300,17 +301,9 @@ export function Calendar({
       document.getElementById(`calendar-tab-${next}`)?.focus(),
     );
   }
-  const shift = (date: string, days: number) => {
-    const next = new Date(`${date}T12:00:00`);
-    next.setDate(next.getDate() + days);
-    return dayKey(next);
-  };
-  const weekStart = shift(
-    selected,
-    -((new Date(`${selected}T12:00:00`).getDay() + 6) % 7),
-  );
-  const weekDays = Array.from({ length: 7 }, (_, n) => shift(weekStart, n));
-  const listEnd = shift(selected, 29);
+  const weekDays = weekOf(selected);
+  const weekStart = weekDays[0];
+  const listEnd = addDays(selected, 29);
   const viewItems =
     view === "month"
       ? []
@@ -325,7 +318,7 @@ export function Calendar({
       setMonth(new Date(year, monthIndex + direction, 1));
       return;
     }
-    const next = shift(selected, direction * (view === "week" ? 7 : 30));
+    const next = addDays(selected, direction * (view === "week" ? 7 : 30));
     setSelected(next);
     setMonth(new Date(`${next}T12:00:00`));
   }
@@ -558,7 +551,7 @@ export function Calendar({
             role="tabpanel"
             aria-labelledby="calendar-tab-list"
           >
-            {Array.from({ length: 30 }, (_, n) => shift(selected, n))
+            {Array.from({ length: 30 }, (_, n) => addDays(selected, n))
               .filter((key) => byDay(key).length > 0)
               .map((key) => (
                 <section key={key} className="list-view-day">

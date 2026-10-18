@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { dayKey } from "../../shared/model.mjs";
 import { formatDate } from "../../shared/format.mjs";
+import { addDays, weekDays } from "../../shared/dates.mjs";
 import {
   officeRows,
   officeSummary,
@@ -57,13 +58,7 @@ export function Office({
             : ["off", "leave"].includes(r.assignment?.workType ?? ""));
     return matches && status;
   });
-  const weekStart = new Date(`${date}T12:00:00`);
-  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
-  const week = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(weekStart);
-    d.setDate(d.getDate() + i);
-    return dayKey(d);
-  });
+  const week = weekDays(date);
   const weekRows = Array.from(
     new Map(
       week
@@ -96,9 +91,7 @@ export function Office({
     );
   }
   function moveDay(offset: number) {
-    const next = new Date(`${date}T12:00:00`);
-    next.setDate(next.getDate() + offset);
-    setDate(dayKey(next));
+    setDate(addDays(date, offset));
   }
   async function submit(event: React.FormEvent) {
     event.preventDefault();

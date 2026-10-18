@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-review-editor-01 / 기준 Claude9e2d719 / main 미병합)
-- **Task Card**: TASK-REVIEW-EDITOR-01 review. EDITOR-01 승인, EDITOR-02는 PR #5 보완과 함께 승인. Claude 통합 대기.
-- **Latest Pushed Commit**: f97aaf3f62ce9261e3d5e40ee7a4a44d012822a4 - fix(TASK-REVIEW-EDITOR-01): 접힌 오류 칸 이동과 반입 저장 중 초안 보호 (검증 소스, 증빙 최종 해시는 응답/git log)
-- **Completed Steps & Modified Files**: ui.tsx 오류 영역 펼침/포커스, Office.tsx 탭 busy 가드, desktop-editor-smoke 신규3회귀, package/workflow 연결, 카드·검토·검증·한국어 기록·README·화면.
-- **Changed Interfaces / Schema Diff**: 기존 시그니처·자료v3 유지. focusFirstInvalid 동작 보강, 새 IPC/패키지 없음.
-- **Test Status**: npm test89/89·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 새3회귀 수정 전 실패→후 통과. 원본 Windows39105341497 성공, 보완 소스f97aaf3 Windows39105905136도 소스/패키지 모두 성공.
-- **Remaining Work for Gemini**: Claude는 두 편집 카드와 보완 PR #5를 함께 통합. 다음 후보 DATES-01. 기관 PC/스키마·암호화·서식 결정 별도.
-- **Modified Code Snippets (if uncommitted)**: 없음(Windows 증빙 문서만 이 기록과 즉시 커밋/푸시). 원 브랜치/main 직접 수정 없음.
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
+- **Task Card**: TASK-DATES-01 review(검증자 codex, 재개 위치는 카드). EDITOR-01·02는 Codex 보완·승인 후 Claude 통합 완료(eba443d). 다음: TASK-CALENDAR-04
+- **Latest Pushed Commit**: aae6dd0 - wip(TASK-DATES-01): 카드 착수와 달력 화면 개편(CALENDAR-04) 분리 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: shared/dates.mjs·dates.d.mts(신규), shared/model.mjs·office.mjs·forms.mjs, src/components/{Briefing,Office,Calendar,FormExport,Observations}.tsx, tests/dates.test.cjs(신규), tests/store.test.cjs·office.test.cjs 자료 시각. 한국어 기록 docs/work-log/2026-10-18-claude-2.md
+- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. 새 모듈 shared/dates.mjs. office.validDate는 dates.validDateKey와 같은 함수. 읽기 검증: 시간대 표시 없는 시각의 반복 종료일은 적힌 날짜 기준(엄격), 있는 시각은 UTC 날짜-1일까지 허용
+- **Test Status**: Linux Node 22: npm test 91/91(시간대 5종), npm run test:desktop 8개 진입점 통과, 화면 검사 142·실패 0, 업무 흐름 11/11
+- **Remaining Work for Gemini**: Codex: DATES-01 검증. 사용자: PR #1 병합 승인, '추가/등록', 주말 합계, SCHEMA-01, 양식 질문, PR #3·#4·#5 정리
+- **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황

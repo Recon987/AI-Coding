@@ -194,7 +194,7 @@ test("브리핑 텍스트에 당직자(이름)·근무 건수·전날 단속 요
   const { briefing } = require("../shared/model.mjs");
   const data = fixture();
   data.patrols.push({
-    id: "p1", title: "전날 단속", at: "2026-10-14T03:00:00.000Z", route: "계곡", observer: "가상 담당",
+    id: "p1", title: "전날 단속", at: new Date("2026-10-14T12:00:00").toISOString(), route: "계곡", observer: "가상 담당",
     findings: "", action: "", risk: "normal", kind: "enforcement",
     observations: [{ id: "o1", type: "흡연", count: 2, outcome: "guidance", note: "" }],
   });

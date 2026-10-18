@@ -13,6 +13,7 @@ import type { Data, Page } from "../types";
 import { formatDate, formatTime, itemClock, SectionHead, Tag } from "../ui";
 import { dutyTypes, officeRows, officeSummary } from "../../shared/office.mjs";
 import { Icon } from "./Icon";
+import { addDays, weekDays } from "../../shared/dates.mjs";
 
 export function Briefing({
   data,
@@ -48,16 +49,10 @@ export function Briefing({
   const calls = data.calls.filter((c) => !c.done);
   const rows =
     filter === "overdue" ? overdue : filter === "today" ? dueToday : tasks;
-  const weekStart = new Date(`${date}T12:00:00`);
-  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
-  const week = Array.from({ length: 7 }, (_, index) => {
-    const day = new Date(weekStart);
-    day.setDate(day.getDate() + index);
-    return day;
-  });
+  const week = weekDays(date);
   const items = calendarItems(data, {
-    startDate: dayKey(week[0]),
-    endDate: dayKey(week[6]),
+    startDate: week[0],
+    endDate: week[6],
   });
   const daily = items.filter((i) => dayKey(new Date(i.at)) === date);
   const holiday = holidayName(date);
@@ -66,9 +61,7 @@ export function Briefing({
     setExpandedDay(false);
   }
   function moveDay(offset: number) {
-    const next = new Date(`${date}T12:00:00`);
-    next.setDate(next.getDate() + offset);
-    chooseDate(dayKey(next));
+    chooseDate(addDays(date, offset));
   }
   const firstUse = collections.every(
     (name) => data[name as Exclude<keyof Data, "version">].length === 0,
@@ -359,8 +352,8 @@ export function Briefing({
               </div>
             </SectionHead>
             <div className="week-strip" aria-label="주간 날짜 선택">
-              {week.map((day) => {
-                const key = dayKey(day);
+              {week.map((key) => {
+                const day = new Date(`${key}T12:00:00`);
                 const count = items.filter(
                   (i) => dayKey(new Date(i.at)) === key,
                 ).length;

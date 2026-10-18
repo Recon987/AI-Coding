@@ -1,3 +1,4 @@
+import { addDays, earliestLocalDay } from "./dates.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
   dutyTypes,
@@ -196,11 +197,6 @@ export function dayKey(date = new Date()) {
 }
 
 // v1/v2 -> v3 is additive and returns a new object without modifying the input.
-/** UTC calendar day before an ISO timestamp, "YYYY-MM-DD"; independent of TZ. */
-function utcDayBefore(at) {
-  const day = new Date(Date.parse(at) - 86400000);
-  return day.toISOString().slice(0, 10);
-}
 export function normalize(input) {
   ensure(
     input && typeof input === "object" && [1, 2, 3].includes(input.version),
@@ -276,9 +272,9 @@ export function normalize(input) {
             "반복 종료일은 반복 주기가 설정된 일정에만 지정할 수 있습니다.",
           );
           // Reading must not depend on this PC's time zone: the editor checked the
-          // local start day, which is never earlier than the UTC day minus one.
+          // local start day, never earlier than earliestLocalDay(at) (shared/dates.mjs).
           ensure(
-            row.repeatUntil >= utcDayBefore(row.at),
+            row.repeatUntil >= earliestLocalDay(row.at),
             "반복 종료일은 일정 시작일 이후여야 합니다.",
           );
         }
@@ -904,9 +900,7 @@ export function briefing(data, date) {
   const duty = officeRows(data, date).filter(
     (r) => r.assignment && r.assignment.duty !== "none",
   );
-  const before = new Date(`${date}T12:00:00Z`);
-  before.setUTCDate(before.getUTCDate() - 1);
-  const yesterday = before.toISOString().slice(0, 10);
+  const yesterday = addDays(date, -1);
   const enforcement = patrolSummary(data, { startDate: yesterday, endDate: yesterday });
   return [
     `공원 업무 수첩 | ${date}${holiday ? ` (${holiday})` : ""} 업무 브리핑`,

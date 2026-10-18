@@ -4,6 +4,7 @@ import {
   OBSERVATION_OUTCOMES,
   patrolSummary,
 } from "../../shared/model.mjs";
+import { periodRange } from "../../shared/dates.mjs";
 import type { Data, Observation } from "../types";
 import { CoordinateInput } from "./CoordinateInput";
 
@@ -142,23 +143,10 @@ export function ObservationEditor({
 }
 
 type Period = "week" | "month" | "30days";
-function periodRange(period: Period, today = new Date()) {
-  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const end = new Date(start);
-  if (period === "week") {
-    start.setDate(start.getDate() - ((start.getDay() + 6) % 7)); // Monday
-    end.setTime(start.getTime());
-    end.setDate(start.getDate() + 6);
-  } else if (period === "month") {
-    start.setDate(1);
-    end.setMonth(start.getMonth() + 1, 0);
-  } else start.setDate(start.getDate() - 29);
-  return { startDate: dayKey(start), endDate: dayKey(end) };
-}
 
 export function PatrolSummary({ data }: { data: Data }) {
   const [period, setPeriod] = useState<Period>("week");
-  const range = periodRange(period);
+  const range = periodRange(period, dayKey());
   const summary = useMemo(() => patrolSummary(data, range), [data, range.startDate, range.endDate]);
   return (
     <section className="panel patrol-summary" aria-labelledby="patrol-summary-title">

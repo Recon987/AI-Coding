@@ -1,17 +1,12 @@
 import { useMemo, useState } from "react";
 import { buildForm, FORMS, type FormFormat, type FormId } from "../../shared/forms.mjs";
 import { dayKey } from "../../shared/model.mjs";
+import { periodRange } from "../../shared/dates.mjs";
 import type { Data } from "../types";
 import { Field } from "../ui";
 import { Sheet } from "./Sheet";
 
-function thisWeek(today = new Date()) {
-  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  return { startDate: dayKey(start), endDate: dayKey(end) };
-}
+const thisWeek = () => periodRange("week", dayKey());
 
 /** Recommended forms (TASK-FORMS-01): preview here, the main process writes the file. */
 export function FormExport({ data, busy, onClose }: { data: Data; busy: boolean; onClose: () => void }) {
