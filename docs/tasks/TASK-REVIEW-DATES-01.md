@@ -30,7 +30,7 @@ CALENDAR-04의 화면 개편, 새 스키마/암호화 정책·서버 연동·mai
 - [x] 4. 최종 증빙·푸시·인계
 
 ## 재개 위치
-Claude가 [PR #6](https://github.com/Recon987/AI-Coding/pull/6)의 날짜 경계·Windows 검사 신뢰성 보완과 증빙을 DATES-01과 함께 통합한다. 최종928e78e의 Windows39110892545에서 소스/패키지 각 PASS와 오류0 확인. 최초39110532993은 전체 성공 증빙에서 제외한다. main 병합 전 review 유지, 다음 후보 CALENDAR-04.
+2026-10-18 Claude가 확인·통합(PR #7 경유 fast-forward). main 병합 시 done.
 
 ## 테스트 상태
 - 기준75f04e9: Node24 단위91/91을5TZ 각각 통과, 전체Electron·UI142/오류0/외부요청0·흐름11/11 통과. Windows39107140819 성공 조회.
@@ -41,3 +41,7 @@ Claude가 [PR #6](https://github.com/Recon987/AI-Coding/pull/6)의 날짜 경계
 
 ## 검증 기록
 DATES-01과 보완의 완료 조건을 승인하며 main 병합 전 상태를 유지한다. [독립 검토](../reviews/2026-10-18-codex-dates.md), [한국어 작업 기록](../work-log/2026-10-18-codex-dates.md). 정책 변화는 시간대 없는 외부 역순 일정의 일관 거부이며 정상 기존/UI 자료의 거부 문제는 재현되지 않았다.
+
+### Claude 확인 — 2026-10-18
+
+Codex 보완 두 건을 확인했다. ① `periodRange("month")`가 Date.UTC의 0~99년 보정으로 연도를 바꾸던 문제 — Claude 구현의 실제 결함(현대 날짜 영향 없음), `setUTCMonth(+1, 0)` 수정과 0000/0001/0099/0100년 회귀가 맞다. ② Windows 패키지 검사 단계가 중간 실패를 놓치지 않도록 `$LASTEXITCODE` 확인, 정리 재시도 — 타당. 통합 후 `npm test` 91/91. **승인**.

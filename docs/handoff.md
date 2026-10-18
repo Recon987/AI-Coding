@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-calendar-04 / 기반 PR #6, PR #7)
-- **Task Card**: TASK-CALENDAR-04 review, verifier claude. 구현·자동 검사 완료, 독립 검증부터 재개.
-- **Latest Pushed Commit**: 86bd62c - fix(TASK-CALENDAR-04): 달력 툴바 중복 줄을 줄이고 화면 검사 통과 (작성 직전 원격, 최종 증빙 해시는 응답/git log)
-- **Completed Steps & Modified Files**: Calendar·calendar/MonthGrid/WeekView/ListView 분리, 전체 폭 툴바·900 CSS px 두 열·격자 로빙/날짜 탐색/Enter·Space 기록 포커스, style.css, desktop-calendar-smoke 및 npm/Windows 검사 연결, 앱0.8.0·README/validation/검토·작업기록·전후 캡처.
-- **Changed Interfaces / Schema Diff**: MonthGrid 내부 focusDate/focusRequest/onFocusDate/onMoveDate/onChoose(date,focusRecords?) props. 데이터v3·외부IPC 변경 없음. 격자42일·선택일1일을 원본에서 각각 조회.
-- **Test Status**: npm test91/91·test:desktop9·UI150/실패0/오류0/외부요청0·업무흐름11/11 통과. 소스86bd62c Windows39128793988 성공, 소스9/패키지8 각 PASS, 단위91·NSIS/portable·SHA256SUMS·업로드. artifact12136379775.
-- **Remaining Work for Gemini**: Claude가 PR #7 독립 검증, #7→#6→#1 통합. 분담 에이전트는 크레딧 부족으로 중단되어 최종 독립 승인 미실행. 기관 실기기 화면낭독기/실제 절전/토스트 별도. 기존 사용자 정책 결정은 미확정 유지.
-- **Modified Code Snippets (if uncommitted)**: 없음. 증빙 파일은 즉시 커밋·푸시하며 최종 상태는 git status 확인.
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1). PR #6·#7 내용은 fast-forward로 포함
+- **Task Card**: TASK-CALENDAR-04·TASK-REVIEW-DATES-01 — Claude 검증 승인 기록 완료(review, main 병합 시 done). TASK-DATES-01·EDITOR-01·02·PANEL-01·POLISH-01도 교차 승인 완료. 다음 후보: TASK-A11Y-02, TASK-LABELS-01, TASK-LIST-02
+- **Latest Pushed Commit**: d964bef - docs(TASK-CALENDAR-04): Windows 통과 증빙과 Claude 검증 인계 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: Claude 검증 기록 docs/tasks/TASK-CALENDAR-04.md·TASK-REVIEW-DATES-01.md, 관찰 이관 docs/tasks/TASK-A11Y-02.md, 한국어 기록 docs/work-log/2026-10-18-claude-2.md
+- **Changed Interfaces / Schema Diff**: 이번 커밋은 문서만. PR #7: 앱 0.8.0, 데이터 v3·IPC 변경 없음, Calendar 하위 컴포넌트 분리
+- **Test Status**: Claude 재실행(Linux Node 22, d964bef): npm test 91/91, npm run test:desktop 전체 통과, 화면 150·실패 0, 업무 흐름 11/11, 별도 키보드·배치 검사 12/12. Codex 기록: Windows 39128793988 성공
+- **Remaining Work for Gemini**: 사용자: PR #1 main 병합 승인(PR #3~#7은 PR #1에 포함되어 정리 가능), '추가/등록', 주말 합계, SCHEMA-01, 양식 질문 4개. 다음 구현 카드 선택
+- **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황

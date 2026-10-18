@@ -30,7 +30,7 @@ TASK-DATES-01에서 분리. [5개 역할 검토](../reviews/2026-10-18-panel.md)
 - [x] 4. 실제 앱·화면·Windows 검증과 독립 검증 요청
 
 ## 재개 위치
-구현·자동 검사·전후 캡처까지 끝나 **Claude 독립 검증 대기**다. [PR #7](https://github.com/Recon987/AI-Coding/pull/7)(기반 PR #6)의 C6·U4·A7 완료 조건을 대조하고 npm test/test:desktop을 재실행한다. main/Claude 원 브랜치에 직접 쓰지 않았으며 #7→#6→#1 순서로 통합한다. 최종 실행 소스86bd62c, 이후 증빙 커밋은 실행 코드를 바꾸지 않는다.
+2026-10-18 Claude 독립 검증 **승인**(아래). PR #7(#6 포함)을 Claude 원 브랜치에 fast-forward로 통합했다. main 병합 시 done. 비차단 관찰 2건은 TASK-A11Y-02에 옮겼다.
 
 ## 테스트 상태
 - 분리 단계: 단위91·desktop8·UI142 통과 후5f7773b 푸시.
@@ -42,3 +42,15 @@ TASK-DATES-01에서 분리. [5개 역할 검토](../reviews/2026-10-18-panel.md)
 구현·실제 앱 검사·UX 역할을 나눴으나 초기 의견과 표시 분리 후 분담 에이전트가 workspace 크레딧 부족으로 중단됐다. 후속 구현/검사는 루트가 수행했다. **최종 독립 승인은 미실행**이며 자동 검사 통과로 대체하지 않는다. verifier Claude가 이 카드에 검증 결과를 기록한다.
 
 [협의 반영·제한·전후 화면](../reviews/2026-10-18-codex-calendar04.md), [한국어 작업 기록](../work-log/2026-10-18-codex-calendar04.md). 고정 높이6주 강제 압축·메뉴 이름 변경·반복 규칙 변경은 제외했다. 자료v3·IPC·백업/한도는 유지한다.
+
+### Claude 독립 검증 — 2026-10-18
+
+기준 `d964bef`(실행 소스 `86bd62c`), Linux Node 22. 구현자(Codex)와 다른 검증자.
+
+- **직접 재실행**: `npm ci` 후 `npm test` 91/91, `npm run test:desktop` 전체 통과(새 desktop-calendar-smoke 포함), `PARK_REVIEW_ZOOM=1 PARK_REVIEW_STRICT=1 node tests/ui-review.cjs` 150·실패 0·외부 요청 0, 업무 흐름 11/11.
+- **코드 대조**: C6 — 월간 격자·주간·목록을 `calendar/MonthGrid·WeekView·ListView`로 분리, 회차 완료·편집·반복 로직은 Calendar.tsx에 그대로. U4 — 툴바 [오늘][‹][›] 제목 … [일정 추가][월|주|목록], 900px 이상 두 열. A7 — `role="grid"`/row/gridcell, 격자 안 tabindex=0 하나(로빙), 방향키·Home/End·PageUp/Down, 키보드 Enter/Space만 선택 날짜 기록으로 포커스(`e.detail === 0`). 선택 날짜 기록은 별도 조회로 바꿔 먼 달 이동에도 회차 한도에 잘리지 않음.
+- **별도 실제 앱 검사(Claude 작성, 저장소 밖 임시 스크립트)**: 격자 Tab 정지점 1개·초기 위치=선택일, 1/31에서 →로 2/1(달 제목 2월·포커스 유지), ↓·PageUp, 3/31에서 PageUp → 2/28(짧은 달 보정), Enter로 선택+기록 영역 포커스, 다시 들어오면 마지막 위치, 1280px 마우스 클릭은 포커스를 옮기지 않음, 960px 두 열, 주간↔월간 왕복 후 정지점 1개, ‹ 버튼 포커스 유지, 페이지 오류 0. 12/12 통과(1건은 검사 설계 오류로 제외: 2026년 2월 격자는 2/1부터라 1/31 선택 칸이 없음).
+- **화면 확인**: docs/ui-review/calendar04 전후 캡처(960px·125%)에서 툴바 한 줄·두 열 배치 확인.
+- **비차단 관찰 → TASK-A11Y-02**: ① 960px 월간 칸의 기록 이름이 한두 글자로 잘림(좁은 폭 2줄 항목). ② 날짜 칸 이름이 "2026-10-15 8건…"처럼 ISO 날짜로 시작(A1 잔여, 기존과 같음).
+
+**판정: 승인.** 자료 v3·IPC·백업 한도 변경 없음 확인.
