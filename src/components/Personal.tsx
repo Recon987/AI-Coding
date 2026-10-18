@@ -99,6 +99,9 @@ export function Personal({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <p className="list-count" role="status" aria-atomic="true">
+          {query.trim() ? `${rows.length}건 표시` : ""}
+        </p>
         {!rows.length && (
           <Empty>
             {query.trim() ? (

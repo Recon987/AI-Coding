@@ -189,7 +189,9 @@ kbd { padding: 0 4px; border: 1px solid var(--line-strong); border-radius: 3px; 
 .section-head .eyebrow { display: none; }
 .current-date { font-size: var(--fs-sm); color: var(--ink-2); text-align: right; white-space: nowrap; }
 .current-date span { display: block; margin-top: 3px; font-size: var(--fs-xs); color: var(--muted); }
-.save-feedback { position: fixed; z-index: 100; bottom: 24px; left: calc(50% + 96px); transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 7px; background: var(--ink); color: var(--on-accent); box-shadow: 0 4px 20px var(--overlay); pointer-events: none; }
+.save-feedback { position: fixed; z-index: 100; bottom: 24px; left: calc(50% + 96px); transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 12px 12px 12px 20px; border-radius: 7px; background: var(--ink); color: var(--on-accent); box-shadow: 0 4px 20px var(--overlay); }
+.save-feedback-close { min-height: 0; padding: 0 6px; border: 0; background: transparent; color: var(--on-accent); font-size: var(--fs-md); line-height: 1; }
+.save-feedback-close:hover { background: transparent; opacity: .8; }
 footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px 28px 20px; color: var(--muted); font-size: var(--fs-xs); }
 
 /* Shared surfaces, records, and forms */
@@ -569,6 +571,8 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .search-dialog > .help, .search-dialog > p { margin: 12px 20px; }
 .search-results { padding: 0 20px; }
 .search-count { margin: 12px 0 0; color: var(--muted); font-size: var(--fs-xs); }
+.search-count:empty, .list-count:empty { margin: 0; }
+.list-count { margin: 4px 0 0; color: var(--muted); font-size: var(--fs-xs); }
 .search-hint { padding: 40px 20px; text-align: center; color: var(--muted); }
 .search-hint > svg { margin-bottom: 12px; color: var(--subtle); }
 .search-hint h2 { margin-bottom: 8px; color: var(--ink); }

@@ -116,7 +116,8 @@ function App() {
   const [feedback, setFeedback] = useState("");
   useEffect(() => {
     if (!feedback) return;
-    const timer = setTimeout(() => setFeedback(""), 4500);
+    // Long enough to read at 125% zoom; the toast also has its own close button.
+    const timer = setTimeout(() => setFeedback(""), 8000);
     return () => clearTimeout(timer);
   }, [feedback]);
   useEffect(() => {
@@ -387,10 +388,23 @@ function App() {
               알림·폴더 열기·파일 내보내기는 데스크톱에서 지원합니다.
             </div>
           )}
+          {/* Always-present live region: screen readers miss regions inserted with their text. */}
+          <div className="sr-only" role="status" aria-atomic="true">
+            {feedback}
+          </div>
           {feedback && (
-            <div className="save-feedback" role="status">
+            <div className="save-feedback" aria-hidden="true">
               <Icon name="check" size={16} />
               {feedback}
+              <button
+                type="button"
+                className="save-feedback-close"
+                tabIndex={-1}
+                onClick={() => setFeedback("")}
+                title="알림 닫기"
+              >
+                ×
+              </button>
             </div>
           )}
           {error && (
@@ -594,9 +608,11 @@ function App() {
           </button>
         </div>
         <div className="search-results">
+          <p className="search-count" role="status" aria-atomic="true">
+            {query.trim() ? `검색 결과 ${searchRows.length}건` : ""}
+          </p>
           {query.trim() ? (
             <>
-              <p className="search-count">검색 결과 {searchRows.length}건</p>
               {searchRows.slice(0, 100).map((row) => (
                 <button
                   className="search-result"

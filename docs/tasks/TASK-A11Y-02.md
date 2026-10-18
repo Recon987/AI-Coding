@@ -29,13 +29,13 @@ updated: 2026-10-18
 ## 진행 단계
 - [x] 1. 검토 문서 A4·A5·A6·A8과 2·3차 조건 재확인(UX: 테두리 강화는 입력칸만, 2줄은 1200px 이하·목록 행은 1줄 유지 / 안전: '/' 단축키는 설정 추가보다 제거 권장)
 - [x] 2. A4: 입력칸 테두리 대비 3:1, forced-colors, 검색 포커스 표시
-- [ ] 3. A5: 상시 라이브 영역·알림 8초+닫기, 검색 결과 건수 낭독, 오늘 상태 띠 group
+- [x] 3. A5: 상시 라이브 영역·알림 8초+닫기, 검색 결과 건수 낭독, 오늘 상태 띠 group
 - [ ] 4. A1 잔여: 주간 띠·월간 칸 이름을 보이는 글자로 시작
 - [ ] 5. A6 좁은 폭 2줄, A8 '/' 단축키 제거(Ctrl+K 유지)
 - [ ] 6. 검사·기록
 
 ## 재개 위치
-3단계: src/main.tsx 알림(feedback)을 항상 있는 라이브 영역으로, 시각 알림 8초 이상+닫기 버튼, 통합 검색·목록 검색 결과 건수 aria-live, Briefing today-strip role=group. 2단계 완료: style.css --input-line(#7f8f88, 흰 바탕 3.39·페이지 3.14), 통합 검색 포커스 테두리, forced-colors 블록.
+4단계 A1 잔여: Briefing.tsx 주간 띠 버튼 aria-label(현재 ISO 시작), calendar/MonthGrid.tsx 날짜 버튼 aria-label을 보이는 글자(요일·일)로 시작하게. 테스트 선택자(desktop-smoke·recurrence-smoke·list-smoke·calendar-smoke의 ISO 이름) 갱신. 3단계 완료: main.tsx 상시 라이브 영역·알림 8초·닫기, 검색 결과 건수 role=status(통합·순찰·업무·메모), 오늘 상태 띠 role=group.
 
 ## 테스트 상태
 미실행

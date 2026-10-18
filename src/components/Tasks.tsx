@@ -124,6 +124,9 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
+        <p className="list-count" role="status" aria-atomic="true">
+          {query.trim() ? `${rows.length}건 표시` : ""}
+        </p>
         {rows.length === 0 && (
           <Empty>
             {query.trim() ? (

@@ -143,7 +143,7 @@ export function Briefing({
   return (
     <>
       <div className="briefing-toolbar">
-        <div className="today-strip" aria-label="오늘 상태">
+        <div className="today-strip" role="group" aria-label="오늘 상태">
           <button
             className={`today-tile ${overdue.length ? "danger" : ""}`}
             onClick={() => setFilter("overdue")}
