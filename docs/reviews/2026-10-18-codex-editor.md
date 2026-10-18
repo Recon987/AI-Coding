@@ -23,7 +23,9 @@ EDITOR-01의 한 줄 머리·480/600px 크기·Ctrl/Cmd+Enter·취소 보호는 
 
 기준 소스와 수정본 모두 Node24.19에서 npm test **89/89**, 전체 Electron·화면142·업무흐름11/11 통과. 수정본 test:desktop는 기존7개+새편집회귀의 **8개 진입점**이다(기존 콘솔 PASS 시나리오 수와 혼동하지 않음). 화면 실패0·페이지오류0·외부요청0, `/tmp/park-workdesk-review/editor-verified`.
 
-정확한 원본9e2d719의 [Windows39105341497](https://github.com/Recon987/AI-Coding/actions/runs/39105341497)은 성공했다. 원본의 성공과 두 오류를 고친 소스의 Windows 결과를 구분한다. 보완본은 푸시 후 workflow_dispatch로 확인한다.
+정확한 원본9e2d719의 [Windows39105341497](https://github.com/Recon987/AI-Coding/actions/runs/39105341497)은 성공했다. 원본의 성공과 두 오류를 고친 소스의 Windows 결과를 구분한다. 보완 소스 `f97aaf3f62ce9261e3d5e40ee7a4a44d012822a4`의 [Windows39105905136](https://github.com/Recon987/AI-Coding/actions/runs/39105905136)도 **성공**했다(2분13초). Node24 잠금 설치·89개·소스 Electron8진입점·NSIS/portable 생성·패키징 EXE의 신규3회귀/기존검사·SHA256SUMS·업로드가 통과했다. 로그에서 소스/패키지 각각3회귀의 PASS를 확인했다. 시작 복구는 -r 주입이 필요한 소스에서만 실행한다.
+
+[보완본 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39105905136/artifacts/12128711616) — GitHub 로그인·보관14일, 기존과 같은 앱0.7.0이므로 소스 해시로 구분. [PR #5](https://github.com/Recon987/AI-Coding/pull/5). 최종 증빙 커밋은 문서만 수정한다.
 
 ## 실제 화면 (가상 자료)
 

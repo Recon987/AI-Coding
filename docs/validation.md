@@ -2,7 +2,7 @@
 
 ## EDITOR-01·02 / Codex 독립 검증과 오류 보완
 
-Claude9e2d719 기준 Node24 단위89·전체Electron·UI142·흐름11 통과, Windows39105341497도 성공. 추가 독립 검사에서 접힌 좌표 오류 칸 이동 실패·CSV 지연 저장 중 탭 이동에 따른 초안 유실을 재현했다. 두 경로를 보완하고 새 실제 Electron3개가 수정 전 실패→수정 후 통과했다. 보완본 npm test89/89·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11 및 독립 재검토 통과. [검토·재현·실제 화면](reviews/2026-10-18-codex-editor.md). 보완본 Windows는 푸시 후 기록한다.
+Claude9e2d719 기준 Node24 단위89·전체Electron·UI142·흐름11 통과, Windows39105341497도 성공. 추가 독립 검사에서 접힌 좌표 오류 칸 이동 실패·CSV 지연 저장 중 탭 이동에 따른 초안 유실을 재현했다. 두 경로를 보완하고 새 실제 Electron3개가 수정 전 실패→수정 후 통과했다. 보완본 npm test89/89·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11 및 독립 재검토 통과. [검토·재현·실제 화면](reviews/2026-10-18-codex-editor.md). 보완 소스f97aaf3의 [Windows39105905136](https://github.com/Recon987/AI-Coding/actions/runs/39105905136) 성공(2분13초): 단위89·소스8진입점·NSIS/portable·패키지의 신규3회귀/기존검사·SHA256SUMS·업로드. 각 PASS를 로그에서 확인했다. [검증 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39105905136/artifacts/12128711616). 증빙 후속 커밋은 문서만 바꾼다.
 
 ## TASK-POLISH-01·TASK-PANEL-01 / Codex 최신 독립 검증
 

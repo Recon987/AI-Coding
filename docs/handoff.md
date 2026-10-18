@@ -11,18 +11,18 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (task/task-review-editor-01 / 기준 Claude9e2d719 / main 미병합)
-- **Task Card**: TASK-REVIEW-EDITOR-01 in-progress. EDITOR-01 승인, EDITOR-02는 이 보완과 함께 승인. 다음은 보완본 Windows 검증.
-- **Latest Pushed Commit**: 50aa2c9 - wip(TASK-REVIEW-EDITOR-01): 편집창과 입력 보호 검증 착수 (작성 직전 원격, 최종 해시는 응답/git log)
+- **Task Card**: TASK-REVIEW-EDITOR-01 review. EDITOR-01 승인, EDITOR-02는 PR #5 보완과 함께 승인. Claude 통합 대기.
+- **Latest Pushed Commit**: f97aaf3f62ce9261e3d5e40ee7a4a44d012822a4 - fix(TASK-REVIEW-EDITOR-01): 접힌 오류 칸 이동과 반입 저장 중 초안 보호 (검증 소스, 증빙 최종 해시는 응답/git log)
 - **Completed Steps & Modified Files**: ui.tsx 오류 영역 펼침/포커스, Office.tsx 탭 busy 가드, desktop-editor-smoke 신규3회귀, package/workflow 연결, 카드·검토·검증·한국어 기록·README·화면.
 - **Changed Interfaces / Schema Diff**: 기존 시그니처·자료v3 유지. focusFirstInvalid 동작 보강, 새 IPC/패키지 없음.
-- **Test Status**: npm test89/89·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 새3회귀 수정 전 실패→후 통과. 원본 Windows39105341497 성공, 보완본은 푸시 후 확인.
-- **Remaining Work for Gemini**: 보완본 Windows 후 증빙 통합. Claude는 두 편집 카드와 보완 PR을 함께 통합. 다음 후보 DATES-01. 기관 PC/스키마·암호화·서식 결정 별도.
-- **Modified Code Snippets (if uncommitted)**: 보완·검증 변경은 이 문서와 즉시 커밋/푸시. 원 브랜치/main 직접 수정 없음.
+- **Test Status**: npm test89/89·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 새3회귀 수정 전 실패→후 통과. 원본 Windows39105341497 성공, 보완 소스f97aaf3 Windows39105905136도 소스/패키지 모두 성공.
+- **Remaining Work for Gemini**: Claude는 두 편집 카드와 보완 PR #5를 함께 통합. 다음 후보 DATES-01. 기관 PC/스키마·암호화·서식 결정 별도.
+- **Modified Code Snippets (if uncommitted)**: 없음(Windows 증빙 문서만 이 기록과 즉시 커밋/푸시). 원 브랜치/main 직접 수정 없음.
 ```
 
 ## 2. 과제 현황
 
-`npm run board`가 우선순위·담당·재개 위치를 출력한다. 이 문서에 백로그를 복제하지 않는다. 2026-10-18: 기존 검증·회차 관리는 Claude 원 브랜치에 통합됐다(PR #2 병합, PR #3 내용 포함). Claude의 POLISH-01·PANEL-01도 Codex가 ad40b18에서 독립 검증 승인했다. main 병합 전이므로 review 상태 유지. 최신 재개 위치는 TASK-REVIEW-PANEL-01 및 두 원 카드 참조.
+`npm run board`가 우선순위·담당·재개 위치를 출력한다. 백로그를 이 문서에 중복 기록하지 않는다. 기존 검증·회차·PANEL/POLISH 검토는 Claude 원 브랜치에 통합됐다. 최신 EDITOR-01·02는 Codex가9e2d719에서 검토하고 두 오류를 보완했다. 보완 소스f97aaf3의 Linux/Windows 소스·패키지 검증까지 완료했으며 PR #5를 두 편집 카드와 함께 통합한다. main 병합 전이므로 review 유지. 다음 후보는 TASK-DATES-01.
 
 ## 3. 작업 시작·종료
 
@@ -49,3 +49,7 @@ Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-
 ## Claude 최신 개선 독립 검증
 
 기준 ad40b18, [Windows 성공](https://github.com/Recon987/AI-Coding/actions/runs/39102593618), [최신 검증 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39102593618/artifacts/12127536294). [세 분야 검토·화면](reviews/2026-10-18-codex-panel.md), [한국어 작업 기록](work-log/2026-10-18-codex.md).
+
+## 편집창·입력 오류 보완 검증
+
+소스f97aaf3, [PR #5](https://github.com/Recon987/AI-Coding/pull/5), [Windows 성공](https://github.com/Recon987/AI-Coding/actions/runs/39105905136), [설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39105905136/artifacts/12128711616). [세 분야 검토·오류 재현·화면](reviews/2026-10-18-codex-editor.md), [한국어 작업 기록](work-log/2026-10-18-codex-editor.md).
