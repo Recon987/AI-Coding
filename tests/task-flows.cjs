@@ -3,6 +3,7 @@
 // off-screen targets). It is a review aid, not a usability test with people.
 // Build first: npm run build && node tests/task-flows.cjs
 const { _electron: electron } = require("playwright");
+const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
@@ -153,6 +154,22 @@ function counter(page) {
       await t.click(sheet().getByRole("button", { name: "변경 저장", exact: true }));
       await sheet().waitFor({ state: "hidden" });
       return "유형은 제안 목록에서 고를 수 있음(datalist). 조치 기본값은 계도";
+    });
+
+    await task("T2c", "같은 구역 다음 순찰을 이어서 기록(이 기록으로 새 순찰, 제목 자동)", async (t) => {
+      await t.click(nav("현장 순찰"));
+      const record = page.locator(".record").filter({ has: page.getByRole("heading", { name: "오후 계곡 순찰", exact: true }) });
+      await t.click(record.getByRole("button", { name: /^이 기록으로 새 순찰 · / }));
+      assert.equal(await page.getByLabel("순찰 구간").inputValue(), "계곡안내소 → 쉼터");
+      assert.equal(await page.getByLabel("담당구역 번호").inputValue(), "3-2");
+      await t.fill(page.getByLabel("확인 사항"), "이상 없음");
+      await t.click(sheet().getByRole("button", { name: "순찰 저장", exact: true }));
+      await sheet().waitFor({ state: "hidden" });
+      const saved = (await page.evaluate(() => window.workdesk.load())).patrols.find((p) => p.findings === "이상 없음");
+      assert.match(saved.title, /^단속 3-2구역 \d{2}:\d{2}$/);
+      assert.equal(saved.observer, "홍길동");
+      assert.equal(saved.observations, undefined, "단속 건은 복사하지 않음");
+      return "구간·기록자·종류·담당구역을 복사, 제목은 비워 두면 '단속 3-2구역 HH:MM'";
     });
 
     await task("T5", "이번 주 샛길 출입 단속 건수 집계", async (t) => {

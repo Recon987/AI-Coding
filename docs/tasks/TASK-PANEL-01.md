@@ -34,9 +34,9 @@ updated: 2026-10-18
 - [ ] 5. 기록(loop-log 5주기, handoff)
 
 ## 재개 위치
-4단계 묶음 B: D1 shared/model.mjs briefing()에 '당직' 절(당직자 이름만, 근무는 건수)·'전날 단속·확인' 절, 하단 경고에 '직원 이름 포함', 날짜 검사 validDate. 그다음 D2 src/components/Patrols.tsx blank() 기본값(at이 가장 늦은 순찰의 기록자·종류·구역), 제목 선택·자동 생성(≤500자), '이 기록으로 새 순찰'(새 id, observations·좌표·확인 사항 제외), 폼 순서=DOM 순서, 측정 tests/task-flows.cjs T2(기준 5클릭·6칸·39자).
+4단계 재검토: 원 제안 역할이 구현 커밋(32ad74f~현재)을 다시 본다 — 안전(S1·S4·S6·S2), 코드(C1), 접근성(A1·D2 접근성 조건), 현장(D1·D2). 지적은 이 카드에서 고치거나 다음 주기 카드로. 그다음 5단계 loop-log 5주기·handoff.
 
 ## 테스트 상태
-묶음 A 후(Linux Node 22): `npm test` 87/87, `npm run test:desktop` 8개 통과, review:flows 10개 완료. C1 후: `npm test` 87/87 통과. S4·S6·S2 후: 85/85. S1 후: 83/83(32ad74f 시점 store.test 1건 실패 → 다음 커밋에서 기대값 조정: 읽기 검증은 시간대 여유 하루, 편집기는 지역 날짜 엄격 검사 유지). 데스크톱 스모크 미실행.
+묶음 A·B 후(Linux Node 22): `npm test` 88/88, `npm run test:desktop` 8개 통과, `PARK_REVIEW_ZOOM=1 PARK_REVIEW_STRICT=1 node tests/ui-review.cjs` 142·실패 0·외부 요청 0, review:flows 11개 완료(T2c 신규: 3클릭·1칸·5자, 기존 T2 5클릭·6칸·39자). Node 24·Windows Actions는 PR에서 확인.
 
 ## 검증 기록

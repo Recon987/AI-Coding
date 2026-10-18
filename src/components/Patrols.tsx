@@ -11,7 +11,7 @@ import { FormExport } from "./FormExport";
 import { ListHeader, ListRow, rowKeys } from "./ListRow";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { CoordinateInput } from "./CoordinateInput";
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { Data, Patrol, PatrolKind, Save, Task } from "../types";
 import {
   Empty,
@@ -23,6 +23,14 @@ import {
   Tag,
 } from "../ui";
 import { askConfirm } from "../confirm";
+/** Title used when the field is left empty, e.g. "단속 3-2구역 14:30" (TASK-PANEL-01 D2). */
+function autoTitle(p: Patrol) {
+  const at = new Date(p.at);
+  const clock = `${String(at.getHours()).padStart(2, "0")}:${String(at.getMinutes()).padStart(2, "0")}`;
+  const zone = p.zone?.trim();
+  return `${p.kind ? PATROL_KINDS[p.kind] : "순찰"}${zone ? ` ${zone}구역` : ""} ${clock}`;
+}
+
 export function Patrols({
   data,
   save,
@@ -36,12 +44,20 @@ export function Patrols({
   initialId?: string;
   openTask: (id: string) => void;
 }) {
-  const blank = (): Patrol => ({
+  // New records start from the most recent patrol's recorder, kind and zone
+  // (TASK-PANEL-01 D2): the same person usually patrols the same zone.
+  const latest = data.patrols.reduce<Patrol | undefined>(
+    (best, p) => (!best || Date.parse(p.at) > Date.parse(best.at) ? p : best),
+    undefined,
+  );
+  const blank = (from: Patrol | undefined = latest, route = ""): Patrol => ({
     id: "",
     title: "",
     at: new Date().toISOString(),
-    route: "",
-    observer: "",
+    route,
+    observer: from?.observer ?? "",
+    ...(from?.kind ? { kind: from.kind } : {}),
+    ...(from?.zone ? { zone: from.zone } : {}),
     findings: "",
     action: "",
     risk: "normal",
@@ -53,6 +69,7 @@ export function Patrols({
   );
   const { draft, setDraft } = editor;
   const [editorKey, setEditorKey] = useState(0);
+  const prefillHint = useId();
   const [coordinateError, setCoordinateError] = useState("");
   const [observationError, setObservationError] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -75,7 +92,7 @@ export function Patrols({
     const item: Patrol = {
       ...draft,
       id: draft.id || crypto.randomUUID(),
-      title: draft.title.trim(),
+      title: draft.title.trim() || autoTitle(draft),
       route: draft.route.trim(),
       observer: draft.observer.trim(),
       zone: draft.zone?.trim(),
@@ -192,6 +209,7 @@ export function Patrols({
                   onClick: () => handover(p),
                 },
                 { label: "수정", onClick: () => resetDraft(p) },
+                { label: "이 기록으로 새 순찰", onClick: () => resetDraft(blank(p, p.route)) },
                 {
                   label: "삭제",
                   tone: "danger",
@@ -276,55 +294,21 @@ export function Patrols({
               </button>
             </div>
             <p className="editor-intro">
-              제목·구간·기록자는 필수입니다. 저장 후 인수인계로 연결할 수
-              있습니다.
+              구간·기록자는 필수입니다. 제목을 비우면 종류·구역·시각으로 자동
+              입력됩니다. 저장 후 인수인계로 연결할 수 있습니다.
+              {latest && !draft.id && (
+                <span id={prefillHint} className="editor-hint">
+                  {" "}
+                  기록자·순찰 종류·담당구역은 최근 순찰({latest.title})에서
+                  가져왔습니다.
+                </span>
+              )}
             </p>
-            <Field label="기록 제목">
-              <input
-                required
-                maxLength={500}
-                autoFocus
-                value={draft.title}
-                onChange={(e) => patch({ title: e.target.value })}
-                placeholder="예: 오전 탐방로 순찰"
-              />
-            </Field>
-            <Field label="순찰 구간">
-              <input
-                required
-                maxLength={500}
-                value={draft.route}
-                onChange={(e) => patch({ route: e.target.value })}
-                placeholder="출발 거점 → 점검 구간 → 도착 거점"
-              />
-            </Field>
-            <div className="form-row">
-              <Field label="기록자">
-                <input
-                  required
-                  maxLength={100}
-                  value={draft.observer}
-                  onChange={(e) => patch({ observer: e.target.value })}
-                />
-              </Field>
-              <Field label="확인 등급">
-                <select
-                  value={draft.risk}
-                  onChange={(e) =>
-                    patch({ risk: e.target.value as Patrol["risk"] })
-                  }
-                >
-                  {Object.entries(riskNames).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-            </div>
             <div className="form-row">
               <Field label="순찰 종류">
                 <select
+                  autoFocus
+                  aria-describedby={latest && !draft.id ? prefillHint : undefined}
                   value={draft.kind ?? ""}
                   onChange={(e) =>
                     patch({ kind: (e.target.value || null) as PatrolKind | null })
@@ -345,6 +329,40 @@ export function Patrols({
                   onChange={(e) => patch({ zone: e.target.value })}
                   placeholder="선택 · 예: 3-2"
                 />
+              </Field>
+            </div>
+            <Field label="순찰 구간">
+              <input
+                required
+                maxLength={500}
+                value={draft.route}
+                onChange={(e) => patch({ route: e.target.value })}
+                placeholder="출발 거점 → 점검 구간 → 도착 거점"
+              />
+            </Field>
+            <div className="form-row">
+              <Field label="기록자">
+                <input
+                  required
+                  maxLength={100}
+                  aria-describedby={latest && !draft.id ? prefillHint : undefined}
+                  value={draft.observer}
+                  onChange={(e) => patch({ observer: e.target.value })}
+                />
+              </Field>
+              <Field label="확인 등급">
+                <select
+                  value={draft.risk}
+                  onChange={(e) =>
+                    patch({ risk: e.target.value as Patrol["risk"] })
+                  }
+                >
+                  {Object.entries(riskNames).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
               </Field>
             </div>
             <Field label="순찰 일시">
@@ -405,6 +423,14 @@ export function Patrols({
                 editor.setExtraDirty(hasError);
               }}
             />
+            <Field label="기록 제목 (선택, 비우면 자동)">
+              <input
+                maxLength={500}
+                value={draft.title}
+                onChange={(e) => patch({ title: e.target.value })}
+                placeholder={autoTitle(draft)}
+              />
+            </Field>
           </form>
         </EditorDialog>
       )}
