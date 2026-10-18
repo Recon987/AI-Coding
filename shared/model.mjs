@@ -1,4 +1,4 @@
-import { formatTime } from "./format.mjs";
+import { formatClock, formatTime } from "./format.mjs";
 import {
   dutyTypes,
   officeCollections,
@@ -946,7 +946,10 @@ export function briefing(data, date) {
     "",
     `전날 단속·확인 (${yesterday}, 총 ${enforcement.totalCount}건)`,
     ...enforcement.observations.map(
-      (r) => `- ${r.type} ${r.count}건 (계도 ${r.guidance}, 과태료 부과 ${r.fine}, 기타 ${r.other})`,
+      (r) =>
+        `- ${r.type} ${r.count}건 (${Object.entries(OBSERVATION_OUTCOMES)
+          .map(([key, label]) => `${label} ${r[key]}`)
+          .join(", ")})`,
     ),
     "",
     `미처리 전화 (${data.calls.filter((c) => !c.done).length}, 현재 상태)`,
@@ -954,4 +957,28 @@ export function briefing(data, date) {
     "",
     `이 문서는 출력 시점의 기록입니다.${duty.length ? " 당직 직원 이름이 포함되어 있습니다." : ""} 개인정보와 업무자료의 전달 범위를 확인하세요.`,
   ].join("\n");
+}
+
+/** Title used when the patrol title is left empty, e.g. "단속 3-2구역 14:30" (TASK-PANEL-01 D2). */
+export function patrolAutoTitle(patrol) {
+  const zone = patrol.zone?.trim();
+  const place = zone ? ` ${zone.endsWith("구역") ? zone : `${zone}구역`}` : "";
+  return `${patrol.kind ? PATROL_KINDS[patrol.kind] : "순찰"}${place} ${formatClock(patrol.at)}`;
+}
+
+/** New patrol draft carrying only recorder, kind and zone (and route when copying)
+ *  from `from`; findings, observations and coordinates are never copied. */
+export function newPatrolDraft(from, { route = "", at = new Date().toISOString() } = {}) {
+  return {
+    id: "",
+    title: "",
+    at,
+    route,
+    observer: from?.observer ?? "",
+    ...(from?.kind ? { kind: from.kind } : {}),
+    ...(from?.zone ? { zone: from.zone } : {}),
+    findings: "",
+    action: "",
+    risk: "normal",
+  };
 }

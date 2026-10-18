@@ -2,9 +2,11 @@ import { matches, searchText } from "../../shared/search.mjs";
 import {
   describeObservations,
   formatCoordinates,
+  newPatrolDraft,
   OBSERVATION_OUTCOMES,
   observationTypes,
   PATROL_KINDS,
+  patrolAutoTitle,
 } from "../../shared/model.mjs";
 import { ObservationEditor, PatrolSummary } from "./Observations";
 import { FormExport } from "./FormExport";
@@ -23,15 +25,6 @@ import {
   Tag,
 } from "../ui";
 import { askConfirm } from "../confirm";
-/** Title used when the field is left empty, e.g. "단속 3-2구역 14:30" (TASK-PANEL-01 D2). */
-function autoTitle(p: Patrol) {
-  const at = new Date(p.at);
-  const clock = `${String(at.getHours()).padStart(2, "0")}:${String(at.getMinutes()).padStart(2, "0")}`;
-  const zone = p.zone?.trim();
-  const place = zone ? ` ${zone.endsWith("구역") ? zone : `${zone}구역`}` : "";
-  return `${p.kind ? PATROL_KINDS[p.kind] : "순찰"}${place} ${clock}`;
-}
-
 type PrefillField = "observer" | "kind" | "zone" | "route";
 /** Fields a new draft took from `from`, as [field, label, value] for the hint. */
 function prefillOf(from: Patrol | undefined, value: Patrol) {
@@ -64,18 +57,8 @@ export function Patrols({
   // TASK-PANEL-01 D2). Last added, not latest `at`: a late entry of an old patrol or a
   // mistyped future time must not pin the defaults.
   const latest = data.patrols.at(-1);
-  const blank = (from: Patrol | undefined = latest, route = ""): Patrol => ({
-    id: "",
-    title: "",
-    at: new Date().toISOString(),
-    route,
-    observer: from?.observer ?? "",
-    ...(from?.kind ? { kind: from.kind } : {}),
-    ...(from?.zone ? { zone: from.zone } : {}),
-    findings: "",
-    action: "",
-    risk: "normal",
-  });
+  const blank = (from: Patrol | undefined = latest, route = ""): Patrol =>
+    newPatrolDraft(from, { route });
   const initial = data.patrols.find((p) => p.id === initialId);
   const editor = useEditorDraft(
     initial || blank(),
@@ -117,7 +100,7 @@ export function Patrols({
     const item: Patrol = {
       ...draft,
       id: draft.id || crypto.randomUUID(),
-      title: draft.title.trim() || autoTitle(draft),
+      title: draft.title.trim() || patrolAutoTitle(draft),
       route: draft.route.trim(),
       observer: draft.observer.trim(),
       zone: draft.zone?.trim(),
@@ -454,7 +437,7 @@ export function Patrols({
                 maxLength={500}
                 value={draft.title}
                 onChange={(e) => patch({ title: e.target.value })}
-                placeholder={autoTitle(draft)}
+                placeholder={patrolAutoTitle(draft)}
               />
             </Field>
           </form>

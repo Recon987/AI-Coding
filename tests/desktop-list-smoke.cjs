@@ -158,6 +158,33 @@ const root = path.resolve(__dirname, "..");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     await page.getByRole("alert").waitFor({ state: "hidden" });
     assert.ok(JSON.parse(fs.readFileSync(liveFile + ".last-good", "utf8")).notes.some(n => n.title === "보호본 실패에도 저장된 메모"));
+    // TASK-PANEL-01 D2: copy a patrol as a new one; the hint names the real source and fields.
+    const source = (await page.evaluate(() => window.workdesk.load())).patrols[0];
+    await page.locator("nav").getByRole("button", { name: "현장 순찰", exact: true }).click();
+    // The fixture repeats titles, so the clicked row is identified by the copied values.
+    await page.getByRole("button", { name: `이 기록으로 새 순찰 · ${source.title}`, exact: true }).first().click();
+    const route = await page.getByLabel("순찰 구간").inputValue();
+    const observer = await page.getByLabel("기록자", { exact: true }).inputValue();
+    assert.ok(route && observer);
+    const hint = await page.locator(".editor-hint").textContent();
+    assert.ok(hint.startsWith(`‘${source.title}’에서 가져옴: 순찰 구간 ${route} · 기록자 ${observer}`), hint);
+    assert.equal(await page.getByLabel("순찰 구간").getAttribute("aria-describedby"), await page.locator(".editor-hint").getAttribute("id"));
+    await page.getByLabel("확인 사항").fill("복사 순찰 이상 없음");
+    await page.getByRole("button", { name: "순찰 저장", exact: true }).click();
+    await page.locator(".sheet[open]").waitFor({ state: "hidden" });
+    const copied = (await page.evaluate(() => window.workdesk.load())).patrols.at(-1);
+    assert.equal(copied.findings, "복사 순찰 이상 없음");
+    assert.equal(copied.route, route);
+    assert.ok(!(await page.evaluate(() => window.workdesk.load())).patrols.slice(0, -1).some((p) => p.id === copied.id));
+    assert.match(copied.title, /^(순찰|[^ ]+)( \S+구역)? \d{2}:\d{2}$/, "빈 제목은 자동 생성");
+    assert.equal(copied.observations, undefined);
+    assert.equal(copied.coordinates, undefined);
+    // The plain "add" button now defaults from that last-added record (not the copy's source title).
+    await page.getByRole("button", { name: "순찰 기록 추가", exact: true }).click();
+    assert.match(await page.locator(".editor-hint").textContent(), new RegExp(`^‘${copied.title}’에서 가져옴: 기록자 ${observer}`));
+    await page.keyboard.press("Escape");
+    await page.locator(".sheet[open]").waitFor({ state: "hidden" });
+
     // TASK-PANEL-01 S2: editing keeps fields this version does not know (e.g. from a newer app).
     const withExtras = await page.evaluate(() => window.workdesk.load());
     withExtras.notes.push({ id: "future-note", title: "미래 필드 메모", body: "본문", tags: ["가상"] });
@@ -182,7 +209,7 @@ const root = path.resolve(__dirname, "..");
     const editedEvent = afterEdit.events.find((e) => e.id === "future-event");
     assert.equal(editedEvent.title, "미래 필드 일정 수정");
     assert.equal(editedEvent.color, "green");
-    console.log(`PASS: 편집 시 모르는 필드 보존(메모·일정), 행 동작 이름에 기록 제목, 보호본 실패 저장 경고·실제자료 갱신/재시도, 예정통제 해제 방지·현재통제 해제, 달력 주간·목록 등록·보기와 이동·보기 탭 키보드(roving)·주간 통제 원본 이동, 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
+    console.log(`PASS: 순찰 복사(출처·채운 칸 안내·자동 제목·단속 건 제외), 편집 시 모르는 필드 보존(메모·일정), 행 동작 이름에 기록 제목, 보호본 실패 저장 경고·실제자료 갱신/재시도, 예정통제 해제 방지·현재통제 해제, 달력 주간·목록 등록·보기와 이동·보기 탭 키보드(roving)·주간 통제 원본 이동, 홈 상태 띠(당직·통제·기한 필터)·주 단위 이동, 목록 ${pages.length}개 화면의 진한 버튼 1개, ↑/↓ 행 이동, Enter 펼치기`);
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });

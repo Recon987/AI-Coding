@@ -4,14 +4,19 @@ const { empty, normalize } = require("../shared/model.mjs");
 const MAX_BYTES = 20 * 1024 * 1024;
 // Antivirus, indexing or sync tools on Windows can hold a file for a moment.
 const TRANSIENT = new Set(["EPERM", "EBUSY", "EACCES"]);
+const isTransientLock = (error) => TRANSIENT.has(error?.code);
 const RETRY_MS = [50, 100, 200, 400];
-function withRetry(action, wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms)) {
+// Replaceable so tests do not sleep; a synchronous wait keeps write() synchronous.
+const retry = {
+  wait: (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms),
+};
+function withRetry(action) {
   for (let attempt = 0; ; attempt++) {
     try {
       return action();
     } catch (error) {
-      if (!TRANSIENT.has(error?.code) || attempt >= RETRY_MS.length) throw error;
-      wait(RETRY_MS[attempt]);
+      if (!isTransientLock(error) || attempt >= RETRY_MS.length) throw error;
+      retry.wait(RETRY_MS[attempt]);
     }
   }
 }
@@ -110,5 +115,7 @@ module.exports = {
   write,
   migrateFile,
   lastGoodFile,
+  isTransientLock,
+  retry,
   due,
 };

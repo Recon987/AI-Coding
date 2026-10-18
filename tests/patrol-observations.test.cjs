@@ -104,3 +104,23 @@ test("브리핑 TXT에 순찰 종류·담당구역·단속 건을 적고 없으�
   assert.match(text, /단속·확인: 흡연 2건\(계도\)/);
   assert.equal(text.match(/단속·확인:/g).length, 1);
 });
+
+test("빠른 순찰 입력: 새 초안은 기록자·종류·구역(복사 시 구간)만 가져오고 자동 제목은 종류·구역·시각", () => {
+  const { newPatrolDraft, patrolAutoTitle } = require("../shared/model.mjs");
+  const source = {
+    id: "p1", title: "원본", at: "2026-10-15T01:00:00.000Z", route: "계곡 → 쉼터", observer: "가상 담당",
+    findings: "샛길 확인", action: "안내", risk: "urgent", kind: "enforcement", zone: "3-2",
+    coordinates: { latitude: 37.6, longitude: 126.9 },
+    observations: [{ id: "o1", type: "흡연", count: 1, outcome: "guidance", note: "" }],
+  };
+  const at = "2026-10-16T05:30:00.000Z"; // 14:30 KST
+  assert.deepEqual(newPatrolDraft(source, { route: source.route, at }), {
+    id: "", title: "", at, route: "계곡 → 쉼터", observer: "가상 담당", kind: "enforcement", zone: "3-2",
+    findings: "", action: "", risk: "normal",
+  });
+  assert.deepEqual(Object.keys(newPatrolDraft(undefined, { at })).sort(), ["action", "at", "findings", "id", "observer", "risk", "route", "title"]);
+  assert.equal(newPatrolDraft({ ...source, kind: undefined, zone: undefined }, { at }).kind, undefined);
+  assert.equal(patrolAutoTitle({ ...source, at }), "단속 3-2구역 14:30");
+  assert.equal(patrolAutoTitle({ ...source, at, zone: "3구역" }), "단속 3구역 14:30");
+  assert.equal(patrolAutoTitle({ ...source, at, kind: undefined, zone: " " }), "순찰 14:30");
+});

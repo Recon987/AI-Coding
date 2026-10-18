@@ -5,6 +5,8 @@ const os = require("node:os");
 const path = require("node:path");
 const store = require("../desktop/store.cjs");
 const { openDataFile } = require("../desktop/recovery.cjs");
+// Lock retries are exercised without real sleeps.
+store.retry.wait = () => {};
 
 const NOW = Date.parse("2026-10-16T09:00:00Z");
 function sandbox(run) {

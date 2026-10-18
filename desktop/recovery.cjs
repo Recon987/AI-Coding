@@ -4,16 +4,21 @@ const path = require("node:path");
 // Opens workdesk.json at startup. A damaged file is copied aside before anything
 // else is written, and is never deleted. Returns false when the app should quit.
 // notify(text) receives warnings the renderer should show once it has loaded.
-const LOCKED = new Set(["EPERM", "EBUSY", "EACCES"]);
 const SEED_FAILED = "마지막 정상본(자동 보호본)을 만들지 못했습니다. 업무 자료는 정상이며 다음 저장 때 다시 시도합니다. 저장 공간과 권한을 확인하고 수동 백업을 만드세요.";
 async function openDataFile({ file, store, dialog, now = Date.now, logger = console, notify = () => {} }) {
-  // A file held by another program is not damaged: offer a retry instead of recovery.
+  // One read path: a file held by another program is not damaged, so it gets a
+  // retry prompt instead of the recovery flow.
   for (;;) {
     try {
+      if (!fs.existsSync(file) && fs.existsSync(store.lastGoodFile(file)))
+        throw new Error("업무 자료 파일이 없지만 마지막 정상본이 남아 있습니다.");
       store.read(file);
+      const migrated = store.migrateFile(file);
+      if (migrated?.warning) notify(migrated.warning);
       break;
     } catch (error) {
-      if (!LOCKED.has(error?.code)) break;
+      if (!store.isTransientLock(error))
+        return recover({ file, store, dialog, now, notify, reason: error });
       const { response } = await dialog.showMessageBox({
         type: "warning",
         buttons: ["다시 시도", "종료"],
@@ -25,15 +30,6 @@ async function openDataFile({ file, store, dialog, now = Date.now, logger = cons
       });
       if (response !== 0) return false;
     }
-  }
-  try {
-    if (!fs.existsSync(file) && fs.existsSync(store.lastGoodFile(file)))
-      throw new Error("업무 자료 파일이 없지만 마지막 정상본이 남아 있습니다.");
-    store.read(file);
-    const migrated = store.migrateFile(file);
-    if (migrated?.warning) notify(migrated.warning);
-  } catch (error) {
-    return recover({ file, store, dialog, now, notify, reason: error });
   }
   // Failure to seed an auxiliary copy does not make a healthy primary corrupt.
   try {

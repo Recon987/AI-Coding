@@ -6,6 +6,7 @@ import type {
   HolidayEntry,
   Control,
   Observation,
+  Patrol,
   PatrolKind,
 } from "../src/types";
 export const collections: string[];
@@ -84,3 +85,5 @@ export function formatCoordinates(
 export const CONTROL_REASONS: Record<Control["reason"], string>;
 /** Closures in effect on a local YYYY-MM-DD date, sorted by start. */
 export function activeControls(data: Data, date: string): Control[];
+export function patrolAutoTitle(patrol: Patrol): string;
+export function newPatrolDraft(from: Patrol | undefined, options?: { route?: string; at?: string }): Patrol;

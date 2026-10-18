@@ -392,7 +392,7 @@ const { empty } = require("../shared/model.mjs");
       1,
     );
     await nav("현장 순찰");
-    await page.getByRole("button", { name: /^수정 · / }).click();
+    await page.getByRole("button", { name: "수정 · 오전 탐방로 순찰", exact: true }).click();
     await page.getByLabel("기록 제목").fill("오전 탐방로 순찰 수정");
     assert.equal(
       await page.getByLabel("경도 (DD)", { exact: true }).inputValue(),
