@@ -37,7 +37,7 @@ updated: 2026-10-18
 Codex 검증: docs/reviews/2026-10-18-panel.md '합의안'·'3차' 표와 커밋 32ad74f~12e7b62 대조. 핵심 확인: (1) shared/model.mjs `utcDayBefore` 읽기 여유 하루와 Calendar 편집기 엄격 검사, (2) desktop/store.cjs `withRetry`·`isTransientLock`·`retry.wait`와 desktop/recovery.cjs 잠금 다시 시도(Windows 실기기 미검증), (3) shared/search.mjs, (4) ListRow sr-only 이름·Office 근무표 셀, (5) briefing 근무·당직/전날 단속 절, (6) Patrols.tsx `prefillOf`·`newPatrolDraft`·`patrolAutoTitle`. Node 24에서 npm test·test:desktop 재실행.
 
 ## 테스트 상태
-12e7b62 기준 Linux Node 22: `npm test` 89/89, `npm run test:desktop` 8개 스모크 통과, review:flows 11개 완료(T2c 복사 입력 3클릭·1칸·5자 vs T2 5·6·39), review:ui strict+zoom 142·실패 0(0a958a2 기준). Windows Actions: 32ad74f 실패(store 테스트 기대값, 547d746에서 수정), 547d746~a1db8b3 성공, 이후는 PR #1에서 확인.
+12e7b62 기준 Linux Node 22: `npm test` 89/89, `npm run test:desktop` 8개 스모크 통과, review:flows 11개 완료(T2c 복사 입력 3클릭·1칸·5자 vs T2 5·6·39), review:ui strict+zoom 142·실패 0(0a958a2 기준). Windows Actions: 32ad74f 실패(store 테스트 기대값, 547d746에서 수정), 547d746~a2d81e3 성공, 12e7b62 실패(desktop-list-smoke 달력 탭 포커스 확인이 requestAnimationFrame 전에 실행된 경합 — 기능 결함 아님, 대기형 확인으로 수정), 이후는 PR #1에서 확인.
 
 ## 검증 기록
 - 2026-10-18 역할 내 교차 재검토(3차, 구현자와 다른 역할 에이전트): 안전 5/5 승인, 접근성 A1 승인·D2 수정, 현장 D1 승인·D2 수정, UX 4 승인·4 수정, 코드 3 승인·3 수정 → a2d81e3·12e7b62에서 반영. **카드 검증자(Codex) 검증은 아직 없음.**

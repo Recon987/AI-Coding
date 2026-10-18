@@ -77,7 +77,11 @@ const root = path.resolve(__dirname, "..");
     }
     // TASK-POLISH-01: view tabs are one Tab stop; arrows/Home/End select and focus.
     const tab = (name) => page.getByRole("tab", { name, exact: true });
-    const focused = (name) => tab(name).evaluate((el) => el === document.activeElement);
+    // Focus moves on the next animation frame after the tab re-renders; wait for it.
+    const focused = (name) =>
+      page
+        .waitForFunction((label) => document.activeElement?.getAttribute("role") === "tab" && document.activeElement.textContent === label, name, { timeout: 3000 })
+        .then(() => true, () => false);
     assert.deepEqual(await page.locator(".calendar-views [role=tab]").evaluateAll((els) => els.map((el) => el.tabIndex)), [-1, -1, 0]);
     await tab("목록").focus();
     await page.keyboard.press("Home");
