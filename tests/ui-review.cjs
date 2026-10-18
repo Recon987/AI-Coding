@@ -169,6 +169,16 @@ async function geometry(page) {
         await nav(label);
         const metrics = await capture(name);
         if (name === "calendar") {
+          const calendarLayout = await page.evaluate(() => {
+            const panel = document.querySelector(".calendar-view-panel").getBoundingClientRect();
+            const agenda = document.querySelector(".calendar-agenda").getBoundingClientRect();
+            return { width: innerWidth, sideBySide: Math.abs(panel.y - agenda.y) < 1 && panel.right < agenda.x,
+              stacked: agenda.y > panel.bottom, tabStops: document.querySelectorAll('.calendar-day[tabindex="0"]').length,
+              rows: document.querySelectorAll('.calendar-month-grid [role="row"]').length,
+              cells: document.querySelectorAll('.calendar-month-grid [role="gridcell"]').length };
+          });
+          check("달력: CSS 화면 폭에 맞춰 두 열 또는 한 열 배치", calendarLayout.width >= 900 ? calendarLayout.sideBySide : calendarLayout.stacked, calendarLayout);
+          check("달력: 42칸·7행과 날짜 Tab 정지점 하나", calendarLayout.rows === 7 && calendarLayout.cells === 42 && calendarLayout.tabStops === 1, calendarLayout);
           const chips = await page.locator(".calendar-chip").evaluateAll((elements) => elements.map((element) => ({
             text: element.textContent.trim(),
             tooltip: element.getAttribute("title") || "",
@@ -187,7 +197,7 @@ async function geometry(page) {
           await dateButton.focus();
           await page.keyboard.press("Enter");
           check("calendar: keyboard can select a date", await dateButton.getAttribute("aria-pressed") === "true");
-          await page.getByRole("button", { name: /^선택 날짜 기록 \d+건 보기$/ }).click();
+          await page.waitForFunction(() => document.activeElement?.classList.contains("calendar-agenda"));
           const agenda = page.getByRole("region", { name: "선택 날짜 기록", exact: true });
           const categories = await agenda.locator(".agenda-row > .tag").allTextContents();
           check("calendar: selected records are focused with explicit types", await agenda.evaluate((element) => element === document.activeElement) && categories.length > 0 && categories.every((category) => /일정|순찰|인계|제출/.test(category)), categories);

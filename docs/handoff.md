@@ -1,6 +1,6 @@
 # AI-Coding 작업 인계장 (`docs/handoff.md`)
 
-**저장소**: `Recon987/AI-Coding` (병합 대상 `main`) · **검증 브랜치 앱/데이터 버전**: `0.7.0` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
+**저장소**: `Recon987/AI-Coding` (병합 대상 `main`) · **검증 브랜치 앱/데이터 버전**: `0.8.0` / `v3` (`v1`/`v2` 자동 백업 후 전환, 기존 `v3` 무손실 호환)
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
@@ -11,13 +11,13 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (task/task-calendar-04 / 기반 task/task-review-dates-01 PR #6)
-- **Task Card**: TASK-CALENDAR-04 in-progress. 1·2단계 완료, 다음 툴바·2열·날짜 격자 키보드.
-- **Latest Pushed Commit**: e099a8b - wip(TASK-CALENDAR-04): 달력 화면과 키보드 개선 착수 (작성 직전 원격, 최종 해시는 응답/git log)
-- **Completed Steps & Modified Files**: Calendar.tsx 표시211줄을 calendar/MonthGrid.tsx·WeekView.tsx·ListView.tsx로 분리. 원본·편집·저장·회차 상태는 부모 유지.
-- **Changed Interfaces / Schema Diff**: 내부 표시 props 분리, 데이터v3·외부IPC 변경 없음.
-- **Test Status**: 분리 단계 npm test91/91·test:desktop8진입점·UI142/오류0/외부요청0 통과. 새UX 미구현/미검증.
-- **Remaining Work for Gemini**: CALENDAR-04 3·4단계. 툴바·900px 이상2열·grid roving/arrow/Home/End/PageUpDown·Enter기록focus·실제 앱/화면/Windows 검증. 분담 에이전트 크레딧 부족 중단, 검토 완료로 가정 금지.
-- **Modified Code Snippets (if uncommitted)**: 분리·기록은 즉시 커밋/푸시, 후속 변경은 git status 확인.
+- **Task Card**: TASK-CALENDAR-04 in-progress. 1~3단계 구현, 다음 최종 화면/Windows 검증.
+- **Latest Pushed Commit**: 5f7773b - wip(TASK-CALENDAR-04): 표시 컴포넌트 분리와 기존 회귀 통과 (작성 직전 원격)
+- **Completed Steps & Modified Files**: Calendar·calendar/MonthGrid/WeekView/ListView 분리, 전체 폭 툴바·900 CSS px 두 열·격자 키보드, style.css, desktop-calendar-smoke 및 npm/Windows 검사 연결, 앱0.8.0 표시.
+- **Changed Interfaces / Schema Diff**: MonthGrid 내부 focusDate/focusRequest/onFocusDate/onMoveDate/onChoose(date,focusRecords?) props. 데이터v3·IPC 변경 없음.
+- **Test Status**: npm test91/91·test:desktop9진입점 통과. 최종 UI150/업무흐름·새 Windows는 다음 단계.
+- **Remaining Work for Gemini**: 새 소스 Windows 소스/패키지 로그·다운로드 확인, 최종 화면/업무흐름 및 증빙·PR. 독립 검증자는 Claude. 분담 에이전트 크레딧 부족 중단으로 최종 승인 미실행.
+- **Modified Code Snippets (if uncommitted)**: 구현·카드 기록은 즉시 커밋/푸시, 후속 변경은 git status 확인.
 ```
 
 ## 2. 과제 현황

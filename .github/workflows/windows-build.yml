@@ -60,7 +60,8 @@ jobs:
             "tests/desktop-list-smoke.cjs",
             "tests/desktop-recurrence-smoke.cjs",
             "tests/desktop-notice-smoke.cjs",
-            "tests/desktop-editor-smoke.cjs"
+            "tests/desktop-editor-smoke.cjs",
+            "tests/desktop-calendar-smoke.cjs"
           )) {
             node $testFile
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

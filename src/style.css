@@ -508,16 +508,30 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 /* Calendar and personal tools */
 .calendar-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, .85fr); gap: 20px; align-items: start; }
 .calendar-detail { display: grid; gap: 20px; }
-.month-controls { display: flex; gap: 5px; }
-.month-controls button { min-height: 32px; padding: 4px 9px; font-size: var(--fs-xs); }
+.calendar-toolbar { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px; }
+.calendar-toolbar h2 { flex: 1; margin: 0; font-size: var(--fs-lg); line-height: 32px; white-space: nowrap; }
+.calendar-navigation { display: flex; gap: 4px; }
+.calendar-navigation button { min-height: 34px; min-width: 34px; padding: 4px 10px; }
+.calendar-toolbar .calendar-views { margin: 0; }
+.calendar-actions { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: -8px; }
+.calendar-actions p { flex: 1; margin: 0; color: var(--muted); font-size: var(--fs-xs); }
+.calendar-actions button { min-height: 32px; padding: 4px 12px; font-size: var(--fs-sm); }
+.calendar-view-panel { min-width: 0; padding: 16px; }
+.calendar-detail { min-width: 0; }
+.calendar-agenda { scroll-margin-top: 72px; }
+.calendar-grid-help { line-height: 20px; }
+.calendar-month-grid:focus-within { position: relative; }
+.calendar-grid-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.calendar-cell { display: flex; min-width: 0; }
+.calendar-day:focus-visible { position: relative; z-index: 1; outline: 2px dashed var(--ink); outline-offset: -4px; }
 .calendar-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .calendar-legend .tag { gap: 4px; }
-.calendar-week, .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.calendar-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .calendar-week span { padding: 8px 4px; color: var(--muted); font-size: var(--fs-xs); text-align: center; }
 .calendar-week span:first-child { color: var(--red-strong); }
 .calendar-week span:last-child { color: var(--blue); }
 .calendar-grid { border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
-.calendar-day { display: flex; flex-direction: column; align-items: stretch; gap: 3px; min-width: 0; min-height: 104px; padding: 5px; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; text-align: left; }
+.calendar-day { width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 3px; min-width: 0; min-height: 104px; padding: 5px; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; text-align: left; }
 .calendar-day.outside { background: var(--surface-sunken); color: var(--subtle); }
 .calendar-day.selected-day { background: var(--surface-hover); box-shadow: inset 0 0 0 2px var(--green); }
 .day-number, .today-number { display: grid; align-self: flex-start; place-items: center; width: 24px; height: 24px; font-size: var(--fs-xs); line-height: 20px; }
@@ -582,8 +596,8 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
   .topbar { padding: 0 24px; }
   .content { padding: 22px 24px 28px; }
   .breadcrumbs { display: none; }
-  .calendar-layout { grid-template-columns: minmax(0, 1fr); }
-  .calendar-detail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .calendar-layout { grid-template-columns: minmax(0, 1fr) 240px; gap: 16px; }
+  .calendar-detail { grid-template-columns: minmax(0, 1fr); }
   .folder-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .daily-overview .section-head { flex-wrap: wrap; }
   .office-metrics button { padding: 8px 10px; gap: 5px; }
@@ -602,6 +616,9 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
   .setup-steps { grid-template-columns: 1fr; }
   .office-tabs { gap: 0; }
   .office-tabs button { padding-right: 8px; padding-left: 8px; }
+}
+@media (max-width: 899px) {
+  .calendar-layout { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 760px) {
   .sidebar { width: 168px; }

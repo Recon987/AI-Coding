@@ -77,6 +77,8 @@ export function Calendar({
   const [selected, setSelected] = useState(
     () => initialDate || dayKey(new Date(initial?.at || Date.now())),
   );
+  const [cursor, setCursor] = useState(selected);
+  const [gridFocusRequest, setGridFocusRequest] = useState(0);
   const blank = (date = selected): Event => ({
     id: "",
     title: "",
@@ -195,6 +197,7 @@ export function Calendar({
     if (source && (await editor.openEditor(source))) {
       const date = occurrenceDay(item);
       setSelected(date);
+      setCursor(date);
       setMonth(new Date(`${date}T12:00:00`));
       setActionError("");
     }
@@ -263,15 +266,28 @@ export function Calendar({
   );
   const gridStart = dayKey(days[0]);
   const gridEnd = dayKey(days[days.length - 1]);
-  const rangeStart = selected < gridStart ? selected : gridStart;
-  const rangeEnd = selected > gridEnd ? selected : gridEnd;
   const items = calendarItems(data, {
-    startDate: rangeStart,
-    endDate: rangeEnd,
+    startDate: gridStart,
+    endDate: gridEnd,
   });
-  const selectedItems = items.filter(
-    (i) => dayKey(new Date(i.at)) === selected,
-  );
+  // 조회 범위를 따로 제한해 먼 달을 탐색해도 반복 회차 한도에 잘리지 않는다.
+  const selectedItems = calendarItems(data, {
+    startDate: selected,
+    endDate: selected,
+  });
+  const focusDate =
+    cursor >= gridStart && cursor <= gridEnd
+      ? cursor
+      : selected >= gridStart && selected <= gridEnd
+        ? selected
+        : dayKey(start);
+  function moveGrid(date: string) {
+    setCursor(date);
+    const next = new Date(`${date}T12:00:00`);
+    if (next.getFullYear() !== year || next.getMonth() !== monthIndex)
+      setMonth(next);
+    setGridFocusRequest((n) => n + 1);
+  }
   const selectedHoliday = holidayName(selected);
   // Week (Mon–Sun around the selected day) and 30-day list views (TASK-CALENDAR-03).
   const [view, setView] = useState<View>("month");
@@ -308,11 +324,16 @@ export function Calendar({
         });
   function moveView(direction: 1 | -1) {
     if (view === "month") {
-      setMonth(new Date(year, monthIndex + direction, 1));
+      const next = new Date(month);
+      next.setDate(1);
+      next.setMonth(monthIndex + direction);
+      setMonth(next);
+      setCursor(dayKey(next));
       return;
     }
     const next = addDays(selected, direction * (view === "week" ? 7 : 30));
     setSelected(next);
+    setCursor(next);
     setMonth(new Date(`${next}T12:00:00`));
   }
   const unit = view === "month" ? "달" : view === "week" ? "주" : "30일";
@@ -329,9 +350,10 @@ export function Calendar({
     agenda.current?.scrollIntoView({ block: "start", behavior: "auto" });
     agenda.current?.focus({ preventScroll: true });
   };
-  function choose(date: string) {
+  function choose(date: string, focusRecords = false) {
     setSelected(date);
-    if (window.matchMedia("(max-width: 960px)").matches)
+    setCursor(date);
+    if (focusRecords || window.matchMedia("(max-width: 899px)").matches)
       requestAnimationFrame(focusAgenda);
   }
   const draftStartDay = dayKey(new Date(draft.at));
@@ -409,51 +431,28 @@ export function Calendar({
   }
   return (
     <div className={`calendar-layout ${view === "month" ? "" : "wide"}`}>
-      <section className="panel">
-        <SectionHead eyebrow="CONNECTED CALENDAR" title={heading}>
-          <div className="month-controls">
-            {exceptionCount > 0 && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (exceptionPanel.current) {
-                    exceptionPanel.current.open = true;
-                    exceptionPanel.current.scrollIntoView({ block: "start" });
-                  }
-                }}
-              >
-                제외 회차 관리 ({exceptionCount})
-              </button>
-            )}
-
-            {view === "month" && (
-              <button onClick={focusAgenda}>
-                선택 날짜 기록 {selectedItems.length}건 보기
-              </button>
-            )}
-            <button
-              className="primary"
-              disabled={busy}
-              onClick={() => editor.openEditor(blank())}
-            >
-              일정 추가
-            </button>
-            <button aria-label={`이전 ${unit}`} onClick={() => moveView(-1)}>
-              ←
-            </button>
-            <button
-              onClick={() => {
-                setMonth(new Date());
-                choose(dayKey());
-              }}
-            >
-              오늘
-            </button>
-            <button aria-label={`다음 ${unit}`} onClick={() => moveView(1)}>
-              →
-            </button>
-          </div>
-        </SectionHead>
+      <header className="calendar-toolbar">
+        <div
+          className="calendar-navigation"
+          role="group"
+          aria-label="달력 날짜 이동"
+        >
+          <button
+            onClick={() => {
+              setMonth(new Date());
+              choose(dayKey());
+            }}
+          >
+            오늘
+          </button>
+          <button aria-label={`이전 ${unit}`} onClick={() => moveView(-1)}>
+            ‹
+          </button>
+          <button aria-label={`다음 ${unit}`} onClick={() => moveView(1)}>
+            ›
+          </button>
+        </div>
+        <h2 id="calendar-heading">{heading}</h2>
         <div
           className="segmented calendar-views"
           role="tablist"
@@ -475,6 +474,31 @@ export function Calendar({
             </button>
           ))}
         </div>
+      </header>
+      <div className="calendar-actions">
+        <p>순찰·인계·제출 기한을 한 달력에서 확인하세요.</p>
+        {exceptionCount > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              if (exceptionPanel.current) {
+                exceptionPanel.current.open = true;
+                exceptionPanel.current.scrollIntoView({ block: "start" });
+              }
+            }}
+          >
+            제외 회차 관리 ({exceptionCount})
+          </button>
+        )}
+        <button
+          className="primary"
+          disabled={busy}
+          onClick={() => editor.openEditor(blank())}
+        >
+          일정 추가
+        </button>
+      </div>
+      <section className="panel calendar-view-panel">
         {view === "week" && (
           <WeekView
             days={weekDays}
@@ -493,6 +517,10 @@ export function Calendar({
             monthIndex={monthIndex}
             items={items}
             selected={selected}
+            focusDate={focusDate}
+            focusRequest={gridFocusRequest}
+            onFocusDate={setCursor}
+            onMoveDate={moveGrid}
             onChoose={choose}
           />
         )}
