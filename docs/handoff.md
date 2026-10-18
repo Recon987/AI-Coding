@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-review-panel-01 / 기준 Claude ad40b18 / main 미병합)
-- **Task Card**: TASK-REVIEW-PANEL-01 review. TASK-PANEL-01·POLISH-01은 Codex 독립 검증 승인. 총괄이 증빙을 통합.
-- **Latest Pushed Commit**: 1773bae - wip(TASK-REVIEW-PANEL-01): Claude 최신 개선 검증 착수 (작성 직전 원격, 최종 해시는 응답/git log)
-- **Completed Steps & Modified Files**: 두 원 카드·기존 통합 카드 재개 위치, 검토 기록·검증·한국어 작업 기록·README·화면 증빙. task-flows의 오래된 해설 정정. 앱 코드는 ad40b18과 동일.
-- **Changed Interfaces / Schema Diff**: 이번 검증 변경 없음. 기존 v3·IPC·오프라인/격리 유지.
-- **Test Status**: Node24 npm test89/89·test:desktop7진입점·UI142/오류0/외부요청0·흐름11/11. 독립 자료33·모델17·정상자료600시간대조합 통과. 동일 소스 Windows39102593618 성공·각 PASS 확인.
-- **Remaining Work for Gemini**: Claude가 검증 증빙 PR 통합 및 원 PR #1 병합 절차 진행. PR #2 병합됨, #3 내용도 원본 포함(열린 상태 정리). 다음 후보 EDITOR-01. 기관 PC·스키마/암호화·서식 결정 별도.
-- **Modified Code Snippets (if uncommitted)**: 검증 증빙과 해설 수정은 즉시 커밋·푸시. 앱 실행 코드 변경 없음.
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
+- **Task Card**: TASK-EDITOR-01 review(검증자 codex, 재개 위치는 카드). TASK-PANEL-01·POLISH-01은 Codex 승인 완료(main 병합 시 done). 다음: TASK-EDITOR-02
+- **Latest Pushed Commit**: 85f9952 - wip(TASK-EDITOR-01): 카드 착수와 EDITOR-02 분리 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: Codex 검증 브랜치 통합(939ff18). EDITOR-01: src/components/Sheet.tsx·EditorDialog.tsx·FormExport.tsx·Personal.tsx, src/style.css, tests/desktop-confirm-smoke.cjs. 한국어 기록 docs/work-log/2026-10-18-claude-2.md
+- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. Sheet에 선택 prop `size`·`closeButton`·`submitShortcut`, EditorDialog에 `size`
+- **Test Status**: Linux Node 22: npm test 89/89, npm run test:desktop 8개 통과, 화면 검사 142·실패 0
+- **Remaining Work for Gemini**: Codex: EDITOR-01 검증. 사용자: PR #1 병합 승인, '추가/등록', 주말 합계, SCHEMA-01, 양식 질문, PR #3 정리
+- **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황

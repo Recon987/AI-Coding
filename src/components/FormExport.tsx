@@ -45,8 +45,19 @@ export function FormExport({ data, busy, onClose }: { data: Data; busy: boolean;
     }
   }
   return (
-    <Sheet title="양식 출력" busy={busy} onClose={onClose} className="form-export">
+    <Sheet title="양식 출력" busy={busy} onClose={onClose} className="form-export" closeButton={false}>
       <div className="editor">
+        <div className="editor-header-actions">
+          <button className="primary" disabled={busy || !api || !!preview.error} onClick={saveFile}>
+            파일로 저장
+          </button>
+          <button disabled={!!preview.error} onClick={copy}>
+            미리보기 복사
+          </button>
+          <button type="button" onClick={onClose}>
+            닫기
+          </button>
+        </div>
         <p className="editor-intro">
           추천 양식입니다(공식 서식 아님). 이미 남긴 순찰·단속 기록으로 만들며 다시 입력하지 않습니다.
         </p>
@@ -98,14 +109,6 @@ export function FormExport({ data, busy, onClose }: { data: Data; busy: boolean;
             {preview.text}
           </pre>
         )}
-        <div className="sheet-actions">
-          <button className="primary" disabled={busy || !api || !!preview.error} onClick={saveFile}>
-            파일로 저장
-          </button>
-          <button disabled={!!preview.error} onClick={copy}>
-            미리보기 복사
-          </button>
-        </div>
         {status && (
           <p className="help" role="status">
             {status}

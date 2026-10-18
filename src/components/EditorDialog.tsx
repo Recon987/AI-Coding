@@ -47,6 +47,7 @@ export function EditorDialog({
   dirty,
   onClose,
   error,
+  size,
   children,
 }: {
   title: string;
@@ -55,6 +56,7 @@ export function EditorDialog({
   /** Called after Sheet confirms discard. Pass finishEditor, not closeEditor. */
   onClose: () => void;
   error: string;
+  size?: "sm" | "md";
   children: ReactNode;
 }) {
   return (
@@ -64,6 +66,9 @@ export function EditorDialog({
       dirty={dirty}
       onClose={onClose}
       className="editor-dialog"
+      size={size}
+      closeButton={false}
+      submitShortcut
     >
       {error && (
         <p role="alert" className="notice error">

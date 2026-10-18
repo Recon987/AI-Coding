@@ -175,6 +175,7 @@ export function Personal({
           dirty={editor.dirty}
           onClose={editor.finishEditor}
           error={editor.saveError}
+          size="sm"
         >
           <form className="editor" onSubmit={submit}>
             <div className="editor-header-actions">
