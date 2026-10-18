@@ -61,6 +61,8 @@ const root = path.resolve(__dirname, "..");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     await page.waitForFunction(() => document.querySelector('.sr-only[role="status"]')?.textContent.includes("저장했습니다"));
     const toast = page.locator(".save-feedback");
+    // From here only runFor moves the app's timers, so slow runners cannot change the result.
+    await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 10);
     const sequence = () => page.locator('.sr-only[role="status"] [data-sequence]').getAttribute("data-sequence");
     const first = await sequence();
     // page.clock keeps running in real time after runFor, so leave a margin for slow
@@ -74,7 +76,16 @@ const root = path.resolve(__dirname, "..");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     await page.waitForFunction((before) => document.querySelector('.sr-only[role="status"] [data-sequence]')?.getAttribute("data-sequence") !== before, first);
     await page.clock.runFor(4000);
-    assert.equal(await toast.isVisible(), true, "같은 문구 재저장 후 타이머 다시 시작(첫 저장 후 9초 이상)");
+    if (!(await toast.isVisible())) {
+      // Diagnose on the runner that fails: what does the app hold right now?
+      console.error("알림 진단:", await page.evaluate(() => ({
+        live: document.querySelector('.sr-only[role="status"]')?.innerHTML,
+        toast: document.querySelector(".save-feedback")?.outerHTML ?? null,
+        active: document.activeElement?.outerHTML.slice(0, 120),
+        now: Date.now(),
+      })));
+      assert.fail("같은 문구 재저장 후 타이머 다시 시작(첫 저장 후 9초 이상)");
+    }
     // The close button is reachable by keyboard, not hidden from screen readers,
     // and returns focus to where the user was.
     const close = toast.getByRole("button", { name: "알림 닫기", exact: true });
