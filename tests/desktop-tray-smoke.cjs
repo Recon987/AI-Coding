@@ -126,12 +126,16 @@ module.exports = async function traySmoke() {
     // native Tray is constructed (no JS exception). Actual Tray construction and
     // hide/reopen run on Windows CI; injectable policy tests cover Linux logic.
     if (process.platform !== "linux") {
-      await toggle.check();
+      // The box turns on only after the main process has created the native tray,
+      // which can lag behind the click in the packaged app; wait for that state.
+      await toggle.click();
       await page
         .getByText("트레이 상주 켜짐 · 창을 숨겨도 알림을 확인합니다.", {
           exact: true,
         })
-        .waitFor();
+        .waitFor({ timeout: 15000 });
+      if (!(await toggle.isChecked()))
+        throw new Error("트레이 상주 설정이 켜짐으로 바뀌지 않았습니다.");
     } else
       console.log(
         "UNRUN: native tray creation/hide/reopen on headless Linux; required on Windows CI",
