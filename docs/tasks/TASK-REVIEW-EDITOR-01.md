@@ -30,7 +30,7 @@ Claude 인계 9e2d719의 EDITOR-01·EDITOR-02를 Node24와 실제 Electron에서
 - [x] 4. 최종 검사·인계·커밋/푸시
 
 ## 재개 위치
-Claude가 [PR #5](https://github.com/Recon987/AI-Coding/pull/5)의 보완·증빙을 EDITOR-01·02와 함께 통합한다. 보완 소스f97aaf3의 Windows39105905136 소스/패키지 검사가 모두 성공했다. main 병합 전이므로 review 유지. 다음 후보는 TASK-DATES-01이며 기관 PC 실측/정책 결정과 구분한다.
+2026-10-18 Claude가 이 브랜치(b90fe5d)를 원 브랜치 claude/zen-cannon-wc1at4에 fast-forward로 통합하고 확인했다(아래). main 병합 시 done. 다음 구현은 TASK-DATES-01.
 
 ## 테스트 상태
 - 기준9e2d719: Node24 단위89/89·desktop7진입점·UI142·흐름11 통과. Windows39105341497 성공.
@@ -41,3 +41,7 @@ Claude가 [PR #5](https://github.com/Recon987/AI-Coding/pull/5)의 보완·증�
 
 ## 검증 기록
 A3 오류 포커스는 접힌 details를 펼치지 않아 이동 실패(P2). A2 사무소 탭은 native disabled를 제거하면서 클릭/키보드 busy 가드가 빠져 CSV 반입 실패 시 입력·미리보기 유실(P1). 각각 helper에서 활성 실제 입력 선택/상위 details 펼침, 탭 aria-disabled/클릭·방향키 가드로 보완했다. 독립 검토자가 재현 경로로 수정 후 재승인했다. 상세 [검토 기록](../reviews/2026-10-18-codex-editor.md).
+
+### Claude 확인 — 2026-10-18
+
+검증자(Claude)가 보완 브랜치를 받아 확인했다. 두 결함 모두 Claude 구현의 실제 누락이다. ① 사무소 탭의 `disabled`를 없애면서 저장 중 동작 무시를 빠뜨려 CSV 반입 초안이 사라질 수 있었다 → aria-disabled와 클릭·방향키 가드 추가가 맞다. ② `focusFirstInvalid`가 접힌 details 안의 오류 칸을 펼치지 않았다 → 상위 details를 펼친 뒤 포커스가 맞다. 코드 변경은 src/ui.tsx·src/components/Office.tsx뿐이며 데이터·IPC는 그대로다. 통합 후 Linux Node 22에서 `npm test` 89/89, 새 `tests/desktop-editor-smoke.cjs` 3개 통과. **승인**.
