@@ -119,7 +119,7 @@ function counter(page) {
     await task("T3", "방금 순찰에서 인수인계 만들기(담당·마감)", async (t) => {
       await t.click(nav("현장 순찰"));
       const record = page.locator(".record").filter({ has: page.getByRole("heading", { name: "오후 계곡 순찰", exact: true }) });
-      await t.click(record.getByRole("button", { name: "인수인계로 연결", exact: true }));
+      await t.click(record.getByRole("button", { name: /^인수인계로 연결 · / }));
       await t.fill(page.getByLabel("담당자", { exact: true }), "김담당");
       await t.fill(page.getByLabel("마감 일시"), "2026-10-16T09:00");
       await t.click(sheet().getByRole("button", { name: /^(변경 저장|업무 등록)$/ }));
@@ -140,7 +140,7 @@ function counter(page) {
     await task("T2b", "순찰 기록에 단속 건 추가(종류·담당구역·유형·건수·위경도)", async (t) => {
       await t.click(nav("현장 순찰"));
       const record = page.locator(".record").filter({ has: page.getByRole("heading", { name: "오후 계곡 순찰", exact: true }) });
-      await t.click(record.getByRole("button", { name: "수정", exact: true }));
+      await t.click(record.getByRole("button", { name: /^수정 · / }));
       await t.select(page.getByLabel("순찰 종류"), "enforcement");
       await t.fill(page.getByLabel("담당구역 번호"), "3-2");
       await t.click(page.getByRole("button", { name: "+ 단속·확인 건 추가" }));
@@ -182,7 +182,7 @@ function counter(page) {
 
     await task("T7", "전화 메모 회신 처리", async (t) => {
       await t.click(nav("전화메모"));
-      await t.click(page.getByRole("button", { name: "처리 완료", exact: true }).first());
+      await t.click(page.getByRole("button", { name: /^처리 완료 · / }).first());
     });
 
     await task("T8", "퇴근 전 오늘 브리핑 미리보기", async (t) => {

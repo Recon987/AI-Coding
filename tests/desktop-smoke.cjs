@@ -205,9 +205,9 @@ const { empty } = require("../shared/model.mjs");
     await page.getByLabel("전화번호").fill("000-0000");
     await page.getByLabel("전달 내용").fill("문의 처리 기록");
     await page.getByRole("button", { name: "저장", exact: true }).click();
-    await page.getByRole("button", { name: "처리 완료", exact: true }).click();
+    await page.getByRole("button", { name: /^처리 완료 · / }).click();
     await page
-      .getByRole("button", { name: "미처리로 변경", exact: true })
+      .getByRole("button", { name: /^미처리로 변경 · / })
       .waitFor();
     await nav("현장 순찰");
     await add("순찰 기록 추가");
@@ -288,7 +288,7 @@ const { empty } = require("../shared/model.mjs");
     );
     await page.getByRole("button", { name: "취소", exact: true }).click();
     await page
-      .getByRole("button", { name: "인수인계로 연결", exact: true })
+      .getByRole("button", { name: /^인수인계로 연결 · / })
       .click();
     await page
       .getByRole("heading", { name: "업무 수정", exact: true })
@@ -341,10 +341,10 @@ const { empty } = require("../shared/model.mjs");
       .locator(".sheet[open]")
       .getByRole("button", { name: "취소", exact: true })
       .click();
-    await page.getByRole("button", { name: "조치 완료", exact: true }).click();
+    await page.getByRole("button", { name: /^조치 완료 · / }).click();
     await page.getByRole("button", { name: "완료", exact: true }).click();
     await page
-      .getByRole("button", { name: "다시 진행", exact: true })
+      .getByRole("button", { name: /^다시 진행 · / })
       .waitFor();
     // Assert all records using the actual preload read path.
     let data = await page.evaluate(() => window.workdesk.load());
@@ -392,7 +392,7 @@ const { empty } = require("../shared/model.mjs");
       1,
     );
     await nav("현장 순찰");
-    await page.getByRole("button", { name: "수정", exact: true }).click();
+    await page.getByRole("button", { name: /^수정 · / }).click();
     await page.getByLabel("기록 제목").fill("오전 탐방로 순찰 수정");
     assert.equal(
       await page.getByLabel("경도 (DD)", { exact: true }).inputValue(),
@@ -468,7 +468,7 @@ const { empty } = require("../shared/model.mjs");
         .coordinates,
       undefined,
     );
-    await optional.getByRole("button", { name: "수정", exact: true }).click();
+    await optional.getByRole("button", { name: /^수정 · / }).click();
     await page.locator(".coordinate-details > summary").click();
     await page.getByLabel("위도 (DD)", { exact: true }).fill("0");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("0");
@@ -480,7 +480,7 @@ const { empty } = require("../shared/model.mjs");
         .coordinates,
       { latitude: 0, longitude: 0 },
     );
-    await optional.getByRole("button", { name: "수정", exact: true }).click();
+    await optional.getByRole("button", { name: /^수정 · / }).click();
     await page
       .getByRole("button", { name: "좌표 지우기", exact: true })
       .click();
@@ -559,8 +559,7 @@ const { empty } = require("../shared/model.mjs");
       .inputValue();
     await page
       .getByRole("button", {
-        name: `시험 직원 ${officeDate} 근무 편집`,
-        exact: true,
+        name: new RegExp(`^\\S.* · 시험 직원 ${officeDate} 근무 편집$`),
       })
       .click();
     assert.equal(

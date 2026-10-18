@@ -4,7 +4,7 @@ export type RowAction = {
   label: string;
   onClick: () => void;
   tone?: "danger";
-  /** Accessible name when the visible label is ambiguous (e.g. several "수정"). */
+  /** Overrides the default accessible name "<label> · <row title>". */
   ariaLabel?: string;
 };
 
@@ -63,6 +63,8 @@ export function ListRow({
             onClick={action.onClick}
           >
             {action.label}
+            {/* Screen readers hear which record ("삭제 · 오전 순찰"); the visible label stays first. */}
+            {!action.ariaLabel && <span className="sr-only"> · {title}</span>}
           </button>
         ))}
       </div>

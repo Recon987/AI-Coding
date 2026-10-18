@@ -455,9 +455,9 @@ export function Office({
                                     <button
                                       disabled={busy}
                                       className={`week-cell ${entry?.workType ?? "missing"}`}
-                                      aria-label={`${row.employee.name} ${day} 근무 편집`}
                                       onClick={() => edit(row.employee.id, day)}
                                     >
+                                      {/* The visible shift is read first; who/when follow (TASK-PANEL-01 A1). */}
                                       <span>
                                         {entry
                                           ? workTypes[entry.workType]
@@ -477,6 +477,10 @@ export function Office({
                                           }
                                         </small>
                                       )}
+                                      <span className="sr-only">
+                                        {" "}
+                                        · {row.employee.name} {day} 근무 편집
+                                      </span>
                                     </button>
                                   </td>
                                 );

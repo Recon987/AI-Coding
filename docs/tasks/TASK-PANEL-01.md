@@ -29,14 +29,14 @@ updated: 2026-10-18
 ## 진행 단계
 - [x] 1. 1차 검토(5개 역할 병렬) — 발견 40건(D8·U8·S8·A8·C8), docs/reviews/2026-10-18-panel.md
 - [x] 2. 2차 교차 검토·합의안 — 반대 2건(U2 hover 철회·S8 보류), 묶음 A(S1·S4+S6+S2편집보존·C1·A1)·B(D1·D2), 다음 주기 카드 5장(EDITOR·DATES·LABELS·SCHEMA·A11Y-02)
-- [ ] 3. 합의 구현 묶음 A: S1 → S4+S6+S2 편집 필드 보존 → C1 → A1
+- [x] 3. 합의 구현 묶음 A: S1(model.mjs utcDayBefore) → S4+S6+S2(store.cjs withRetry·recovery 잠금 다시 시도·백업 새 이름·메모/일정 편집 필드 보존) → C1(shared/search.mjs) → A1(ListRow '<동작> · <제목>', 근무표 셀 이름)
 - [ ] 4. 합의 구현 묶음 B(D1·D2)·원 제안 역할 재검토
 - [ ] 5. 기록(loop-log 5주기, handoff)
 
 ## 재개 위치
-3단계 A1부터: src/components/ListRow.tsx 행 동작 버튼 이름을 "<제목> <동작>"으로 자동 생성(보이는 글자로 시작), src/components/Office.tsx 주간 근무표 셀 aria-label이 보이는 근무 내용을 덮어쓰지 않게, 스모크 선택자(desktop-smoke·confirm·list·task-flows의 name "수정"/"삭제" exact) 갱신, desktop-list-smoke에 편집 필드 보존 검사 추가. S1·S4·S6·S2·C1 완료.
+4단계 묶음 B: D1 shared/model.mjs briefing()에 '당직' 절(당직자 이름만, 근무는 건수)·'전날 단속·확인' 절, 하단 경고에 '직원 이름 포함', 날짜 검사 validDate. 그다음 D2 src/components/Patrols.tsx blank() 기본값(at이 가장 늦은 순찰의 기록자·종류·구역), 제목 선택·자동 생성(≤500자), '이 기록으로 새 순찰'(새 id, observations·좌표·확인 사항 제외), 폼 순서=DOM 순서, 측정 tests/task-flows.cjs T2(기준 5클릭·6칸·39자).
 
 ## 테스트 상태
-C1 후: `npm test` 87/87 통과. S4·S6·S2 후: 85/85. S1 후: 83/83(32ad74f 시점 store.test 1건 실패 → 다음 커밋에서 기대값 조정: 읽기 검증은 시간대 여유 하루, 편집기는 지역 날짜 엄격 검사 유지). 데스크톱 스모크 미실행.
+묶음 A 후(Linux Node 22): `npm test` 87/87, `npm run test:desktop` 8개 통과, review:flows 10개 완료. C1 후: `npm test` 87/87 통과. S4·S6·S2 후: 85/85. S1 후: 83/83(32ad74f 시점 store.test 1건 실패 → 다음 커밋에서 기대값 조정: 읽기 검증은 시간대 여유 하루, 편집기는 지역 날짜 엄격 검사 유지). 데스크톱 스모크 미실행.
 
 ## 검증 기록
