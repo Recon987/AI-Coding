@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1). PR #6·#7 내용은 fast-forward로 포함
-- **Task Card**: TASK-CALENDAR-04·TASK-REVIEW-DATES-01 — Claude 검증 승인 기록 완료(review, main 병합 시 done). TASK-DATES-01·EDITOR-01·02·PANEL-01·POLISH-01도 교차 승인 완료. 다음 후보: TASK-A11Y-02, TASK-LABELS-01, TASK-LIST-02
-- **Latest Pushed Commit**: d964bef - docs(TASK-CALENDAR-04): Windows 통과 증빙과 Claude 검증 인계 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: Claude 검증 기록 docs/tasks/TASK-CALENDAR-04.md·TASK-REVIEW-DATES-01.md, 관찰 이관 docs/tasks/TASK-A11Y-02.md, 한국어 기록 docs/work-log/2026-10-18-claude-2.md
-- **Changed Interfaces / Schema Diff**: 이번 커밋은 문서만. PR #7: 앱 0.8.0, 데이터 v3·IPC 변경 없음, Calendar 하위 컴포넌트 분리
-- **Test Status**: Claude 재실행(Linux Node 22, d964bef): npm test 91/91, npm run test:desktop 전체 통과, 화면 150·실패 0, 업무 흐름 11/11, 별도 키보드·배치 검사 12/12. Codex 기록: Windows 39128793988 성공
-- **Remaining Work for Gemini**: 사용자: PR #1 main 병합 승인(PR #3~#7은 PR #1에 포함되어 정리 가능), '추가/등록', 주말 합계, SCHEMA-01, 양식 질문 4개. 다음 구현 카드 선택
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
+- **Task Card**: TASK-A11Y-02 review(검증자 codex, 재개 위치는 카드). 그 외 이번 주기 카드(PANEL·POLISH·EDITOR-01·02·DATES-01·CALENDAR-04)는 교차 승인 완료. 다음 후보: TASK-LABELS-01, TASK-LIST-02
+- **Latest Pushed Commit**: a1fbae4 - wip(TASK-A11Y-02): 상태 안내를 화면낭독기가 놓치지 않게(A5) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: src/style.css, src/main.tsx, src/components/{Briefing,Patrols,Tasks,Personal}.tsx, src/components/calendar/MonthGrid.tsx, tests/desktop-a11y-smoke.cjs(신규), tests/desktop-recurrence-smoke.cjs, tests/ui-review.cjs, package.json, .github/workflows/windows-build.yml. 한국어 기록 docs/work-log/2026-10-18-claude-2.md
+- **Changed Interfaces / Schema Diff**: 데이터 v3·IPC 변경 없음. '/' 단축키 제거(Ctrl+K 유지). 날짜 버튼 접근 이름 형식 변경(보이는 글자 먼저)
+- **Test Status**: Linux Node 22: npm test 91/91, npm run test:desktop 10개 진입점 통과, 화면 검사 150·실패 0, 업무 흐름 11/11
+- **Remaining Work for Gemini**: Codex: A11Y-02 검증. 기관 PC: 고대비 테마·NVDA 확인. 사용자: PR #1 병합 승인, '추가/등록', 주말 합계, SCHEMA-01, 양식 질문
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

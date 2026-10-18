@@ -187,10 +187,10 @@ async function geometry(page) {
           check("calendar: titles lead the visible chip text", chips.length > 0 && chips.every((chip) => !/^(일정|순찰|인계|제출)\s*[·:]/.test(chip.text) && chip.text.includes("가상")), chips);
           check("calendar: complete titles, type and 24h time remain available", chips.every((chip) => chip.tooltip.includes(chip.text.replace(/^↻\s*/, "")) && /\d{2}:\d{2}/.test(chip.tooltip) && /일정|순찰|인계|제출/.test(chip.tooltip) && chip.dayName.includes(chip.text.replace(/^↻\s*/, ""))), chips);
           if (date.startsWith("2026-10-")) {
-            const holiday = page.getByRole("button", { name: /^2026-10-03 .*개천절/ });
+            const holiday = page.getByRole("button", { name: /^3일, 2026\. 10\. 3\. .*개천절/ });
             const holidayColor = await holiday.locator(".day-number").evaluate((element) => getComputedStyle(element).color);
-            const fridayHolidayColor = await page.getByRole("button", { name: /^2026-10-09 .*한글날/ }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
-            const saturdayColor = await page.getByRole("button", { name: /^2026-10-10 / }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
+            const fridayHolidayColor = await page.getByRole("button", { name: /^9일, 2026\. 10\. 9\. .*한글날/ }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
+            const saturdayColor = await page.getByRole("button", { name: /^10일, 2026\. 10\. 10\. / }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
             check("calendar: a Saturday public holiday retains holiday meaning and color", holidayColor === fridayHolidayColor && holidayColor !== saturdayColor, { holidayColor, fridayHolidayColor, saturdayColor });
           }
           const dateButton = page.locator(".calendar-day").filter({ has: page.locator(".calendar-chip") }).first();

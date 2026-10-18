@@ -360,7 +360,8 @@ export function Briefing({
                 return (
                   <button
                     key={key}
-                    aria-label={`${key} 기록 ${count}건`}
+                    // Starts with what is on the button (요일·날짜), not an ISO key (TASK-A11Y-02).
+                    aria-label={`${day.toLocaleDateString("ko-KR", { weekday: "short" })} ${day.getDate()}일, ${formatDate(key, { weekday: false })} 기록 ${count}건`}
                     aria-pressed={date === key}
                     className={`${date === key ? "selected" : ""} ${today === key ? "is-today" : ""}`}
                     onClick={() => chooseDate(key)}

@@ -41,7 +41,7 @@ const TITLE = "가상 반복 회의";
     page.locator("nav").getByRole("button", { name, exact: true }).click();
   const load = () => page.evaluate(() => window.workdesk.load());
   const selectDate = async (date) => {
-    await page.locator(`.calendar-day[aria-label^="${date} "]`).click();
+    await page.locator(`.calendar-day[data-date="${date}"]`).click();
   };
   const manage = async (name) => {
     await page.locator(".data-menu > summary").click();
@@ -126,7 +126,7 @@ const TITLE = "가상 반복 회의";
     );
 
     // Opening tomorrow's briefing record must retain tomorrow's occurrence context.
-    await page.getByRole("button", { name: /^2026-10-16 기록/ }).click();
+    await page.getByRole("button", { name: /^금 16일, 2026\. 10\. 16\. 기록/ }).click();
     await page.locator(".timeline-row").filter({ hasText: TITLE }).click();
     const editor = page.getByRole("dialog", { name: "일정 수정", exact: true });
     await editor.waitFor();
@@ -340,13 +340,15 @@ const TITLE = "가상 반복 회의";
     );
   } catch (error) {
     failed = true;
+    // Print the real failure first; a cleanup error below must not hide it.
+    console.error("반복 일정 검사 본문 실패:", error);
     throw error;
   } finally {
     if (app) {
       if (failed) await app.evaluate(({ app }) => app.exit(1)).catch(() => {});
       else await app.close();
     }
-    fs.rmSync(dir, { recursive: true, force: true });
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 })().catch((error) => {
   console.error(error);

@@ -165,7 +165,8 @@ export function MonthGrid({
                       tabIndex={key === focusDate ? 0 : -1}
                       onFocus={() => onFocusDate(key)}
                       onKeyDown={(e) => dateKeys(e, key)}
-                      aria-label={`${key} ${work.length}건, ${formatDate(key)}${holiday ? `, ${holiday}` : ""}${closures.length ? `, 탐방로 통제 ${closures.length}곳` : ""}${entryDescription ? `, ${entryDescription}` : ""}${work.length > 3 ? `, 그 외 ${work.length - 3}건. 선택 날짜 기록에서 전체 확인` : ""}`}
+                      // Visible day number first, then the full date (TASK-A11Y-02).
+                      aria-label={`${date.getDate()}일, ${formatDate(key)}, ${work.length}건${holiday ? `, ${holiday}` : ""}${closures.length ? `, 탐방로 통제 ${closures.length}곳` : ""}${entryDescription ? `, ${entryDescription}` : ""}${work.length > 3 ? `, 그 외 ${work.length - 3}건. 선택 날짜 기록에서 전체 확인` : ""}`}
                       aria-pressed={selected === key}
                       aria-current={key === dayKey() ? "date" : undefined}
                       className={`calendar-day ${date.getMonth() !== monthIndex ? "outside" : ""} ${key === selected ? "selected-day" : ""} ${holiday ? "holiday-day" : ""} ${date.getDay() === 0 ? "sunday" : date.getDay() === 6 ? "saturday" : ""}`}

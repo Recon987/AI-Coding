@@ -838,3 +838,12 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
   .tag, .calendar-chip, .calendar-control-mark, .week-item { border: 1px solid CanvasText; }
   button:disabled, [aria-disabled="true"] { color: GrayText; border-color: GrayText; opacity: 1; }
 }
+
+/* TASK-A11Y-02 A6: at narrow widths (and 125% zoom) let short labels wrap to two lines
+   instead of cutting to one or two characters. List rows stay on one line. */
+@media (max-width: 1200px) {
+  .calendar-chip { align-items: flex-start; white-space: normal; }
+  .calendar-chip > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere; }
+  .today-tile > small { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal; }
+  .week-cell small { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal; overflow-wrap: anywhere; }
+}

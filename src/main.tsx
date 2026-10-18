@@ -121,15 +121,10 @@ function App() {
     return () => clearTimeout(timer);
   }, [feedback]);
   useEffect(() => {
+    // Ctrl/Cmd+K only: a bare "/" fired by dictation or a screen reader's browse mode
+    // opened search mid-task and could not be switched off (WCAG 2.1.4, TASK-A11Y-02).
     const shortcut = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement;
-      const editing = target.matches(
-        "input, textarea, select, [contenteditable=true]",
-      );
-      if (
-        ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") ||
-        (event.key === "/" && !editing)
-      ) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setSearchOpen(true);
         searchInput.current?.focus();
@@ -571,7 +566,7 @@ function App() {
                     </p>
                     <h3>검색 바로가기</h3>
                     <p>
-                      Ctrl+K 또는 / 키로 통합 검색을 엽니다. 검색창에서 Esc를
+                      Ctrl+K로 통합 검색을 엽니다. 검색창에서 Esc를
                       누르면 원래 화면으로 돌아갑니다.
                     </p>
                   </section>
