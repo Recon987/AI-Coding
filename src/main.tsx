@@ -134,8 +134,14 @@ function App() {
   useEffect(() => {
     // Long enough to read at 125% zoom; paused while the close button has focus.
     if (!feedback.message || feedbackFocused) return;
+    // Clear only the message this timer was started for: an older timer that fires in
+    // the gap before React cancels it must not erase a newer message (seen on Windows).
+    const sequence = feedback.sequence;
     const timer = setTimeout(
-      () => setFeedbackState((previous) => ({ ...previous, message: "" })),
+      () =>
+        setFeedbackState((previous) =>
+          previous.sequence === sequence ? { ...previous, message: "" } : previous,
+        ),
       8000,
     );
     return () => clearTimeout(timer);
