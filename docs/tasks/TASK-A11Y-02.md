@@ -35,9 +35,15 @@ updated: 2026-10-18
 - [x] 6. tests/desktop-a11y-smoke.cjs 신규(test:desktop·Windows 패키지 단계에 추가). recurrence-smoke가 날짜 이름 앞부분으로 칸을 찾던 것을 data-date로 바꾸고, 본문 오류가 정리 오류에 가려지지 않게 먼저 출력
 
 ## 재개 위치
-Codex 검증: style.css(--input-line, forced-colors 블록, 1200px 이하 2줄), src/main.tsx(상시 라이브 영역·알림 8초·닫기·'/' 제거), 검색 건수 role=status(main·Patrols·Tasks·Personal), Briefing 주간 띠·today-strip, calendar/MonthGrid.tsx 날짜 이름, tests/desktop-a11y-smoke.cjs. 실제 고대비 테마·화면낭독기(NVDA) 확인은 기관 PC에서(Playwright forcedColors 에뮬레이션으로만 확인).
+Codex 검증 재개: 아래 '검증 중 발견 보완'의 두 결함 수정(src/main.tsx 알림 {message, sequence}·닫기·포커스 복귀·포커스 중 타이머 정지, tests/desktop-a11y-smoke.cjs 회귀)을 확인하고 TASK-REVIEW-A11Y-02 검증을 이어 간다. Codex의 이전 환경 미푸시 보완은 이 커밋으로 대체되므로 복원할 필요 없다.
 
 ## 테스트 상태
-Linux Node 22(2026-10-18): `npm test` 91/91, `npm run test:desktop` 10개 진입점 통과(새 a11y 검사 포함), 화면 검사 150·실패 0·외부 요청 0, 업무 흐름 11/11. Node 24·Windows Actions는 PR #1에서 확인.
+보완 후 Linux Node 22(2026-10-18): `npm test` 91/91, `npm run test:desktop` 10개 진입점 통과, 화면 검사 150·실패 0. 새 회귀 검사는 보완 전 코드에서 실패(시간 초과)하고 보완 후 통과함을 확인. Windows Actions는 이 커밋 실행으로 확인.
 
 ## 검증 기록
+
+### 검증 중 발견 보완 (2026-10-18, Claude)
+
+Codex가 TASK-REVIEW-A11Y-02 검증 중 찾은 두 결함(Codex 환경 시작 실패로 보완이 미푸시 상태)을 구현자 Claude가 원 브랜치에서 같은 설계로 고쳤다.
+1. 같은 문구로 연속 저장하면 상태가 바뀌지 않아 화면낭독기가 다시 읽지 않고 8초 타이머도 첫 저장 기준으로 끝났다 → 알림 상태를 {message, sequence}로, 상시 status 안 메시지에 sequence를 key로 써 새로 안내, 타이머 재시작.
+2. 닫기(×) 버튼이 aria-hidden 영역 안·Tab 제외라 키보드·화면낭독기로 닫을 수 없었다 → 문구만 aria-hidden(상시 status가 읽음), 버튼은 '알림 닫기' 이름으로 Tab 순서에 두고, 버튼에 포커스가 있는 동안 타이머 정지, 닫으면 직전 위치로 포커스 복귀.

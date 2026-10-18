@@ -61,13 +61,34 @@ const root = path.resolve(__dirname, "..");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     await page.waitForFunction(() => document.querySelector('.sr-only[role="status"]')?.textContent.includes("저장했습니다"));
     const toast = page.locator(".save-feedback");
+    const sequence = () => page.locator('.sr-only[role="status"] [data-sequence]').getAttribute("data-sequence");
+    const first = await sequence();
     await page.clock.runFor(6000);
     assert.equal(await toast.isVisible(), true, "6초 뒤에도 알림 표시");
-    await toast.locator(".save-feedback-close").click();
+    // Same message again: announced anew and the 8 s timer restarts (Codex review finding).
+    await page.evaluate(async () => window.workdesk.save(await window.workdesk.load()));
+    await page.getByRole("button", { name: "메모 추가", exact: true }).click();
+    await page.getByLabel("제목", { exact: true }).fill("가상 낭독 확인 메모 2");
+    await page.keyboard.press("Control+Enter");
+    await page.locator(".sheet[open]").waitFor({ state: "hidden" });
+    await page.waitForFunction((before) => document.querySelector('.sr-only[role="status"] [data-sequence]')?.getAttribute("data-sequence") !== before, first);
+    await page.clock.runFor(6000);
+    assert.equal(await toast.isVisible(), true, "같은 문구 재저장 후 타이머 다시 시작");
+    // The close button is reachable by keyboard, not hidden from screen readers,
+    // and returns focus to where the user was.
+    const close = toast.getByRole("button", { name: "알림 닫기", exact: true });
+    assert.equal(await close.evaluate((el) => el.closest('[aria-hidden="true"]') === null && el.tabIndex >= 0), true);
+    const memoSearch = page.getByLabel("기록 검색");
+    await memoSearch.focus();
+    await close.focus();
+    await page.clock.runFor(9000);
+    assert.equal(await toast.isVisible(), true, "닫기 버튼에 포커스가 있는 동안 유지");
+    await page.keyboard.press("Enter");
     await toast.waitFor({ state: "hidden" });
+    assert.equal(await memoSearch.evaluate((el) => el === document.activeElement), true, "닫은 뒤 원래 위치로 포커스 복귀");
     // List search announces how many rows remain.
     await page.getByLabel("기록 검색").fill("낭독 확인");
-    assert.equal(await page.locator('.list-count[role="status"]').textContent(), "1건 표시");
+    assert.equal(await page.locator('.list-count[role="status"]').textContent(), "2건 표시");
 
     // A8: a bare "/" no longer opens search; Ctrl+K still does.
     await page.locator("main h1").click();
@@ -86,7 +107,7 @@ const root = path.resolve(__dirname, "..");
     assert.equal(await chip.evaluate((el) => getComputedStyle(el).webkitLineClamp), "2");
     await page.setViewportSize({ width: 1360, height: 900 });
     assert.equal(await chip.evaluate((el) => getComputedStyle(el).webkitLineClamp), "none", "넓은 화면은 한 줄");
-    console.log("PASS: 입력칸 대비·고대비 선택 표시, 날짜 이름(보이는 글자 먼저), 상시 낭독 영역·알림 8초·닫기, 검색 건수 낭독, / 단축키 제거·Ctrl+K 유지, 좁은 폭 2줄");
+    console.log("PASS: 입력칸 대비·고대비 선택 표시, 날짜 이름(보이는 글자 먼저), 상시 낭독 영역·같은 문구 재안내·알림 8초(포커스 중 유지)·키보드 닫기와 포커스 복귀, 검색 건수 낭독, / 단축키 제거·Ctrl+K 유지, 좁은 폭 2줄");
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
