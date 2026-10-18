@@ -1,11 +1,11 @@
 ---
 id: TASK-DATES-01
 title: 날짜·주간·기간 계산을 shared/dates.mjs로 단일화(C2) 후 달력 개편 준비
-status: backlog
+status: in-progress
 role: builder
-owner: none
-verifier: claude
-branch: task/task-dates-01
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
 updated: 2026-10-18
@@ -17,17 +17,20 @@ updated: 2026-10-18
 ## 완료 조건
 - [ ] 월요일 시작 주·하루 이동·기간 계산을 Briefing·Office·Calendar·FormExport·Observations에서 shared로 이동(동작 불변)
 - [ ] TZ 3종 단위 테스트
-- [ ] 후속: C6 Calendar 분리 → U4 툴바·두 열 유지 → A7 날짜 격자 grid/로빙
+- [ ] 시간대 표시 없는 외부 자료의 반복 종료일 읽기 판정이 PC 시간대와 무관(Codex P3)
 - [ ] `npm test`, `npm run test:desktop` 통과
 
 ## 범위 밖
-합의안의 보류·기각 항목.
+달력 화면 분리(C6)·툴바/두 열(U4)·날짜 격자 키보드(A7)는 TASK-CALENDAR-04로 분리. 합의안의 보류·기각 항목.
 
 ## 진행 단계
-- [ ] 1. 착수 시 검토 문서의 해당 발견과 2차 조건을 다시 읽고 단계를 나눈다
+- [x] 1. 검토 문서 C2와 2차 조건(안전: 동작 불변 이동·TZ 여러 종 테스트) 재확인, 카드 분리(CALENDAR-04)
+- [ ] 2. shared/dates.mjs(addDays·weekStart·weekDays·daysInclusive·periodRange·validDateKey)와 TZ 3종 테스트
+- [ ] 3. 화면 5곳·model/forms를 dates.mjs로 교체, utcDayBefore 정리(P3)
+- [ ] 4. 전체 검사·기록
 
 ## 재개 위치
-착수 전.
+2단계: shared/dates.mjs와 shared/dates.d.mts 작성, tests/dates.test.cjs(자식 프로세스로 TZ Asia/Seoul·UTC·America/Los_Angeles).
 
 ## 테스트 상태
 미실행
