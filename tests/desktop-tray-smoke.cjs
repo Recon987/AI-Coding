@@ -260,8 +260,13 @@ module.exports = async function traySmoke() {
     console.log(
       "PASS: PC 설정·resume24h·요약·완료/미래 제외·영구 중복 방지·미저장 종료 취소/승인; 실제 트레이 닫기/복귀는 Windows에서 검증",
     );
+  } catch (error) {
+    // 정리 중 파일 잠금 오류가 나더라도 최초 검사 실패를 로그에 남긴다.
+    console.error("트레이 검사 본문 실패:", error);
+    throw error;
   } finally {
     if (app) await app.evaluate(({ app }) => app.exit(1)).catch(() => {});
-    fs.rmSync(dir, { recursive: true, force: true });
+    // Windows가 종료 직후 잠시 점유한 파일은 제한적으로 재시도한다.
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 };

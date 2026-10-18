@@ -707,7 +707,7 @@ const { empty } = require("../shared/model.mjs");
       if (failed) await app.evaluate(({ app }) => app.exit(1)).catch(() => {});
       else await app.close();
     }
-    fs.rmSync(dir, { recursive: true, force: true });
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 })().catch((error) => {
   console.error(error);

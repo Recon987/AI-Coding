@@ -12,12 +12,12 @@
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (task/task-review-dates-01 / 기준 Claude75f04e9 / main 미병합)
 - **Task Card**: TASK-REVIEW-DATES-01 in-progress. DATES-01 독립 검증 승인·0~99년 월말P3 보완. 다음은 보완본 Windows 확인.
-- **Latest Pushed Commit**: 45fdc57 - wip(TASK-REVIEW-DATES-01): 날짜 계산과 시간대 경계 검증 착수 (작성 직전 원격, 최종 해시는 응답/git log)
+- **Latest Pushed Commit**: a2f0b4cad998f98ebd9837cd6ef8c12f4e264d6e - fix(TASK-REVIEW-DATES-01): 월말 연도 보존과 날짜 단일화 검증 기록 (작성 직전 원격, 최종 해시는 응답/git log)
 - **Completed Steps & Modified Files**: shared/dates.mjs 월말 연도 보존, tests/dates.test.cjs 5TZ 회귀, DATES/검증 카드·검토/검증/한국어 기록·handoff.
 - **Changed Interfaces / Schema Diff**: 기존 함수 시그니처·자료v3·IPC 유지. periodRange의 허용한 낮은 연도 결과만 보완.
-- **Test Status**: Node24 npm test91/91을5TZ 각각·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 독립 자료1800·현대경계2412·정상600·보완경계132 통과. 원본 Windows39107140819 성공, 보완본은 푸시 후 확인.
+- **Test Status**: Node24 npm test91/91을5TZ 각각·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 독립 자료1800·현대경계2412·정상600·보완경계132 통과. 원본 Windows39107140819 성공. 첫 보완39110532993은 중간 패키지 실패가 success로 덮여 보류, 종료 코드/정리 재시도 보완 후 재검증.
 - **Remaining Work for Gemini**: Windows 후 증빙 통합. Claude는 DATES-01과 이 보완을 함께 통합. 다음 CALENDAR-04. 기관 PC·정책 결정 별도.
-- **Modified Code Snippets (if uncommitted)**: 보완·증빙은 이 문서와 즉시 커밋/푸시. 원 브랜치/main 직접 수정 없음.
+- **Modified Code Snippets (if uncommitted)**: Windows 검사 신뢰성 보완·증빙을 즉시 커밋/푸시. 원 브랜치/main 직접 수정 없음.
 ```
 
 ## 2. 과제 현황

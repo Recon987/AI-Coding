@@ -27,6 +27,7 @@
 ## 직접 실행
 
 - Node24.19.0 기준과 보완본 각각 npm test **91/91**, Asia/Seoul·UTC·America/Los_Angeles·Pacific/Kiritimati·Pacific/Pago_Pago **각각91/91**.
+- 전체 명령에 TZ를5종 지정해 실행했다. controls/patrol-observations/forms 일부 기존 검사는 자체적으로 서울TZ를 고정하므로 모든 개별 기능을5TZ에서 검사했다고 해석하지 않는다. 날짜 전용 검사는 자식 프로세스의 실제5TZ를 직접 검증하며 독립 자료/화면 검사와 함께 판정했다.
 - npm run test:desktop 전체 **8개 진입점 통과**. 이전 편집 오류/CSV 실패 초안 보존 회귀도 포함.
 - 실제 화면 **142개**, 오류0·외부요청0. 업무 흐름 **11/11**. 기준 `/tmp/park-workdesk-review/dates-baseline`, 보완 `/tmp/park-workdesk-review/dates-verified`.
 - 정확한75f04e9의 [Windows39107140819](https://github.com/Recon987/AI-Coding/actions/runs/39107140819) 성공 조회. 보완본 Windows 소스/패키지는 푸시 후 별도 기록한다.
@@ -34,3 +35,9 @@
 ## 다음 범위
 
 CALENDAR-04의 화면 분리·툴바·날짜 격자 키보드 개편은 이번 날짜 유틸 검증과 분리돼 있다. 기관 PC 실사용과 기존 스키마/암호화/용어/서식 정책도 이번 검증에서 확정하지 않았다. 새 외부 패키지·API·IPC 및 데이터v3 변경 없음.
+
+## Windows 로그에서 추가 발견한 검사 신뢰성 문제
+
+보완 소스a2f0b4c의 Windows39110532993은 API상 success지만 패키징 첫 desktop-smoke에서 tray 임시 폴더 정리 EPERM이 발생했다. 뒤의 명령이 성공하면 PowerShell 단계의 최종 종료 코드가0이 되어 중간 실패가 덮였다. **이 실행은 전체 패키지 검사 성공 증빙으로 채택하지 않는다.**
+
+정리 오류가 앞선 트레이 본문 예외를 덮었을 수도 있으므로 원인을 제품/백신/자식 프로세스로 단정하지 않는다. 트레이 검사에서 최초 본문 오류를 먼저 로그로 남기고, 임시 폴더 정리는 Node의 제한 재시도(maxRetries10/retryDelay100)를 사용한다. 영구 정리 실패는 계속 오류로 처리한다. PowerShell은 각 Node 검사 종료 코드가0이 아니면 즉시 같은 코드로 종료하도록 바꿨다. 이 보완을 푸시해 새 Windows 실행에서 각 PASS와 오류 유무를 다시 확인한다. 앱 코드는 a2f0b4c와 같다.
