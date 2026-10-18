@@ -149,11 +149,13 @@ export function Office({
             aria-controls={`office-panel-${value}`}
             tabIndex={tab === value ? 0 : -1}
             aria-selected={tab === value}
+            aria-disabled={busy || undefined}
             onKeyDown={(event) => {
               const key = event.key;
               if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(key))
                 return;
               event.preventDefault();
+              if (busy) return;
               const nextIndex =
                 key === "Home"
                   ? 0
@@ -168,7 +170,9 @@ export function Office({
               document.getElementById(`office-tab-${next}`)?.focus();
             }}
             key={value}
-            onClick={() => setTab(value)}
+            onClick={() => {
+              if (!busy) setTab(value);
+            }}
             className={tab === value ? "selected" : ""}
           >
             {label}

@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
-- **Task Card**: TASK-EDITOR-01·TASK-EDITOR-02 review(검증자 codex, 재개 위치는 각 카드). PANEL-01·POLISH-01은 Codex 승인 완료
-- **Latest Pushed Commit**: 77a1f0d - wip(TASK-EDITOR-02): 입력 오류를 해당 칸에 연결하고 저장 버튼을 잠그지 않음(A3) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: EDITOR-01(Sheet 머리 한 줄·Ctrl+Enter·크기), EDITOR-02(src/ui.tsx Field hint/error/필수 표시·focusFirstInvalid, Controls·Calendar·Patrols·CoordinateInput 오류 연결, ListRow·Calendar·Office·main 메뉴 aria-disabled). 한국어 기록 docs/work-log/2026-10-18-claude-2.md
-- **Changed Interfaces / Schema Diff**: 데이터 v3 변경 없음. Field에 선택 prop `hint`·`error`, ui.tsx에 `focusFirstInvalid`. 순찰 저장 버튼은 좌표 오류에도 활성(눌러서 안내)
-- **Test Status**: Linux Node 22: npm test 89/89, npm run test:desktop 8개 통과, 화면 검사 142·실패 0, 업무 흐름 11/11
-- **Remaining Work for Gemini**: Codex: EDITOR-01·02 검증. 사용자: PR #1 병합 승인, '추가/등록', 주말 합계, SCHEMA-01, 양식 질문, PR #3 정리. 다음 후보: TASK-DATES-01
-- **Modified Code Snippets (if uncommitted)**: 없음
+- **Repository & Branch**: Recon987/AI-Coding (task/task-review-editor-01 / 기준 Claude9e2d719 / main 미병합)
+- **Task Card**: TASK-REVIEW-EDITOR-01 in-progress. EDITOR-01 승인, EDITOR-02는 이 보완과 함께 승인. 다음은 보완본 Windows 검증.
+- **Latest Pushed Commit**: 50aa2c9 - wip(TASK-REVIEW-EDITOR-01): 편집창과 입력 보호 검증 착수 (작성 직전 원격, 최종 해시는 응답/git log)
+- **Completed Steps & Modified Files**: ui.tsx 오류 영역 펼침/포커스, Office.tsx 탭 busy 가드, desktop-editor-smoke 신규3회귀, package/workflow 연결, 카드·검토·검증·한국어 기록·README·화면.
+- **Changed Interfaces / Schema Diff**: 기존 시그니처·자료v3 유지. focusFirstInvalid 동작 보강, 새 IPC/패키지 없음.
+- **Test Status**: npm test89/89·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 새3회귀 수정 전 실패→후 통과. 원본 Windows39105341497 성공, 보완본은 푸시 후 확인.
+- **Remaining Work for Gemini**: 보완본 Windows 후 증빙 통합. Claude는 두 편집 카드와 보완 PR을 함께 통합. 다음 후보 DATES-01. 기관 PC/스키마·암호화·서식 결정 별도.
+- **Modified Code Snippets (if uncommitted)**: 보완·검증 변경은 이 문서와 즉시 커밋/푸시. 원 브랜치/main 직접 수정 없음.
 ```
 
 ## 2. 과제 현황

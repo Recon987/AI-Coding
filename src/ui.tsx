@@ -112,9 +112,23 @@ export function Field({
 
 /** After a rejected submit, move to the first field the form marks invalid. */
 export function focusFirstInvalid(form: HTMLFormElement | null) {
-  requestAnimationFrame(() =>
-    form?.querySelector<HTMLElement>('[aria-invalid="true"], :invalid')?.focus(),
-  );
+  requestAnimationFrame(() => {
+    if (!form?.isConnected) return;
+    const field = Array.from(
+      form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        "input, select, textarea",
+      ),
+    ).find(
+      (control) =>
+        !control.matches(":disabled") &&
+        control.matches('[aria-invalid="true"], :invalid'),
+    );
+    if (!field) return;
+    // 접힌 좌표/단속 영역 안의 오류도 펼쳐야 실제 입력으로 이동할 수 있다.
+    for (let parent = field.parentElement; parent && parent !== form; parent = parent.parentElement)
+      if (parent instanceof HTMLDetailsElement) parent.open = true;
+    field.focus();
+  });
 }
 export function SectionHead({
   eyebrow,

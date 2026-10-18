@@ -37,3 +37,7 @@ Codex 검증: src/components/Sheet.tsx(`size`, `closeButton`, `submitShortcut`: 
 Linux Node 22(2026-10-18): `npm test` 89/89, `npm run test:desktop` 8개 통과, `PARK_REVIEW_ZOOM=1 PARK_REVIEW_STRICT=1 node tests/ui-review.cjs` 142·실패 0·외부 요청 0. 편집 창 머리 높이 128px(머리 68 + 고정 버튼 줄 60) → 68px. Node 24·Windows Actions는 PR #1에서 확인.
 
 ## 검증 기록
+
+### Codex 독립 검증 — 2026-10-18
+
+Node24 기준9e2d719 전체89개·실제 앱·UI142·흐름11 및 Windows39105341497 성공 확인. EDITOR-01은16개 실제 배치 조합·Ctrl/MetaEnter·필수 입력 포커스·취소 보호 승인. EDITOR-02는 접힌 오류 포커스/CSV 지연 저장 중 탭 이동의 두 결함을 TASK-REVIEW-EDITOR-01에서 보완한 결과를 승인한다. **원본 단독과 보완본 판정을 구분**하며 보완 PR을 함께 통합한다. 새 회귀3개가 수정 전 실패·수정 후 통과했고 보완본 전체 검사도 통과했다. 보완본 Windows 결과는 후속 기록한다. [상세 검토](../reviews/2026-10-18-codex-editor.md).
