@@ -18,6 +18,7 @@ import type { Data, Patrol, PatrolKind, Save, Task } from "../types";
 import {
   Empty,
   Field,
+  focusFirstInvalid,
   formatTime,
   localInput,
   riskNames,
@@ -96,7 +97,12 @@ export function Patrols({
     .sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (coordinateError || observationError) return;
+    if (coordinateError || observationError) {
+      // The save button stays usable; it explains and moves to the problem instead.
+      editor.setSaveError("좌표 형식이 맞지 않는 칸이 있습니다. 표시된 칸을 고친 뒤 저장하세요.");
+      focusFirstInvalid(e.currentTarget as HTMLFormElement);
+      return;
+    }
     const item: Patrol = {
       ...draft,
       id: draft.id || crypto.randomUUID(),
@@ -287,10 +293,7 @@ export function Patrols({
         >
           <form className="editor" onSubmit={submit}>
             <div className="editor-header-actions">
-              <button
-                className="primary"
-                disabled={busy || !!coordinateError || observationError}
-              >
+              <button className="primary" disabled={busy}>
                 {draft.id ? "변경 저장" : "순찰 저장"}
               </button>
               <button

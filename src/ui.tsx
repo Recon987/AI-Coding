@@ -45,29 +45,75 @@ export function Tag({
 }) {
   return <span className={`tag ${tone}`}>{children}</span>;
 }
+/**
+ * Label + control. A `required` control shows "(필수)" (the native required state is
+ * what screen readers announce). `hint` and `error` sit under the control and are
+ * linked with aria-describedby; an error also sets aria-invalid (TASK-EDITOR-02).
+ */
 export function Field({
   label,
   children,
+  hint,
+  error,
 }: {
   label: string;
   children: ReactNode;
+  hint?: ReactNode;
+  error?: string;
 }) {
   const generatedId = useId();
   const control = isValidElement(children)
-    ? (children as ReactElement<{ id?: string; "aria-labelledby"?: string }>)
+    ? (children as ReactElement<{
+        id?: string;
+        required?: boolean;
+        "aria-labelledby"?: string;
+        "aria-describedby"?: string;
+        "aria-invalid"?: boolean;
+      }>)
     : null;
   const controlId = control?.props.id || generatedId;
   const labelId = `${generatedId}-label`;
+  const hintId = hint ? `${generatedId}-hint` : undefined;
+  const errorId = error ? `${generatedId}-error` : undefined;
+  const describedBy =
+    [control?.props["aria-describedby"], hintId, errorId].filter(Boolean).join(" ") ||
+    undefined;
   return (
     <label className="field" htmlFor={controlId}>
-      <span id={labelId}>{label}</span>
+      <span className="field-label">
+        <span id={labelId}>{label}</span>
+        {control?.props.required && (
+          <small className="required-mark" aria-hidden="true">
+            필수
+          </small>
+        )}
+      </span>
       {control
         ? cloneElement(control, {
             id: controlId,
             "aria-labelledby": control.props["aria-labelledby"] || labelId,
+            "aria-describedby": describedBy,
+            "aria-invalid": error ? true : control.props["aria-invalid"],
           })
         : children}
+      {hint && (
+        <small id={hintId} className="field-hint">
+          {hint}
+        </small>
+      )}
+      {error && (
+        <small id={errorId} className="field-error" role="alert">
+          {error}
+        </small>
+      )}
     </label>
+  );
+}
+
+/** After a rejected submit, move to the first field the form marks invalid. */
+export function focusFirstInvalid(form: HTMLFormElement | null) {
+  requestAnimationFrame(() =>
+    form?.querySelector<HTMLElement>('[aria-invalid="true"], :invalid')?.focus(),
   );
 }
 export function SectionHead({

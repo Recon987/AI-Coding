@@ -72,6 +72,23 @@ const { empty } = require("../shared/model.mjs");
       await page.keyboard.press("Control+k");
       await page.getByLabel("기록 통합 검색", { exact: true }).fill(query);
     };
+    // TASK-EDITOR-02: an invalid coordinate no longer disables 저장; pressing it keeps the
+    // sheet open, explains the problem and moves focus to the marked field.
+    const saveBlocked = async (name) => {
+      const before = (await page.evaluate(() => window.workdesk.load())).patrols.length;
+      await page.locator(".sheet[open]").getByRole("button", { name, exact: true }).click();
+      await page.locator(".sheet[open] .notice.error").waitFor();
+      await page.waitForFunction(() => document.activeElement?.getAttribute("aria-invalid") === "true");
+      assert.ok(
+        await page.evaluate(() =>
+          (document.activeElement.getAttribute("aria-describedby") ?? "")
+            .split(" ")
+            .some((id) => document.getElementById(id)?.classList.contains("coordinate-error")),
+        ),
+        "오류 문구가 칸과 연결됨",
+      );
+      assert.equal((await page.evaluate(() => window.workdesk.load())).patrols.length, before);
+    };
     const manage = async (name) => {
       await page.locator(".data-menu > summary").click();
       await page
@@ -220,26 +237,11 @@ const { empty } = require("../shared/model.mjs");
     await page.locator(".coordinate-details > summary").click();
     // DD input: partial, malformed and out-of-range values block saving.
     await page.getByLabel("위도 (DD)", { exact: true }).fill("37.5");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "순찰 저장", exact: true })
-        .isEnabled(),
-      false,
-    );
+    await saveBlocked("순찰 저장");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("181");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "순찰 저장", exact: true })
-        .isEnabled(),
-      false,
-    );
+    await saveBlocked("순찰 저장");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("0x7f");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "순찰 저장", exact: true })
-        .isEnabled(),
-      false,
-    );
+    await saveBlocked("순찰 저장");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("127.25");
     assert.equal(
       await page.getByLabel("DMS 변환 결과").textContent(),
@@ -400,12 +402,7 @@ const { empty } = require("../shared/model.mjs");
     );
     await page.getByLabel("좌표 입력 형식").selectOption("dms");
     await page.getByLabel("위도 분", { exact: true }).fill("60");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "변경 저장", exact: true })
-        .isEnabled(),
-      false,
-    );
+    await saveBlocked("변경 저장");
     await page.getByLabel("위도 분", { exact: true }).fill("45");
     await page.getByLabel("위도 방향").selectOption("S");
     await page.getByLabel("경도 방향").selectOption("W");

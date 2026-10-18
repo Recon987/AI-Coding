@@ -21,6 +21,7 @@ import {
   categoryTone,
   Empty,
   Field,
+  focusFirstInvalid,
   formatDate,
   itemClock,
   localInput,
@@ -349,7 +350,10 @@ export function Calendar({
     draft.repeatUntil! < draftStartDay;
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (invalidRepeatUntil) return;
+    if (invalidRepeatUntil) {
+      focusFirstInvalid(e.currentTarget as HTMLFormElement);
+      return;
+    }
     const existing = data.events.find((e) => e.id === draft.id);
     if (
       existing &&
@@ -834,7 +838,7 @@ export function Calendar({
               })()}
 
             <div className="editor-header-actions">
-              <button className="primary" disabled={busy || invalidRepeatUntil}>
+              <button className="primary" disabled={busy}>
                 {draft.id ? "변경 저장" : "일정 저장"}
               </button>
               <button
@@ -916,7 +920,15 @@ export function Calendar({
                 </select>
               </Field>
               {activeRecurrence && (
-                <Field label="반복 종료일">
+                <Field
+                  label="반복 종료일"
+                  hint="비우면 계속 반복"
+                  error={
+                    invalidRepeatUntil
+                      ? `반복 종료일은 일정 시작일(${draftStartDay})과 같거나 이후여야 합니다.`
+                      : undefined
+                  }
+                >
                   <input
                     type="date"
                     aria-label="반복 종료일"
@@ -933,11 +945,6 @@ export function Calendar({
                 </Field>
               )}
             </div>
-            {invalidRepeatUntil && (
-              <p role="alert" className="error">
-                반복 종료일은 일정 시작일({draftStartDay}) 이후여야 합니다.
-              </p>
-            )}
             <p className="help">앱 실행 중 예정 시각에 알림을 표시합니다.</p>
           </form>
         </EditorDialog>

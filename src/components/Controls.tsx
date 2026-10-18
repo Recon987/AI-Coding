@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CONTROL_REASONS, dayKey } from "../../shared/model.mjs";
 import { askConfirm, confirmDelete } from "../confirm";
 import type { Control, Data, Save } from "../types";
-import { Empty, Field, SectionHead, Tag } from "../ui";
+import { Empty, Field, focusFirstInvalid, SectionHead, Tag } from "../ui";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { ListHeader, ListRow, rowKeys } from "./ListRow";
 
@@ -44,6 +44,8 @@ export function Controls({
     .filter((c) => state(c, today) === filter)
     .sort((a, b) => (filter === "ended" ? b.start.localeCompare(a.start) : a.start.localeCompare(b.start)));
 
+  const endError =
+    draft.end && draft.end < draft.start ? "종료일은 시작일과 같거나 이후여야 합니다." : "";
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const row: Control = {
@@ -55,8 +57,8 @@ export function Controls({
       end: draft.end || null,
     };
     if (!row.title) return;
-    if (row.end !== null && row.end < row.start) {
-      editor.setSaveError("종료일은 시작일 이후여야 합니다.");
+    if (endError) {
+      focusFirstInvalid(e.currentTarget as HTMLFormElement);
       return;
     }
     const ok = await save({
@@ -215,7 +217,7 @@ export function Controls({
               <Field label="시작일">
                 <input type="date" required value={draft.start} onChange={(e) => e.target.value && patch({ start: e.target.value })} />
               </Field>
-              <Field label="종료일">
+              <Field label="종료일" hint="비우면 해제할 때까지" error={endError}>
                 <input
                   type="date"
                   min={draft.start}
