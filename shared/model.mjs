@@ -922,7 +922,7 @@ export function briefing(data, date) {
       ? [
           `근무·당직 (당직 ${duty.length}명)`,
           ...duty.map((r) => `- ${dutyTypes[r.assignment.duty]}: ${r.employee.name}`),
-          `- 근무 ${office.working} · 휴무·연가 ${office.off} · 미등록 ${office.unregistered} (직원 ${office.total}명)`,
+          `- 근무·출장 ${office.working} · 휴무·연가 ${office.off} · 미등록 ${office.unregistered} (직원 ${office.total}명)`,
           "",
         ]
       : []),

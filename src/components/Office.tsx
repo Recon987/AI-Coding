@@ -478,8 +478,10 @@ export function Office({
                                         </small>
                                       )}
                                       <span className="sr-only">
-                                        {" "}
-                                        · {row.employee.name} {day} 근무 편집
+                                        {entry ? "" : " 미등록"} ·{" "}
+                                        {row.employee.name}{" "}
+                                        {formatDate(day, { year: false })} 근무
+                                        편집
                                       </span>
                                     </button>
                                   </td>

@@ -199,7 +199,7 @@ test("브리핑 텍스트에 당직자(이름)·근무 건수·전날 단속 요
     observations: [{ id: "o1", type: "흡연", count: 2, outcome: "guidance", note: "" }],
   });
   const text = briefing(data, "2026-10-15");
-  assert.match(text, /근무·당직 \(당직 1명\)\n- 숙직: 시험 직원\n- 근무 1 · 휴무·연가 0 · 미등록 1 \(직원 2명\)/);
+  assert.match(text, /근무·당직 \(당직 1명\)\n- 숙직: 시험 직원\n- 근무·출장 1 · 휴무·연가 0 · 미등록 1 \(직원 2명\)/);
   assert.doesNotMatch(text, /미등록 직원/, "당직자 외 이름은 넣지 않음");
   assert.match(text, /전날 단속·확인 \(2026-10-14, 총 2건\)\n- 흡연 2건 \(계도 2, 과태료 부과 0, 기타 0\)/);
   assert.match(text, /당직 직원 이름이 포함되어 있습니다/);

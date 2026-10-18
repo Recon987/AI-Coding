@@ -28,7 +28,23 @@ function autoTitle(p: Patrol) {
   const at = new Date(p.at);
   const clock = `${String(at.getHours()).padStart(2, "0")}:${String(at.getMinutes()).padStart(2, "0")}`;
   const zone = p.zone?.trim();
-  return `${p.kind ? PATROL_KINDS[p.kind] : "순찰"}${zone ? ` ${zone}구역` : ""} ${clock}`;
+  const place = zone ? ` ${zone.endsWith("구역") ? zone : `${zone}구역`}` : "";
+  return `${p.kind ? PATROL_KINDS[p.kind] : "순찰"}${place} ${clock}`;
+}
+
+type PrefillField = "observer" | "kind" | "zone" | "route";
+/** Fields a new draft took from `from`, as [field, label, value] for the hint. */
+function prefillOf(from: Patrol | undefined, value: Patrol) {
+  if (!from) return null;
+  const fields = (
+    [
+      ["route", "순찰 구간", value.route],
+      ["observer", "기록자", value.observer],
+      ["kind", "순찰 종류", value.kind ? PATROL_KINDS[value.kind] : ""],
+      ["zone", "담당구역", value.zone ?? ""],
+    ] as [PrefillField, string, string][]
+  ).filter(([, , v]) => v);
+  return fields.length ? { from: from.title, fields } : null;
 }
 
 export function Patrols({
@@ -44,12 +60,10 @@ export function Patrols({
   initialId?: string;
   openTask: (id: string) => void;
 }) {
-  // New records start from the most recent patrol's recorder, kind and zone
-  // (TASK-PANEL-01 D2): the same person usually patrols the same zone.
-  const latest = data.patrols.reduce<Patrol | undefined>(
-    (best, p) => (!best || Date.parse(p.at) > Date.parse(best.at) ? p : best),
-    undefined,
-  );
+  // New records start from the last patrol added on this PC (recorder, kind, zone;
+  // TASK-PANEL-01 D2). Last added, not latest `at`: a late entry of an old patrol or a
+  // mistyped future time must not pin the defaults.
+  const latest = data.patrols.at(-1);
   const blank = (from: Patrol | undefined = latest, route = ""): Patrol => ({
     id: "",
     title: "",
@@ -70,6 +84,17 @@ export function Patrols({
   const { draft, setDraft } = editor;
   const [editorKey, setEditorKey] = useState(0);
   const prefillHint = useId();
+  // Which record filled which fields of a new draft; UI state only, never saved.
+  const [prefill, setPrefill] = useState(() =>
+    initial ? null : prefillOf(latest, blank()),
+  );
+  const filled = (field: PrefillField) =>
+    !draft.id && prefill?.fields.some(([key]) => key === field) ? prefillHint : undefined;
+  const startNew = (from = latest, route = "") => {
+    const value = blank(from, route);
+    setPrefill(prefillOf(from, value));
+    return resetDraft(value);
+  };
   const [coordinateError, setCoordinateError] = useState("");
   const [observationError, setObservationError] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -155,7 +180,7 @@ export function Patrols({
             <button
               className="primary"
               disabled={busy}
-              onClick={() => resetDraft(blank())}
+              onClick={() => startNew()}
             >
               순찰 기록 추가
             </button>
@@ -209,7 +234,7 @@ export function Patrols({
                   onClick: () => handover(p),
                 },
                 { label: "수정", onClick: () => resetDraft(p) },
-                { label: "이 기록으로 새 순찰", onClick: () => resetDraft(blank(p, p.route)) },
+                { label: "이 기록으로 새 순찰", onClick: () => startNew(p, p.route) },
                 {
                   label: "삭제",
                   tone: "danger",
@@ -294,21 +319,20 @@ export function Patrols({
               </button>
             </div>
             <p className="editor-intro">
-              구간·기록자는 필수입니다. 제목을 비우면 종류·구역·시각으로 자동
-              입력됩니다. 저장 후 인수인계로 연결할 수 있습니다.
-              {latest && !draft.id && (
-                <span id={prefillHint} className="editor-hint">
-                  {" "}
-                  기록자·순찰 종류·담당구역은 최근 순찰({latest.title})에서
-                  가져왔습니다.
-                </span>
-              )}
+              구간·기록자는 필수입니다. 저장 후 인수인계로 연결할 수 있습니다.
             </p>
+            {!draft.id && prefill && (
+              <p id={prefillHint} className="editor-hint">
+                ‘{prefill.from}’에서 가져옴:{" "}
+                {prefill.fields.map(([, label, value]) => `${label} ${value}`).join(" · ")}. 다른
+                사람·구역이면 바꾸세요.
+              </p>
+            )}
             <div className="form-row">
               <Field label="순찰 종류">
                 <select
                   autoFocus
-                  aria-describedby={latest && !draft.id ? prefillHint : undefined}
+                  aria-describedby={filled("kind")}
                   value={draft.kind ?? ""}
                   onChange={(e) =>
                     patch({ kind: (e.target.value || null) as PatrolKind | null })
@@ -325,6 +349,7 @@ export function Patrols({
               <Field label="담당구역 번호">
                 <input
                   maxLength={50}
+                  aria-describedby={filled("zone")}
                   value={draft.zone ?? ""}
                   onChange={(e) => patch({ zone: e.target.value })}
                   placeholder="선택 · 예: 3-2"
@@ -335,6 +360,7 @@ export function Patrols({
               <input
                 required
                 maxLength={500}
+                aria-describedby={filled("route")}
                 value={draft.route}
                 onChange={(e) => patch({ route: e.target.value })}
                 placeholder="출발 거점 → 점검 구간 → 도착 거점"
@@ -345,7 +371,7 @@ export function Patrols({
                 <input
                   required
                   maxLength={100}
-                  aria-describedby={latest && !draft.id ? prefillHint : undefined}
+                  aria-describedby={filled("observer")}
                   value={draft.observer}
                   onChange={(e) => patch({ observer: e.target.value })}
                 />

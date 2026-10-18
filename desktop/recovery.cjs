@@ -21,7 +21,7 @@ async function openDataFile({ file, store, dialog, now = Date.now, logger = cons
         cancelId: 1,
         noLink: true,
         message: "업무 자료 파일을 다른 프로그램이 사용 중입니다.",
-        detail: `백신 검사·동기화(OneDrive 등)가 끝난 뒤 다시 시도하세요. 파일은 바꾸지 않았습니다.\n원인: ${error.message}`,
+        detail: `백신 검사·동기화(OneDrive 등)가 끝난 뒤 다시 시도하세요. 계속 실패하면 폴더 권한과 읽기 전용 속성을 확인하세요. 파일은 바꾸지 않았습니다.\n원인: ${error.message}`,
       });
       if (response !== 0) return false;
     }

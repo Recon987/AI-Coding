@@ -559,7 +559,7 @@ const { empty } = require("../shared/model.mjs");
       .inputValue();
     await page
       .getByRole("button", {
-        name: new RegExp(`^\\S.* · 시험 직원 ${officeDate} 근무 편집$`),
+        name: new RegExp(`^\\S.* · 시험 직원 ${Number(officeDate.slice(5, 7))}\\. ${Number(officeDate.slice(8))}\\. .* 근무 편집$`),
       })
       .click();
     assert.equal(

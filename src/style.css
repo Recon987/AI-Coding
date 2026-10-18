@@ -246,6 +246,8 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .form-row .field { margin: 0; }
 .editor { position: static; min-width: 0; }
 .editor-intro { margin: 0 0 20px; font-size: var(--fs-sm); line-height: 21px; color: var(--muted); }
+.editor-intro:has(+ .editor-hint) { margin-bottom: 6px; }
+.editor-hint { margin: 0 0 20px; font-size: var(--fs-xs); line-height: 18px; color: var(--muted); }
 .editor-header-actions { display: flex; align-items: center; flex-shrink: 0; gap: 8px; }
 .editor-header-actions button { white-space: nowrap; font-size: var(--fs-sm); }
 .form-actions { display: flex; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }

@@ -33,7 +33,7 @@ function durableReplace(file, payload) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const temporary = file + ".tmp";
   try {
-    const fd = fs.openSync(temporary, "w", 0o600);
+    const fd = withRetry(() => fs.openSync(temporary, "w", 0o600));
     try {
       const bytes = Buffer.from(payload, "utf8");
       for (let offset = 0; offset < bytes.length; )
@@ -44,7 +44,8 @@ function durableReplace(file, payload) {
     }
     withRetry(() => fs.renameSync(temporary, file));
   } finally {
-    if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
+    // Cleanup must not replace the original error.
+    try { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); } catch {}
   }
   // Persist the rename itself; directories cannot be opened for fsync on Windows.
   if (process.platform !== "win32") {

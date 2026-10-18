@@ -162,6 +162,7 @@ function counter(page) {
       await t.click(record.getByRole("button", { name: /^이 기록으로 새 순찰 · / }));
       assert.equal(await page.getByLabel("순찰 구간").inputValue(), "계곡안내소 → 쉼터");
       assert.equal(await page.getByLabel("담당구역 번호").inputValue(), "3-2");
+      assert.match(await page.locator(".editor-hint").textContent(), /^‘오후 계곡 순찰’에서 가져옴: 순찰 구간 계곡안내소 → 쉼터 · 기록자 홍길동 · 순찰 종류 단속 · 담당구역 3-2\./);
       await t.fill(page.getByLabel("확인 사항"), "이상 없음");
       await t.click(sheet().getByRole("button", { name: "순찰 저장", exact: true }));
       await sheet().waitFor({ state: "hidden" });
