@@ -1,5 +1,12 @@
 import { formatTime } from "./format.mjs";
-import { officeCollections, validateOffice, validDate } from "./office.mjs";
+import {
+  dutyTypes,
+  officeCollections,
+  officeRows,
+  officeSummary,
+  validateOffice,
+  validDate,
+} from "./office.mjs";
 const personalCollections = [
   "notes",
   "events",
@@ -879,7 +886,7 @@ export function describeObservations(observations = []) {
 }
 
 export function briefing(data, date) {
-  ensure(/^\d{4}-\d{2}-\d{2}$/.test(date), "브리핑 날짜를 확인하세요.");
+  ensure(validDate(date), "브리핑 날짜를 확인하세요.");
   const holiday = holidayName(date);
   const when = formatTime;
   const due = data.tasks.filter(
@@ -891,6 +898,16 @@ export function briefing(data, date) {
     startDate: date,
     endDate: date,
   }).filter((i) => i.category === "일정");
+  // Morning-meeting sections (TASK-PANEL-01 D1). Only duty staff are named; the
+  // rest of the roster is counted, so the exported text carries as few names as possible.
+  const office = officeSummary(data, date);
+  const duty = officeRows(data, date).filter(
+    (r) => r.assignment && r.assignment.duty !== "none",
+  );
+  const before = new Date(`${date}T12:00:00Z`);
+  before.setUTCDate(before.getUTCDate() - 1);
+  const yesterday = before.toISOString().slice(0, 10);
+  const enforcement = patrolSummary(data, { startDate: yesterday, endDate: yesterday });
   return [
     `공원 업무 수첩 | ${date}${holiday ? ` (${holiday})` : ""} 업무 브리핑`,
     "개인 기록 기준 · 공식 결재/근무현황 자료 아님",
@@ -901,6 +918,14 @@ export function briefing(data, date) {
         `- ${c.title}${c.zone ? ` | 담당구역 ${c.zone}` : ""} | ${CONTROL_REASONS[c.reason]} | ${c.start} ~ ${c.end ?? "해제 시까지"}${c.note ? `\n  ${c.note}` : ""}`,
     ),
     "",
+    ...(office.total
+      ? [
+          `근무·당직 (당직 ${duty.length}명)`,
+          ...duty.map((r) => `- ${dutyTypes[r.assignment.duty]}: ${r.employee.name}`),
+          `- 근무 ${office.working} · 휴무·연가 ${office.off} · 미등록 ${office.unregistered} (직원 ${office.total}명)`,
+          "",
+        ]
+      : []),
     `일정 (${events.length})`,
     ...events.map(
       (e) =>
@@ -919,9 +944,14 @@ export function briefing(data, date) {
         `- [${t.kind === "submission" ? "제출" : "인계"}] ${t.title} | 담당: ${t.assignee || "미지정"} | 마감: ${when(t.at)}\n  ${t.body}`,
     ),
     "",
+    `전날 단속·확인 (${yesterday}, 총 ${enforcement.totalCount}건)`,
+    ...enforcement.observations.map(
+      (r) => `- ${r.type} ${r.count}건 (계도 ${r.guidance}, 과태료 부과 ${r.fine}, 기타 ${r.other})`,
+    ),
+    "",
     `미처리 전화 (${data.calls.filter((c) => !c.done).length}, 현재 상태)`,
     ...data.calls.filter((c) => !c.done).map((c) => `- ${c.title}: ${c.body}`),
     "",
-    "이 문서는 출력 시점의 기록입니다. 개인정보와 업무자료의 전달 범위를 확인하세요.",
+    `이 문서는 출력 시점의 기록입니다.${duty.length ? " 당직 직원 이름이 포함되어 있습니다." : ""} 개인정보와 업무자료의 전달 범위를 확인하세요.`,
   ].join("\n");
 }
