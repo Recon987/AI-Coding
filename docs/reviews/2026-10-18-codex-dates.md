@@ -30,7 +30,7 @@
 - 전체 명령에 TZ를5종 지정해 실행했다. controls/patrol-observations/forms 일부 기존 검사는 자체적으로 서울TZ를 고정하므로 모든 개별 기능을5TZ에서 검사했다고 해석하지 않는다. 날짜 전용 검사는 자식 프로세스의 실제5TZ를 직접 검증하며 독립 자료/화면 검사와 함께 판정했다.
 - npm run test:desktop 전체 **8개 진입점 통과**. 이전 편집 오류/CSV 실패 초안 보존 회귀도 포함.
 - 실제 화면 **142개**, 오류0·외부요청0. 업무 흐름 **11/11**. 기준 `/tmp/park-workdesk-review/dates-baseline`, 보완 `/tmp/park-workdesk-review/dates-verified`.
-- 정확한75f04e9의 [Windows39107140819](https://github.com/Recon987/AI-Coding/actions/runs/39107140819) 성공 조회. 보완본 Windows 소스/패키지는 푸시 후 별도 기록한다.
+- 정확한75f04e9의 [Windows39107140819](https://github.com/Recon987/AI-Coding/actions/runs/39107140819) 성공 조회. 최종 보완본 소스/패키지는 아래 Windows 검사 신뢰성 절의39110892545 결과를 따른다.
 
 ## 다음 범위
 
@@ -40,4 +40,6 @@ CALENDAR-04의 화면 분리·툴바·날짜 격자 키보드 개편은 이번 �
 
 보완 소스a2f0b4c의 Windows39110532993은 API상 success지만 패키징 첫 desktop-smoke에서 tray 임시 폴더 정리 EPERM이 발생했다. 뒤의 명령이 성공하면 PowerShell 단계의 최종 종료 코드가0이 되어 중간 실패가 덮였다. **이 실행은 전체 패키지 검사 성공 증빙으로 채택하지 않는다.**
 
-정리 오류가 앞선 트레이 본문 예외를 덮었을 수도 있으므로 원인을 제품/백신/자식 프로세스로 단정하지 않는다. 트레이 검사에서 최초 본문 오류를 먼저 로그로 남기고, 임시 폴더 정리는 Node의 제한 재시도(maxRetries10/retryDelay100)를 사용한다. 영구 정리 실패는 계속 오류로 처리한다. PowerShell은 각 Node 검사 종료 코드가0이 아니면 즉시 같은 코드로 종료하도록 바꿨다. 이 보완을 푸시해 새 Windows 실행에서 각 PASS와 오류 유무를 다시 확인한다. 앱 코드는 a2f0b4c와 같다.
+정리 오류가 앞선 트레이 본문 예외를 덮었을 수도 있으므로 원인을 제품/백신/자식 프로세스로 단정하지 않는다. 트레이 검사에서 최초 본문 오류를 먼저 로그로 남기고, 임시 폴더 정리는 Node의 제한 재시도(maxRetries10/retryDelay100)를 사용한다. 영구 정리 실패는 계속 오류로 처리한다. PowerShell은 각 Node 검사 종료 코드가0이 아니면 즉시 같은 코드로 종료하도록 바꿨다. 최종 소스 `928e78e5113df5ab45d32d3c86ff6434a1d7cd3e`의 [Windows39110892545](https://github.com/Recon987/AI-Coding/actions/runs/39110892545)는 **성공**했다(2분46초). 새 종료 코드 가드가 적용된 상태에서 단위91개·소스8진입점·패키지7진입점 모두 각 PASS를 확인했고 예외 로그는 없었다. NSIS/portable·SHA256SUMS·업로드도 완료됐다. 시작 복구는 -r 주입이 필요한 소스에서만 실행한다.
+
+[최종 검증 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39110892545/artifacts/12129919918) — GitHub 로그인·보관14일. 앱0.7.0, 앱 코드는 a2f0b4c와 같고 검사 신뢰성만 더 보강했다. [PR #6](https://github.com/Recon987/AI-Coding/pull/6)에서 DATES-01과 함께 통합한다. 최초 실패의 제품/자식 프로세스/백신 원인은 로그만으로 특정하지 않으며, 새 실행은 최초 예외를 별도 기록하고 지속 실패를 숨기지 않는다. 후속 최종 증빙 커밋은 문서만 바꾼다.

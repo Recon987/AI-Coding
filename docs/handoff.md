@@ -11,18 +11,18 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (task/task-review-dates-01 / 기준 Claude75f04e9 / main 미병합)
-- **Task Card**: TASK-REVIEW-DATES-01 in-progress. DATES-01 독립 검증 승인·0~99년 월말P3 보완. 다음은 보완본 Windows 확인.
-- **Latest Pushed Commit**: a2f0b4cad998f98ebd9837cd6ef8c12f4e264d6e - fix(TASK-REVIEW-DATES-01): 월말 연도 보존과 날짜 단일화 검증 기록 (작성 직전 원격, 최종 해시는 응답/git log)
-- **Completed Steps & Modified Files**: shared/dates.mjs 월말 연도 보존, tests/dates.test.cjs 5TZ 회귀, DATES/검증 카드·검토/검증/한국어 기록·handoff.
+- **Task Card**: TASK-REVIEW-DATES-01 review. DATES-01 독립 검증 승인·월말P3/CI 신뢰성 보완. Claude PR #6 통합 대기.
+- **Latest Pushed Commit**: 928e78e5113df5ab45d32d3c86ff6434a1d7cd3e - fix(TASK-REVIEW-DATES-01): Windows 검사 중간 실패 감지와 정리 재시도 (검증 소스, 최종 증빙 해시는 응답/git log)
+- **Completed Steps & Modified Files**: shared/dates.mjs 월말 연도 보존·5TZ 회귀, workflow 종료 코드 가드·tray/desktop 정리 제한 재시도/원 오류 로깅, 카드·검토/검증/한국어 기록·README/architecture/handoff.
 - **Changed Interfaces / Schema Diff**: 기존 함수 시그니처·자료v3·IPC 유지. periodRange의 허용한 낮은 연도 결과만 보완.
-- **Test Status**: Node24 npm test91/91을5TZ 각각·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 독립 자료1800·현대경계2412·정상600·보완경계132 통과. 원본 Windows39107140819 성공. 첫 보완39110532993은 중간 패키지 실패가 success로 덮여 보류, 종료 코드/정리 재시도 보완 후 재검증.
-- **Remaining Work for Gemini**: Windows 후 증빙 통합. Claude는 DATES-01과 이 보완을 함께 통합. 다음 CALENDAR-04. 기관 PC·정책 결정 별도.
-- **Modified Code Snippets (if uncommitted)**: Windows 검사 신뢰성 보완·증빙을 즉시 커밋/푸시. 원 브랜치/main 직접 수정 없음.
+- **Test Status**: Node24 npm test91/91을5TZ 각각·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11. 독립 자료1800·현대경계2412·정상600·보완경계132 통과. 최종 Windows39110892545(928e78e) 소스/패키지 각 PASS·예외0 확인. 첫39110532993의 success는 전체 통과 증빙에서 제외.
+- **Remaining Work for Gemini**: Claude는 DATES-01과 PR #6 보완/증빙을 함께 통합. 다음 CALENDAR-04. 기관 PC·정책 결정 별도.
+- **Modified Code Snippets (if uncommitted)**: 없음(최종 증빙 문서만 이 기록과 즉시 커밋/푸시). 원 브랜치/main 직접 수정 없음.
 ```
 
 ## 2. 과제 현황
 
-`npm run board`가 우선순위·담당·재개 위치를 출력한다. 백로그를 이 문서에 중복 기록하지 않는다. 기존 검증·회차·PANEL/POLISH 검토는 Claude 원 브랜치에 통합됐다. 최신 EDITOR-01·02는 Codex가9e2d719에서 검토하고 두 오류를 보완했다. 보완 소스f97aaf3의 Linux/Windows 소스·패키지 검증까지 완료했으며 PR #5를 두 편집 카드와 함께 통합한다. main 병합 전이므로 review 유지. 다음 후보는 TASK-DATES-01.
+`npm run board`가 우선순위·담당·재개 위치를 출력한다. 백로그를 중복 기록하지 않는다. 기존 EDITOR-01·02 보완은 Claude 원 브랜치에 통합됐다. 최신 DATES-01도 Codex가 독립 검증했고 월말 경계/Windows 검사 신뢰성을 PR #6에서 보완했다. 최종928e78e의 Windows39110892545 소스/패키지 각 PASS 확인. 최초39110532993은 중간 실패가 덮인 실행이므로 전체 통과 증빙에서 제외한다. main 병합 전 review 유지, 다음 후보 CALENDAR-04.
 
 ## 3. 작업 시작·종료
 
@@ -53,3 +53,7 @@ Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-
 ## 편집창·입력 오류 보완 검증
 
 소스f97aaf3, [PR #5](https://github.com/Recon987/AI-Coding/pull/5), [Windows 성공](https://github.com/Recon987/AI-Coding/actions/runs/39105905136), [설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39105905136/artifacts/12128711616). [세 분야 검토·오류 재현·화면](reviews/2026-10-18-codex-editor.md), [한국어 작업 기록](work-log/2026-10-18-codex-editor.md).
+
+## DATES-01 최종 검증
+
+소스928e78e, [PR #6](https://github.com/Recon987/AI-Coding/pull/6), [Windows 성공](https://github.com/Recon987/AI-Coding/actions/runs/39110892545), [설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39110892545/artifacts/12129919918). [독립 검토·검사 신뢰성 보완](reviews/2026-10-18-codex-dates.md), [한국어 작업 기록](work-log/2026-10-18-codex-dates.md).

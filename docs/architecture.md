@@ -6,6 +6,10 @@ Electron의 제한된 preload API로 로컬 파일 저장·폴더 열기·백업
 
 `src/components/`는 업무별 화면, `shared/model.mjs`는 브라우저와 Electron이 공유하는 검증·달력·브리핑·알림 계산이다. `desktop/store.cjs`가 JSON의 원자 교체(임시 파일 fsync 후 이름 바꾸기)와 v1 원본 보존을 담당한다. 주 파일을 저장할 때마다 같은 내용의 `workdesk.json.last-good`도 원자적으로 갱신한다. `desktop/recovery.cjs`는 시작 시 자료를 읽지 못하면 손상 파일을 `.corrupt-<시각>.json`으로 먼저 보관(삭제하지 않음)한 뒤 마지막 정상본 사용·백업 복원·종료를 묻는다. 보관에 실패하면 아무것도 쓰지 않고 종료한다. 주 프로세스의 단일 인스턴스 잠금으로 동시에 여러 앱이 파일을 쓰는 것을 방지한다. 다중 사용자 또는 서버 DB용 구조는 아니다.
 
+## 날짜 키와 현지 시각
+
+`shared/dates.mjs`는 YYYY-MM-DD 날짜 키의 주 시작·하루 이동·포함 일수·집계 기간을 UTC 정오에서 계산한다. 키는 시각이 아니므로 PC 시간대나 DST의23/25시간 영향으로 날짜를 바꾸지 않는다. `dayKey`와 표시 함수는 현지 날짜 입출력 경계로 유지하며 알림의 경과 시간 계산과 혼동하지 않는다. 모델·양식·브리핑·사무소·달력·집계가 같은 날짜 산술을 참조한다. `office.validDate`는 기존 import 호환을 위해 `dates.validDateKey`를 그대로 노출한다. 함수와 선언은 dates.mjs/dates.d.mts, 시간대 회귀는 tests/dates.test.cjs에 있다.
+
 ## 데이터 v3
 
 v1의 notes/events/calls/folders 및 v2의 patrols/tasks를 보존하고 v3에 organizations/employees/bases/assignments를 추가했다. 조직 계층과 직원/거점 소속, 직원+날짜별 근무/당직을 UUID로 연결한다. shared/office.mjs가 참조·중복·날짜·거점·순환을 검증하고 현황을 계산한다. shared/office-import.mjs가 표준 CSV 반입을 전체 검증·미리보기한다. 순찰에는 시각·구간·기록자·확인 사항·현장 조치·확인 등급을 저장하고, 선택 필드로 순찰 종류(`kind`)·담당구역 번호(`zone`)·단속·확인 건(`observations[]`: 유형·건수·조치·메모·선택 위경도, 기록당 50개)을 둔다. 쓰지 않은 선택 필드는 저장하지 않아 기존 기록 모양을 유지한다. `patrolSummary`가 현지 날짜 기간으로 유형·조치별 건수를 합산한다. 업무에는 handover/submission 구분, 담당자·제출처·마감·알림 시점·완료 시각을 저장한다.

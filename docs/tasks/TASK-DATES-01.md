@@ -30,7 +30,7 @@ updated: 2026-10-18
 - [x] 4. 전체 검사·기록. 시간대에 기대던 기존 테스트 자료 2곳(store 반복 일정, office 브리핑)을 지역 시각으로 바꿔 5개 시간대 모두 통과
 
 ## 재개 위치
-Codex 검증: shared/dates.mjs·dates.d.mts, shared/model.mjs(earliestLocalDay·addDays), shared/office.mjs(validDate = validDateKey), shared/forms.mjs(daysInclusive), 화면 5곳. 동작 불변 확인: 주간 띠·사무소 주간표·달력 주간/목록·양식 기본 기간·단속 집계 기간. 시간대 5종으로 `TZ=... npm test`. 다음: TASK-CALENDAR-04.
+Codex가 TASK-REVIEW-DATES-01에서 독립 검증 승인했다. [PR #6](https://github.com/Recon987/AI-Coding/pull/6)의 낮은 연도 월말/Windows 검사 신뢰성 보완과 함께 통합한다. 최종 Windows39110892545 각 소스/패키지 PASS 확인, 최초39110532993은 중간 실패 덮임으로 전체 통과 증빙에서 제외한다. 다음 후보 TASK-CALENDAR-04. main 병합 전 review 유지.
 
 ## 테스트 상태
 Linux Node 22(2026-10-18): `npm test` 91/91을 Asia/Seoul·UTC·America/Los_Angeles·Pacific/Kiritimati·Pacific/Pago_Pago 5개 시간대에서 모두 통과(변경 전에는 LA에서 2~3건 실패). `npm run test:desktop` 8개 진입점 통과, 화면 검사 142·실패 0, 업무 흐름 11/11. Node 24·Windows Actions는 PR #1에서 확인.
@@ -43,4 +43,4 @@ P3 비차단: `utcDayBefore`는 Date.parse를 사용하므로 offset 없는 time
 
 ### Codex 독립 검증 — 2026-10-18
 
-기준75f04e9과 소규모 보완을 승인. Node24 전체91개를5TZ 각각, desktop8진입점·UI142·흐름11 통과. 서울/뉴욕 실제 앱의 DST·월경계5화면과 자료1800회 교차 읽기·원문 보존 승인. 일반 날짜 동작 불변, 역순 외부 일정의 엄격화는 카드에 명시된 정책과 일치한다. 새 month 함수의0000~0099년 보정(P3)은 TASK-REVIEW-DATES-01에서 보완·회귀 추가 후 승인받았다. 기준75f04e9 Windows39107140819 성공, 보완본은 후속 확인. [상세 검토](../reviews/2026-10-18-codex-dates.md).
+기준75f04e9과 소규모 보완을 승인. Node24 전체91개를5TZ 각각, desktop8진입점·UI142·흐름11 통과. 서울/뉴욕 실제 앱의 DST·월경계5화면과 자료1800회 교차 읽기·원문 보존 승인. 일반 날짜 동작 불변, 역순 외부 일정의 엄격화는 카드에 명시된 정책과 일치한다. 새 month 함수의0000~0099년 보정(P3)은 TASK-REVIEW-DATES-01에서 보완·회귀 추가 후 승인받았다. 기준75f04e9 Windows39107140819 성공 조회. 최종928e78e의 [Windows39110892545](https://github.com/Recon987/AI-Coding/actions/runs/39110892545)도 소스/패키지 각 PASS 확인. 최초 보완39110532993의 중간 실패 덮임은 수정하고 전체 통과 증빙에서 제외했다. [PR #6](https://github.com/Recon987/AI-Coding/pull/6)을 함께 통합한다. [상세 검토](../reviews/2026-10-18-codex-dates.md).

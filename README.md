@@ -111,7 +111,7 @@ DD 원본만 저장하고 DMS 초는 소수 6자리까지 계산합니다(자리
 
 ## Windows에서 확인하기
 
-검증 브랜치 v0.7.0의 Windows 소스·패키징된 앱 검사 완료: [설치형·portable 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/39105905136/artifacts/12128711616). GitHub 로그인 필요, 보관 14일. [PR #5](https://github.com/Recon987/AI-Coding/pull/5)의 f97aaf3 보완 검증 빌드이며 main에는 아직 병합하지 않았습니다.
+검증 브랜치 v0.7.0의 Windows 소스·패키징된 앱 검사 완료: [설치형·portable 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/39110892545/artifacts/12129919918). GitHub 로그인 필요, 보관 14일. [PR #6](https://github.com/Recon987/AI-Coding/pull/6)의 928e78e 검증 빌드이며 main에는 아직 병합하지 않았습니다.
 
 회사 네트워크에서 개발용 패키지를 설치할 필요가 없도록 [Windows 빌드](https://github.com/Recon987/AI-Coding/actions/workflows/windows-build.yml)를 준비했습니다.
 
