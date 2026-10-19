@@ -111,9 +111,14 @@ const root = path.resolve(__dirname, "..");
     await close.focus();
     await page.clock.runFor(9000);
     assert.equal(await toast.isVisible(), true, "닫기 버튼에 포커스가 있는 동안 유지");
+    // 바깥으로 나갔다 재진입하면 가장 최근의 작업 위치로 복귀해야 한다.
+    const latestTarget = page.locator(".data-menu > summary");
+    await latestTarget.focus();
+    await page.keyboard.press("Tab");
+    assert.equal(await close.evaluate((el) => el === document.activeElement), true, "Tab으로 알림 재진입");
     await page.keyboard.press("Enter");
     await toast.waitFor({ state: "hidden" });
-    assert.equal(await memoSearch.evaluate((el) => el === document.activeElement), true, "닫은 뒤 원래 위치로 포커스 복귀");
+    assert.equal(await latestTarget.evaluate((el) => el === document.activeElement), true, "재진입 후 가장 최근 위치로 포커스 복귀");
     // List search announces how many rows remain.
     await page.getByLabel("기록 검색").fill("낭독 확인");
     assert.equal(await page.locator('.list-count[role="status"]').textContent(), "2건 표시");
