@@ -120,7 +120,14 @@ else {
       const data = store.read(r.filePaths[0], { required: true });
       // TASK-BACKUP-02: only the newest RESTORE_KEEP protection copies are kept;
       // the user is told which ones go before anything is replaced.
-      const copies = store.restoreCopies(file);
+      // Listing is advisory: if the folder cannot be listed, restore still works and nothing is pruned.
+      let copies = [];
+      let listFailed = false;
+      try {
+        copies = store.restoreCopies(file);
+      } catch {
+        listFailed = true;
+      }
       const goingAway = copies.slice(0, Math.max(0, copies.length + 1 - store.RESTORE_KEEP));
       const stamp = (at) => {
         const d = new Date(at);
@@ -136,7 +143,9 @@ else {
           "현재 데이터를 백업 내용으로 교체할까요? 교체 전 데이터는 자동 보관됩니다.",
         detail: [
           `복원 전 보호본은 최근 ${store.RESTORE_KEEP}개만 보관합니다.`,
-          goingAway.length
+          listFailed
+            ? "보호본 목록을 확인하지 못해 이번에는 오래된 보호본을 정리하지 않습니다."
+            : goingAway.length
             ? `복원하면 가장 오래된 보호본 ${goingAway.length}개(${goingAway.map((c) => stamp(c.at)).join(", ")})를 지웁니다. 필요하면 취소하고 먼저 다른 곳에 복사하세요.`
             : "",
         ].filter(Boolean).join("\n"),
@@ -144,14 +153,20 @@ else {
       if (answer.response !== 1) return null;
       store.write(store.restoreCopyPath(file), store.read(file));
       const saved = store.write(file, data, { keepLastGood: true });
-      // Pruning runs only after the restore committed; failing to delete is not a failed restore.
-      const pruned = store.pruneRestoreCopies(file);
-      const warnings = [
-        saved?.warning,
-        pruned.failed.length
-          ? `오래된 복원 보호본 ${pruned.failed.length}개를 지우지 못했습니다. 저장 폴더 권한을 확인하세요.`
-          : "",
-      ].filter(Boolean);
+      // The restore is committed from here on. Pruning may only warn: throwing now would
+      // leave the renderer on pre-restore data and its next save would undo the restore
+      // (DS-01, Codex data-safety audit 2026-10-19).
+      let pruneWarning = "";
+      if (!listFailed) {
+        try {
+          const pruned = store.pruneRestoreCopies(file);
+          if (pruned.failed.length)
+            pruneWarning = `오래된 복원 보호본 ${pruned.failed.length}개를 지우지 못했습니다. 저장 폴더 권한을 확인하세요.`;
+        } catch (error) {
+          pruneWarning = `복원은 완료했지만 오래된 복원 보호본을 정리하지 못했습니다(${error.message}). 보호본은 그대로 남아 있습니다.`;
+        }
+      }
+      const warnings = [saved?.warning, pruneWarning].filter(Boolean);
       if (warnings.length) notify(warnings.join(" "));
       return data;
     });

@@ -266,6 +266,15 @@ function App() {
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "백업 작업에 실패했습니다.");
+      // Whatever failed, show what is on disk now, so a later save cannot write
+      // stale screen data over a restore that did commit (DS-01).
+      if (restore && api)
+        try {
+          const current = await api.load();
+          setData(normalize(current, { allowNewer: isNewerData(current) }));
+        } catch {
+          // Keep the error above; the next start reads the file again.
+        }
     } finally {
       saving.current = false;
       setBusy(false);

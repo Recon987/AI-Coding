@@ -42,3 +42,6 @@ updated: 2026-10-19
 2026-10-19 Linux(Node 22): `npm test` 116/116(새 backup-retention 2개: 7개 중 오래된 2개만 정리·다른 파일 보존·이름 충돌·삭제 실패 보고), `npm run test:desktop` 12개 진입점(desktop-notice-smoke에 실제 복원: 확인창 안내·5개 유지·가장 오래된 것만 정리·새 보호본 = 복원 전 자료, LA 시간대에서도 통과), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows 수동 실행 [39230668333](https://github.com/Recon987/AI-Coding/actions/runs/39230668333)(20cdc3c) 성공.
 
 ## 검증 기록
+
+### 2026-10-19 Codex 감사 DS-01 보완 (Claude)
+Codex 자료 안전성 감사(PR #10)가 이 카드의 결함을 찾았다: 복원 확정 뒤 보호본 정리 단계의 목록 읽기 오류가 예외로 올라가 화면이 복원 전 자료로 남고, 다음 저장이 복원을 되돌렸다. `desktop/main.cjs` 정리 단계를 경고로 바꾸고 `src/main.tsx`가 복원 실패 시 디스크를 다시 읽도록 고쳤다. 감사 검사를 정식 검사에 편입. 상세는 TASK-REVIEW-DATA-SAFETY-01 검증 기록.
