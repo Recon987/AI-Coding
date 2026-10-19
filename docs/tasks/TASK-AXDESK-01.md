@@ -1,9 +1,9 @@
 ---
 id: TASK-AXDESK-01
 title: AX Desk 권역별 사업 관리와 마일스톤 달력·브리핑 파생
-status: backlog
+status: in-progress
 role: builder
-owner: none
+owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: TASK-MODULES-02
@@ -13,6 +13,9 @@ updated: 2026-10-19
 
 ## 배경
 TASK-ARCH-MODULAR-01 Step C-1. [보정 명세](../specs/modular-ax/implementation.md) 5장 '사업 관리'.
+
+## 의존 예외
+- 의존 예외: TASK-MODULES-02 (사용자 승인 2026-10-19, "이어서 AXDESK-01 진행해" — MODULES-02는 구현·Linux 검사 완료 후 Codex 검증 대기. 검증에서 바뀌는 점은 이 카드에도 반영)
 
 ## 완료 조건
 - [ ] 사업 등록·수정·삭제 확인·검색·권역(전체/본사/서부/북부/연구원·보전원/기타)·단계 필터·정렬
@@ -28,7 +31,7 @@ TASK-ARCH-MODULAR-01 Step C-1. [보정 명세](../specs/modular-ax/implementatio
 - [ ] 2. 마일스톤 파생·검사·기록
 
 ## 재개 위치
-MODULES-02 완료 후.
+1단계: src/components/AxDesk.tsx 자리 표시를 사업 목록(검색·권역·단계 필터·정렬)과 편집 Sheet로 교체. 집행률 계산은 shared/ax.mjs executionRate.
 
 ## 테스트 상태
 미실행
