@@ -16,6 +16,7 @@ import { OfficeDirectory } from "./OfficeDirectory";
 import { OfficeImport } from "./OfficeImport";
 import { Sheet } from "./Sheet";
 import { askConfirm, discardChanges } from "../confirm";
+import { SAVE } from "../../shared/labels.mjs";
 const officeTabs = [
   ["board", "근무현황"],
   ["employees", "직원 관리"],
@@ -607,7 +608,7 @@ export function Office({
             </Field>
             <div className="sheet-actions">
               <button className="primary" disabled={busy}>
-                근무 저장
+                {SAVE}
               </button>
               <button type="button" disabled={busy} onClick={closeDraft}>
                 취소

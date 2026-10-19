@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76(PR #1 병합)
-- **Task Card**: TASK-SCHEMA-01 review, TASK-BRIEF-02 review(둘 다 검증자 codex). 다음 ready: TASK-LABELS-01. backlog: TASK-FORMS-02(SCHEMA-01 뒤)
-- **Latest Pushed Commit**: 129030b - wip(TASK-BRIEF-02): 카드 착수 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: BRIEF-02 — shared/dates.mjs(isWeekend·previousWorkday), shared/model.mjs(enforcementRange, briefing 단속 절 기간·제목), .d.mts, tests/office.test.cjs. SCHEMA-01은 b9047a7·90eba07
-- **Changed Interfaces / Schema Diff**: 새 함수 `isWeekend`, `previousWorkday`, `enforcementRange`. 브리핑 텍스트의 단속 절이 여러 날일 때 제목이 '직전 근무일 이후 단속·확인 (시작 ~ 끝, …)'. 자료 형식·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 100/100, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. SCHEMA-01 Windows 39188503229 성공, BRIEF-02 Windows는 푸시 후 수동 실행
-- **Remaining Work for Gemini**: Codex: SCHEMA-01·BRIEF-02 검증. 다음 구현 TASK-LABELS-01('등록' 통일·라벨 단일화). 사용자: Windows 검사를 수동 실행으로 할지 PR로 할지
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76
+- **Task Card**: TASK-SCHEMA-01·TASK-BRIEF-02·TASK-LABELS-01 review(모두 검증자 codex). backlog 다음: TASK-FORMS-02('고발·인계', SCHEMA-01 검증 뒤)
+- **Latest Pushed Commit**: 5a514bb - wip(TASK-LABELS-01): 카드 진행 단계·재개 위치 갱신 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: LABELS-01 — shared/model.mjs(RISK_LABEL·isRecurring·recurrenceText), shared/office.mjs(WORK_GROUPS·workGroup), shared/labels.mjs(신규 문구 상수), 화면 9개 파일 문구·중복 제거, tests/labels.test.cjs(신규), 테스트 11개 파일이 문구 상수 사용, README
+- **Changed Interfaces / Schema Diff**: 새 export `RISK_LABEL`, `isRecurring`, `recurrenceText`, `WORK_GROUPS`, `workGroup`, `shared/labels.mjs`. 화면 버튼 문구 변경('등록'·'저장' 통일). 자료 형식·허용값·IPC 변경 없음
+- **Test Status**: Linux Node 22: npm test 106/106, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. Windows: SCHEMA-01 39188503229·BRIEF-02 39219106199 성공, LABELS-01은 푸시 후 수동 실행
+- **Remaining Work for Gemini**: Codex: SCHEMA-01·BRIEF-02·LABELS-01 검증. 검증 뒤 main 병합 PR(사용자 승인). 그다음 TASK-FORMS-02
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

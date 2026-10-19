@@ -15,6 +15,7 @@ import { formatDate, formatTime, itemClock, SectionHead, Tag } from "../ui";
 import { dutyTypes, officeRows, officeSummary } from "../../shared/office.mjs";
 import { Icon } from "./Icon";
 import { addDays, weekDays } from "../../shared/dates.mjs";
+import { addLabel, TARGET } from "../../shared/labels.mjs";
 
 export function Briefing({
   data,
@@ -85,9 +86,9 @@ export function Briefing({
         <div className="start-actions">
           {(
             [
-              ["patrol", "순찰 기록", "현장에서 본 것과 조치를 바로 남기기"],
-              ["calendar", "일정 등록", "회의와 마감 시간을 놓치지 않도록"],
-              ["calls", "전화메모 작성", "통화 내용과 회신할 일을 빠르게"],
+              ["patrol", addLabel(TARGET.patrol), "현장에서 본 것과 조치를 바로 남기기"],
+              ["calendar", addLabel(TARGET.event), "회의와 마감 시간을 놓치지 않도록"],
+              ["calls", addLabel(TARGET.call), "통화 내용과 회신할 일을 빠르게"],
               [
                 "office",
                 "근무현황판 준비",

@@ -7,6 +7,8 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 
 const root = path.resolve(__dirname, "..");
 (async () => {
@@ -41,7 +43,7 @@ const root = path.resolve(__dirname, "..");
     const confirmBox = page.getByRole("alertdialog");
     const openDraft = async () => {
       await nav("제출 기한").click();
-      await page.getByRole("button", { name: "제출 기한 추가", exact: true }).click();
+      await page.getByRole("button", { name: L.addLabel(L.TARGET.submission), exact: true }).click();
       await page.getByLabel("업무 제목").fill("작성 중 초안");
     };
     // TASK-EDITOR-01: editors have no separate "닫기 ×"; 취소 and Esc close them.
@@ -86,14 +88,14 @@ const root = path.resolve(__dirname, "..");
     await nav("업무 메모").click();
     await page.getByRole("heading", { name: "업무 메모", exact: true }).waitFor();
     // Ctrl+Enter saves from inside a textarea too.
-    await page.getByRole("button", { name: "메모 추가" }).click();
+    await page.getByRole("button", { name: L.addLabel(L.TARGET.note) }).click();
     await page.getByLabel("제목", { exact: true }).fill("단축키 저장 메모");
     await page.getByLabel("내용", { exact: true }).fill("Ctrl+Enter");
     await page.keyboard.press("Control+Enter");
     await sheet.waitFor({ state: "hidden" });
     assert.ok((await page.evaluate(() => window.workdesk.load())).notes.some((n) => n.title === "단축키 저장 메모"));
     // Delete: cancel keeps the record, confirm removes it.
-    await page.getByRole("button", { name: "메모 추가" }).click();
+    await page.getByRole("button", { name: L.addLabel(L.TARGET.note) }).click();
     await page.getByLabel("제목", { exact: true }).fill("삭제 확인 메모");
     await page.getByLabel("내용", { exact: true }).fill("가상 자료");
     await sheet.getByRole("button", { name: "저장", exact: true }).click();

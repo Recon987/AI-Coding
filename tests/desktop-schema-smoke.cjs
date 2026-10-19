@@ -8,6 +8,8 @@ const os = require("node:os");
 const path = require("node:path");
 const store = require("../desktop/store.cjs");
 const { READER_VERSION } = require("../shared/model.mjs");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 
 const root = path.resolve(__dirname, "..");
 async function launch(dir, profile) {
@@ -50,7 +52,7 @@ const future = { inspections: [{ id: "i1", facility: "가상 데크" }] };
     assert.equal(await newer.locator(".read-only-notice").getAttribute("role"), "alert");
     await newer.locator("nav").getByRole("button", { name: "업무 메모", exact: true }).click();
     await newer.getByRole("heading", { name: "가상 보존 메모", exact: true }).waitFor();
-    await newer.getByRole("button", { name: /^메모 (추가|등록)$/ }).click();
+    await newer.getByRole("button", { name: L.addLabel(L.TARGET.note), exact: true }).click();
     await newer.getByLabel("제목", { exact: true }).fill("저장되면 안 되는 메모");
     await newer.getByRole("button", { name: "저장", exact: true }).click();
     await newer.getByRole("alert").filter({ hasText: "읽기 전용 자료라 저장" }).waitFor();

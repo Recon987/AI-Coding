@@ -35,6 +35,7 @@ import { MonthGrid } from "./calendar/MonthGrid";
 import { WeekView } from "./calendar/WeekView";
 import { ListView } from "./calendar/ListView";
 import { askConfirm, confirmDelete } from "../confirm";
+import { addLabel, editorTitle, SAVE, TARGET } from "../../shared/labels.mjs";
 type View = "month" | "week" | "list";
 const VIEWS: [View, string][] = [
   ["month", "월간"],
@@ -472,7 +473,7 @@ export function Calendar({
             disabled={busy}
             onClick={() => editor.openEditor(blank())}
           >
-            일정 추가
+            {addLabel(TARGET.event)}
           </button>
         </div>
         <div
@@ -620,7 +621,7 @@ export function Calendar({
       )}
       {editor.isOpen && (
         <EditorDialog
-          title={draft.id ? "일정 수정" : "일정 등록"}
+          title={editorTitle(TARGET.event, Boolean(draft.id))}
           busy={busy}
           dirty={editor.dirty}
           onClose={editor.finishEditor}
@@ -670,7 +671,7 @@ export function Calendar({
 
             <div className="editor-header-actions">
               <button className="primary" disabled={busy}>
-                {draft.id ? "변경 저장" : "일정 저장"}
+                {SAVE}
               </button>
               <button
                 type="button"

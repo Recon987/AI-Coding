@@ -5,6 +5,8 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { empty } = require("../shared/model.mjs");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 (async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "park-desktop-test-"));
   const root = path.resolve(__dirname, "..");
@@ -104,7 +106,7 @@ const { empty } = require("../shared/model.mjs");
     const firstUse = page.getByRole("region", { name: "업무 시작 안내", exact: true });
     await firstUse.waitFor();
     assert.equal(await firstUse.getByRole("button").count(), 4);
-    for (const [action, title] of [["순찰 기록", "순찰 기록 등록"], ["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
+    for (const [action, title] of [L.TARGET.patrol, L.TARGET.event, L.TARGET.call].map((target) => [L.addLabel(target), L.addLabel(target)])) {
       await firstUse.getByRole("button", { name: action, exact: true }).click();
       const dialog = page.getByRole("dialog", { name: title, exact: true });
       await dialog.waitFor();
@@ -135,7 +137,7 @@ const { empty } = require("../shared/model.mjs");
     await page.reload();
     await firstUse.waitFor();
     await nav("업무 메모");
-    await add("메모 추가");
+    await add(L.addLabel(L.TARGET.note));
     assert.equal(
       await page
         .getByLabel("제목", { exact: true })
@@ -211,13 +213,13 @@ const { empty } = require("../shared/model.mjs");
       (await page.evaluate(() => window.workdesk.load())).notes.length,
       0,
     );
-    await add("메모 추가");
+    await add(L.addLabel(L.TARGET.note));
     await page.getByLabel("제목", { exact: true }).fill("보존할 업무 메모");
     await page.getByLabel("내용", { exact: true }).fill("새 버전에서도 유지");
     await page.getByRole("button", { name: "저장", exact: true }).click();
     await page.getByRole("heading", { name: "보존할 업무 메모" }).waitFor();
     await nav("전화메모");
-    await add("전화메모 추가");
+    await add(L.addLabel(L.TARGET.call));
     await page.getByLabel("제목", { exact: true }).fill("안내 전화");
     await page.getByLabel("전화번호").fill("000-0000");
     await page.getByLabel("전달 내용").fill("문의 처리 기록");
@@ -227,7 +229,7 @@ const { empty } = require("../shared/model.mjs");
       .getByRole("button", { name: /^미처리로 변경 · / })
       .waitFor();
     await nav("현장 순찰");
-    await add("순찰 기록 추가");
+    await add(L.addLabel(L.TARGET.patrol));
     await page.getByLabel("기록 제목").fill("오전 탐방로 순찰");
     await page.getByLabel("순찰 구간").fill("안내소 → 전망대");
     await page.getByLabel("기록자").fill("시험 담당");
@@ -237,11 +239,11 @@ const { empty } = require("../shared/model.mjs");
     await page.locator(".coordinate-details > summary").click();
     // DD input: partial, malformed and out-of-range values block saving.
     await page.getByLabel("위도 (DD)", { exact: true }).fill("37.5");
-    await saveBlocked("순찰 저장");
+    await saveBlocked(L.SAVE);
     await page.getByLabel("경도 (DD)", { exact: true }).fill("181");
-    await saveBlocked("순찰 저장");
+    await saveBlocked(L.SAVE);
     await page.getByLabel("경도 (DD)", { exact: true }).fill("0x7f");
-    await saveBlocked("순찰 저장");
+    await saveBlocked(L.SAVE);
     await page.getByLabel("경도 (DD)", { exact: true }).fill("127.25");
     assert.equal(
       await page.getByLabel("DMS 변환 결과").textContent(),
@@ -253,7 +255,7 @@ const { empty } = require("../shared/model.mjs");
       "위도 37.5°, 경도 127.25°",
     );
     await page.getByLabel("좌표 입력 형식").selectOption("dd");
-    await page.getByRole("button", { name: "순찰 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page
       .getByRole("heading", { name: "오전 탐방로 순찰", exact: true })
       .waitFor();
@@ -293,19 +295,19 @@ const { empty } = require("../shared/model.mjs");
       .getByRole("button", { name: /^인수인계로 연결 · / })
       .click();
     await page
-      .getByRole("heading", { name: "업무 수정", exact: true })
+      .getByRole("heading", { name: L.editLabel(L.TARGET.handover), exact: true })
       .waitFor();
     await page.getByLabel("업무 제목").fill("안내판 후속 확인");
     await page.getByLabel("담당자", { exact: true }).fill("시설 담당");
     await page.getByLabel("마감 일시").fill("2030-10-16T09:00");
-    await page.getByRole("button", { name: "변경 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page
       .getByRole("heading", { name: "안내판 후속 확인", exact: true })
       .waitFor();
     // Returning to the same patrol must open the existing outstanding task.
     await nav("현장 순찰");
     await page.getByRole("button", { name: "후속 조치 보기" }).click();
-    await page.getByRole("heading", { name: "업무 수정" }).waitFor();
+    await page.getByRole("heading", { name: L.editLabel(L.TARGET.handover) }).waitFor();
     assert.equal(
       await page.getByLabel("업무 제목").inputValue(),
       "안내판 후속 확인",
@@ -315,18 +317,18 @@ const { empty } = require("../shared/model.mjs");
       .getByRole("heading", { name: "이어받을 업무", exact: true })
       .waitFor();
     await nav("제출 기한");
-    await add("제출 기한 추가");
+    await add(L.addLabel(L.TARGET.submission));
     await page.getByLabel("업무 제목").fill("주간 실적 제출");
     await page.getByLabel("담당자", { exact: true }).fill("서무 담당");
     await page.getByLabel("제출처").fill("관리부");
     await page.getByLabel("마감 일시").fill("2030-10-16T17:00");
-    await page.getByRole("button", { name: "업무 등록", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page.getByRole("heading", { name: "주간 실적 제출" }).waitFor();
     await nav("월간 일정");
-    await add("일정 추가");
+    await add(L.addLabel(L.TARGET.event));
     await page.getByLabel("일정 제목").fill("현장 회의");
     await page.getByLabel("일정 일시").fill("2030-10-16T10:00");
-    await page.getByRole("button", { name: "일정 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     const selectedDay = page.locator('.calendar-day[aria-pressed="true"]');
     await page.waitForFunction(() => document.querySelector('.calendar-day[aria-pressed="true"]')?.getAttribute("aria-label")?.includes("현장 회의"));
     const selectedName = await selectedDay.getAttribute("aria-label");
@@ -338,7 +340,7 @@ const { empty } = require("../shared/model.mjs");
     );
     await search("안내판 후속");
     await page.locator(".search-result").click();
-    await page.getByRole("heading", { name: "업무 수정" }).waitFor();
+    await page.getByRole("heading", { name: L.editLabel(L.TARGET.handover) }).waitFor();
     await page
       .locator(".sheet[open]")
       .getByRole("button", { name: "취소", exact: true })
@@ -402,7 +404,7 @@ const { empty } = require("../shared/model.mjs");
     );
     await page.getByLabel("좌표 입력 형식").selectOption("dms");
     await page.getByLabel("위도 분", { exact: true }).fill("60");
-    await saveBlocked("변경 저장");
+    await saveBlocked(L.SAVE);
     await page.getByLabel("위도 분", { exact: true }).fill("45");
     await page.getByLabel("위도 방향").selectOption("S");
     await page.getByLabel("경도 방향").selectOption("W");
@@ -410,7 +412,7 @@ const { empty } = require("../shared/model.mjs");
       await page.getByLabel("DD 변환 결과").textContent(),
       "위도 -37.75°, 경도 -127.25°",
     );
-    await page.getByRole("button", { name: "변경 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page
       .getByRole("heading", { name: "오전 탐방로 순찰 수정" })
       .waitFor();
@@ -451,11 +453,11 @@ const { empty } = require("../shared/model.mjs");
     }
     // Optional coordinates: legacy-shaped record, valid zero pair, explicit clearing.
     await nav("현장 순찰");
-    await add("순찰 기록 추가");
+    await add(L.addLabel(L.TARGET.patrol));
     await page.getByLabel("기록 제목").fill("좌표 없는 순찰");
     await page.getByLabel("순찰 구간").fill("관리 거점");
     await page.getByLabel("기록자").fill("시험 담당");
-    await page.getByRole("button", { name: "순찰 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     const optional = page.locator(".record").filter({
       has: page.getByRole("heading", { name: "좌표 없는 순찰", exact: true }),
     });
@@ -469,7 +471,7 @@ const { empty } = require("../shared/model.mjs");
     await page.locator(".coordinate-details > summary").click();
     await page.getByLabel("위도 (DD)", { exact: true }).fill("0");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("0");
-    await page.getByRole("button", { name: "변경 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await optional.locator(".record-details > summary").click();
     await optional.getByText("위도 0°, 경도 0°", { exact: false }).waitFor();
     assert.deepEqual(
@@ -481,7 +483,7 @@ const { empty } = require("../shared/model.mjs");
     await page
       .getByRole("button", { name: "좌표 지우기", exact: true })
       .click();
-    await page.getByRole("button", { name: "변경 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     assert.equal(
       (await page.evaluate(() => window.workdesk.load())).patrols[1]
@@ -506,7 +508,7 @@ const { empty } = require("../shared/model.mjs");
     await add("조직 추가");
     await page.getByLabel("조직 코드", { exact: true }).fill("PARK");
     await page.getByLabel("조직 이름", { exact: true }).fill("시험 사무소");
-    await page.getByRole("button", { name: "조직 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page
       .getByRole("heading", { name: "시험 사무소", exact: true })
       .waitFor();
@@ -515,7 +517,7 @@ const { empty } = require("../shared/model.mjs");
     await page.getByLabel("직원번호", { exact: true }).fill("E001");
     await page.getByLabel("직원 이름", { exact: true }).fill("시험 직원");
     await page.getByLabel("직위·담당", { exact: true }).fill("시설 담당");
-    await page.getByRole("button", { name: "직원 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page
       .getByRole("heading", { name: "시험 직원", exact: true })
       .waitFor();
@@ -523,7 +525,7 @@ const { empty } = require("../shared/model.mjs");
     await add("거점 추가");
     await page.getByLabel("거점 코드", { exact: true }).fill("B01");
     await page.getByLabel("거점 이름", { exact: true }).fill("시험 탐방센터");
-    await page.getByRole("button", { name: "거점 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page
       .getByRole("heading", { name: "시험 탐방센터", exact: true })
       .waitFor();
@@ -538,7 +540,7 @@ const { empty } = require("../shared/model.mjs");
       .getByLabel("근무 거점", { exact: true })
       .selectOption(officeData.bases[0].id);
     await page.getByLabel("근무 비고", { exact: true }).fill("야간 교대 인계");
-    await page.getByRole("button", { name: "근무 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page
       .getByRole("button", { name: "시험 직원 근무 수정", exact: true })
       .waitFor();
@@ -566,7 +568,7 @@ const { empty } = require("../shared/model.mjs");
     await page
       .getByLabel("근무 비고", { exact: true })
       .fill("수정된 교대 인계");
-    await page.getByRole("button", { name: "근무 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page.getByRole("dialog").waitFor({ state: "hidden" });
     // CSV file preview must not mutate storage until explicitly applied.
     await page.getByRole("tab", { name: "파일 반입", exact: true }).click();
@@ -627,7 +629,7 @@ const { empty } = require("../shared/model.mjs");
       .getByRole("button", { name: "반입 직원 근무 등록", exact: true })
       .click();
     await page.getByLabel("기본 근무", { exact: true }).selectOption("off");
-    await page.getByRole("button", { name: "근무 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page
       .getByRole("button", { name: "반입 직원 근무 수정", exact: true })
       .waitFor();

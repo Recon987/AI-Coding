@@ -4,6 +4,8 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 const root = path.resolve(__dirname, "..");
 
 async function withApp(check) {
@@ -41,7 +43,7 @@ async function withApp(check) {
 async function collapsedError(observation) {
   await withApp(async (app, page) => {
     await page.locator("nav").getByRole("button", { name: "현장 순찰", exact: true }).click();
-    await page.getByRole("button", { name: "순찰 기록 추가", exact: true }).click();
+    await page.getByRole("button", { name: L.addLabel(L.TARGET.patrol), exact: true }).click();
     await page.getByLabel("순찰 구간", { exact: true }).fill("가상 탐방로");
     await page.getByLabel("기록자", { exact: true }).fill("가상 직원");
     if (observation) {
@@ -55,7 +57,7 @@ async function collapsedError(observation) {
     await details.getByLabel("경도 (DD)", { exact: true }).fill("127");
     await summary.click();
     assert.equal(await details.evaluate((el) => el.open), false);
-    await page.getByRole("button", { name: "순찰 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page.locator(".editor-dialog .notice.error").waitFor();
     const latitude = details.getByLabel("위도 (DD)", { exact: true });
     await page.waitForFunction(() => document.activeElement?.getAttribute("aria-invalid") === "true");
@@ -66,7 +68,7 @@ async function collapsedError(observation) {
     assert.equal((await page.evaluate(() => window.workdesk.load())).patrols.length, 0, "잘못된 자료는 저장하지 않음");
     assert.equal(await page.getByLabel("순찰 구간", { exact: true }).inputValue(), "가상 탐방로", "다른 초안 보존");
     await details.getByRole("button", { name: "좌표 지우기", exact: true }).click();
-    await page.getByRole("button", { name: "순찰 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page.locator(".editor-dialog").waitFor({ state: "hidden" });
     const saved = (await page.evaluate(() => window.workdesk.load())).patrols;
     assert.equal(saved.length, 1, "오류 정정 후 저장 가능");

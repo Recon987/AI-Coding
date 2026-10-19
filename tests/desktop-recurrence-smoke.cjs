@@ -6,6 +6,8 @@ const os = require("node:os");
 const path = require("node:path");
 const { empty, reminderItems, briefing } = require("../shared/model.mjs");
 const { selectDue } = require("../desktop/notifications.cjs");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 
 const root = path.resolve(__dirname, "..");
 const DATE = "2026-10-15";
@@ -245,7 +247,7 @@ const TITLE = "가상 반복 회의";
       "미저장 수정 중 회차 변경 차단",
     );
     await editor
-      .getByRole("button", { name: "변경 저장", exact: true })
+      .getByRole("button", { name: L.SAVE, exact: true })
       .click();
     await editor.waitFor({ state: "hidden" });
     await waitEvent((event) => event.title.endsWith(" 수정"));
@@ -259,7 +261,7 @@ const TITLE = "가상 반복 회의";
       .click();
     await editor.getByLabel("반복 주기", { exact: true }).selectOption("none");
     await editor
-      .getByRole("button", { name: "변경 저장", exact: true })
+      .getByRole("button", { name: L.SAVE, exact: true })
       .click();
     await page
       .getByRole("alertdialog")

@@ -6,6 +6,8 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { REVIEW_DATE, reviewFixture } = require("./review-fixture.cjs");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 
 const root = path.resolve(__dirname, "..");
 (async () => {
@@ -64,13 +66,13 @@ const root = path.resolve(__dirname, "..");
     // A modal inside the hidden month-only detail area used to open at 0x0 and block the app.
     for (const view of ["주간", "목록"]) {
       await page.getByRole("tab", { name: view, exact: true }).click();
-      await page.getByRole("button", { name: "일정 추가", exact: true }).click();
+      await page.getByRole("button", { name: L.addLabel(L.TARGET.event), exact: true }).click();
       const editor = page.getByRole("dialog", { name: "일정 등록", exact: true });
       await editor.waitFor({ state: "visible" });
       assert.equal(await editor.evaluate(el => !!el.closest("[hidden]")), false);
       await editor.getByLabel("일정 제목", { exact: true }).fill(`${view} 보기에서 등록`);
       await editor.getByLabel("일정 일시", { exact: true }).fill(`${REVIEW_DATE}T13:00`);
-      await editor.getByRole("button", { name: "일정 저장", exact: true }).click();
+      await editor.getByRole("button", { name: L.SAVE, exact: true }).click();
       await editor.waitFor({ state: "hidden" });
       assert.ok((await page.evaluate(() => window.workdesk.load())).events.some(e => e.title === `${view} 보기에서 등록`));
       assert.equal(await page.getByRole("tab", { name: view, exact: true }).getAttribute("aria-selected"), "true");
@@ -230,7 +232,7 @@ const root = path.resolve(__dirname, "..");
     const previousGood = fs.readFileSync(liveFile + ".last-good", "utf8");
     fs.mkdirSync(liveFile + ".last-good.tmp");
     await page.locator("nav").getByRole("button", { name: "업무 메모", exact: true }).click();
-    await page.getByRole("button", { name: "메모 추가", exact: true }).click();
+    await page.getByRole("button", { name: L.addLabel(L.TARGET.note), exact: true }).click();
     await page.getByLabel("제목", { exact: true }).fill("보호본 실패에도 저장된 메모");
     await page.getByRole("button", { name: "저장", exact: true }).click();
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
@@ -240,7 +242,7 @@ const root = path.resolve(__dirname, "..");
     assert.equal(fs.readFileSync(liveFile + ".last-good", "utf8"), previousGood);
     fs.rmdirSync(liveFile + ".last-good.tmp");
     // A subsequent healthy save keeps that committed record and clears the warning.
-    await page.getByRole("button", { name: "메모 추가", exact: true }).click();
+    await page.getByRole("button", { name: L.addLabel(L.TARGET.note), exact: true }).click();
     await page.getByLabel("제목", { exact: true }).fill("보호본 재시도 후 메모");
     await page.getByRole("button", { name: "저장", exact: true }).click();
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
@@ -258,7 +260,7 @@ const root = path.resolve(__dirname, "..");
     assert.ok(hint.startsWith(`‘${source.title}’에서 가져옴: 순찰 구간 ${route} · 기록자 ${observer}`), hint);
     assert.equal(await page.getByLabel("순찰 구간").getAttribute("aria-describedby"), await page.locator(".editor-hint").getAttribute("id"));
     await page.getByLabel("확인 사항").fill("복사 순찰 이상 없음");
-    await page.getByRole("button", { name: "순찰 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     const copied = (await page.evaluate(() => window.workdesk.load())).patrols.at(-1);
     assert.equal(copied.findings, "복사 순찰 이상 없음");
@@ -268,7 +270,7 @@ const root = path.resolve(__dirname, "..");
     assert.equal(copied.observations, undefined);
     assert.equal(copied.coordinates, undefined);
     // The plain "add" button now defaults from that last-added record (not the copy's source title).
-    await page.getByRole("button", { name: "순찰 기록 추가", exact: true }).click();
+    await page.getByRole("button", { name: L.addLabel(L.TARGET.patrol), exact: true }).click();
     assert.match(await page.locator(".editor-hint").textContent(), new RegExp(`^‘${copied.title}’에서 가져옴: 기록자 ${observer}`));
     await page.keyboard.press("Escape");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
@@ -300,7 +302,7 @@ const root = path.resolve(__dirname, "..");
       return (input?.getAttribute("aria-describedby") ?? "").split(" ").map((id) => document.getElementById(id)?.textContent).join(" | ");
     });
     assert.match(errorText, /종료일은 시작일과 같거나 이후/);
-    await page.getByRole("button", { name: "통제 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page.waitForFunction(() => document.activeElement?.getAttribute("aria-invalid") === "true");
     assert.ok(!(await page.evaluate(() => window.workdesk.load())).controls.some((c) => c.title === "가상 오류 확인 구간"));
     await page.keyboard.press("Escape");
@@ -324,7 +326,7 @@ const root = path.resolve(__dirname, "..");
     await page.getByRole("tab", { name: "목록", exact: true }).click();
     await page.locator(".list-view-row").filter({ hasText: "미래 필드 일정" }).click();
     await page.getByLabel("일정 제목", { exact: true }).fill("미래 필드 일정 수정");
-    await page.getByRole("button", { name: "변경 저장", exact: true }).click();
+    await page.getByRole("button", { name: L.SAVE, exact: true }).click();
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     const afterEdit = await page.evaluate(() => window.workdesk.load());
     assert.deepEqual(afterEdit.notes.find((n) => n.id === "future-note"), { id: "future-note", title: "미래 필드 메모", body: "본문 수정", tags: ["가상"] });

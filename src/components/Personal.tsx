@@ -5,6 +5,7 @@ import type { Data, Save, Call } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
 import { confirmDelete } from "../confirm";
 import { ListHeader, ListRow, rowKeys } from "./ListRow";
+import { addLabel, editorTitle, SAVE, TARGET } from "../../shared/labels.mjs";
 export function Personal({
   data,
   save,
@@ -87,7 +88,7 @@ export function Personal({
               disabled={busy}
               onClick={() => editor.openEditor(blank())}
             >
-              {mode === "calls" ? "전화메모 추가" : "메모 추가"}
+              {addLabel(mode === "calls" ? TARGET.call : TARGET.note)}
             </button>
           </div>
         </SectionHead>
@@ -168,13 +169,7 @@ export function Personal({
       </section>
       {editor.isOpen && (
         <EditorDialog
-          title={
-            draft.id
-              ? "기록 수정"
-              : mode === "calls"
-                ? "전화메모 등록"
-                : "메모 작성"
-          }
+          title={editorTitle(mode === "calls" ? TARGET.call : TARGET.note, Boolean(draft.id))}
           busy={busy}
           dirty={editor.dirty}
           onClose={editor.finishEditor}
@@ -184,7 +179,7 @@ export function Personal({
           <form className="editor" onSubmit={submit}>
             <div className="editor-header-actions">
               <button className="primary" disabled={busy}>
-                저장
+                {SAVE}
               </button>
               <button
                 type="button"

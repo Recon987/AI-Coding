@@ -5,6 +5,7 @@ import type { Data, Save, Task } from "../types";
 import { Empty, Field, formatTime, localInput, SectionHead, Tag } from "../ui";
 import { confirmDelete } from "../confirm";
 import { ListHeader, ListRow, rowKeys } from "./ListRow";
+import { addLabel, editorTitle, SAVE, TARGET } from "../../shared/labels.mjs";
 type Props = {
   data: Data;
   save: Save;
@@ -97,7 +98,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
               disabled={busy}
               onClick={() => editor.openEditor(blank())}
             >
-              {isSubmission ? "제출 기한 추가" : "인수인계 추가"}
+              {addLabel(isSubmission ? TARGET.submission : TARGET.handover)}
             </button>
           </div>
         </SectionHead>
@@ -215,13 +216,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
       </section>
       {editor.isOpen && (
         <EditorDialog
-          title={
-            draft.id
-              ? "업무 수정"
-              : isSubmission
-                ? "제출 기한 등록"
-                : "인수인계 등록"
-          }
+          title={editorTitle(isSubmission ? TARGET.submission : TARGET.handover, Boolean(draft.id))}
           busy={busy}
           dirty={editor.dirty}
           onClose={editor.finishEditor}
@@ -230,7 +225,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
           <form className="editor" onSubmit={submit}>
             <div className="editor-header-actions">
               <button className="primary" disabled={busy}>
-                {draft.id ? "변경 저장" : "업무 등록"}
+                {SAVE}
               </button>
               <button
                 type="button"

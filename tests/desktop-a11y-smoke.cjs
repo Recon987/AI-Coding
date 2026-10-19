@@ -7,6 +7,8 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { REVIEW_DATE, reviewFixture } = require("./review-fixture.cjs");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 
 const root = path.resolve(__dirname, "..");
 (async () => {
@@ -63,7 +65,7 @@ const root = path.resolve(__dirname, "..");
     assert.equal(await live.count(), 1);
     assert.equal((await live.textContent()).trim(), "");
     await nav("업무 메모");
-    await page.getByRole("button", { name: "메모 추가", exact: true }).click();
+    await page.getByRole("button", { name: L.addLabel(L.TARGET.note), exact: true }).click();
     await page.getByLabel("제목", { exact: true }).fill("가상 낭독 확인 메모");
     await page.keyboard.press("Control+Enter");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
@@ -78,7 +80,7 @@ const root = path.resolve(__dirname, "..");
     await page.clock.runFor(5000);
     assert.equal(await toast.isVisible(), true, "5초 뒤에도 알림 표시");
     // Same message again: announced anew and the 8 s timer restarts (Codex review finding).
-    await page.getByRole("button", { name: "메모 추가", exact: true }).click();
+    await page.getByRole("button", { name: L.addLabel(L.TARGET.note), exact: true }).click();
     await page.getByLabel("제목", { exact: true }).fill("가상 낭독 확인 메모 2");
     await page.keyboard.press("Control+Enter");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });

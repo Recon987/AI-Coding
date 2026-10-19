@@ -26,6 +26,7 @@ import {
   Tag,
 } from "../ui";
 import { askConfirm } from "../confirm";
+import { addLabel, editorTitle, SAVE, TARGET } from "../../shared/labels.mjs";
 type PrefillField = "observer" | "kind" | "zone" | "route";
 /** Fields a new draft took from `from`, as [field, label, value] for the hint. */
 function prefillOf(from: Patrol | undefined, value: Patrol) {
@@ -171,7 +172,7 @@ export function Patrols({
               disabled={busy}
               onClick={() => startNew()}
             >
-              순찰 기록 추가
+              {addLabel(TARGET.patrol)}
             </button>
           </div>
         </SectionHead>
@@ -290,7 +291,7 @@ export function Patrols({
       </section>
       {editor.isOpen && (
         <EditorDialog
-          title={draft.id ? "순찰 기록 수정" : "순찰 기록 등록"}
+          title={editorTitle(TARGET.patrol, Boolean(draft.id))}
           busy={busy}
           dirty={editor.dirty}
           onClose={editor.finishEditor}
@@ -299,7 +300,7 @@ export function Patrols({
           <form className="editor" onSubmit={submit}>
             <div className="editor-header-actions">
               <button className="primary" disabled={busy}>
-                {draft.id ? "변경 저장" : "순찰 저장"}
+                {SAVE}
               </button>
               <button
                 type="button"
