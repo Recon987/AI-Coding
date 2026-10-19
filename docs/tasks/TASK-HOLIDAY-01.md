@@ -1,7 +1,7 @@
 ---
 id: TASK-HOLIDAY-01
 title: 선거일·임시공휴일 반영과 공휴일 표 범위 밖 안내
-status: in-progress
+status: ready
 role: builder
 owner: claude
 verifier: codex
@@ -34,7 +34,7 @@ updated: 2026-10-19
 - [x] 5. 테스트·기록
 
 ## 재개 위치
-Codex 검증 반려(HL-01): src/components/HolidayManager.tsx의 store()에서 parseHolidayLines가 던지는 한도 검증 예외를 화면 오류로 처리한다. 1,000개 상태의 직접 등록/붙여 넣기 모두 안내·초안 보존·자료 불변을 보장한 뒤 재검증한다. tests/desktop-holiday-limits-audit.cjs가 현재2개 경로에서 실패한다.
+Codex 검증 반려(HL-01), BACKUP-02의 BK-01 처리 후 순차 보완 대기: src/components/HolidayManager.tsx의 store()에서 parseHolidayLines가 던지는 한도 검증 예외를 화면 오류로 처리한다. 1,000개 상태의 직접 등록/붙여 넣기 모두 안내·초안 보존·자료 불변을 보장한 뒤 재검증한다. tests/desktop-holiday-limits-audit.cjs가 현재2개 경로에서 실패한다.
 
 ## 구현 내용·검증 요점
 - 조사: docs/research/holidays.md(출처 포함). 관보 원문은 기관에서 최종 확인 필요.
