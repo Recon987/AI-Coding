@@ -96,3 +96,15 @@ test("붙여 넣기 반입: 형식·날짜·이름 검사, 한 줄이라도 틀�
   ]);
   assert.deepEqual(parseHolidayLines("2030-06-05,a\n2030-06-05,b", [], id).skipped, 1, "붙여 넣은 목록 안의 중복도 건너뜀");
 });
+
+test("HL-01: 공휴일 한도 초과는 예외가 아니라 안내 문구로 돌려준다", () => {
+  const { parseHolidayLines } = require("../shared/model.mjs");
+  const { addDays } = require("../shared/dates.mjs");
+  const full = Array.from({ length: 1000 }, (_, i) => ({ id: `h${i}`, date: addDays("2030-01-01", i), name: "가상" }));
+  assert.equal(new Set(full.map((h) => h.date)).size, 1000, "테스트 자료 날짜가 모두 달라야 함");
+  const result = parseHolidayLines("2099-12-31,가상 초과", full, () => "x");
+  assert.deepEqual(result.rows, []);
+  assert.equal(result.errors.length, 1);
+  assert.match(result.errors[0], /최대 1,000개까지 등록할 수 있습니다\. 지금 1,000개가 있어 1개를 더 넣을 수 없습니다/);
+  assert.deepEqual(parseHolidayLines("2099-12-31,가상 초과", full.slice(1), () => "x").errors, [], "999개면 등록 가능");
+});

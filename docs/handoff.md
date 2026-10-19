@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding / task/task-review-data-safety-01 (통합 대상 claude/zen-cannon-wc1at4, 최종 main)
-- **Task Card**: TASK-REVIEW-DATA-SAFETY-01 done(사용자 요청한 독립 감사 완료). 후속4카드 승인·HOLIDAY-01 ready(HL-01 반려)·BACKUP-02 in-progress(BK-01 반려)
-- **Latest Pushed Commit**: dd31bad - docs(TASK-REVIEW-DATA-SAFETY-01): DS-01 완료와 6카드 판정·병합 보류 인계 (최종 문서 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: DS-01 재감사 승인·6카드 코드/검사/Windows 대조, tests/desktop-holiday-limits-audit.cjs·desktop-backup-clock-audit.cjs와 증빙, docs/reviews/2026-10-19-codex-dispatch.md·각 카드·작업 기록
-- **Changed Interfaces / Schema Diff**: Codex 제품 코드·스키마·IPC 변경 없음. 검증 기준afc3825의data v3/reader2 유지
-- **Test Status**: npm test129/129(감사13 포함), test:desktop13개 진입점(감사5/5 포함), UI150·흐름11 통과. Windows39232674307 소스13/패키지12·감사 각5/5 통과. 새 HL-01 감사2경로 실패, BK-01 정상1통과/시계 역행1실패. 새 경계 감사 Windows 미실행
-- **Remaining Work for Gemini**: 전체 main 병합 승인 보류. Claude가 BK-01(이번 복원 직전 보호본 보존·사전 안내 일치)을 먼저, HL-01(한도 예외를 화면 안내로 처리)을 순차 보완. 새 경계 감사와 전체/Windows 재검증 필요
-- **Modified Code Snippets (if uncommitted)**: 없음(최종 문서 푸시 후 확인). 제품 결함2건은 미수정
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76. Codex PR #11(11d098a) 통합
+- **Task Card**: BACKUP-02(BK-01 보완)·HOLIDAY-01(HL-01 보완) review — Codex 재검증 대기. SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02는 Codex 승인(PR #11). REVIEW-DATA-SAFETY-01 done. ARCH-MODULAR-01 blocked(PR #12, 이 두 보완·main 병합 뒤 착수)
+- **Latest Pushed Commit**: 5ba80dc - fix(TASK-BACKUP-02): 시계가 앞서 있던 보호본 때문에 새 복원 보호본이 지워지던 결함(BK-01) 수정 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: BK-01 — desktop/store.cjs(restoreCopyPath 최댓값+1, restoreCopiesToPrune, pruneRestoreCopies protect), desktop/main.cjs. HL-01 — shared/model.mjs parseHolidayLines 한도 안내, src/components/HolidayManager.tsx 예외 처리. 감사 tests/desktop-backup-clock-audit.cjs·tests/desktop-holiday-limits-audit.cjs를 test:desktop·Windows 검사에 편입
+- **Changed Interfaces / Schema Diff**: store `restoreCopyPath(file, now, existing?)`, 새 `restoreCopiesToPrune`, `pruneRestoreCopies(file, keep, protect?)`. 자료 형식·IPC 변경 없음
+- **Test Status**: Linux Node 22: npm test 131/131, npm run test:desktop 12개 진입점 + 감사 9/9(자료 안전 5·시계 2·공휴일 한도 2), 화면 검사 150·실패 0, 업무 과업 11/11. 수정 전 두 감사 실패 재현. Windows는 푸시 후 수동 실행
+- **Remaining Work for Gemini**: Codex: BK-01·HL-01 재검증 → 사용자 승인으로 main 병합 → ARCH-MODULAR-01(PR #12 보정 명세) 착수
+- **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황

@@ -30,7 +30,15 @@ export function HolidayManager({
     a.date.localeCompare(b.date),
   );
   async function store(text: string, clear: () => void) {
-    const result = parseHolidayLines(text, data.customHolidays);
+    let result: ReturnType<typeof parseHolidayLines>;
+    try {
+      result = parseHolidayLines(text, data.customHolidays);
+    } catch (error) {
+      // Any other validation failure is shown too; nothing is saved and the draft stays.
+      setErrors([error instanceof Error ? error.message : "등록할 수 없는 목록입니다."]);
+      setStatus("등록하지 않았습니다. 아래 내용을 확인하세요.");
+      return;
+    }
     setErrors(result.errors);
     if (result.errors.length) {
       setStatus("등록하지 않았습니다. 아래 줄을 고친 뒤 다시 시도하세요.");

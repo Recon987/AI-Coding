@@ -523,6 +523,11 @@ export function parseHolidayLines(text, existing = [], makeId = () => crypto.ran
     taken.add(date);
     rows.push({ id: makeId(), date, name });
   });
+  // HL-01 (Codex review 2026-10-19): the limit is a message, not an exception.
+  if (!errors.length && existing.length + rows.length > MAX_CUSTOM_HOLIDAYS)
+    errors.push(
+      `공휴일은 최대 ${MAX_CUSTOM_HOLIDAYS.toLocaleString("ko-KR")}개까지 등록할 수 있습니다. 지금 ${existing.length.toLocaleString("ko-KR")}개가 있어 ${rows.length.toLocaleString("ko-KR")}개를 더 넣을 수 없습니다. 지난 공휴일을 지운 뒤 다시 등록하세요.`,
+    );
   if (!errors.length) validateCustomHolidays([...existing, ...rows]);
   return { rows: errors.length ? [] : rows, skipped, errors };
 }
