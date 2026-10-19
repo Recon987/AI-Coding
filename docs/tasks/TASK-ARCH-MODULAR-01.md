@@ -18,7 +18,7 @@ updated: 2026-10-19
 
 ## 완료 조건·단계
 - [x] 첨부 원문 보관·main/검증 브랜치 상태 확인
-- [ ] 현재 앱0.8.0·version3 저장 계약과 대조한 보정 명세 작성
+- [x] 현재 앱0.8.0·version3 저장 계약과 대조한 보정 명세 작성
 - [ ] 선행 BK-01·HL-01 보완 및후속6카드 독립 검증·main 병합 완료 확인
 - [ ] Step A: 선택적 modules·AX 모델과 무손실 전환/백업 검증
 - [ ] Step B: 코어4종·기존 기능 보존·내장 모듈 관리/동적 메뉴 검증
@@ -26,10 +26,13 @@ updated: 2026-10-19
 - [ ] 단계별 npm test·test:desktop·독립 검증·Windows 확인 후 통합
 
 ## 재개 위치
-먼저 docs/specs/modular-ax/implementation.md에 실제 version3·기존필드·오프라인 경계·누락 기능 보존·단계별 수용 조건을 보정한다. 구현은 BK-01·HL-01과main 병합 완료 전 시작하지 않는다. 이후main SHA를 고정하고 feat/modular-architecture 및 Step별 task 브랜치/카드를 만든다(추가worktree 없음).
+보정 명세 docs/specs/modular-ax/implementation.md와전용 인계 handoff.md를 읽는다. BK-01·HL-01 보완·후속6카드 검증·main 병합 여부를 확인한다. 미충족이면 blocked를 유지한다. 충족 후 당시 최신main SHA를 고정하고 feat/modular-architecture 및 Step별 task 브랜치/카드를 만든다(추가worktree 없음).
 
 ## 테스트 상태
-문서 초안 작성 중. 기능 구현·AX 테스트·새 빌드는 미실행.
+main1474d76 기반 문서 브랜치 Node24: npm test91/91·npm run test:desktop10개 진입점 통과(타입/빌드 포함). 원문 SHA256 대조 일치·보드/공백 검사 통과. 제품 코드는 변경하지 않았으며 AX 신규 기능·AX 검사·개편 Windows 빌드는 미구현/미실행.
 
 ## 검증 기록
 명세 검토 결과는 보정 문서와전용 인계장에 기록한다. blocked는 환경 오류가 아니라 사용자가 지정한 구현 선행 조건 미충족을 뜻한다.
+
+### 2026-10-19 Codex 명세 검토
+실제 필드version/events/notes/calls를 보존하고, 이미v3인 자료를schemaVersion2→3으로 잘못 전환하지 않도록 보정했다. 실제 메뉴 소유 파일main.tsx, 사무소/통제/바로가기 접근 보존, 정적 내장 모듈·알 수 없는ID 보존, 초기 예제 재주입 방지, 마일스톤 원본 파생, 오프라인 보고서 템플릿·명시적 내보내기를 수용 조건으로 구체화했다. 사용자 선행 조건 미충족으로 제품 구현은 시작하지 않았다. 후속6카드가main에 없어서 이main 기반 보드의 상태는 원격 검증 브랜치의 최신 판정과 다를 수 있다. PR #11과실제 병합 SHA를 기준으로 재개한다.
