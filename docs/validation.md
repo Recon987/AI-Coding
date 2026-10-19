@@ -1,5 +1,12 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## 2026-10-19 DS-01 재감사·후속6카드 독립 검증
+
+기준afc3825. Node24 npm test129/129(감사13 포함)·test:desktop13개 진입점(감사5/5 포함), UI150 실패0/오류0/외부요청0·업무흐름11/11 통과. [Windows39232674307](https://github.com/Recon987/AI-Coding/actions/runs/39232674307) 소스13/패키지12개 진입점·감사 각5/5, NSIS/portable·SHA256SUMS·업로드를 상세 로그로 확인했다. [시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39232674307/artifacts/12178067224).
+
+DS-01은 승인·감사 카드done. SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02 승인. HOLIDAY-01은 한도 예외 안내 누락(HL-01/P2), BACKUP-02는 시계 역행 시 새 보호본 삭제(BK-01/P1)로 반려했다. 새로운 독립 실제 앱 경계 감사는 각각2실패 및1통과/1실패이며 현재 CI/Windows 검사에 포함되지 않는다. **전체 main 병합 승인은 보류**한다. [코드·수치·재현·전후 증빙](reviews/2026-10-19-codex-dispatch.md).
+
+
 ## A11Y-02 독립 검증 재개 — 2026-10-19
 
 최종 보완746b478, [PR #8](https://github.com/Recon987/AI-Coding/pull/8). Node24 단위91/91·desktop10·UI150/실패0/오류0/외부요청0·흐름11/11 통과. 원격 보완을 검증하고 재진입 복귀 P2를 추가 재현·최소 보완(새 회귀 전 실패·후 통과)했다. [Windows39184848329](https://github.com/Recon987/AI-Coding/actions/runs/39184848329) 단위91·소스10/패키지9 각 PASS·A11Y 양쪽 PASS·예외0, NSIS/portable·체크섬·업로드 확인. [검증 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39184848329/artifacts/12157428954). 증빙 커밋은 실행 코드를 바꾸지 않는다. [복구·정적/실행 검토 구분·화면·제약](reviews/2026-10-19-codex-a11y02.md). Codex 추가 보완은 Claude 교차 확인 대기, 실제 NVDA/기관 고대비 미실행.

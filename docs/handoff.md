@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76. Codex PR #10(task/task-review-data-safety-01, 2853c84)은 이 브랜치에 merge commit으로 통합
-- **Task Card**: SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02 review(검증자 codex). TASK-REVIEW-DATA-SAFETY-01 review — DS-01 수정 완료, Codex 재감사 대기
-- **Latest Pushed Commit**: 5d95140 - docs(TASK-BACKUP-02): HOLIDAY-01·BACKUP-02 Windows 수동 실행 통과 기록 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: DS-01 — desktop/main.cjs(복원 확정 뒤 정리 예외를 경고로, 확인창 전 목록 실패는 정리 생략), src/main.tsx(복원 실패 시 디스크 다시 읽기), package.json·windows-build.yml(감사 2개 편입). Codex 감사 파일 tests/data-safety-audit.cjs·tests/desktop-data-safety-audit.cjs, docs/reviews/data-safety-20261019/
-- **Changed Interfaces / Schema Diff**: 없음(복원 오류 처리만). 자료 형식·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 129/129(기존 116 + 감사 13), npm run test:desktop 12개 진입점 + 감사 실제 앱 5/5, 화면 검사 150·실패 0, 업무 과업 11/11. 수정 전 감사 DS-01 실패 재현. Windows는 푸시 후 수동 실행
-- **Remaining Work for Gemini**: Codex: 수정본으로 자료 안전성 재감사, 7개 카드 검증. 사용자 승인 후 main 병합
-- **Modified Code Snippets (if uncommitted)**: 없음
+- **Repository & Branch**: Recon987/AI-Coding / task/task-review-data-safety-01 (통합 대상 claude/zen-cannon-wc1at4, 최종 main)
+- **Task Card**: TASK-REVIEW-DATA-SAFETY-01 done(사용자 요청한 독립 감사 완료). 후속4카드 승인·HOLIDAY-01 ready(HL-01 반려)·BACKUP-02 in-progress(BK-01 반려)
+- **Latest Pushed Commit**: d051c60 - test(TASK-REVIEW-DATA-SAFETY-01): 시계 역행 시 새 복원 보호본 삭제 재현 (최종 문서 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: DS-01 재감사 승인·6카드 코드/검사/Windows 대조, tests/desktop-holiday-limits-audit.cjs·desktop-backup-clock-audit.cjs와 증빙, docs/reviews/2026-10-19-codex-dispatch.md·각 카드·작업 기록
+- **Changed Interfaces / Schema Diff**: Codex 제품 코드·스키마·IPC 변경 없음. 검증 기준afc3825의data v3/reader2 유지
+- **Test Status**: npm test129/129(감사13 포함), test:desktop13개 진입점(감사5/5 포함), UI150·흐름11 통과. Windows39232674307 소스13/패키지12·감사 각5/5 통과. 새 HL-01 감사2경로 실패, BK-01 정상1통과/시계 역행1실패. 새 경계 감사 Windows 미실행
+- **Remaining Work for Gemini**: 전체 main 병합 승인 보류. Claude가 BK-01(이번 복원 직전 보호본 보존·사전 안내 일치)을 먼저, HL-01(한도 예외를 화면 안내로 처리)을 순차 보완. 새 경계 감사와 전체/Windows 재검증 필요
+- **Modified Code Snippets (if uncommitted)**: 없음(최종 문서 푸시 후 확인). 제품 결함2건은 미수정
 ```
 
 ## 2. 과제 현황
@@ -72,3 +72,8 @@ Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-
 ## A11Y-02 복구·검증 결과 보존
 
 환경 복구 후 기존 미푸시 변경을 별도 보관하고 Claude의 동등 수정·타이머 경합 보완을 검증했다. 추가 알림 재진입 포커스 문제는 [PR #8](https://github.com/Recon987/AI-Coding/pull/8) 실행746b478·최종 문서788071a에 보존했다. Linux 단위91·desktop10·UI150·흐름11, Windows39184848329 소스10/패키지9 모두 통과했다. 환경 오류로 검증 중단이라는 이전 기록을 대체한다. 이 LIST 브랜치는 PR #8을 포함하지 않으므로 총괄이 두 결과를 각각 통합한다.
+
+
+## DS-01 재감사·후속6카드 독립 검증(2026-10-19)
+
+DS-01은 afc3825에서 승인됐다. 자료 안전성 **감사 카드**는 사용자 요청대로done이다. 제품6카드는4승인·2반려로 전체 main 병합은 보류한다. [최종 검토](reviews/2026-10-19-codex-dispatch.md). BK-01은 시계 역행 때 새 복원 직전 보호본을 즉시 지우는 P1, HL-01은 공휴일 한도 초과 시 화면 안내 없는 미처리 예외 P2다. Claude가 BACKUP-02 진행 중 → HOLIDAY-01 ready 순으로 보완한다. 기존 자동 검사 성공은 이 새 경계 실패를 포함하지 않는다.

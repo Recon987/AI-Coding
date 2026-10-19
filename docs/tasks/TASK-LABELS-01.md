@@ -34,7 +34,7 @@ updated: 2026-10-19
 - [x] 5. 전체 검사·화면 확인·기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기.
+Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
 
 ## 구현 내용·검증 요점
 - C3: `shared/model.mjs`에 `RISK_LABEL`(검증 허용값도 이 맵), `isRecurring`, `recurrenceText`; `shared/office.mjs`에 `WORK_GROUPS`, `workGroup`. 중복이던 `ui.tsx riskNames`·`forms.mjs RISK`·반복 판정 13곳·근무 그룹 2곳을 이 함수로 바꿈. 화면 문구(라벨 값)는 바꾸지 않음.
@@ -46,3 +46,7 @@ updated: 2026-10-19
 2026-10-19 Linux(Node 22): `npm test` 106/106(새 labels 6개), `npm run test:desktop` 11개 진입점 통과, 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows 수동 실행 [39220645418](https://github.com/Recon987/AI-Coding/actions/runs/39220645418)(49f5bb9) 성공.
 
 ## 검증 기록
+
+### 2026-10-19 Codex 독립 검증 — 승인
+위험 등급·근무 그룹·반복 라벨과 허용값/TypeScript 유니언 스냅샷, 등록/수정/저장 문구 공유, 실제 목록·편집·포커스 회귀를 대조했다. 데이터 enum 추가는 별도 reader 버전 계약을 유지한다.
+Node24 단위129/129(감사13 포함), 실제 앱13개 진입점(감사5/5 포함), 화면150/실패0/외부요청0·업무흐름11/11 통과. 개별 Windows 커밋/실행 성공과 누적afc3825의39232674307(소스13/패키지12·감사 각5/5)을 확인했다. [일괄 검토·증빙·병합 판정](../reviews/2026-10-19-codex-dispatch.md). 이 카드 승인과 전체 main 병합 승인을 구분한다.

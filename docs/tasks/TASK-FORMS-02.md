@@ -32,7 +32,7 @@ FORMS-01 v1(순찰일지·단속·계도 기록 출력)과 초안(docs/research/
 - [x] 4. 테스트(허용값 스냅샷 갱신·minReader 자동 기록·구버전 보호 왕복)·기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기(TASK-SCHEMA-01 검증과 함께 보면 좋다).
+Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
 
 ## 구현 내용·검증 요점
 - `shared/model.mjs`: `OBSERVATION_OUTCOMES.referral = "고발·인계"`(계도·과태료 부과 다음, 기타 조치 앞). `READER_VERSION` 1 → 2. 저장 결과의 `minReader` = max(파일에 있던 값, 내용이 요구하는 값). '고발·인계'가 하나라도 있으면 2, 없으면 지금처럼 필드 없음. 한 번 올라간 값은 낮추지 않는다(지운 뒤에도 2 유지 — 구버전에서 읽기 전용이 되는 것뿐이라 안전 쪽).
@@ -44,3 +44,7 @@ FORMS-01 v1(순찰일지·단속·계도 기록 출력)과 초안(docs/research/
 2026-10-19 Linux(Node 22): `npm test` 108/108(새 2: minReader 자동 기록·낮추지 않음·집계·TXT/CSV, 보드 의존 예외), `npm run test:desktop` 11개 진입점, 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. 실제 앱에서 저장 파일 minReader 2와 960px 집계표 확인. Windows 수동 실행 [39226923903](https://github.com/Recon987/AI-Coding/actions/runs/39226923903)(7b02d5d) 성공.
 
 ## 검증 기록
+
+### 2026-10-19 Codex 독립 검증 — 승인
+referral 선택값·조치별 집계·TXT/CSV 출력·minReader2 자동 상향 및 제거 후 유지가 통과했다. 실제 SCHEMA-01 reader1 코드의 안전 거부·원본 보존도 확인했다. 공식 서식 대체나 위반자 인적사항 수집은 추가하지 않았다.
+Node24 단위129/129(감사13 포함), 실제 앱13개 진입점(감사5/5 포함), 화면150/실패0/외부요청0·업무흐름11/11 통과. 개별 Windows 커밋/실행 성공과 누적afc3825의39232674307(소스13/패키지12·감사 각5/5)을 확인했다. [일괄 검토·증빙·병합 판정](../reviews/2026-10-19-codex-dispatch.md). 이 카드 승인과 전체 main 병합 승인을 구분한다.
