@@ -15,7 +15,7 @@
 - **Latest Pushed Commit**: 1474d76 - Merge PR #1 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
 - **Completed Steps & Modified Files**: shared/model.mjs(READER_VERSION·isNewerData·normalize allowNewer·모르는 최상위 키 보존), desktop/store.cjs·recovery.cjs·main.cjs(읽기 전용 시작·쓰기 거부), src/main.tsx(읽기 전용 표시·차단), tests/schema.test.cjs, tests/desktop-schema-smoke.cjs, package.json·windows-build.yml, AGENTS.md·docs/architecture.md 규칙
 - **Changed Interfaces / Schema Diff**: 최상위 선택 필드 `minReader?: number`(없으면 기존과 동일), 모르는 최상위 키 보존. `normalize(input, { allowNewer })`, `openDataFile` 반환값에 "read-only" 추가. IPC·preload 변경 없음. 데이터 v3 유지
-- **Test Status**: Linux Node 22: npm test 99/99, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. Windows는 푸시 후 확인
+- **Test Status**: Linux Node 22: npm test 99/99, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. Windows 수동 실행 39188503229(90eba07) 성공. 앞선 39187832768은 검사 결함(편집 초안을 연 채 종료 → 기본 확인창 대기)으로 멈춰 취소
 - **Remaining Work for Gemini**: Codex: TASK-SCHEMA-01 검증. 다음 구현 TASK-BRIEF-02 → TASK-LABELS-01 → TASK-FORMS-02
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
