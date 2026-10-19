@@ -1,11 +1,11 @@
 ---
 id: TASK-LABELS-01
 title: 라벨·허용값 단일화(C3)·누락 테스트(C8)·버튼 문구 상수화(U6)
-status: ready
+status: in-progress
 role: builder
-owner: none
-verifier: claude
-branch: task/task-labels-01
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
 updated: 2026-10-19
@@ -27,10 +27,14 @@ updated: 2026-10-19
 합의안의 보류·기각 항목.
 
 ## 진행 단계
-- [ ] 1. 착수 시 검토 문서의 해당 발견과 2차 조건을 다시 읽고 단계를 나눈다
+- [x] 1. 검토 문서 C3·C8·U6와 2차 조건 재확인: 라벨 문구 자체는 바꾸지 않음(C3), 허용값 스냅샷으로 "라벨 추가=enum 확장"을 드러냄(자료 안전), 화면낭독 이름의 대상 포함(A1) 유지, 저장 버튼은 '저장' 하나(U6)
+- [ ] 2. C3: shared에 RISK_LABEL·isRecurring·recurrenceText·workGroup, 중복 정의 제거
+- [ ] 3. C8: tests/labels.test.cjs(허용값 스냅샷·맵 키=검증 허용값), describeObservations 테스트, FormExport가 FORM_FORMATS 사용
+- [ ] 4. U6: shared/labels.mjs 문구 상수('<대상> 등록'·'<대상> 수정'·'저장'), 화면 교체, 스모크가 상수를 읽음
+- [ ] 5. 전체 검사·화면 확인·기록
 
 ## 재개 위치
-착수 전.
+2단계: shared/model.mjs(RISK_LABEL·isRecurring·recurrenceText), shared/office.mjs(WORK_GROUPS·workGroup), src/ui.tsx riskNames, shared/forms.mjs RISK, Calendar/Briefing/MonthGrid/search의 반복 문구.
 
 ## 테스트 상태
 미실행
