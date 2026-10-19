@@ -26,6 +26,7 @@ import { Controls } from "./components/Controls";
 import { Tasks } from "./components/Tasks";
 import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
+import { HolidayManager } from "./components/HolidayManager";
 import { Icon } from "./components/Icon";
 import { Empty, SectionHead, Tag } from "./ui";
 import "./style.css";
@@ -95,6 +96,8 @@ function App() {
     [busy, setBusy] = useState(false),
     // TASK-SCHEMA-01: a newer app's file is shown but never saved from this version.
     [readOnly, setReadOnly] = useState(false),
+    // TASK-HOLIDAY-01: user-added holidays sheet, opened from 자료 관리.
+    [holidaysOpen, setHolidaysOpen] = useState(false),
     [query, setQuery] = useState("");
   const [, setClock] = useState(0);
   useEffect(() => {
@@ -408,6 +411,18 @@ function App() {
                   <Icon name="handover" size={16} />
                   복원
                 </button>
+                <button
+                  disabled={!ready || busy}
+                  onClick={(event) => {
+                    event.currentTarget
+                      .closest("details")
+                      ?.removeAttribute("open");
+                    setHolidaysOpen(true);
+                  }}
+                >
+                  <Icon name="calendar" size={16} />
+                  공휴일 관리
+                </button>
               </div>
             </details>
           </div>
@@ -469,6 +484,9 @@ function App() {
             <div role="alert" className="error read-only-notice">
               읽기 전용: {NEWER_DATA_MESSAGE}
             </div>
+          )}
+          {holidaysOpen && (
+            <HolidayManager data={data} busy={busy} save={save} onClose={() => setHolidaysOpen(false)} />
           )}
           {error && (
             <div role="alert" className="error">

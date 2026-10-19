@@ -10,6 +10,7 @@ import {
   holidayName,
   RECURRENCE_LABEL,
   isRecurring,
+  LUNAR_TABLE_YEARS,
   recurrenceText,
 } from "../../shared/model.mjs";
 import type {
@@ -499,6 +500,15 @@ export function Calendar({
         </div>
       </header>
       <section className="panel calendar-view-panel">
+        {(() => {
+          // TASK-HOLIDAY-01: outside the lunar table, 설·추석·부처님오신날 are missing.
+          const shownYear = view === "month" ? year : Number(selected.slice(0, 4));
+          return shownYear < LUNAR_TABLE_YEARS.first || shownYear > LUNAR_TABLE_YEARS.last ? (
+            <p className="calendar-note" role="note">
+              {shownYear}년은 음력 공휴일(설·추석·부처님오신날)이 표에 없습니다. 필요한 날은 자료 관리 → 공휴일 관리에서 등록하세요.
+            </p>
+          ) : null;
+        })()}
         {view === "week" && (
           <WeekView
             customHolidays={data.customHolidays}

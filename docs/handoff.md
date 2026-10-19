@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76
-- **Task Card**: TASK-SCHEMA-01·TASK-BRIEF-02·TASK-LABELS-01·TASK-FORMS-02 review(모두 검증자 codex). FORMS-02는 사용자 승인 의존 예외(SCHEMA-01 검증 전 착수)
-- **Latest Pushed Commit**: 7b02d5d - feat(TASK-FORMS-02): 단속 조치에 '고발·인계' 추가와 읽기 수준 2(minReader) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: FORMS-02 — shared/model.mjs(referral, READER_VERSION 2, minReader 자동 기록, 집계 열), shared/forms.mjs(합계 문구), src/types.ts, src/components/Observations.tsx(집계표 열), tests(schema·labels·office·patrol-observations·board), scripts/board.mjs(의존 예외), docs/orchestration/README.md 4장
-- **Changed Interfaces / Schema Diff**: 단속 조치 허용값에 `referral` 추가(자료 형식 확장, minReader 2). `READER_VERSION` 2. 집계 행 `referral` 필드. IPC 변경 없음, 데이터 v3 유지
-- **Test Status**: Linux Node 22: npm test 108/108, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. Windows: SCHEMA-01·BRIEF-02·LABELS-01 성공, FORMS-02 39226923903 성공
-- **Remaining Work for Gemini**: Codex: 4개 카드 검증(SCHEMA-01 먼저). 검증 뒤 사용자 승인으로 main 병합. 다음 후보 TASK-HOLIDAY-01(선거일·임시공휴일), TASK-BACKUP-02
+- **Task Card**: TASK-SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01 review(모두 검증자 codex)
+- **Latest Pushed Commit**: 87d21a1 - wip(TASK-HOLIDAY-01): 사용자 공휴일 선택 컬렉션 customHolidays (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: HOLIDAY-01 — shared/model.mjs(노동절·제헌절·선거일, 겹침 대체 오류 수정, customHolidays·parseHolidayLines), src/components/HolidayManager.tsx(신규), src/main.tsx(자료 관리 메뉴), Calendar·MonthGrid·WeekView·ListView·Briefing, style.css, tests/holidays.test.cjs·tests/desktop-holiday-smoke.cjs(신규), docs/research/holidays.md, README·architecture
+- **Changed Interfaces / Schema Diff**: 선택 최상위 컬렉션 `customHolidays`(없으면 빈 목록). `holidaysForYear(year, custom?)`, `holidayName(date, custom?)`, `enforcementRange(date, custom?)`, 새 `LUNAR_TABLE_YEARS`, `validateCustomHolidays`, `parseHolidayLines`. 공휴일 결과 변경(노동절·제헌절·선거일 추가, 2025-05-07·2028-10-06 제거). IPC 변경 없음
+- **Test Status**: Linux Node 22: npm test 114/114, npm run test:desktop 12개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. Windows: 앞 4개 카드 성공, HOLIDAY-01은 푸시 후 수동 실행
+- **Remaining Work for Gemini**: Codex: 5개 카드 검증(SCHEMA-01 → FORMS-02 순서 권장). 검증 뒤 사용자 승인으로 main 병합. 기관: 노동절·제헌절·선거일을 관보로 최종 확인
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

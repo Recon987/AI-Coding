@@ -75,3 +75,24 @@ test("사용자 공휴일: 검증·저장 왕복·이름 합치기·브리핑 �
     assert.throws(() => normalize({ ...empty(), customHolidays: bad }), /추가 공휴일/);
   assert.equal(validateCustomHolidays(custom), custom);
 });
+
+test("붙여 넣기 반입: 형식·날짜·이름 검사, 한 줄이라도 틀리면 전부 거부, 이미 있는 날짜는 건너뜀", () => {
+  const { parseHolidayLines } = require("../shared/model.mjs");
+  let n = 0;
+  const id = () => `id${++n}`;
+  const existing = [{ id: "h0", date: "2026-10-02", name: "기존" }];
+  const ok = parseHolidayLines("2030-06-05,지방선거일\n\n2026-10-02, 중복\r\n2030-03-27\t대통령선거일 ", existing, id);
+  assert.deepEqual(ok, {
+    rows: [{ id: "id1", date: "2030-06-05", name: "지방선거일" }, { id: "id2", date: "2030-03-27", name: "대통령선거일" }],
+    skipped: 1,
+    errors: [],
+  });
+  const bad = parseHolidayLines("2030-06-05,지방선거일\n6월 5일,틀린 형식\n2030-02-30,없는 날\n2030-01-02," + "가".repeat(31), [], id);
+  assert.deepEqual(bad.rows, []);
+  assert.deepEqual(bad.errors, [
+    "2번째 줄: 'YYYY-MM-DD,이름' 형식이 아닙니다.",
+    "3번째 줄: 없는 날짜입니다 (2030-02-30).",
+    "4번째 줄: 이름은 30자 이하로 입력하세요.",
+  ]);
+  assert.deepEqual(parseHolidayLines("2030-06-05,a\n2030-06-05,b", [], id).skipped, 1, "붙여 넣은 목록 안의 중복도 건너뜀");
+});

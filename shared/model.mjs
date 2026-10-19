@@ -502,6 +502,30 @@ export function validateCustomHolidays(list) {
   }
   return list;
 }
+/**
+ * Parses pasted lines "YYYY-MM-DD,이름" (comma or tab; blank lines ignored) into new
+ * customHolidays rows. Dates already in `existing` are skipped. Any bad line rejects
+ * the whole paste, so nothing is half-imported (TASK-HOLIDAY-01).
+ */
+export function parseHolidayLines(text, existing = [], makeId = () => crypto.randomUUID()) {
+  const taken = new Set(existing.map((h) => h.date));
+  const rows = [];
+  const errors = [];
+  let skipped = 0;
+  String(text ?? "").split(/\r?\n/).forEach((line, index) => {
+    if (!line.trim()) return;
+    const match = /^\s*(\d{4}-\d{2}-\d{2})\s*[,\t]\s*(.+?)\s*$/.exec(line);
+    if (!match) return errors.push(`${index + 1}번째 줄: 'YYYY-MM-DD,이름' 형식이 아닙니다.`);
+    const [, date, name] = match;
+    if (!validDate(date)) return errors.push(`${index + 1}번째 줄: 없는 날짜입니다 (${date}).`);
+    if (name.length > 30) return errors.push(`${index + 1}번째 줄: 이름은 30자 이하로 입력하세요.`);
+    if (taken.has(date)) return skipped++;
+    taken.add(date);
+    rows.push({ id: makeId(), date, name });
+  });
+  if (!errors.length) validateCustomHolidays([...existing, ...rows]);
+  return { rows: errors.length ? [] : rows, skipped, errors };
+}
 /** Years covered by the lunar holiday table; other years have solar holidays only. */
 export const LUNAR_TABLE_YEARS = { first: 2025, last: 2035 };
 

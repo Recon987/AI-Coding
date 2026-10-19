@@ -7,6 +7,7 @@ export const TARGET: {
   note: string;
   call: string;
   assignment: string;
+  holiday: string;
 };
 export const SAVE: string;
 export function addLabel(target: string): string;

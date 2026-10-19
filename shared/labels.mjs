@@ -11,6 +11,7 @@ export const TARGET = {
   note: "메모",
   call: "전화메모",
   assignment: "근무",
+  holiday: "공휴일",
 };
 export const SAVE = "저장";
 /** "<대상> 등록" for list buttons and new-record editors. */

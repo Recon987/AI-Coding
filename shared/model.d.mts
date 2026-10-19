@@ -110,3 +110,9 @@ export function recurrenceText(
 export const LUNAR_TABLE_YEARS: { first: number; last: number };
 /** Throws unless the list is valid (unique ids and dates, names 1–30 characters, at most 1,000). */
 export function validateCustomHolidays(list: unknown): CustomHoliday[];
+/** Parses pasted "YYYY-MM-DD,이름" lines; any bad line rejects all (rows empty). Existing dates are skipped. */
+export function parseHolidayLines(
+  text: string,
+  existing?: CustomHoliday[],
+  makeId?: () => string,
+): { rows: CustomHoliday[]; skipped: number; errors: string[] };
