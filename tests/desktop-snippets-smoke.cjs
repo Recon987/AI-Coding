@@ -42,7 +42,12 @@ async function launch(dir, profile) {
     const sheet = page.locator(".sheet[open]");
     const rows = () => page.locator(".ax-snippet");
     const status = page.locator(".ax-snippets .list-count");
-    const clipboard = () => app.evaluate(({ clipboard }) => clipboard.readText());
+    // Windows keeps clipboard text with CRLF line ends (Chromium converts \n on copy, as
+    // Windows programs expect). Only the line ends may differ; every other character must match.
+    const clipboard = async () => {
+      const text = await app.evaluate(({ clipboard }) => clipboard.readText());
+      return process.platform === "win32" ? text.replace(/\r\n/g, "\n") : text;
+    };
 
     // 1. Opening the screen writes nothing; examples come only from the button.
     const before = raw();
