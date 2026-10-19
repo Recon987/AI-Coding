@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { buildForm, FORMS, type FormFormat, type FormId } from "../../shared/forms.mjs";
+import { buildForm, FORM_FORMATS, FORMS, type FormFormat, type FormId } from "../../shared/forms.mjs";
 import { dayKey } from "../../shared/model.mjs";
 import { periodRange } from "../../shared/dates.mjs";
 import type { Data } from "../types";
@@ -8,6 +8,10 @@ import { Sheet } from "./Sheet";
 
 const thisWeek = () => periodRange("week", dayKey());
 
+const FORMAT_LABEL: Record<FormFormat, string> = {
+  txt: "TXT · 읽기·붙여 넣기",
+  csv: "CSV · 엑셀 편집",
+};
 /** Recommended forms (TASK-FORMS-01): preview here, the main process writes the file. */
 export function FormExport({ data, busy, onClose }: { data: Data; busy: boolean; onClose: () => void }) {
   const [form, setForm] = useState<FormId>("patrol-log");
@@ -83,15 +87,10 @@ export function FormExport({ data, busy, onClose }: { data: Data; busy: boolean;
         </div>
         <fieldset className="format-choice">
           <legend>파일 형식</legend>
-          {(
-            [
-              ["txt", "TXT · 읽기·붙여 넣기"],
-              ["csv", "CSV · 엑셀 편집"],
-            ] as const
-          ).map(([value, label]) => (
+          {FORM_FORMATS.map((value) => (
             <label key={value}>
               <input type="radio" name="form-format" checked={format === value} onChange={() => setFormat(value)} />
-              {label}
+              {FORMAT_LABEL[value]}
             </label>
           ))}
         </fieldset>

@@ -33,3 +33,6 @@ export function officeSummary(
   off: number;
   duty: number;
 };
+export const WORK_GROUPS: { working: string[]; off: string[] };
+/** "working" | "off" | null for a work type. */
+export function workGroup(workType: string | null | undefined): "working" | "off" | null;

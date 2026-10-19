@@ -3,7 +3,8 @@ import { addDays, periodRange, validDateKey } from "../../../shared/dates.mjs";
 import {
   dayKey,
   holidayName,
-  RECURRENCE_LABEL,
+  isRecurring,
+  recurrenceText,
 } from "../../../shared/model.mjs";
 import type { CalendarItem } from "../../types";
 import { categoryTone, formatDate, itemClock } from "../../ui";
@@ -190,13 +191,11 @@ export function MonthGrid({
                         <span
                           className={`calendar-chip ${categoryTone(i.category)} ${i.done ? "done" : ""}`}
                           key={i.key}
-                          title={`${i.category} · ${itemClock(i)} · ${i.title}${i.recurrence && i.recurrence !== "none" ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복` : ""}${i.done ? " · 완료" : ""}`}
+                          title={`${i.category} · ${itemClock(i)} · ${i.title}${isRecurring(i) ? ` · ${recurrenceText(i)}` : ""}${i.done ? " · 완료" : ""}`}
                         >
                           <Icon name={i.page} size={12} />
                           <span>
-                            {i.recurrence && i.recurrence !== "none"
-                              ? "↻ "
-                              : ""}
+                            {isRecurring(i) ? "↻ " : ""}
                             {i.title}
                           </span>
                         </span>

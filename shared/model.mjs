@@ -38,6 +38,21 @@ export const RECURRENCE_LABEL = {
   monthly: "매월",
   yearly: "매년",
 };
+/** True when the event repeats (recurrence set and not "none"). */
+export function isRecurring(event) {
+  return Boolean(event?.recurrence) && event.recurrence !== "none";
+}
+/** "매주 반복", with " (~YYYY-MM-DD)" when `until` and an end date exist; "" if not recurring. */
+export function recurrenceText(event, { until = false } = {}) {
+  if (!isRecurring(event)) return "";
+  return `${RECURRENCE_LABEL[event.recurrence]} 반복${until && event.repeatUntil ? ` (~${event.repeatUntil})` : ""}`;
+}
+// Patrol risk labels: the single source for screens, forms and validation (TASK-LABELS-01).
+export const RISK_LABEL = {
+  normal: "일반 기록",
+  attention: "확인 필요",
+  urgent: "우선 확인",
+};
 // Patrol kinds and observation outcomes are optional v3 fields (TASK-PATROL-02).
 export const PATROL_KINDS = {
   safety: "안전 순찰",
@@ -96,7 +111,7 @@ function validateOccurrenceMetadata(event) {
   for (const key of ["completedDates", "excludedDates"]) {
     if (event[key] === undefined) continue;
     ensure(
-      event.recurrence && event.recurrence !== "none" && RECURRENCE.includes(event.recurrence),
+      isRecurring(event) && RECURRENCE.includes(event.recurrence),
       "회차별 완료·제외일은 반복 일정에만 설정할 수 있습니다.",
     );
     const dates = event[key];
@@ -305,7 +320,7 @@ function normalizeContent(input) {
             "반복 종료일 형식을 확인하세요.",
           );
           ensure(
-            row.recurrence && row.recurrence !== "none",
+            isRecurring(row),
             "반복 종료일은 반복 주기가 설정된 일정에만 지정할 수 있습니다.",
           );
           // Reading must not depend on this PC's time zone: the editor checked the
@@ -372,7 +387,7 @@ function normalizeContent(input) {
           "순찰 내용을 확인하세요.",
         );
         ensure(
-          ["normal", "attention", "urgent"].includes(row.risk),
+          Object.hasOwn(RISK_LABEL, row.risk),
           "확인 등급을 확인하세요.",
         );
       }
@@ -756,7 +771,7 @@ export function expandEventOccurrences(event, range = {}) {
 function changeOccurrenceDate(event, date, key, enabled) {
   ensure(typeof enabled === "boolean", "회차 상태는 참 또는 거짓이어야 합니다.");
   ensure(validDate(date), "변경할 회차 날짜를 확인하세요.");
-  ensure(event.recurrence && event.recurrence !== "none", "반복 일정의 회차만 변경할 수 있습니다.");
+  ensure(isRecurring(event), "반복 일정의 회차만 변경할 수 있습니다.");
   validateOccurrenceMetadata(event);
   const dates = new Set(event[key] ?? []);
   // Historical dates may survive a rule edit. Removing an existing date is safe
@@ -981,7 +996,7 @@ export function briefing(data, date) {
     `일정 (${events.length})`,
     ...events.map(
       (e) =>
-        `- [${e.done ? "완료" : "예정"}${e.recurrence && e.recurrence !== "none" ? `/${RECURRENCE_LABEL[e.recurrence]}` : ""}] ${when(e.at)} ${e.title}`,
+        `- [${e.done ? "완료" : "예정"}${isRecurring(e) ? `/${RECURRENCE_LABEL[e.recurrence]}` : ""}] ${when(e.at)} ${e.title}`,
     ),
     "",
     `순찰 기록 (${patrols.length})`,

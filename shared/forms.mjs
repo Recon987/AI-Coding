@@ -7,6 +7,7 @@ import {
   OBSERVATION_OUTCOMES,
   PATROL_KINDS,
   patrolSummary,
+  RISK_LABEL as RISK,
 } from "./model.mjs";
 import { daysInclusive } from "./dates.mjs";
 import { validDate } from "./office.mjs";
@@ -16,7 +17,6 @@ export const FORMS = {
   "enforcement-log": "단속·계도 기록",
 };
 export const FORM_FORMATS = ["txt", "csv"];
-const RISK = { normal: "일반 기록", attention: "확인 필요", urgent: "우선 확인" };
 const MAX_DAYS = 366;
 const NOTICE = "추천 양식 · 공식 서식 아님 · 개인 기록 기준";
 

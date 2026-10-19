@@ -7,6 +7,7 @@ import {
   officeSummary,
   workTypes,
   dutyTypes,
+  workGroup,
 } from "../../shared/office.mjs";
 import type { Assignment, Data, Save } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
@@ -53,9 +54,7 @@ export function Office({
         ? !r.assignment
         : filter === "duty"
           ? !!r.assignment && r.assignment.duty !== "none"
-          : filter === "working"
-            ? ["work", "base", "trip"].includes(r.assignment?.workType ?? "")
-            : ["off", "leave"].includes(r.assignment?.workType ?? ""));
+          : workGroup(r.assignment?.workType) === filter);
     return matches && status;
   });
   const week = weekDays(date);

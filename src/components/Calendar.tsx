@@ -9,6 +9,8 @@ import {
   dayKey,
   holidayName,
   RECURRENCE_LABEL,
+  isRecurring,
+  recurrenceText,
 } from "../../shared/model.mjs";
 import type {
   CalendarItem,
@@ -101,8 +103,6 @@ export function Calendar({
     (n, e) => n + (e.excludedDates?.length || 0),
     0,
   );
-  const isRecurring = (event: Event | CalendarItem) =>
-    !!event.recurrence && event.recurrence !== "none";
   const occurrenceDay = (item: CalendarItem) =>
     item.occurrenceDate || dayKey(new Date(item.at));
   async function persistEvent(next: Event) {
@@ -357,7 +357,7 @@ export function Calendar({
       requestAnimationFrame(focusAgenda);
   }
   const draftStartDay = dayKey(new Date(draft.at));
-  const activeRecurrence = draft.recurrence && draft.recurrence !== "none";
+  const activeRecurrence = isRecurring(draft);
   const invalidRepeatUntil =
     Boolean(activeRecurrence) &&
     Boolean(draft.repeatUntil) &&
@@ -382,7 +382,7 @@ export function Calendar({
     )
       return;
     const recFields =
-      draft.recurrence && draft.recurrence !== "none"
+      isRecurring(draft)
         ? {
             recurrence: draft.recurrence,
             repeatUntil: draft.repeatUntil || null,
@@ -552,9 +552,7 @@ export function Calendar({
                 </button>
                 <small>
                   <time dateTime={i.at}>{itemClock(i)}</time>
-                  {i.recurrence && i.recurrence !== "none"
-                    ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복${i.repeatUntil ? ` (~${i.repeatUntil})` : ""}`
-                    : ""}
+                  {isRecurring(i) ? ` · ${recurrenceText(i, { until: true })}` : ""}
                 </small>
               </div>
               {i.page === "calendar" && completionControls(i)}

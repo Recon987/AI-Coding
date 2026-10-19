@@ -5,7 +5,8 @@ import {
   dayKey,
   formatCoordinates,
   holidayName,
-  RECURRENCE_LABEL,
+  isRecurring,
+  recurrenceText,
   collections,
   activeControls,
 } from "../../shared/model.mjs";
@@ -403,7 +404,7 @@ export function Briefing({
                   className="timeline-row"
                   key={row.key}
                   disabled={busy}
-                  onClick={() => navigate(row.page as Page, row.page === "calendar" && row.recurrence && row.recurrence !== "none" ? `occurrence:${dayKey(new Date(row.at))}:${row.id}` : row.id)}
+                  onClick={() => navigate(row.page as Page, row.page === "calendar" && isRecurring(row) ? `occurrence:${dayKey(new Date(row.at))}:${row.id}` : row.id)}
                 >
                   <time>{itemClock(row)}</time>
                   <div>
@@ -412,9 +413,7 @@ export function Briefing({
                     </strong>
                     <small>
                       {row.category}
-                      {row.recurrence && row.recurrence !== "none"
-                        ? ` · ${RECURRENCE_LABEL[row.recurrence]} 반복`
-                        : ""}
+                      {isRecurring(row) ? ` · ${recurrenceText(row)}` : ""}
                       {row.done ? " · 완료" : ""}
                     </small>
                     {coordinates && (

@@ -5,6 +5,7 @@ import {
   formatCoordinates,
   PATROL_KINDS,
   RECURRENCE_LABEL,
+  isRecurring,
 } from "./model.mjs";
 
 const join = (...parts) => parts.filter((p) => p !== undefined && p !== null && p !== "").join(" ");
@@ -26,7 +27,7 @@ export const searchText = {
   control: (c) => join(c.title, c.zone, CONTROL_REASONS[c.reason], c.start, c.end ?? "해제 시까지", c.note),
   task: (t) => join(t.title, t.body, t.assignee, t.destination),
   event: (e) =>
-    join(e.title, e.recurrence && e.recurrence !== "none" ? join(RECURRENCE_LABEL[e.recurrence], "반복", e.repeatUntil) : ""),
+    join(e.title, isRecurring(e) ? join(RECURRENCE_LABEL[e.recurrence], "반복", e.repeatUntil) : ""),
   note: (n) => join(n.title, n.body),
   call: (c) => join(c.title, c.body, c.phone),
 };

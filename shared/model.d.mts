@@ -94,3 +94,12 @@ export function patrolAutoTitle(patrol: Patrol): string;
 export function newPatrolDraft(from: Patrol | undefined, options?: { route?: string; at?: string }): Patrol;
 /** Days the briefing's enforcement section covers: last working day (weekends and holidays skipped) through yesterday. */
 export function enforcementRange(date: string): { startDate: string; endDate: string };
+/** Patrol risk labels; keys are the allowed `risk` values. */
+export const RISK_LABEL: Record<Patrol["risk"], string>;
+/** True when the event repeats (recurrence set and not "none"). */
+export function isRecurring(event: { recurrence?: EventRecurrence | null } | null | undefined): boolean;
+/** "매주 반복" (+ " (~end)" with `until`), or "" when not recurring. */
+export function recurrenceText(
+  event: { recurrence?: EventRecurrence | null; repeatUntil?: string | null },
+  options?: { until?: boolean },
+): string;
