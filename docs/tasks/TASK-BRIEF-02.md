@@ -1,7 +1,7 @@
 ---
 id: TASK-BRIEF-02
 title: 월요일·연휴 다음 날 브리핑의 '전날 단속'을 직전 근무일부터 어제까지 합계로
-status: in-progress
+status: review
 role: builder
 owner: claude
 verifier: codex
@@ -15,22 +15,29 @@ updated: 2026-10-19
 TASK-PANEL-01 D1로 브리핑에 '전날 단속·확인'(어제 하루)이 들어갔다. 월요일에는 일요일 하루만 보여 금·토 기록이 빠진다. 2026-10-19 사용자가 결정을 Claude 추천에 위임("니가 추천하는 대로 그냥 진행"): **주말 합계**로 결정. 더 정확히는 "직전 근무일부터 어제까지"로, 화요일은 월요일 하루, 월요일은 금~일, 공휴일 다음 날은 공휴일과 그 앞 근무일까지 포함한다.
 
 ## 완료 조건
-- [ ] `shared/model.mjs` briefing(): 기간 = 직전 근무일(주말·`holidayName` 공휴일 제외한 가장 가까운 과거 날짜) ~ 어제. 평일 연속이면 지금과 같이 어제 하루
-- [ ] 절 제목이 기간을 보여 준다(하루면 지금 문구, 여러 날이면 'MM. DD.~MM. DD.')
-- [ ] 단위 테스트: 화·월·공휴일 다음 날·연휴(설·추석) 다음 날
-- [ ] `npm test`, `npm run test:desktop` 통과
+- [x] `shared/model.mjs` briefing(): 기간 = 직전 근무일(주말·`holidayName` 공휴일 제외한 가장 가까운 과거 날짜) ~ 어제. 평일 연속이면 지금과 같이 어제 하루
+- [x] 절 제목이 기간을 보여 준다(하루면 지금 문구, 여러 날이면 'MM. DD.~MM. DD.')
+- [x] 단위 테스트: 화·월·공휴일 다음 날·연휴(설·추석) 다음 날
+- [x] `npm test`, `npm run test:desktop` 통과
 
 ## 범위 밖
 교대 근무자별 근무일(근무표 기반 개인 기준). 기관 공통 달력(주말·공휴일)만 쓴다.
 
 ## 진행 단계
-- [ ] 1. shared/dates.mjs에 직전 근무일 계산(공휴일 함수 재사용) + 테스트
-- [ ] 2. briefing() 기간·제목 적용 + 테스트, 화면·TXT 확인
+- [x] 1. shared/dates.mjs에 직전 근무일 계산(공휴일 함수 재사용) + 테스트
+- [x] 2. briefing() 기간·제목 적용 + 테스트, 화면·TXT 확인
 
 ## 재개 위치
-1단계: shared/dates.mjs에 `previousWorkday(date, isHoliday)`(공휴일 판정은 인자로 받아 순환 import 방지), shared/model.mjs briefing()의 `yesterday` 계산(950행 근처) 교체, tests/dates.test.cjs·tests/office.test.cjs.
+구현 완료, Codex 검증 대기.
+
+## 구현 내용·검증 요점
+- `shared/dates.mjs`: `isWeekend(key)`, `previousWorkday(key, isHoliday)` — 공휴일 표는 model.mjs에 있어 판정 함수를 인자로 받는다(순환 import 없음). 잘못된 판정에도 31일 안에서 멈춤.
+- `shared/model.mjs`: `enforcementRange(date)` = { 직전 근무일, 어제 }(공휴일은 `holidayName`). `briefing()`의 단속 절이 이 기간의 `patrolSummary` 합계를 쓴다. 하루면 기존 제목 `전날 단속·확인 (YYYY-MM-DD, 총 n건)` 그대로, 여러 날이면 `직전 근무일 이후 단속·확인 (시작 ~ 끝, 총 n건)`.
+- 예: 화 10-20 → 10-19 하루, 월 10-19 → 10-16~10-18, 10-06(대체공휴일 다음 날) → 10-02~10-05, 추석 다음 월 09-28 → 09-23~09-27, 설 다음 날 02-19 → 02-13~02-18.
+- 화면 '브리핑 미리보기'와 TXT 내보내기가 같은 `briefing()`을 쓰므로 함께 바뀐다. 자료 형식 변경 없음.
+- 한계: 기관 공통 달력(주말·법정공휴일, 공휴일 표 2025~2035)만 본다. 선거일·임시공휴일은 TASK-HOLIDAY-01, 교대 근무자 개인 기준은 범위 밖.
 
 ## 테스트 상태
-미실행
+2026-10-19 Linux(Node 22): `npm test` 100/100(새 테스트 1개: 6개 날짜 경우·합계·제목·31일 상한, TZ 4종에서도 통과), `npm run test:desktop` 11개 진입점 통과, 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행으로 확인.
 
 ## 검증 기록

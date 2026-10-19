@@ -1,4 +1,4 @@
-import { addDays, earliestLocalDay } from "./dates.mjs";
+import { addDays, earliestLocalDay, previousWorkday } from "./dates.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
   dutyTypes,
@@ -928,6 +928,15 @@ export function describeObservations(observations = []) {
     .join(", ");
 }
 
+/** Days the briefing's enforcement section covers: last working day through yesterday. */
+export function enforcementRange(date) {
+  ensure(validDate(date), "브리핑 날짜를 확인하세요.");
+  return {
+    startDate: previousWorkday(date, (key) => holidayName(key) !== null),
+    endDate: addDays(date, -1),
+  };
+}
+
 export function briefing(data, date) {
   ensure(validDate(date), "브리핑 날짜를 확인하세요.");
   const holiday = holidayName(date);
@@ -947,8 +956,10 @@ export function briefing(data, date) {
   const duty = officeRows(data, date).filter(
     (r) => r.assignment && r.assignment.duty !== "none",
   );
-  const yesterday = addDays(date, -1);
-  const enforcement = patrolSummary(data, { startDate: yesterday, endDate: yesterday });
+  // Since the last working day (TASK-BRIEF-02): Tuesday shows Monday, Monday shows
+  // Friday–Sunday, and the day after a holiday includes the holiday too.
+  const { startDate: since, endDate: yesterday } = enforcementRange(date);
+  const enforcement = patrolSummary(data, { startDate: since, endDate: yesterday });
   return [
     `공원 업무 수첩 | ${date}${holiday ? ` (${holiday})` : ""} 업무 브리핑`,
     "개인 기록 기준 · 공식 결재/근무현황 자료 아님",
@@ -985,7 +996,9 @@ export function briefing(data, date) {
         `- [${t.kind === "submission" ? "제출" : "인계"}] ${t.title} | 담당: ${t.assignee || "미지정"} | 마감: ${when(t.at)}\n  ${t.body}`,
     ),
     "",
-    `전날 단속·확인 (${yesterday}, 총 ${enforcement.totalCount}건)`,
+    since === yesterday
+      ? `전날 단속·확인 (${yesterday}, 총 ${enforcement.totalCount}건)`
+      : `직전 근무일 이후 단속·확인 (${since} ~ ${yesterday}, 총 ${enforcement.totalCount}건)`,
     ...enforcement.observations.map(
       (r) =>
         `- ${r.type} ${r.count}건 (${Object.entries(OBSERVATION_OUTCOMES)

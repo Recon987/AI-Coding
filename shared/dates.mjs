@@ -24,6 +24,24 @@ export function addDays(key, n) {
   return toKey(date);
 }
 
+/** True on Saturday or Sunday. */
+export function isWeekend(key) {
+  const day = toUtc(key).getUTCDay();
+  return day === 0 || day === 6;
+}
+
+/**
+ * The closest working day before `key`: skips weekends and days for which
+ * `isHoliday(key)` is true (TASK-BRIEF-02). The holiday table lives in model.mjs,
+ * so it is passed in. Stops after 31 days so a wrong predicate cannot loop forever.
+ */
+export function previousWorkday(key, isHoliday = () => false) {
+  let day = addDays(key, -1);
+  for (let step = 1; step < 31 && (isWeekend(day) || isHoliday(day)); step++)
+    day = addDays(day, -1);
+  return day;
+}
+
 /** Monday of the week containing `key` (weeks run Monday–Sunday). */
 export function weekStart(key) {
   return addDays(key, -((toUtc(key).getUTCDay() + 6) % 7));

@@ -92,3 +92,5 @@ export const CONTROL_REASONS: Record<Control["reason"], string>;
 export function activeControls(data: Data, date: string): Control[];
 export function patrolAutoTitle(patrol: Patrol): string;
 export function newPatrolDraft(from: Patrol | undefined, options?: { route?: string; at?: string }): Patrol;
+/** Days the briefing's enforcement section covers: last working day (weekends and holidays skipped) through yesterday. */
+export function enforcementRange(date: string): { startDate: string; endDate: string };
