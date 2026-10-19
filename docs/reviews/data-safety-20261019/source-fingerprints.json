@@ -1,0 +1,39 @@
+{
+  "baseline": "20cdc3c4431f7d055397d61aef3ab6fe982e9e9a",
+  "node": "24.19.0",
+  "sha256": {
+    "desktop/store.cjs": "b29a84e569a1c44e550a31a9be76391ddda6717dbd9742686aaa47d6903bb2d9",
+    "desktop/recovery.cjs": "c833fb2d390a39836478636b91de835d2de4c623650a86906500c6d7504b9dcd",
+    "desktop/main.cjs": "a8467c549f4484574da05e76a0bbd2d7974859e3ee1d8677a17395809919b302",
+    "shared/model.mjs": "4fe7496d1a8b94a81457020ce6259f324617e9b5a1a86669356debf3bb242956"
+  },
+  "기존검사": {
+    "npm test": {
+      "passed": 116,
+      "failed": 0
+    },
+    "npm run test:desktop": {
+      "진입점": 12,
+      "결과": "통과"
+    },
+    "Windows": {
+      "run": 39230668333,
+      "소스진입점": 12,
+      "패키지진입점": 11,
+      "PASS표식": 27,
+      "예외": 0
+    }
+  },
+  "추가감사": {
+    "단위": {
+      "passed": 13,
+      "failed": 0
+    },
+    "실제앱": {
+      "passed": 4,
+      "failed": 1,
+      "실패": "DS-01"
+    }
+  },
+  "주의": "Windows는 기존 검사 결과이며 신규 감사 실행 결과가 아니다."
+}

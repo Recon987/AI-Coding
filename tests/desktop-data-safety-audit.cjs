@@ -45,7 +45,7 @@ const sample = title => ({ ...store.empty(), notes: [{ id: "audit-note", title, 
       delete globalThis.__auditReadDir;
       delete globalThis.__auditRename;
     });
-    for (const mode of ["cancel", "invalid", "before-commit", "after-commit-listing"]) {
+    for (const mode of ["success", "cancel", "invalid", "before-commit", "after-commit-listing"]) {
       const result = { mode, passed: false };
       report.cases.push(result);
       try {
@@ -82,6 +82,7 @@ const sample = title => ({ ...store.empty(), notes: [{ id: "audit-note", title, 
         await page.locator(".data-menu > summary").click();
         await page.locator(".data-menu").getByRole("button", { name: "복원", exact: true }).click();
         await page.locator('.save-indicator[data-state="ready"]').waitFor();
+        if (mode === "success") await page.getByRole("status").filter({ hasText: "백업 자료를 복원했습니다" }).waitFor();
         if (mode === "invalid" || mode === "before-commit") await page.getByRole("alert").waitFor();
         if (mode === "after-commit-listing") {
           await page.waitForFunction(() => !!document.querySelector('[role="alert"]') || document.querySelector('[role="status"]')?.textContent.includes("백업 자료를 복원했습니다"));
@@ -91,7 +92,14 @@ const sample = title => ({ ...store.empty(), notes: [{ id: "audit-note", title, 
         result.visibleAfterRestore = await page.locator(".row-main h3").allTextContents();
         result.alert = await page.getByRole("alert").allTextContents();
         result.protectionCopies = store.restoreCopies(file).length;
-        if (mode !== "after-commit-listing") {
+        if (mode === "success") {
+          assert.deepEqual(store.read(file), restored);
+          assert.deepEqual(store.read(store.lastGoodFile(file)), restored);
+          assert.equal(result.protectionCopies, 5);
+          await navNotes();
+          result.visibleAfterRestore = await page.locator(".row-main h3").allTextContents();
+          assert.deepEqual(result.visibleAfterRestore, restored.notes.map(n => n.title));
+        } else if (mode !== "after-commit-listing") {
           assert.deepEqual(fs.readFileSync(file), before, "확정 전 실패/취소의 원본 바이트");
           assert.deepEqual(fs.readFileSync(store.lastGoodFile(file)), goodBefore);
           assert.ok([5, 6].includes(result.protectionCopies));

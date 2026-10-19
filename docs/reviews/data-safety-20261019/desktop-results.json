@@ -3,6 +3,18 @@
   "platform": "linux",
   "cases": [
     {
+      "mode": "success",
+      "passed": true,
+      "diskAfterRestore": [
+        "가상 백업에서 복원한 메모"
+      ],
+      "visibleAfterRestore": [
+        "가상 백업에서 복원한 메모"
+      ],
+      "alert": [],
+      "protectionCopies": 5
+    },
+    {
       "mode": "cancel",
       "passed": true,
       "diskAfterRestore": [
