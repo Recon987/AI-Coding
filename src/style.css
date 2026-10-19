@@ -914,3 +914,6 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .snippet-code { max-height: 360px; margin: 0 0 8px; padding: 12px 14px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-sunken); color: var(--ink); font: var(--fs-xs)/1.55 Consolas, "D2Coding", "Courier New", monospace; white-space: pre; tab-size: 2; }
 .snippet-code:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 .snippet-input { font: var(--fs-xs)/1.55 Consolas, "D2Coding", "Courier New", monospace; white-space: pre; tab-size: 2; }
+/* 보고서 초안 (TASK-AXDESK-03) */
+.ax-report .report-filename { margin: 4px 0 8px; font-size: var(--fs-sm); color: var(--muted); font-weight: 500; word-break: break-all; }
+.report-preview { max-height: 560px; white-space: pre-wrap; overflow-wrap: anywhere; }

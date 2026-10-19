@@ -26,13 +26,13 @@ TASK-ARCH-MODULAR-01 Step C-3. [보정 명세](../specs/modular-ax/implementatio
 공식 서식 대체, 온라인 AI.
 
 ## 진행 단계
-- [ ] 1. 템플릿·미리보기
+- [x] 1. 템플릿·미리보기
 - [ ] 2. 내보내기 IPC·검사·기록
 
 ## 재개 위치
-1단계: shared/ax-report.mjs에 순수 템플릿 함수(4개 절, `[작성 필요]`), AX 모듈 세 번째 화면(Page "ax-report")에 사업 선택·미리보기·복사.
+2단계: IPC `export-ax-report`(desktop/main.cjs·preload.cjs)는 코드 작성됨. 남은 일: tests/ax-report.test.cjs(4개 절·[작성 필요]·요청 검증·파일명), tests/desktop-axreport-smoke.cjs(미리보기=저장 파일, 복사, 저장 대화상자, IPC 거부), 전체 검사·architecture IPC 기록.
 
 ## 테스트 상태
-미실행
+2026-10-19 체크포인트: tsc 통과, `npm test` 153/153(보고서 검사 아직 없음), 화면 캡처 확인. test:desktop 미실행.
 
 ## 검증 기록

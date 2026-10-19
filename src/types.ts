@@ -175,6 +175,7 @@ export type Page =
   | "folders"
   | "ax"
   | "ax-snippets"
+  | "ax-report"
   | "about";
 export type Save = (data: Data) => Promise<boolean>;
 export type CalendarItem = {
@@ -217,6 +218,9 @@ declare global {
       exportBriefing(date: string): Promise<boolean>;
       exportForm(
         request: import("../shared/forms.mjs").FormRequest,
+      ): Promise<boolean>;
+      exportAxReport(
+        request: import("../shared/ax-report.mjs").AxReportRequest,
       ): Promise<boolean>;
     };
   }

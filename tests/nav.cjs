@@ -15,6 +15,7 @@ const PAGE_IDS = {
   "업무 메모": "notes",
   "AX 사업 관리": "ax",
   "GIS·AI 스니펫": "ax-snippets",
+  "보고서 초안": "ax-report",
   바로가기: "folders",
   "앱 안내": "about",
 };

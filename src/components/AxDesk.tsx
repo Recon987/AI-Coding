@@ -61,11 +61,14 @@ export function AxDesk({
   save,
   busy,
   initialId,
+  openReport,
 }: {
   data: Data;
   save: Save;
   busy: boolean;
   initialId?: string;
+  /** Opens 보고서 초안 with this project chosen. */
+  openReport?: (id: string) => void;
 }) {
   const blank = (): Draft => ({
     id: "",
@@ -254,6 +257,7 @@ export function AxDesk({
               owner={p.manager || "—"}
               actions={[
                 { label: "수정", onClick: () => editor.openEditor(toDraft(p)) },
+                ...(openReport ? [{ label: "보고서", onClick: () => openReport(p.id) }] : []),
                 {
                   label: "삭제",
                   tone: "danger" as const,

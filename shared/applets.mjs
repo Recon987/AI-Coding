@@ -39,7 +39,7 @@ export const MODULE_APPLETS = [
     category: "planning",
     description: "권역별 AX 사업·GIS/AI 스니펫·보고서 초안(본사 AX추진팀)",
     defaultEnabled: true,
-    pages: ["ax", "ax-snippets"],
+    pages: ["ax", "ax-snippets", "ax-report"],
   },
 ];
 export const APPLET_CATEGORIES = { core: "공통", field: "현장", planning: "기획", admin: "행정" };
