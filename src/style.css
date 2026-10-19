@@ -57,6 +57,8 @@
   --cat-holiday-bg: var(--red-soft);
   --cat-control: var(--slate);
   --cat-control-bg: var(--slate-soft);
+  --cat-ax: var(--purple);
+  --cat-ax-bg: var(--purple-soft);
   --work-base: var(--blue);
   --work-base-bg: var(--blue-soft);
   --work-trip: var(--teal);
@@ -207,6 +209,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .tag.danger { color: var(--status-danger); background: var(--status-danger-bg); }
 .tag.holiday { color: var(--cat-holiday); background: var(--cat-holiday-bg); }
 .tag.patrol, .calendar-chip.patrol { color: var(--cat-patrol); background: var(--cat-patrol-bg); }
+.tag.ax, .calendar-chip.ax { color: var(--cat-ax); background: var(--cat-ax-bg); }
 .notice { padding: 12px 16px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--green-soft); color: var(--green-text); font-size: var(--fs-sm); line-height: 21px; }
 .error { padding: 12px 16px; margin-bottom: 16px; border: 1px solid var(--red-line); border-radius: 6px; color: var(--danger); background: var(--red-soft); font-size: var(--fs-sm); line-height: 21px; }
 .empty { padding: 48px 20px; text-align: center; color: var(--muted); }
@@ -807,6 +810,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .week-item span { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow-wrap: anywhere; }
 .week-item.patrol { background: var(--cat-patrol-bg); color: var(--cat-patrol); }
 .week-item.task { background: var(--cat-task-bg); color: var(--cat-task); }
+.week-item.ax { background: var(--cat-ax-bg); color: var(--cat-ax); }
 .week-item.done span { text-decoration: line-through; opacity: .75; }
 .list-view { display: grid; gap: 16px; }
 .list-view-day h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font-size: var(--fs-sm); }
@@ -889,3 +893,20 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .applet-toggle small { grid-column: 2; font-size: var(--fs-xs); }
 .applet-move { display: flex; gap: 2px; }
 .applet-move button { min-width: 32px; padding: 2px 8px; }
+
+/* AX 사업 관리 (TASK-AXDESK-01) */
+.ax-zone-filter { flex-wrap: wrap; width: fit-content; max-width: 100%; margin: 4px 0 8px; }
+.ax-projects .list-tools select { width: auto; min-height: 36px; font-size: var(--fs-sm); }
+.ax-budget { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 4px 0 10px; font-size: var(--fs-sm); }
+.ax-bar { position: relative; flex: 0 0 160px; height: 8px; overflow: hidden; border-radius: 4px; background: var(--surface-hover); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.ax-bar > span { position: absolute; inset: 0 auto 0 0; background: var(--cat-ax); }
+.ax-bar > span.over { background: var(--status-warning); }
+.ax-facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0 0 8px; font-size: var(--fs-sm); }
+.ax-facts dt { color: var(--muted); }
+.ax-facts dd { margin: 0; }
+.ax-note { margin: 12px 0 0; font-size: var(--fs-xs); }
+.field-warning { color: var(--status-warning); }
+@media (forced-colors: active) {
+  .ax-bar > span { background: CanvasText; }
+  .ax-bar > span.over { background: Highlight; }
+}

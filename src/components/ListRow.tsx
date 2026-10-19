@@ -99,17 +99,23 @@ export function ListHeader({
   compact = false,
   plain = false,
   ownerLabel = "담당",
+  whenLabel = "일시",
+  statusLabel = "상태",
+  kindLabel = "유형",
 }: {
   compact?: boolean;
   plain?: boolean;
   ownerLabel?: string;
+  whenLabel?: string;
+  statusLabel?: string;
+  kindLabel?: string;
 }) {
   return (
     <div className="list-header" aria-hidden="true">
       <div className="list-header-cols">
-        {!compact && !plain && <span>일시</span>}
-        {!plain && <span>상태</span>}
-        {!compact && !plain && <span>유형</span>}
+        {!compact && !plain && <span>{whenLabel}</span>}
+        {!plain && <span>{statusLabel}</span>}
+        {!compact && !plain && <span>{kindLabel}</span>}
         <span>제목</span>
         {!plain && <span>{ownerLabel}</span>}
       </div>

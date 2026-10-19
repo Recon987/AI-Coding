@@ -1,6 +1,6 @@
 import { addDays, earliestLocalDay, previousWorkday } from "./dates.mjs";
 import { validateModules } from "./applets.mjs";
-import { validateAxProjects, validateAxSnippets } from "./ax.mjs";
+import { AX_STAGES, AX_ZONES, milestoneItems, validateAxProjects, validateAxSnippets } from "./ax.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
   dutyTypes,
@@ -982,6 +982,7 @@ export function calendarItems(data, range) {
         done: false,
       })),
     ...controlDays(data, range),
+    ...milestoneItems(data.axProjects, range ?? {}),
   ].sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
 }
 export function reminderItems(data, now = Date.now()) {
@@ -1083,6 +1084,7 @@ export function briefing(data, date) {
   );
   const patrols = data.patrols.filter((p) => dayKey(new Date(p.at)) === date);
   const controls = activeControls(data, date);
+  const milestones = (data.axProjects ?? []).filter((p) => p.nextMilestoneDate === date);
   const events = calendarItems(data, {
     startDate: date,
     endDate: date,
@@ -1121,6 +1123,18 @@ export function briefing(data, date) {
         `- [${e.done ? "완료" : "예정"}${isRecurring(e) ? `/${RECURRENCE_LABEL[e.recurrence]}` : ""}] ${when(e.at)} ${e.title}`,
     ),
     "",
+    // AX milestones (TASK-AXDESK-01): listed only on days that have one, so briefings of
+    // offices that do not use AX Desk stay as before.
+    ...(milestones.length
+      ? [
+          `AX 사업 마일스톤 (${milestones.length})`,
+          ...milestones.map(
+            (p) =>
+              `- ${p.title} | ${p.nextMilestone.trim() || "차기 마일스톤"} | ${AX_ZONES[p.zone]} | ${AX_STAGES[p.stage]}`,
+          ),
+          "",
+        ]
+      : []),
     `순찰 기록 (${patrols.length})`,
     ...patrols.map(
       (p) =>

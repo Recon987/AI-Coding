@@ -615,7 +615,7 @@ function App() {
                   initialId={focusId}
                 />
               )}
-              {page === "ax" && <AxDesk data={data} />}
+              {page === "ax" && <AxDesk key={page + focusId} data={data} save={save} busy={busy} initialId={focusId} />}
               {page === "folders" && (
                 <section className="panel">
                   <SectionHead title="자주 쓰는 업무 폴더">

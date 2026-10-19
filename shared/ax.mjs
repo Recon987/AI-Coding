@@ -72,3 +72,33 @@ export function executionRate(project) {
   if (!project.budgetTotal) return null;
   return project.budgetExecuted / project.budgetTotal;
 }
+
+/** Calendar title of a project's next milestone: the project name, then the milestone text. */
+export const milestoneTitle = (p) => (p.nextMilestone.trim() ? `${p.title} · ${p.nextMilestone.trim()}` : p.title);
+
+/**
+ * Calendar rows derived from axProjects (TASK-AXDESK-01): exactly one all-day row per
+ * project whose nextMilestoneDate falls in the range. Never copied into events or tasks,
+ * so editing or deleting the project changes the calendar and briefing at once. Hiding the
+ * AX module only hides the menu entry; the milestones stay, like every other record.
+ */
+export function milestoneItems(projects = [], range = {}) {
+  return projects
+    .filter((p) => p.nextMilestoneDate
+      && (!range.startDate || p.nextMilestoneDate >= range.startDate)
+      && (!range.endDate || p.nextMilestoneDate <= range.endDate))
+    .map((p) => {
+      const [y, m, d] = p.nextMilestoneDate.split("-").map(Number);
+      return {
+        id: p.id,
+        title: milestoneTitle(p),
+        at: new Date(y, m - 1, d).toISOString(),
+        key: `ax:${p.id}`,
+        category: "AX",
+        page: "ax",
+        done: p.stage === "done",
+        zone: p.zone,
+        stage: p.stage,
+      };
+    });
+}

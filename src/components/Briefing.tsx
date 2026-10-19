@@ -394,6 +394,11 @@ export function Briefing({
                   }
                 </b>
               </span>
+              {daily.some((i) => i.category === "AX") && (
+                <span>
+                  AX <b>{daily.filter((i) => i.category === "AX").length}</b>
+                </span>
+              )}
             </div>
             {(expandedDay ? daily : daily.slice(0, 4)).map((row) => {
               const coordinates =

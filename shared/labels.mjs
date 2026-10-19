@@ -12,6 +12,7 @@ export const TARGET = {
   call: "전화메모",
   assignment: "근무",
   holiday: "공휴일",
+  axProject: "AX 사업",
 };
 export const SAVE = "저장";
 /** "<대상> 등록" for list buttons and new-record editors. */
