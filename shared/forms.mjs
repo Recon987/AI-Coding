@@ -137,7 +137,10 @@ function enforcementLog(data, { startDate, endDate, format }) {
     "",
     `유형별 합계 (총 ${summary.totalCount}건)`,
     ...summary.observations.map(
-      (r) => `- ${r.type}: ${r.count}건 (계도 ${r.guidance}, 과태료 부과 ${r.fine}, 기타 ${r.other})`,
+      (r) =>
+        `- ${r.type}: ${r.count}건 (${Object.entries(OBSERVATION_OUTCOMES)
+          .map(([key, label]) => `${label} ${r[key]}`)
+          .join(", ")})`,
     ),
   ].join("\n") + "\n";
 }

@@ -66,6 +66,8 @@ export const PATROL_KINDS = {
 export const OBSERVATION_OUTCOMES = {
   guidance: "계도",
   fine: "과태료 부과",
+  // Reader level 2 (TASK-FORMS-02): apps before it reject this value, so files using it carry minReader 2.
+  referral: "고발·인계",
   other: "기타 조치",
 };
 // Suggestions only: people may type any type; fine amounts are never stored.
@@ -214,7 +216,8 @@ export function dayKey(date = new Date()) {
 // TASK-SCHEMA-01: the highest `minReader` this app understands. A later app that
 // stores something older readers would misread or drop raises the file's minReader
 // above this; such a file opens read-only here and is never written back.
-export const READER_VERSION = 1;
+// Reader levels: 1 = TASK-SCHEMA-01; 2 = observation outcome "referral" (TASK-FORMS-02).
+export const READER_VERSION = 2;
 const MAX_EXTRA_KEYS = 100;
 const RESERVED_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 export const NEWER_DATA_MESSAGE =
@@ -252,6 +255,11 @@ export function normalize(input, { allowNewer = false } = {}) {
     }
   }
   return normalizeContent(input);
+}
+/** Lowest reader level that understands this content (see READER_VERSION). */
+function readerNeeded(data) {
+  const referral = data.patrols.some((p) => p.observations?.some((o) => o.outcome === "referral"));
+  return referral ? 2 : 1;
 }
 function normalizeContent(input) {
   const personal =
@@ -437,10 +445,12 @@ function normalizeContent(input) {
       extra.every((key) => key.length <= 64 && !RESERVED_KEYS.has(key)),
     "자료의 최상위 항목 이름을 확인하세요.",
   );
+  // Never lowered: a value kept from the file, raised when the content needs a newer reader.
+  const minReader = Math.max(input.minReader ?? 1, readerNeeded(data));
   return {
     ...Object.fromEntries(extra.map((key) => [key, input[key]])),
     version: 3,
-    ...(input.minReader !== undefined ? { minReader: input.minReader } : {}),
+    ...(input.minReader !== undefined || minReader > 1 ? { minReader } : {}),
     ...Object.fromEntries(collections.map((key) => [key, data[key]])),
     controls,
   };
@@ -917,7 +927,7 @@ export function patrolSummary(data, { startDate, endDate }) {
     byKind.set(kind, (byKind.get(kind) ?? 0) + 1);
     for (const o of p.observations ?? []) {
       const type = o.type.trim();
-      const row = byType.get(type) ?? { type, count: 0, entries: 0, guidance: 0, fine: 0, other: 0 };
+      const row = byType.get(type) ?? { type, count: 0, entries: 0, ...Object.fromEntries(Object.keys(OBSERVATION_OUTCOMES).map((key) => [key, 0])) };
       row.count += o.count;
       row.entries += 1;
       row[o.outcome] += o.count;

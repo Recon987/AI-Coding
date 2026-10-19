@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76
-- **Task Card**: TASK-SCHEMA-01·TASK-BRIEF-02·TASK-LABELS-01 review(모두 검증자 codex). backlog 다음: TASK-FORMS-02('고발·인계', SCHEMA-01 검증 뒤)
-- **Latest Pushed Commit**: 49f5bb9 - feat(TASK-LABELS-01): 버튼·편집창 문구를 '등록'·'저장'으로 통일하고 문구 상수화(U6) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: LABELS-01 — shared/model.mjs(RISK_LABEL·isRecurring·recurrenceText), shared/office.mjs(WORK_GROUPS·workGroup), shared/labels.mjs(신규 문구 상수), 화면 9개 파일 문구·중복 제거, tests/labels.test.cjs(신규), 테스트 11개 파일이 문구 상수 사용, README
-- **Changed Interfaces / Schema Diff**: 새 export `RISK_LABEL`, `isRecurring`, `recurrenceText`, `WORK_GROUPS`, `workGroup`, `shared/labels.mjs`. 화면 버튼 문구 변경('등록'·'저장' 통일). 자료 형식·허용값·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 106/106, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. Windows: SCHEMA-01 39188503229·BRIEF-02 39219106199 성공, LABELS-01 39220645418 성공
-- **Remaining Work for Gemini**: Codex: SCHEMA-01·BRIEF-02·LABELS-01 검증. 검증 뒤 main 병합 PR(사용자 승인). 그다음 TASK-FORMS-02
+- **Task Card**: TASK-SCHEMA-01·TASK-BRIEF-02·TASK-LABELS-01·TASK-FORMS-02 review(모두 검증자 codex). FORMS-02는 사용자 승인 의존 예외(SCHEMA-01 검증 전 착수)
+- **Latest Pushed Commit**: f65ee53 - wip(TASK-FORMS-02): 사용자 승인 의존 예외로 착수 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: FORMS-02 — shared/model.mjs(referral, READER_VERSION 2, minReader 자동 기록, 집계 열), shared/forms.mjs(합계 문구), src/types.ts, src/components/Observations.tsx(집계표 열), tests(schema·labels·office·patrol-observations·board), scripts/board.mjs(의존 예외), docs/orchestration/README.md 4장
+- **Changed Interfaces / Schema Diff**: 단속 조치 허용값에 `referral` 추가(자료 형식 확장, minReader 2). `READER_VERSION` 2. 집계 행 `referral` 필드. IPC 변경 없음, 데이터 v3 유지
+- **Test Status**: Linux Node 22: npm test 108/108, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. Windows: SCHEMA-01·BRIEF-02·LABELS-01 성공, FORMS-02는 푸시 후 수동 실행
+- **Remaining Work for Gemini**: Codex: 4개 카드 검증(SCHEMA-01 먼저). 검증 뒤 사용자 승인으로 main 병합. 다음 후보 TASK-HOLIDAY-01(선거일·임시공휴일), TASK-BACKUP-02
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

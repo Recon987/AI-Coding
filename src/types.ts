@@ -33,7 +33,7 @@ export type Observation = {
   id: string;
   type: string;
   count: number;
-  outcome: "guidance" | "fine" | "other";
+  outcome: "guidance" | "fine" | "referral" | "other";
   coordinates?: Coordinates | null;
   note: string;
 };

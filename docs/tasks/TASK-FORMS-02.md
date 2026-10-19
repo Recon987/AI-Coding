@@ -1,7 +1,7 @@
 ---
 id: TASK-FORMS-02
 title: 추천 양식 v2 — 단속 조치에 '고발·인계' 추가
-status: in-progress
+status: review
 role: builder
 owner: claude
 verifier: codex
@@ -19,22 +19,28 @@ FORMS-01 v1(순찰일지·단속·계도 기록 출력)과 초안(docs/research/
 
 ## 완료 조건
 - [x] forms-draft.md '사용자에게 확인할 것' 4개 질문의 답과 날짜를 '피드백 기록'에 남김(2026-10-19, Claude 추천 위임)
-- [ ] 단속 조치 값에 '고발·인계'(referral) 추가: types·검증·집계·양식 출력·화면 선택지, minReader 상향(TASK-SCHEMA-01 규칙)
-- [ ] `npm test`, `npm run test:desktop` 통과
+- [x] 단속 조치 값에 '고발·인계'(referral) 추가: types·검증·집계·양식 출력·화면 선택지, minReader 상향(TASK-SCHEMA-01 규칙)
+- [x] `npm test`, `npm run test:desktop` 통과
 
 ## 범위 밖
 공식 서식 대체, 결재 연동, 위반자 인적사항. 시설 점검표(실제 서식을 받을 때까지 보류), 인쇄 전용 화면.
 
 ## 진행 단계
 - [x] 1. 사용자 피드백 받기
-- [ ] 2. 모델: OBSERVATION_OUTCOMES에 referral '고발·인계', READER_VERSION 2, referral을 쓰는 자료만 minReader 2로 저장(아니면 지금처럼 필드 없음), 집계 열 추가
-- [ ] 3. 화면·양식: 조치 선택지, 순찰 집계·TXT/CSV 양식의 고발·인계 열, 타입
-- [ ] 4. 테스트(허용값 스냅샷 갱신·minReader 자동 기록·구버전 보호 왕복)·기록
+- [x] 2. 모델: OBSERVATION_OUTCOMES에 referral '고발·인계', READER_VERSION 2, referral을 쓰는 자료만 minReader 2로 저장(아니면 지금처럼 필드 없음), 집계 열 추가
+- [x] 3. 화면·양식: 조치 선택지, 순찰 집계·TXT/CSV 양식의 고발·인계 열, 타입
+- [x] 4. 테스트(허용값 스냅샷 갱신·minReader 자동 기록·구버전 보호 왕복)·기록
 
 ## 재개 위치
-2단계: shared/model.mjs OBSERVATION_OUTCOMES·READER_VERSION·normalize 출력의 minReader, patrolSummary 집계(guidance/fine/other → referral 추가).
+구현 완료, Codex 검증 대기(TASK-SCHEMA-01 검증과 함께 보면 좋다).
+
+## 구현 내용·검증 요점
+- `shared/model.mjs`: `OBSERVATION_OUTCOMES.referral = "고발·인계"`(계도·과태료 부과 다음, 기타 조치 앞). `READER_VERSION` 1 → 2. 저장 결과의 `minReader` = max(파일에 있던 값, 내용이 요구하는 값). '고발·인계'가 하나라도 있으면 2, 없으면 지금처럼 필드 없음. 한 번 올라간 값은 낮추지 않는다(지운 뒤에도 2 유지 — 구버전에서 읽기 전용이 되는 것뿐이라 안전 쪽).
+- 집계 `patrolSummary` 행에 `referral` 열, 브리핑·양식 TXT 합계 문구는 조치 이름 맵에서 만든다('기타' → '기타 조치'로 다른 화면과 같아짐). CSV '조치' 칸에 '고발·인계'. 화면의 조치 선택지와 집계표 열은 맵에서 자동.
+- 구버전과의 관계: SCHEMA-01 앱(읽기 수준 1)은 이 파일을 손상으로 처리하지 않고 "새 버전 자료"로 안내 후 파일을 그대로 둔다(내용을 해석할 수 없어 읽기 전용 화면도 열지 않음). SCHEMA-01 이전 앱(v0.8.0 이하)은 보호되지 않으므로 백업 안내 유지.
+- 위반자 인적사항·과태료 금액은 여전히 기록하지 않는다.
 
 ## 테스트 상태
-미실행
+2026-10-19 Linux(Node 22): `npm test` 108/108(새 2: minReader 자동 기록·낮추지 않음·집계·TXT/CSV, 보드 의존 예외), `npm run test:desktop` 11개 진입점, 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. 실제 앱에서 저장 파일 minReader 2와 960px 집계표 확인. Windows는 푸시 후 수동 실행.
 
 ## 검증 기록

@@ -12,7 +12,7 @@ const forms = require("../shared/forms.mjs");
 const ALLOWED = {
   risk: ["normal", "attention", "urgent"],
   patrolKind: ["safety", "resource", "enforcement", "fire", "facility", "incident", "general"],
-  outcome: ["guidance", "fine", "other"],
+  outcome: ["guidance", "fine", "referral", "other"],
   controlReason: ["fire", "weather", "construction", "resource", "other"],
   recurrence: ["none", "daily", "weekly", "monthly", "yearly"],
   workType: ["work", "off", "leave", "trip", "base"],
@@ -42,7 +42,8 @@ test("허용값 스냅샷: 라벨 맵 키가 고정 목록과 같다(라벨 추�
   for (const [name, keys] of Object.entries(ALLOWED))
     assert.deepEqual(Object.keys(MAPS[name]), keys, name);
   assert.deepEqual(model.RECURRENCE, ALLOWED.recurrence);
-  assert.equal(model.READER_VERSION, 1, "허용값을 늘리면 READER_VERSION도 올린다");
+  // 2: "referral" outcome (TASK-FORMS-02). Raise it again with the next enum extension.
+  assert.equal(model.READER_VERSION, 2, "허용값을 늘리면 READER_VERSION도 올린다");
 });
 
 test("라벨 맵 키 = TypeScript 타입 유니언", () => {

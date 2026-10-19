@@ -50,6 +50,7 @@ export type ObservationSummaryRow = {
   entries: number;
   guidance: number;
   fine: number;
+  referral: number;
   other: number;
 };
 export function patrolSummary(

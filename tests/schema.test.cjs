@@ -130,3 +130,36 @@ test("시작: 읽을 수 없는 새 버전 파일은 복구 흐름(이전 정상
     assert.equal(dialog.errors.length, 1);
     assert.match(dialog.errors[0], /새 버전 자료: .*바꾸지 않았습니다/s);
   }));
+
+// TASK-FORMS-02: the first reader-level change. Files using "referral" carry minReader 2,
+// so a reader-1 app (SCHEMA-01) opens them read-only instead of rejecting or rewriting them.
+test("'고발·인계'를 쓰는 자료는 minReader 2로 저장되고, 지운 뒤에도 낮추지 않는다", () =>
+  sandbox((dir, file) => {
+    const { patrolSummary } = require("../shared/model.mjs");
+    const { buildForm } = require("../shared/forms.mjs");
+    assert.equal(READER_VERSION, 2);
+    const data = sample();
+    data.patrols.push({
+      id: "p1", title: "가상 단속", at: "2026-10-19T10:00:00+09:00", route: "가상 구간", observer: "가상 직원",
+      findings: "", action: "", risk: "normal", kind: "enforcement",
+      observations: [
+        { id: "o1", type: "흡연", count: 1, outcome: "referral", note: "" },
+        { id: "o2", type: "흡연", count: 2, outcome: "guidance", note: "" },
+      ],
+    });
+    assert.equal(normalize(data).minReader, 2);
+    store.write(file, data, { keepLastGood: true });
+    assert.equal(JSON.parse(fs.readFileSync(file, "utf8")).minReader, 2);
+    assert.equal(JSON.parse(fs.readFileSync(store.lastGoodFile(file), "utf8")).minReader, 2);
+    const row = patrolSummary(data, { startDate: "2026-10-19", endDate: "2026-10-19" }).observations[0];
+    assert.deepEqual(row, { type: "흡연", count: 3, entries: 2, guidance: 2, fine: 0, referral: 1, other: 0 });
+    const text = buildForm(data, { form: "enforcement-log", startDate: "2026-10-19", endDate: "2026-10-19", format: "txt" }).content;
+    assert.match(text, /흡연 1건 \| 고발·인계 \|/);
+    assert.match(text, /- 흡연: 3건 \(계도 2, 과태료 부과 0, 고발·인계 1, 기타 조치 0\)/);
+    const csv = buildForm(data, { form: "enforcement-log", startDate: "2026-10-19", endDate: "2026-10-19", format: "csv" }).content;
+    assert.match(csv, /"고발·인계"/);
+    // Removing the referral keeps minReader 2 (never lowered); files without it stay as before.
+    const removed = { ...normalize(data), patrols: [{ ...data.patrols[0], observations: [data.patrols[0].observations[1]] }] };
+    assert.equal(normalize(removed).minReader, 2);
+    assert.equal(Object.hasOwn(normalize(sample()), "minReader"), false);
+  }));
