@@ -1,0 +1,154 @@
+{
+  "layouts": [
+    {
+      "width": 1280,
+      "height": 800,
+      "zoom": 1,
+      "viewport": 1280,
+      "overflow": -15,
+      "rows": [
+        {
+          "height": 67,
+          "titleWidth": 332.8125,
+          "actionRight": 1216
+        },
+        {
+          "height": 67,
+          "titleWidth": 332.8125,
+          "actionRight": 1216
+        },
+        {
+          "height": 67,
+          "titleWidth": 332.8125,
+          "actionRight": 1216
+        },
+        {
+          "height": 56,
+          "titleWidth": 332.8125,
+          "actionRight": 1216
+        }
+      ]
+    },
+    {
+      "width": 1101,
+      "height": 800,
+      "zoom": 1,
+      "viewport": 1101,
+      "overflow": -15,
+      "rows": [
+        {
+          "height": 158.96875,
+          "titleWidth": 780,
+          "actionRight": 1041
+        },
+        {
+          "height": 158.96875,
+          "titleWidth": 780,
+          "actionRight": 1041
+        },
+        {
+          "height": 158.96875,
+          "titleWidth": 780,
+          "actionRight": 1041
+        },
+        {
+          "height": 147.96875,
+          "titleWidth": 780,
+          "actionRight": 1041
+        }
+      ]
+    },
+    {
+      "width": 960,
+      "height": 680,
+      "zoom": 1,
+      "viewport": 960,
+      "overflow": -15,
+      "rows": [
+        {
+          "height": 158.96875,
+          "titleWidth": 647,
+          "actionRight": 900
+        },
+        {
+          "height": 158.96875,
+          "titleWidth": 647,
+          "actionRight": 900
+        },
+        {
+          "height": 158.96875,
+          "titleWidth": 647,
+          "actionRight": 900
+        },
+        {
+          "height": 147.96875,
+          "titleWidth": 647,
+          "actionRight": 900
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "zoom": 1.25,
+      "viewport": 1024,
+      "overflow": -12,
+      "rows": [
+        {
+          "height": 158.77500915527344,
+          "titleWidth": 706.4000244140625,
+          "actionRight": 967.2000274658203
+        },
+        {
+          "height": 158.77500915527344,
+          "titleWidth": 706.4000244140625,
+          "actionRight": 967.2000274658203
+        },
+        {
+          "height": 158.77500915527344,
+          "titleWidth": 706.4000244140625,
+          "actionRight": 967.2000274658203
+        },
+        {
+          "height": 147.97500610351562,
+          "titleWidth": 706.4000244140625,
+          "actionRight": 967.2000274658203
+        }
+      ]
+    },
+    {
+      "width": 960,
+      "height": 680,
+      "zoom": 1.25,
+      "viewport": 768,
+      "overflow": -12,
+      "rows": [
+        {
+          "height": 158.77500915527344,
+          "titleWidth": 458.3999938964844,
+          "actionRight": 711.1999969482422
+        },
+        {
+          "height": 158.77500915527344,
+          "titleWidth": 458.3999938964844,
+          "actionRight": 711.1999969482422
+        },
+        {
+          "height": 158.77500915527344,
+          "titleWidth": 458.3999938964844,
+          "actionRight": 711.1999969482422
+        },
+        {
+          "height": 147.97500610351562,
+          "titleWidth": 458.3999938964844,
+          "actionRight": 711.1999969482422
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "reviewedSource": "e6fd498a0904d2551247c316e849c295d737e39f",
+  "reviewedDocs": "e671160",
+  "independentRun": "2026-10-19 / Linux Node 24.19.0"
+}

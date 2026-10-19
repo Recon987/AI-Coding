@@ -1,7 +1,7 @@
 ---
 id: TASK-MODULES-01
 title: 모듈 레지스트리·선택 필드(modules·axProjects·axSnippets) 모델과 개편 전 백업(Step A)
-status: review
+status: in-progress
 role: builder
 owner: claude
 verifier: codex
@@ -31,7 +31,7 @@ TASK-ARCH-MODULAR-01 Step A. 기준 문서: [보정 명세](../specs/modular-ax/
 - [x] 3. 개편 전 백업·테스트·기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기. 다음 카드 TASK-MODULES-02(화면).
+Codex 검증 보완 요청(MOD-01/P2). shared/applets.mjs의 customConfigs 64KB 검사를 UTF-8 바이트 기준으로 맞춘다. tests/modular-contract-audit.cjs 첫 사례와 단위 경계(한도 이하·정확히 한도·초과, ASCII·한글)를 확인하고 기존 허용 파일은 임의 삭제/축소하지 않는다. 구현을 다시 review로 올리기 전 npm test·npm run test:desktop 및 Windows 증빙을 갱신한다. MODULES-02·AXDESK-01의 기능 검증은 통과했지만 이 선행 카드 보완을 기다린다.
 
 ## 구현 내용·검증 요점
 - `shared/applets.mjs`(신규): CORE_APPLETS(briefing·calendar·tasks·memos, 기존 Page ID 매핑), MODULE_APPLETS(patrols·office·ax-desk), `visibleModules`(저장값이 없으면 메모리 기본값: 순찰·AX, 사무소 자료가 있으면 사무소도), `moduleOrder`, `withModules`(모르는 ID·순서·설정 보존), `validateModules`(ID 형식·중복·100개·예약 키·customConfigs JSON 64KB·깊이 6, 모르는 하위 키 보존). 화면 연결(componentKey)은 MODULES-02에서 src의 정적 맵으로.
@@ -44,3 +44,8 @@ TASK-ARCH-MODULAR-01 Step A. 기준 문서: [보정 명세](../specs/modular-ax/
 2026-10-19 Linux(Node 22): `npm test` 142/142(새 modules 11개 + 허용값 스냅샷에 AX 3종), `npm run test:desktop` 12개 진입점 + 감사 9/9, 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. Windows 39261289803(c08591d, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사 통과. main 1eb40aa(PR #13 병합) Windows 39261191057 성공.
 
 ## 검증 기록
+
+### 2026-10-19 Codex 독립 검증 — MOD-01 보완 요청
+- 기준 e671160(실행 e6fd498), 원본 바이트 백업·백업 실패 원본 유지·미지 키 보존·minReader·기본 모듈·BK-01 보완은 통과.
+- **MOD-01/P2**: customConfigs의 JSON.stringify(...).length는 바이트가 아니다. 한글 30,000자는 JSON 90,023 UTF-8 바이트인데 64KB 검사를 통과한다. 전체 20MB 저장 상한과 기존 자료 보존은 유지되므로 자료 손실로 과장하지 않는다. 카드에 명시한 설정 한도 계약은 아직 충족하지 못해 승인 보류, in-progress로 반환한다.
+- 재현: `TZ=Asia/Seoul node tests/modular-contract-audit.cjs` 첫 사례 실패. 두 번째 AX 연도 사례는 별도 P3 후속이다. 검토·전체 증빙: [독립 검토](../reviews/2026-10-19-codex-modular.md).

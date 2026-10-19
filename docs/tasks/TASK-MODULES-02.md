@@ -1,7 +1,7 @@
 ---
 id: TASK-MODULES-02
 title: 코어 4종·동적 모듈 메뉴·모듈 관리 서랍(Step B)
-status: review
+status: blocked
 role: builder
 owner: claude
 verifier: codex
@@ -34,7 +34,7 @@ AX Desk 화면 내용.
 - [x] 3. 숨김 모듈 링크·검사·기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기. 검증 때 볼 곳: src/main.tsx(사이드바 `주 메뉴`·`.page-switch`·`.hidden-module-note`), src/components/AppletDrawer.tsx, tests/nav.cjs(테스트 공통 화면 이동), tests/desktop-modules-smoke.cjs. 다음 카드: TASK-AXDESK-01(src/components/AxDesk.tsx 자리 표시 화면을 사업 관리로).
+기능 검증 통과(e671160 / 실행 e6fd498). 선행 TASK-MODULES-01의 MOD-01 설정 바이트 한도 보완 때문에 통합은 blocked. 보완 후 선행 카드→MODULES-02→AXDESK-01 순서로 의존 상태를 복구하고 재검증 결과를 반영한다. 서랍 저장 실패·현재 화면 유지·숨김 후 검색 진입·키보드 포커스 추가 검증도 통과했다.
 
 ## 구현 메모
 - 사이드바 `<nav aria-label="주 메뉴">`: 기본(업무 브리핑·월간 일정·인수인계·제출 기한·업무·전화 메모) / 모듈(켠 것만, 저장 순서) / 모듈 관리·바로가기·앱 안내. 메뉴 글자는 짧은 이름(`인수인계·기한`, `메모·전화`), 접근 이름은 전체 이름.
@@ -52,3 +52,8 @@ AX Desk 화면 내용.
 2026-10-19 Linux(Node 22): `npm test` 142/142, `npm run test:desktop` 13개 진입점(새 desktop-modules-smoke) + 감사 9/9, 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11 완료. Windows 39263527042(6e1a9a9, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사(새 모듈 검사 포함) 통과.
 
 ## 검증 기록
+
+### 2026-10-19 Codex 독립 검증 — 기능 승인, 의존 보완 대기
+- 기준 e671160(실행 e6fd498), Linux Node 24 단위 147/147, desktop 일반 14개+감사 3개(9/9), 화면 150/150, 업무 11/11 통과. Windows 원본 소스 SHA와 소스·설치본 검사 로그 확인.
+- MODULES-02: 코어4·모듈 순서/숨김/다시 켬·읽기 전용·실패 원본/스위치/포커스 유지 통과. AXDESK-01: 사업 CRUD·필터/정렬·집행률·달력/브리핑/검색 원본 파생·숨김 후 유지·실패 초안 유지 통과.
+- 기능 승인과 통합 가능 상태를 구분한다. 선행 MODULES-01의 MOD-01/P2로 blocked이며, 코드 자체의 실패를 의미하지 않는다. [독립 검토](../reviews/2026-10-19-codex-modular.md).

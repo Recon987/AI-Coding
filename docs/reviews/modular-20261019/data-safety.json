@@ -1,0 +1,84 @@
+{
+  "baseline": "20cdc3c4431f7d055397d61aef3ab6fe982e9e9a",
+  "platform": "linux",
+  "cases": [
+    {
+      "mode": "success",
+      "passed": true,
+      "diskAfterRestore": [
+        "가상 백업에서 복원한 메모"
+      ],
+      "visibleAfterRestore": [
+        "가상 백업에서 복원한 메모"
+      ],
+      "alert": [],
+      "protectionCopies": 5
+    },
+    {
+      "mode": "cancel",
+      "passed": true,
+      "diskAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "visibleAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "alert": [],
+      "protectionCopies": 5
+    },
+    {
+      "mode": "invalid",
+      "passed": true,
+      "diskAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "visibleAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "alert": [
+        "Error invoking remote method 'restore': SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+      ],
+      "protectionCopies": 5
+    },
+    {
+      "mode": "before-commit",
+      "passed": true,
+      "diskAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "visibleAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "alert": [
+        "Error invoking remote method 'restore': Error: 감사 ENOSPC"
+      ],
+      "protectionCopies": 6
+    },
+    {
+      "mode": "after-commit-listing",
+      "passed": true,
+      "diskAfterRestore": [
+        "가상 백업에서 복원한 메모"
+      ],
+      "visibleAfterRestore": [],
+      "alert": [
+        "복원은 완료했지만 오래된 복원 보호본을 정리하지 못했습니다(감사 EACCES: 복원 후 보호본 목록 읽기 실패). 보호본은 그대로 남아 있습니다."
+      ],
+      "protectionCopies": 6,
+      "diskAfterNextSave": [
+        "가상 복원 직후 추가 메모",
+        "가상 백업에서 복원한 메모"
+      ],
+      "lastGoodAfterNextSave": [
+        "가상 복원 직후 추가 메모",
+        "가상 백업에서 복원한 메모"
+      ],
+      "backupUnchanged": true
+    }
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "reviewedSource": "e6fd498a0904d2551247c316e849c295d737e39f",
+  "reviewedDocs": "e671160",
+  "independentRun": "2026-10-19 / Linux Node 24.19.0"
+}

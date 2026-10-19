@@ -1,0 +1,31 @@
+{
+  "reference": "afc3825",
+  "cases": [
+    {
+      "mode": "direct",
+      "passed": true,
+      "unhandledErrors": [],
+      "status": "등록하지 않았습니다. 아래 줄을 고친 뒤 다시 시도하세요.",
+      "validation": [
+        "공휴일은 최대 1,000개까지 등록할 수 있습니다. 지금 1,000개가 있어 1개를 더 넣을 수 없습니다. 지난 공휴일을 지운 뒤 다시 등록하세요."
+      ],
+      "dataUnchanged": true,
+      "draft": "가상 초과"
+    },
+    {
+      "mode": "paste",
+      "passed": true,
+      "unhandledErrors": [],
+      "status": "등록하지 않았습니다. 아래 줄을 고친 뒤 다시 시도하세요.",
+      "validation": [
+        "공휴일은 최대 1,000개까지 등록할 수 있습니다. 지금 1,000개가 있어 1개를 더 넣을 수 없습니다. 지난 공휴일을 지운 뒤 다시 등록하세요."
+      ],
+      "dataUnchanged": true,
+      "draft": "2030-01-01,가상 초과"
+    }
+  ],
+  "externalRequests": [],
+  "reviewedSource": "e6fd498a0904d2551247c316e849c295d737e39f",
+  "reviewedDocs": "e671160",
+  "independentRun": "2026-10-19 / Linux Node 24.19.0"
+}

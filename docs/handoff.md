@@ -10,17 +10,19 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1eb40aa(PR #13, Windows 39261191057 성공)
-- **Task Card**: TASK-AXDESK-01 review(검증자 codex, MODULES-02 의존 예외). TASK-MODULES-01·02 review(Windows 39261289803·39263527042 성공). 다음 TASK-AXDESK-02 → 03. BK-01·HL-01 Codex 사후 재검증 대기
-- **Latest Pushed Commit**: e6fd498(AXDESK-01 구현, Windows 39264945738 성공) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: src/components/AxDesk.tsx(사업 목록·편집·집행률), shared/ax.mjs(milestoneItems·milestoneTitle +d.mts), shared/model.mjs(calendarItems에 AX 파생, briefing AX 구역), shared/search.mjs(ax +d.mts), shared/labels.mjs(TARGET.axProject +d.mts), src/ui.tsx(종일·ax 색), ListRow(머리글 이름), calendar/MonthGrid(범례), Briefing(AX 건수), style.css, tests/ax-desk.test.cjs·desktop-axdesk-smoke.cjs(신규), package.json·windows-build.yml
-- **Changed Interfaces / Schema Diff**: 자료 형식 변경 없음(MODULES-01의 axProjects 사용). 달력 항목 분류 "AX"(key `ax:<id>`, page "ax", 종일). 브리핑 문구에 "AX 사업 마일스톤 (n)" 구역(그날 있을 때만). IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 147/147, npm run test:desktop 14개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows 39264945738(e6fd498) 성공
-- **Remaining Work for Gemini**: Codex: MODULES-01·02·AXDESK-01 검증, BK-01·HL-01 재검증. 사용자: "마지막 화면 기억", "브리핑에 이번 주 마일스톤·마일스톤 알림" 여부. Claude: AXDESK-02
-- **Modified Code Snippets (if uncommitted)**: 없음
+- **Repository & Branch**: Recon987/AI-Coding (task/task-review-modular-01 → claude/zen-cannon-wc1at4, 최종 대상 main). 검증 기준 e671160 / 실행 e6fd498, main 1eb40aa
+- **Task Card**: TASK-REVIEW-MODULAR-01 review(기록 교차 확인 Claude). MODULES-01 in-progress(MOD-01/P2 보완 요청), MODULES-02·AXDESK-01 기능 승인/의존 보완 대기 blocked
+- **Latest Pushed Commit**: 9502f80 - test(TASK-REVIEW-MODULAR-01): 설정 바이트·마일스톤 연도 경계 결함 재현 보존 (기록 포함 최종 해시는 응답/원격 HEAD 참조)
+- **Completed Steps & Modified Files**: 세 분야 독립 검토·기존 필수 검사·화면·Windows 증빙 대조·BK-01/HL-01 해결 승인. tests/modular-contract-audit.cjs 신규, docs/reviews/2026-10-19-codex-modular.md 및 증빙, 원 카드·validation·작업 기록
+- **Changed Interfaces / Schema Diff**: 제품 코드·IPC·데이터 형식 변경 없음. 새 경계 감사만 추가(기존 npm test와 분리)
+- **Test Status**: Linux Node24 npm test147/147, test:desktop17개 진입점(일반14+감사3/총9사례), UI150/150, 업무11/11 통과. Windows39261289803·39263527042·39264945738 성공과 SHA 확인, 최신 소스17/패키지16·감사 각각9/9. 추가 경계 감사는 MOD-01/AX-DATE-01 두 사례 실패
+- **Remaining Work for Gemini**: Claude는 MOD-01 한글 설정 UTF-8 64KB 제한·원본 보존 보완 후 재검증 요청. 선행→MODULES-02→AXDESK-01 상태 복구 후 main 병합 판단. AX-DATE-01/P3는 TASK-AX-DATES-01 후속. AXDESK-02는 구현하지 않음. 기존 마지막 화면 기억/AX 주간 브리핑·알림 정책 결정은 그대로
+- **Modified Code Snippets (if uncommitted)**: 없음(검토 기록 커밋 후 최종 패킷에 푸시 해시 확인)
 ```
 
 ## 2. 과제 현황
+
+**2026-10-19 모듈·AX 독립 검증**: [검토](reviews/2026-10-19-codex-modular.md). BK-01·HL-01 사후 재검증은 해결 승인이다. MODULES-02·AXDESK-01의 일반 업무 기능은 통과했으나 MODULES-01의 설정 64KB 바이트 계약(MOD-01/P2)을 보완해야 전체 병합을 승인할 수 있다. 낮은 연도 AX-DATE-01은 P3 후속. 아래의 과거 반려·검증 대기 문단은 당시 기록이다.
 
 **2026-10-19 두 번째 main 병합**: 7주기 카드 6장(SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02)과 Codex 자료 안전 감사(PR #10·#11)를 사용자 승인으로 병합. BK-01·HL-01 보완의 Codex 독립 재검증은 병합 뒤에 받는다. 다음 작업은 TASK-ARCH-MODULAR-01([보정 명세](specs/modular-ax/implementation.md)).
 
