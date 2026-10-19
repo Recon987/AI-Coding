@@ -1,7 +1,7 @@
 ---
 id: TASK-AXDESK-03
 title: AX Desk 보고서 초안(양식 기반)과 TXT/MD 내보내기
-status: in-progress
+status: review
 role: builder
 owner: claude
 verifier: codex
@@ -18,21 +18,27 @@ TASK-ARCH-MODULAR-01 Step C-3. [보정 명세](../specs/modular-ax/implementatio
 - 의존 예외: TASK-AXDESK-01 (사용자 승인 2026-10-19, "이어서 AXDESK-03 진행해" — AXDESK-01은 Codex 기능 승인 후 MODULES-01 재검증 대기로 review. 검증에서 바뀌는 점은 이 카드에도 반영)
 
 ## 완료 조건
-- [ ] 순수 템플릿 함수: 사업개요·추진배경·추진실적·향후계획 4개 절, 없는 정보는 `[작성 필요]`(성과·수치·법령을 지어내지 않음), "보고서 초안/추천 구조"로 안내(AI 생성 아님)
-- [ ] 미리보기·복사, 명시적 IPC `export-ax-report`(사업 ID·형식만 받고 main이 저장 자료로 다시 만듦, 안전한 파일명)
-- [ ] `npm test`, `npm run test:desktop` 통과, IPC 화이트리스트 기록
+- [x] 순수 템플릿 함수: 사업개요·추진배경·추진실적·향후계획 4개 절, 없는 정보는 `[작성 필요]`(성과·수치·법령을 지어내지 않음), "보고서 초안/추천 구조"로 안내(AI 생성 아님)
+- [x] 미리보기·복사, 명시적 IPC `export-ax-report`(사업 ID·형식만 받고 main이 저장 자료로 다시 만듦, 안전한 파일명)
+- [x] `npm test`, `npm run test:desktop` 통과, IPC 화이트리스트 기록
 
 ## 범위 밖
 공식 서식 대체, 온라인 AI.
 
 ## 진행 단계
 - [x] 1. 템플릿·미리보기
-- [ ] 2. 내보내기 IPC·검사·기록
+- [x] 2. 내보내기 IPC·검사·기록
 
 ## 재개 위치
-2단계: IPC `export-ax-report`(desktop/main.cjs·preload.cjs)는 코드 작성됨. 남은 일: tests/ax-report.test.cjs(4개 절·[작성 필요]·요청 검증·파일명), tests/desktop-axreport-smoke.cjs(미리보기=저장 파일, 복사, 저장 대화상자, IPC 거부), 전체 검사·architecture IPC 기록.
+구현 완료, Codex 검증 대기. 검증 때 볼 곳: shared/ax-report.mjs(buildAxReport·checkAxReportRequest·safeFileTitle), src/components/AxReport.tsx, AxDesk.tsx('보고서' 행 동작), desktop/main.cjs·preload.cjs(`export-ax-report`), docs/architecture.md(IPC 기록), tests/ax-report.test.cjs, tests/desktop-axreport-smoke.cjs. 이것으로 TASK-ARCH-MODULAR-01 Step C(AXDESK-01~03) 구현이 모두 끝났다.
+
+## 구현 메모
+- 화면: AX 모듈의 세 번째 화면 "보고서 초안"(Page `ax-report`, 보기 전환). 사업 선택·형식(TXT/MD)·미리보기·초안 복사·파일로 저장. AX 사업 행에 '보고서' 동작 추가(그 사업이 선택된 채 열림). "보고서 초안·추천 구조, 공식 서식 아님, 온라인 AI 안 씀" 안내.
+- 템플릿(순수 함수): 1. 사업개요(사업명·권역·단계·사업비·담당·협력기관) 2. 추진배경 3. 추진실적(단계·예산 집행) 4. 향후계획(차기 마일스톤·위험·이슈). 기록에 없는 것(사업 기간·내용, 추진 필요성·근거, 성과·산출물, 향후 일정 등)과 빈 칸은 `[작성 필요]`. 사업비 0은 집행률을 계산하지 않고, 초과 집행은 "사업비보다 n천원 많음 — 확인 필요"로 사실만 적는다. 메모는 '앱에 기록한 메모'로 구분해 참고로만 붙인다. 끝에 `[작성 필요]` 개수 안내.
+- IPC `export-ax-report`(화이트리스트 추가 1개): 렌더러는 `{ projectId, format }`만 보내고, 본체가 저장된 자료·본체의 오늘 날짜로 같은 함수를 다시 불러 만든다. 다른 키(경로·본문 등)·모르는 형식·없는 사업은 저장 대화상자를 열기 전에 거부. TXT는 BOM 포함(옛 메모장), MD는 BOM 없음, 파일 권한 0600. 파일명 `AX사업보고서초안-<정리한 사업명>-<날짜>.<형식>`(Windows 금지 문자·장치 이름·끝 점 정리, 60자).
+- 작성 기준일은 저장 파일을 쓰는 본체의 날짜다. 화면 미리보기도 같은 날 기준이며 자정을 넘겨 화면을 열어 둔 경우만 하루 차이가 날 수 있다(다시 열면 맞춰짐).
 
 ## 테스트 상태
-2026-10-19 체크포인트: tsc 통과, `npm test` 153/153(보고서 검사 아직 없음), 화면 캡처 확인. test:desktop 미실행.
+2026-10-19 Linux(Node 22): `npm test` 158/158(보고서 새 5개), `npm run test:desktop` 종료 0(진입점 16개 + 감사 3개, 새 desktop-axreport-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 변화 없음). Windows는 푸시 후 수동 실행(AXDESK-02의 CRLF 검사 보완과 함께).
 
 ## 검증 기록

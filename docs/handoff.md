@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main 1eb40aa)
-- **Task Card**: TASK-AXDESK-02 review(검증자 codex, AXDESK-01 의존 예외). TASK-MODULES-01 review(MOD-01 보완, Windows 39288485908 성공, Codex 재검증 대기). TASK-MODULES-02·AXDESK-01 review(Codex 기능 승인). TASK-AX-DATES-01 backlog(P3). 다음 TASK-AXDESK-03
-- **Latest Pushed Commit**: 59e85db(AXDESK-02 체크포인트) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: src/components/AxSnippets.tsx(신규), shared/ax.mjs(AX_EXAMPLE_SNIPPETS·examplesAdded·withExampleSnippets) +d.mts, shared/search.mjs(axSnippet, 통합 검색) +d.mts, shared/applets.mjs(ax-desk pages에 ax-snippets), shared/labels.mjs(TARGET.axSnippet) +d.mts, src/types.ts(Page "ax-snippets"), src/main.tsx(화면 이름·설명·렌더), Briefing.tsx(첫 사용 판정에서 예제 제외), style.css, tests/ax-desk.test.cjs(+4)·desktop-snippets-smoke.cjs(신규)·nav.cjs, package.json·windows-build.yml
-- **Changed Interfaces / Schema Diff**: 자료 형식 변경 없음(axSnippets 사용). 예제를 넣으면 `modules.customConfigs["ax-desk"].examplesAdded: true`가 기록됨(없던 modules는 현재 보이는 모듈 그대로 생성). 새 Page "ax-snippets". IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 153/153, npm run test:desktop 종료 0(진입점 15 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행
-- **Remaining Work for Gemini**: Codex(재연결 후): MODULES-01 재검증, AXDESK-02 검증. 사용자: 예제를 '단추로 한 번'이 맞는지, main 병합 승인, AX-DATES-01·마지막 화면 기억·AX 주간 브리핑/알림 결정. Claude: AXDESK-03
+- **Task Card**: TASK-AXDESK-03 review(검증자 codex, AXDESK-01 의존 예외). TASK-AXDESK-02 review(Windows CRLF 검사 보완 06a9f4d). TASK-MODULES-01 review(MOD-01, Codex 재검증 대기). TASK-MODULES-02·AXDESK-01 review(Codex 기능 승인). TASK-AX-DATES-01 backlog(P3). 모듈형 개편 Step A~C 구현 완료
+- **Latest Pushed Commit**: 06a9f4d(AXDESK-02 Windows 검사 보완) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: shared/ax-report.mjs(+d.mts, 신규), src/components/AxReport.tsx(신규), AxDesk.tsx('보고서' 행 동작), src/main.tsx·types.ts(Page "ax-report", window.workdesk.exportAxReport), shared/applets.mjs(ax-desk pages), desktop/main.cjs·preload.cjs(export-ax-report), docs/architecture.md, style.css, tests/ax-report.test.cjs·desktop-axreport-smoke.cjs(신규)·nav.cjs·desktop-snippets-smoke.cjs(CRLF), package.json·windows-build.yml
+- **Changed Interfaces / Schema Diff**: 새 IPC `export-ax-report`({ projectId, format: "txt"|"md" }만 허용, 본체가 저장 자료로 생성, TXT BOM/MD 무BOM, 0600). preload 화이트리스트에 `exportAxReport` 1개 추가. 자료 형식 변경 없음
+- **Test Status**: Linux Node 22: npm test 158/158, npm run test:desktop 종료 0(진입점 16 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows 39291699887(4d46ed2) 실패 → 원인 Windows 클립보드 CRLF(검사 보완), 재실행은 푸시 후
+- **Remaining Work for Gemini**: Codex: MODULES-01 재검증, AXDESK-02·03 검증(IPC 추가 검토 포함). 사용자: 스니펫 예제 방식, main 병합 승인, AX-DATES-01·마지막 화면 기억·AX 주간 브리핑/알림 결정
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
