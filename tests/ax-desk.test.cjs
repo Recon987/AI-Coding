@@ -81,3 +81,87 @@ test("집행률: 예산 0은 계산하지 않고, 초과 집행은 실제 비율
   // Saved values stay as entered (no clamping to the budget).
   assert.equal(withProjects(project({ budgetExecuted: 1130 })).axProjects[0].budgetExecuted, 1130);
 });
+
+// TASK-AXDESK-02: snippet library.
+const { AX_EXAMPLE_SNIPPETS, examplesAdded, withExampleSnippets, validateAxSnippets } = require("../shared/ax.mjs");
+const { visibleModules } = require("../shared/applets.mjs");
+const NOW = "2026-10-19T09:00:00.000Z";
+
+test("예제 3개: 고정 ID·예제 표시·검증 통과, 사용자가 넣을 때만 들어가고 다시 생기지 않는다", () => {
+  assert.deepEqual(AX_EXAMPLE_SNIPPETS.map((s) => [s.id, s.category]), [
+    ["example-gee-sentinel2", "gee"],
+    ["example-dd-dms", "python"],
+    ["example-report-prompt", "prompt"],
+  ]);
+  const base = normalize(empty());
+  assert.equal(base.axSnippets.length, 0, "열기만 해서는 예제를 만들지 않음");
+  assert.equal(examplesAdded(base), false);
+  const seeded = normalize(withExampleSnippets(base, NOW));
+  assert.equal(seeded.axSnippets.length, 3);
+  assert.ok(seeded.axSnippets.every((s) => s.example === true && s.updatedAt === NOW));
+  assert.doesNotThrow(() => validateAxSnippets(seeded.axSnippets));
+  assert.equal(examplesAdded(seeded), true);
+  // The mark lives in the AX module's settings; the menu stays as before.
+  assert.deepEqual(visibleModules(seeded), visibleModules(base));
+  // Deleting every example keeps the mark: nothing offers or refills them.
+  const cleared = normalize({ ...seeded, axSnippets: [] });
+  assert.equal(examplesAdded(cleared), true);
+  // A second call never duplicates IDs.
+  assert.equal(withExampleSnippets(seeded, NOW).axSnippets.length, 3);
+  // The input is not changed.
+  assert.equal(base.axSnippets.length, 0);
+  assert.equal(Object.hasOwn(base, "modules"), false);
+});
+
+test("예제 넣기: 저장된 모듈 순서·다른 설정은 그대로, 읽을 수 없는 AX 설정은 덮지 않는다", () => {
+  const saved = normalize({
+    ...empty(),
+    modules: {
+      enabledModuleIds: ["ax-desk"],
+      moduleOrder: ["office", "ax-desk", "future-tool", "patrols"],
+      customConfigs: { patrols: { view: "list" }, "ax-desk": { pinned: ["x"] } },
+    },
+  });
+  const out = normalize(withExampleSnippets(saved, NOW));
+  assert.deepEqual(out.modules.moduleOrder, saved.modules.moduleOrder);
+  assert.deepEqual(out.modules.enabledModuleIds, ["ax-desk"]);
+  assert.deepEqual(out.modules.customConfigs, { patrols: { view: "list" }, "ax-desk": { pinned: ["x"], examplesAdded: true } });
+  const odd = normalize({ ...empty(), modules: { enabledModuleIds: [], moduleOrder: [], customConfigs: { "ax-desk": "v9-format" } } });
+  assert.throws(() => withExampleSnippets(odd, NOW), /읽을 수 없어 예제를 넣지 않았습니다/);
+  assert.equal(odd.modules.customConfigs["ax-desk"], "v9-format");
+});
+
+test("스니펫 검색: 제목·분류·태그·설명·본문으로 찾고 스니펫 화면으로 연다", () => {
+  const data = normalize(withExampleSnippets(normalize(empty()), NOW));
+  for (const [query, id] of [
+    ["Sentinel-2 구름", "example-gee-sentinel2"],
+    ["Python", "example-dd-dms"],
+    ["DMS", "example-dd-dms"],
+    ["표기만 바꾸는", "example-dd-dms"],
+    ["COPERNICUS/S2_SR_HARMONIZED", "example-gee-sentinel2"],
+    ["[작성 필요]", "example-report-prompt"],
+  ])
+    assert.deepEqual(searchRecords(data, query).map((r) => [r.id, r.page]), [[id, "ax-snippets"]], query);
+});
+
+test("스니펫 본문: 한글·따옴표·탭·개행·HTML 글자·100,000자를 저장·다시 읽기 후 그대로 보존", () => {
+  const store = require("../desktop/store.cjs");
+  const fs = require("node:fs");
+  const os = require("node:os");
+  const path = require("node:path");
+  const tricky = '한글 "큰따옴표" \'작은따옴표\' `백틱`\n\t탭\r\n<script>alert("x")</script> &amp; \\ 역슬래시\n\n끝';
+  const big = ("가나다 abc \"q\"\n").repeat(10000).slice(0, 100000);
+  assert.equal(big.length, 100000);
+  const row = (id, snippet) => ({ id, title: id, category: "python", tags: ["태그"], snippet, description: "", updatedAt: NOW });
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "workdesk-snippets-"));
+  try {
+    const file = path.join(dir, "workdesk.json");
+    store.write(file, { ...empty(), axSnippets: [row("a", tricky), row("b", big)] });
+    const back = store.read(file).axSnippets;
+    assert.equal(back[0].snippet, tricky);
+    assert.equal(back[1].snippet, big);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+  assert.throws(() => normalize({ ...empty(), axSnippets: [row("c", big + "x")] }), /100,000자/);
+});

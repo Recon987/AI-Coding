@@ -47,7 +47,7 @@ MOD-01 보완 완료, Codex 재검증 대기(재현 감사 첫 사례·tests/mod
 - `shared/applets.mjs`: `jsonBytes(value)`(TextEncoder로 JSON 텍스트의 UTF-8 바이트 수)를 추가하고 customConfigs 64KB 검사를 글자 수 대신 바이트로 바꿨다. 순수 함수, DOM·Electron 의존 없음.
 - 경계 검사(tests/modules.test.cjs 새 2개): ASCII 정확히 65,536바이트 허용·1바이트 초과 거부, 한글 21,837자+ASCII 2바이트 = 정확히 65,536바이트 허용·1바이트 초과 거부, Codex 재현(한글 30,000자 = 90,023바이트) 거부.
 - 이미 큰 설정이 든 파일: 시작 시 기존 손상 파일 흐름을 그대로 탄다 — 원본을 바이트 그대로 `.corrupt-<시각>.json`으로 보관, 안내창에 "모듈 설정은 64KB 이하여야 합니다" 원인 표시, 사용자가 고르기 전(종료 포함) 원본을 바꾸지 않음. 자동 삭제·축소 없음. 참고: modules를 쓰는 앱은 아직 main에 병합되지 않아 배포본 사용자의 파일에는 이 경우가 없다.
-- 결과: `TZ=Asia/Seoul node tests/modular-contract-audit.cjs`의 MOD-01 사례 통과(AX-DATE-01 사례는 별도 P3 카드 TASK-AX-DATES-01로 아직 실패, 종료 코드 1 유지). `npm test` 149/149, `npm run test:desktop` 종료 0(17개 진입점).
+- 결과: `TZ=Asia/Seoul node tests/modular-contract-audit.cjs`의 MOD-01 사례 통과(AX-DATE-01 사례는 별도 P3 카드 TASK-AX-DATES-01로 아직 실패, 종료 코드 1 유지). `npm test` 149/149, `npm run test:desktop` 종료 0(17개 진입점). Windows 39288485908(79b0868, workflow_dispatch) 성공.
 
 ## 검증 기록
 
