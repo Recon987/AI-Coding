@@ -65,6 +65,11 @@ const future = { inspections: [{ id: "i1", facility: "가상 데크" }] };
       return results;
     });
     for (const message of direct) assert.match(message, /더 새 버전/, message);
+    // Discard the unsaved draft first: on Windows the close guard shows a native
+    // dialog that would block app.close() (seen in Actions run 39187832768).
+    await newer.keyboard.press("Escape");
+    await newer.getByRole("alertdialog").getByRole("button", { name: "변경 버리기", exact: true }).click();
+    await newer.locator(".sheet[open]").waitFor({ state: "hidden" });
     await app.close();
     app = undefined;
     assert.equal(fs.readFileSync(newerFile, "utf8"), raw, "새 버전 파일은 바이트 그대로");

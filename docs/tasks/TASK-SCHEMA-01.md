@@ -48,6 +48,6 @@ updated: 2026-10-19
 - 한계: SCHEMA-01 이전 앱(v0.8.0 이하)은 `minReader`를 모르므로 보호되지 않는다. 다음 enum 확장(FORMS-02)부터 `READER_VERSION`을 2로 올리고 해당 자료에 `minReader: 2`를 쓴다.
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 99/99(새 schema 8개), `npm run test:desktop` 11개 진입점 통과(새 desktop-schema-smoke: 새 버전 파일 바이트 불변·손상 사본/보호본 없음·UI/IPC 저장·백업·복원 거부, 현재 파일 UI 저장 후 모르는 키 보존), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows는 푸시 후 확인.
+2026-10-19 Linux(Node 22): `npm test` 99/99(새 schema 8개), `npm run test:desktop` 11개 진입점 통과(새 desktop-schema-smoke: 새 버전 파일 바이트 불변·손상 사본/보호본 없음·UI/IPC 저장·백업·복원 거부, 현재 파일 UI 저장 후 모르는 키 보존), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows 1차 수동 실행 39187832768(b9047a7)은 데스크톱 검사 단계에서 멈춰 취소했다: 새 검사가 저장 거부된 편집 초안을 연 채 앱을 닫아 Windows의 "저장하지 않은 변경" 기본 확인창이 떠서 대기(검사 결함, 앱 동작은 의도대로). 검사가 초안을 버린 뒤 닫도록 고쳐 재실행한다.
 
 ## 검증 기록
