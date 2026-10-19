@@ -12,10 +12,10 @@
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76. Codex PR #10(task/task-review-data-safety-01, 2853c84)은 이 브랜치에 merge commit으로 통합
 - **Task Card**: SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02 review(검증자 codex). TASK-REVIEW-DATA-SAFETY-01 review — DS-01 수정 완료, Codex 재감사 대기
-- **Latest Pushed Commit**: 5d95140 - docs(TASK-BACKUP-02): HOLIDAY-01·BACKUP-02 Windows 수동 실행 통과 기록 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Latest Pushed Commit**: afc3825 - fix(TASK-BACKUP-02): 복원 확정 뒤 보호본 정리 오류가 복원을 되돌리던 결함(DS-01) 수정 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
 - **Completed Steps & Modified Files**: DS-01 — desktop/main.cjs(복원 확정 뒤 정리 예외를 경고로, 확인창 전 목록 실패는 정리 생략), src/main.tsx(복원 실패 시 디스크 다시 읽기), package.json·windows-build.yml(감사 2개 편입). Codex 감사 파일 tests/data-safety-audit.cjs·tests/desktop-data-safety-audit.cjs, docs/reviews/data-safety-20261019/
 - **Changed Interfaces / Schema Diff**: 없음(복원 오류 처리만). 자료 형식·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 129/129(기존 116 + 감사 13), npm run test:desktop 12개 진입점 + 감사 실제 앱 5/5, 화면 검사 150·실패 0, 업무 과업 11/11. 수정 전 감사 DS-01 실패 재현. Windows는 푸시 후 수동 실행
+- **Test Status**: Linux Node 22: npm test 129/129(기존 116 + 감사 13), npm run test:desktop 12개 진입점 + 감사 실제 앱 5/5, 화면 검사 150·실패 0, 업무 과업 11/11. 수정 전 감사 DS-01 실패 재현. Windows 39232674307(afc3825) 성공
 - **Remaining Work for Gemini**: Codex: 수정본으로 자료 안전성 재감사, 7개 카드 검증. 사용자 승인 후 main 병합
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
