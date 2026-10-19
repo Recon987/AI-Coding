@@ -66,6 +66,7 @@ jobs:
             "tests/desktop-schema-smoke.cjs",
             "tests/desktop-holiday-smoke.cjs",
             "tests/desktop-modules-smoke.cjs",
+            "tests/desktop-axdesk-smoke.cjs",
             "tests/desktop-data-safety-audit.cjs",
             "tests/desktop-backup-clock-audit.cjs",
             "tests/desktop-holiday-limits-audit.cjs"

@@ -49,6 +49,6 @@ AX Desk 화면 내용.
 - 제안(사용자 결정 필요): 도구별로 마지막에 본 화면을 기억해 메뉴 클릭 한 번에 열면 자주 쓰는 쪽은 이전과 같은 클릭 수가 된다. 이 카드 범위 밖이라 구현하지 않았다.
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 142/142, `npm run test:desktop` 13개 진입점(새 desktop-modules-smoke) + 감사 9/9, 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11 완료. Windows는 푸시 후 수동 실행.
+2026-10-19 Linux(Node 22): `npm test` 142/142, `npm run test:desktop` 13개 진입점(새 desktop-modules-smoke) + 감사 9/9, 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11 완료. Windows 39263527042(6e1a9a9, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사(새 모듈 검사 포함) 통과.
 
 ## 검증 기록
