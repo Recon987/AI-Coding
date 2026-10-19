@@ -119,18 +119,30 @@ function restoreCopies(file) {
     .map((name) => ({ file: path.join(dir, name), at: Number(name.slice(prefix.length, -5)) }))
     .sort((a, b) => a.at - b.at);
 }
-/** A new, unused protection-copy path for a restore at `now`. */
-function restoreCopyPath(file, now = Date.now()) {
-  let at = now;
+/**
+ * A new, unused protection-copy path for a restore at `now`. The number is never below
+ * an existing copy's, so the new copy always sorts newest even after the PC clock was
+ * once set ahead (BK-01, Codex review 2026-10-19).
+ */
+function restoreCopyPath(file, now = Date.now(), existing = restoreCopies(file)) {
+  let at = Math.max(now, ...existing.map((c) => c.at + 1));
   while (fs.existsSync(`${file}.before-restore-${at}.json`)) at++;
   return `${file}.before-restore-${at}.json`;
 }
-/** Deletes the oldest restore copies beyond `keep`; a file that cannot be deleted is reported, not thrown. */
-function pruneRestoreCopies(file, keep = RESTORE_KEEP) {
-  const copies = restoreCopies(file);
+/** The copies a prune would delete: the oldest beyond `keep`, never one listed in `protect`. */
+function restoreCopiesToPrune(copies, keep = RESTORE_KEEP, protect = []) {
+  const kept = copies.filter((c) => protect.includes(c.file));
+  const others = copies.filter((c) => !protect.includes(c.file));
+  return others.slice(0, Math.max(0, others.length - Math.max(0, keep - kept.length)));
+}
+/**
+ * Deletes the oldest restore copies beyond `keep`, never the files in `protect` (the copy
+ * just made). A file that cannot be deleted is reported, not thrown.
+ */
+function pruneRestoreCopies(file, keep = RESTORE_KEEP, protect = []) {
   const removed = [];
   const failed = [];
-  for (const copy of copies.slice(0, Math.max(0, copies.length - keep))) {
+  for (const copy of restoreCopiesToPrune(restoreCopies(file), keep, protect)) {
     try {
       withRetry(() => fs.unlinkSync(copy.file));
       removed.push(copy);
@@ -160,6 +172,7 @@ module.exports = {
   RESTORE_KEEP,
   restoreCopies,
   restoreCopyPath,
+  restoreCopiesToPrune,
   pruneRestoreCopies,
   isTransientLock,
   retry,

@@ -1,7 +1,7 @@
 ---
 id: TASK-BACKUP-02
 title: 복원 보호본 보관 개수 제한
-status: in-progress
+status: review
 role: builder
 owner: claude
 verifier: codex
@@ -30,7 +30,7 @@ updated: 2026-10-19
 - [x] 2. 테스트·문서
 
 ## 재개 위치
-Codex 검증 반려(BK-01, P1): 미래 시각의 기존 보호본이 있을 때 새 복원 직전 보호본을 정리 과정에서 지운다. desktop/store.cjs restoreCopyPath·pruneRestoreCopies와 main.cjs의 사전 삭제 안내가 동일한 보존/삭제 대상을 선택하도록 보완한다. tests/desktop-backup-clock-audit.cjs의 정상/시계 역행2경로를 통과시킨 뒤 재검증한다.
+BK-01 보완 완료(Codex PR #11 반려 사유), Codex 재검증 대기.
 
 ## 구현 내용·검증 요점
 - `desktop/store.cjs`: `RESTORE_KEEP = 5`, `restoreCopies(file)`(이름이 정확히 `<파일>.before-restore-<숫자>.json`인 것만, 숫자 = 시각 순), `restoreCopyPath(file, now)`(같은 시각이면 다음 숫자), `pruneRestoreCopies(file, keep)`(오래된 것부터 지우고, 지우지 못한 파일은 throw 없이 보고).
@@ -52,3 +52,9 @@ DS-01은 afc3825에서 Linux·Windows 소스/패키지 감사5/5로 해소됨을
 수정 조건: 이번 복원 직전 보호본은 항상 남기고, 오래된 보호본 중 정리할 대상을 사전 안내와 일치시킨다. 시간 역행·이름 충돌·정리 실패에서도 원본 보호와 최근5개 정책을 함께 검증한다. 제품 코드는 Codex가 수정하지 않았다.
 
 - [ ] BK-01: 시계 역행에서도 이번 복원 직전 보호본 보존·안내한 기존 보호본만 정리
+
+### 2026-10-19 BK-01 보완 (Claude)
+Codex 반려(PR #11, P1): PC 시계가 앞서 있던 때 만든 보호본 5개가 남아 있으면, 이번 복원 직전 보호본의 이름 숫자가 더 작아 정리에서 바로 지워졌고, 확인창의 삭제 안내와 실제 대상도 달랐다. 재현(`node tests/desktop-backup-clock-audit.cjs` 종료 1) 후 수정:
+- `restoreCopyPath(file, now, existing)`: 새 보호본 숫자를 기존 최댓값+1 이상으로 — 항상 가장 새것.
+- `restoreCopiesToPrune(copies, keep, protect)`: 확인창 안내와 실제 정리가 같은 함수를 쓴다. `pruneRestoreCopies(file, keep, protect)`는 방금 만든 보호본을 어떤 경우에도 지우지 않는다.
+- 결과: 시계 감사 2/2(과거·미래 보호본), 단위 130/130(새 BK-01 테스트), 복원 실제 앱 검사·DS-01 감사 유지. 감사 2개(시계·공휴일 한도)를 test:desktop·Windows 검사 목록에 편입.

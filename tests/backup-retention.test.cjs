@@ -67,3 +67,24 @@ test("새 보호본 이름은 같은 시각이어도 겹치지 않고, 지우지
     }
     assert.ok(fs.existsSync(`${file}.before-restore-1.json`));
   }));
+
+// BK-01 (Codex review 2026-10-19): copies named with a clock that was once set ahead.
+test("시계가 앞서 있던 때의 보호본이 있어도 새 보호본이 가장 새것이고 정리되지 않는다", () =>
+  sandbox((dir, file) => {
+    const future = Date.UTC(2027, 9, 19);
+    for (let i = 0; i < 5; i++) fs.writeFileSync(`${file}.before-restore-${future + i}.json`, "{}");
+    const now = Date.UTC(2026, 9, 19);
+    const fresh = store.restoreCopyPath(file, now);
+    assert.equal(fresh, `${file}.before-restore-${future + 5}.json`, "기존 최댓값보다 크게");
+    const planned = store.restoreCopiesToPrune([...store.restoreCopies(file), { file: fresh, at: Infinity }], 5, [fresh]);
+    fs.writeFileSync(fresh, "{}");
+    const { removed } = store.pruneRestoreCopies(file, 5, [fresh]);
+    assert.deepEqual(removed.map((c) => c.file), planned.map((c) => c.file), "안내한 대상 = 실제로 지운 대상");
+    assert.deepEqual(removed.map((c) => c.at), [future]);
+    assert.ok(fs.existsSync(fresh), "새 보호본은 남는다");
+    // Even if a protected copy were the oldest by name, it is never deleted.
+    fs.writeFileSync(`${file}.before-restore-1.json`, "{}");
+    const { removed: again } = store.pruneRestoreCopies(file, 5, [`${file}.before-restore-1.json`]);
+    assert.ok(!again.some((c) => c.at === 1));
+    assert.ok(fs.existsSync(`${file}.before-restore-1.json`));
+  }));

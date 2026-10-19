@@ -128,7 +128,12 @@ else {
       } catch {
         listFailed = true;
       }
-      const goingAway = copies.slice(0, Math.max(0, copies.length + 1 - store.RESTORE_KEEP));
+      // The same rule the prune below applies, with the new copy (always newest) counted in,
+      // so the prompt names exactly what will be deleted (BK-01).
+      const newCopy = listFailed ? null : store.restoreCopyPath(file, Date.now(), copies);
+      const goingAway = listFailed
+        ? []
+        : store.restoreCopiesToPrune([...copies, { file: newCopy, at: Infinity }], store.RESTORE_KEEP, [newCopy]);
       const stamp = (at) => {
         const d = new Date(at);
         const pad = (n) => String(n).padStart(2, "0");
@@ -151,7 +156,8 @@ else {
         ].filter(Boolean).join("\n"),
       });
       if (answer.response !== 1) return null;
-      store.write(store.restoreCopyPath(file), store.read(file));
+      const protectionCopy = newCopy ?? store.restoreCopyPath(file, Date.now(), []);
+      store.write(protectionCopy, store.read(file));
       const saved = store.write(file, data, { keepLastGood: true });
       // The restore is committed from here on. Pruning may only warn: throwing now would
       // leave the renderer on pre-restore data and its next save would undo the restore
@@ -159,7 +165,7 @@ else {
       let pruneWarning = "";
       if (!listFailed) {
         try {
-          const pruned = store.pruneRestoreCopies(file);
+          const pruned = store.pruneRestoreCopies(file, store.RESTORE_KEEP, [protectionCopy]);
           if (pruned.failed.length)
             pruneWarning = `오래된 복원 보호본 ${pruned.failed.length}개를 지우지 못했습니다. 저장 폴더 권한을 확인하세요.`;
         } catch (error) {
