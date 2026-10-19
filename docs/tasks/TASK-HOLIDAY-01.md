@@ -18,7 +18,7 @@ updated: 2026-10-19
 2026-10-19 사용자 요청("이어서 HOLIDAY-01 진행해")으로 backlog에서 바로 착수.
 
 ## 완료 조건
-- [ ] 확정된 선거일 반영(출처 기록)
+- [x] 확정된 선거일 반영(출처 기록)
 - [ ] 사용자가 로컬 파일로 추가 공휴일을 반입·삭제(검증 포함, 외부 호출 없음)
 - [ ] 표 범위 밖 연도에서 "음력 공휴일 미포함" 안내
 - [ ] 회귀 테스트
@@ -28,15 +28,15 @@ updated: 2026-10-19
 
 ## 진행 단계
 - [x] 1. 법령·선거일 확인(docs/research/holidays.md): 노동절·제헌절 2026년부터 공휴일(대체 적용), 선거일 2025-06-03·2026-06-03·2028-04-12, 임시공휴일 2025-01-27, 겹침 대체공휴일 하루 더 만드는 기존 오류 발견
-- [ ] 2. 내장 표: 노동절·제헌절(2026~), 선거일·임시공휴일, 겹침 대체공휴일 오류 수정, 표 범위 함수
+- [x] 2. 내장 표: 노동절·제헌절(2026~), 선거일·임시공휴일, 겹침 대체공휴일 오류 수정, 표 범위 함수
 - [ ] 3. 사용자 공휴일: 선택 컬렉션 customHolidays(검증·한도), holidaysForYear/holidayName이 함께 계산
 - [ ] 4. 화면: '공휴일 관리'(직접 추가·붙여 넣기 반입·삭제), 표 범위 밖 안내
 - [ ] 5. 테스트·기록
 
 ## 재개 위치
-2단계: shared/model.mjs SOLAR_HOLIDAYS(from 연도), 선거일 표, holidaysForYear의 겹침 대체 계산(같은 날 겹침은 대체 1일).
+3단계: 선택 컬렉션 customHolidays({id,date,name}) — src/types.ts, shared/model.mjs(optionalCollections·검증·holidaysForYear(year, custom)·holidayName(date, custom)·enforcementRange(date, custom)), 호출부(Calendar·Briefing·MonthGrid·WeekView·ListView).
 
 ## 테스트 상태
-미실행
+2026-10-19 체크포인트(2단계): npm test 112/112(새 holidays 4개 — 고치기 전 코드에서 4개 모두 실패 확인). test:desktop 미실행.
 
 ## 검증 기록

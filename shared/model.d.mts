@@ -104,3 +104,5 @@ export function recurrenceText(
   event: { recurrence?: EventRecurrence | null; repeatUntil?: string | null },
   options?: { until?: boolean },
 ): string;
+/** Years covered by the lunar holiday table (설·추석·부처님오신날). */
+export const LUNAR_TABLE_YEARS: { first: number; last: number };

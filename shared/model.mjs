@@ -459,13 +459,27 @@ function normalizeContent(input) {
 const SOLAR_HOLIDAYS = [
   { month: 1, day: 1, name: "신정", subRule: "none" },
   { month: 3, day: 1, name: "삼일절", subRule: "weekend" },
+  // 2026 공휴일법 개정(TASK-HOLIDAY-01, docs/research/holidays.md): 관공서 규정상 대체공휴일 적용.
+  { month: 5, day: 1, name: "노동절", subRule: "weekend", from: 2026 },
   { month: 5, day: 5, name: "어린이날", subRule: "weekend" },
   { month: 6, day: 6, name: "현충일", subRule: "none" },
+  { month: 7, day: 17, name: "제헌절", subRule: "weekend", from: 2026 },
   { month: 8, day: 15, name: "광복절", subRule: "weekend" },
   { month: 10, day: 3, name: "개천절", subRule: "weekend" },
   { month: 10, day: 9, name: "한글날", subRule: "weekend" },
   { month: 12, day: 25, name: "성탄절", subRule: "weekend" },
 ];
+
+// Election days and one-off holidays already fixed by law or decree (no substitutes).
+// Later ones are added by the user (customHolidays) once announced.
+const FIXED_HOLIDAYS = [
+  { date: "2025-01-27", name: "임시공휴일" },
+  { date: "2025-06-03", name: "대통령선거일" },
+  { date: "2026-06-03", name: "지방선거일" },
+  { date: "2028-04-12", name: "국회의원선거일" },
+];
+/** Years covered by the lunar holiday table; other years have solar holidays only. */
+export const LUNAR_TABLE_YEARS = { first: 2025, last: 2035 };
 
 // 오프라인 음력 법정공휴일 표 (2025~2035년, 설날 연휴·부처님오신날·추석 연휴)
 const LUNAR_HOLIDAYS_BY_YEAR = {
@@ -583,13 +597,18 @@ export function holidaysForYear(year) {
   );
   if (holidayCache.has(year)) return holidayCache.get(year);
   const raw = [
-    ...SOLAR_HOLIDAYS.map((h) => ({
+    ...SOLAR_HOLIDAYS.filter((h) => !h.from || year >= h.from).map((h) => ({
       date: `${year}-${String(h.month).padStart(2, "0")}-${String(h.day).padStart(2, "0")}`,
       name: h.name,
       subRule: h.subRule,
       group: h.name,
     })),
     ...(LUNAR_HOLIDAYS_BY_YEAR[year] || []),
+    ...FIXED_HOLIDAYS.filter((h) => h.date.startsWith(`${year}-`)).map((h) => ({
+      ...h,
+      subRule: "none",
+      group: h.name,
+    })),
   ];
   const byDate = new Map();
   for (const item of raw) {
@@ -603,25 +622,35 @@ export function holidaysForYear(year) {
     groups.get(item.group).push(item);
   }
   const substitutes = [];
+  // Holidays sharing a weekday lose one day per extra holiday, so a day where two
+  // overlap yields one substitute, not two (2025-05-05 → 5-06 only; 2028-10-03 → 10-05 only).
+  const overlapSubs = new Map();
+  const takeOverlap = (date) => {
+    const groupsThatDay = new Set((byDate.get(date) || []).map((i) => i.group)).size;
+    const used = overlapSubs.get(date) ?? 0;
+    if (used >= groupsThatDay - 1) return false;
+    overlapSubs.set(date, used + 1);
+    return true;
+  };
   for (const [, items] of groups) {
     const rule = items[0].subRule;
     if (rule === "none") continue;
     let needsSub = false;
     for (const item of items) {
       const dow = parseLocalDate(item.date).getDay();
-      const sameDayItems = byDate.get(item.date) || [];
-      const overlapsOther = sameDayItems.some(
-        (other) => other.group !== item.group,
-      );
-      if (rule === "weekend" && (dow === 0 || dow === 6 || overlapsOther)) {
-        needsSub = true;
-        break;
-      }
-      if (rule === "sunday" && (dow === 0 || overlapsOther)) {
+      if ((rule === "weekend" && (dow === 0 || dow === 6)) || (rule === "sunday" && dow === 0)) {
         needsSub = true;
         break;
       }
     }
+    if (!needsSub)
+      for (const item of items) {
+        const overlapsOther = (byDate.get(item.date) || []).some((other) => other.group !== item.group);
+        if (overlapsOther && takeOverlap(item.date)) {
+          needsSub = true;
+          break;
+        }
+      }
     if (needsSub) {
       const lastDateStr = items[items.length - 1].date;
       const cursor = parseLocalDate(lastDateStr);
