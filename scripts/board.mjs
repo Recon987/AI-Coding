@@ -24,6 +24,14 @@ export function parseCard(text, file = "card") {
   return { ...fields, body: match[2], file };
 }
 
+// "- 의존 예외: TASK-X-01 (사용자 승인 YYYY-MM-DD …)" lines in a card body let it start
+// before TASK-X-01 is verified (orchestration README 4장). Anything else is not an exception.
+function approvedExceptions(body = "") {
+  return new Set(
+    [...body.matchAll(/^- 의존 예외: (TASK-[A-Z0-9]+(?:-[A-Z0-9]+)*) \(사용자 승인 \d{4}-\d{2}-\d{2}/gm)].map((m) => m[1]),
+  );
+}
+
 export function validateCards(cards) {
   const errors = [];
   const ids = new Map(cards.map((c) => [c.id, c]));
@@ -54,9 +62,14 @@ export function validateCards(cards) {
     if (["in-progress", "review"].includes(c.status)) {
       if (c.owner === "none") errors.push(`${where}: ${c.status} 카드에는 owner가 필요합니다.`);
       if (!/##\s*재개 위치/.test(c.body)) errors.push(`${where}: '## 재개 위치' 절이 필요합니다.`);
-      for (const d of deps)
-        if (ids.get(d) && ids.get(d).status !== "done")
-          errors.push(`${where}: 의존 카드 ${d}가 아직 done이 아닙니다.`);
+      const allowed = approvedExceptions(c.body);
+      for (const d of deps) {
+        const status = ids.get(d)?.status;
+        if (!status || status === "done") continue;
+        // A user-approved exception only covers a dependency already built and in review.
+        if (allowed.has(d) && status === "review") continue;
+        errors.push(`${where}: 의존 카드 ${d}가 아직 done이 아닙니다.`);
+      }
     }
     if (c.status === "in-progress") {
       if (active.has(c.owner))
