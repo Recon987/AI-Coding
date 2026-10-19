@@ -1,7 +1,7 @@
 // AX Desk records (TASK-MODULES-01, docs/specs/modular-ax/implementation.md 5장).
 // Optional top-level collections axProjects and axSnippets. Enum values are stable keys;
 // screens show the labels. Money is in thousand won (천원). Pure: no DOM, Electron or network.
-import { validDateKey } from "./dates.mjs";
+import { localDate, validDateKey } from "./dates.mjs";
 import { visibleModules, withModules } from "./applets.mjs";
 
 export const AX_ZONES = { hq: "본사", west: "서부", north: "북부", institute: "연구원·보전원", other: "기타" };
@@ -93,7 +93,7 @@ export function milestoneItems(projects = [], range = {}) {
       return {
         id: p.id,
         title: milestoneTitle(p),
-        at: new Date(y, m - 1, d).toISOString(),
+        at: localDate(y, m - 1, d).toISOString(),
         key: `ax:${p.id}`,
         category: "AX",
         page: "ax",

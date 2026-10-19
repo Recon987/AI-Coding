@@ -85,3 +85,14 @@ export function earliestLocalDay(at) {
     return written;
   return addDays(new Date(Date.parse(at)).toISOString().slice(0, 10), -1);
 }
+
+/**
+ * A local-time Date for these parts, like `new Date(year, monthIndex, day, …)` but keeping
+ * years 0–99 as written: the constructor reads them as 1900–1999 (TASK-AX-DATES-01).
+ * Out-of-range months and days roll over as with the constructor.
+ */
+export function localDate(year, monthIndex, day, hours = 0, minutes = 0, seconds = 0, ms = 0) {
+  const date = new Date(2000, 0, 1, hours, minutes, seconds, ms);
+  date.setFullYear(year, monthIndex, day);
+  return date;
+}

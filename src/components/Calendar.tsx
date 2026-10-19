@@ -1,6 +1,6 @@
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useRef, useState } from "react";
-import { addDays, weekDays as weekOf } from "../../shared/dates.mjs";
+import { addDays, localDate, weekDays as weekOf } from "../../shared/dates.mjs";
 import {
   calendarItems,
   expandEventOccurrences,
@@ -10,6 +10,7 @@ import {
   holidayName,
   RECURRENCE_LABEL,
   isRecurring,
+  HOLIDAY_TABLE_YEARS,
   LUNAR_TABLE_YEARS,
   recurrenceText,
 } from "../../shared/model.mjs";
@@ -259,12 +260,12 @@ export function Calendar({
 
   const year = month.getFullYear(),
     monthIndex = month.getMonth();
-  const start = new Date(year, monthIndex, 1);
-  const first = new Date(year, monthIndex, 1 - start.getDay());
+  const start = localDate(year, monthIndex, 1);
+  const first = localDate(year, monthIndex, 1 - start.getDay());
   const days = Array.from(
     { length: 42 },
     (_, n) =>
-      new Date(first.getFullYear(), first.getMonth(), first.getDate() + n),
+      localDate(first.getFullYear(), first.getMonth(), first.getDate() + n),
   );
   const gridStart = dayKey(days[0]);
   const gridEnd = dayKey(days[days.length - 1]);
@@ -503,6 +504,12 @@ export function Calendar({
         {(() => {
           // TASK-HOLIDAY-01: outside the lunar table, 설·추석·부처님오신날 are missing.
           const shownYear = view === "month" ? year : Number(selected.slice(0, 4));
+          if (shownYear < HOLIDAY_TABLE_YEARS.first || shownYear > HOLIDAY_TABLE_YEARS.last)
+            return (
+              <p className="calendar-note" role="note">
+                {shownYear}년은 공휴일 표({HOLIDAY_TABLE_YEARS.first}~{HOLIDAY_TABLE_YEARS.last}년) 밖이라 기본 공휴일을 표시하지 않습니다. 필요한 날은 자료 관리 → 공휴일 관리에서 등록하세요.
+              </p>
+            );
           return shownYear < LUNAR_TABLE_YEARS.first || shownYear > LUNAR_TABLE_YEARS.last ? (
             <p className="calendar-note" role="note">
               {shownYear}년은 음력 공휴일(설·추석·부처님오신날)이 표에 없습니다. 필요한 날은 자료 관리 → 공휴일 관리에서 등록하세요.

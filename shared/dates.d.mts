@@ -12,3 +12,5 @@ export function earliestLocalDay(at: string): string;
 export function isWeekend(key: string): boolean;
 /** Closest earlier working day, skipping weekends and `isHoliday` days (at most 31 days back). */
 export function previousWorkday(key: string, isHoliday?: (key: string) => boolean): string;
+/** Local-time Date like `new Date(y, m, d, …)` that keeps years 0–99 as written. */
+export function localDate(year: number, monthIndex: number, day: number, hours?: number, minutes?: number, seconds?: number, ms?: number): Date;
