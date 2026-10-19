@@ -113,13 +113,39 @@ function App() {
       setQuery("");
     }
   }, [searchOpen]);
-  const [feedback, setFeedback] = useState("");
+  // A sequence number makes a repeated message ("변경 사항을 저장했습니다." twice) a new
+  // announcement and restarts the timer (TASK-A11Y-02, found in Codex review).
+  const [feedback, setFeedbackState] = useState({ message: "", sequence: 0 });
+  const [feedbackFocused, setFeedbackFocused] = useState(false);
+  const feedbackReturn = useRef<HTMLElement | null>(null);
+  const setFeedback = useCallback(
+    (message: string) =>
+      setFeedbackState((previous) => ({ message, sequence: previous.sequence + 1 })),
+    [],
+  );
+  const dismissFeedback = useCallback(() => {
+    const target = feedbackReturn.current;
+    feedbackReturn.current = null;
+    setFeedbackFocused(false);
+    setFeedbackState((previous) => ({ ...previous, message: "" }));
+    // Closing from the keyboard returns focus to where the user was working.
+    if (target?.isConnected) target.focus();
+  }, []);
   useEffect(() => {
-    if (!feedback) return;
-    // Long enough to read at 125% zoom; the toast also has its own close button.
-    const timer = setTimeout(() => setFeedback(""), 8000);
+    // Long enough to read at 125% zoom; paused while the close button has focus.
+    if (!feedback.message || feedbackFocused) return;
+    // Clear only the message this timer was started for: an older timer that fires in
+    // the gap before React cancels it must not erase a newer message (seen on Windows).
+    const sequence = feedback.sequence;
+    const timer = setTimeout(
+      () =>
+        setFeedbackState((previous) =>
+          previous.sequence === sequence ? { ...previous, message: "" } : previous,
+        ),
+      8000,
+    );
     return () => clearTimeout(timer);
-  }, [feedback]);
+  }, [feedback, feedbackFocused]);
   useEffect(() => {
     // Ctrl/Cmd+K only: a bare "/" fired by dictation or a screen reader's browse mode
     // opened search mid-task and could not be switched off (WCAG 2.1.4, TASK-A11Y-02).
@@ -385,18 +411,31 @@ function App() {
           )}
           {/* Always-present live region: screen readers miss regions inserted with their text. */}
           <div className="sr-only" role="status" aria-atomic="true">
-            {feedback}
+            {feedback.message && (
+              <span key={feedback.sequence} data-sequence={feedback.sequence}>
+                {feedback.message}
+              </span>
+            )}
           </div>
-          {feedback && (
-            <div className="save-feedback" aria-hidden="true">
+          {feedback.message && (
+            <div
+              className="save-feedback"
+              onFocus={(event) => {
+                setFeedbackFocused(true);
+                if (!feedbackReturn.current)
+                  feedbackReturn.current = event.relatedTarget as HTMLElement | null;
+              }}
+              onBlur={() => setFeedbackFocused(false)}
+            >
               <Icon name="check" size={16} />
-              {feedback}
+              {/* Already read out by the status region above. */}
+              <span aria-hidden="true">{feedback.message}</span>
               <button
                 type="button"
                 className="save-feedback-close"
-                tabIndex={-1}
-                onClick={() => setFeedback("")}
+                aria-label="알림 닫기"
                 title="알림 닫기"
+                onClick={dismissFeedback}
               >
                 ×
               </button>

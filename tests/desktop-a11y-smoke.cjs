@@ -52,6 +52,14 @@ const root = path.resolve(__dirname, "..");
 
     // A5: the status region exists before any message; the toast stays 8 s and can be closed.
     const live = page.locator('.sr-only[role="status"]');
+    // Record every change of the announcement region with the app's clock, for diagnosis.
+    await page.evaluate(() => {
+      const region = document.querySelector('.sr-only[role="status"]');
+      window.__liveLog = [];
+      new MutationObserver(() =>
+        window.__liveLog.push([Date.now(), region.innerHTML]),
+      ).observe(region, { childList: true, subtree: true, characterData: true });
+    });
     assert.equal(await live.count(), 1);
     assert.equal((await live.textContent()).trim(), "");
     await nav("업무 메모");
@@ -61,13 +69,54 @@ const root = path.resolve(__dirname, "..");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     await page.waitForFunction(() => document.querySelector('.sr-only[role="status"]')?.textContent.includes("저장했습니다"));
     const toast = page.locator(".save-feedback");
-    await page.clock.runFor(6000);
-    assert.equal(await toast.isVisible(), true, "6초 뒤에도 알림 표시");
-    await toast.locator(".save-feedback-close").click();
+    // From here only runFor moves the app's timers, so slow runners cannot change the result.
+    await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 10);
+    const sequence = () => page.locator('.sr-only[role="status"] [data-sequence]').getAttribute("data-sequence");
+    const first = await sequence();
+    // page.clock keeps running in real time after runFor, so leave a margin for slow
+    // Windows runners: 5 s, then 4 s after the second save (9 s after the first).
+    await page.clock.runFor(5000);
+    assert.equal(await toast.isVisible(), true, "5초 뒤에도 알림 표시");
+    // Same message again: announced anew and the 8 s timer restarts (Codex review finding).
+    await page.getByRole("button", { name: "메모 추가", exact: true }).click();
+    await page.getByLabel("제목", { exact: true }).fill("가상 낭독 확인 메모 2");
+    await page.keyboard.press("Control+Enter");
+    await page.locator(".sheet[open]").waitFor({ state: "hidden" });
+    // Wait for the *next* announcement itself (a cleared region must not count).
+    const next = String(Number(first) + 1);
+    await page
+      .waitForFunction((n) => document.querySelector(`.sr-only[role="status"] [data-sequence="${n}"]`), next)
+      .catch(async (error) => {
+        console.error("다음 안내 없음:", await page.evaluate(() => window.__liveLog));
+        throw error;
+      });
+    await page.clock.runFor(4000);
+    if (!(await toast.isVisible())) {
+      // Diagnose on the runner that fails: what does the app hold right now?
+      console.error("알림 진단:", await page.evaluate(() => ({
+        live: document.querySelector('.sr-only[role="status"]')?.innerHTML,
+        toast: document.querySelector(".save-feedback")?.outerHTML ?? null,
+        active: document.activeElement?.outerHTML.slice(0, 120),
+        now: Date.now(),
+        log: window.__liveLog,
+      })));
+      assert.fail("같은 문구 재저장 후 타이머 다시 시작(첫 저장 후 9초 이상)");
+    }
+    // The close button is reachable by keyboard, not hidden from screen readers,
+    // and returns focus to where the user was.
+    const close = toast.getByRole("button", { name: "알림 닫기", exact: true });
+    assert.equal(await close.evaluate((el) => el.closest('[aria-hidden="true"]') === null && el.tabIndex >= 0), true);
+    const memoSearch = page.getByLabel("기록 검색");
+    await memoSearch.focus();
+    await close.focus();
+    await page.clock.runFor(9000);
+    assert.equal(await toast.isVisible(), true, "닫기 버튼에 포커스가 있는 동안 유지");
+    await page.keyboard.press("Enter");
     await toast.waitFor({ state: "hidden" });
+    assert.equal(await memoSearch.evaluate((el) => el === document.activeElement), true, "닫은 뒤 원래 위치로 포커스 복귀");
     // List search announces how many rows remain.
     await page.getByLabel("기록 검색").fill("낭독 확인");
-    assert.equal(await page.locator('.list-count[role="status"]').textContent(), "1건 표시");
+    assert.equal(await page.locator('.list-count[role="status"]').textContent(), "2건 표시");
 
     // A8: a bare "/" no longer opens search; Ctrl+K still does.
     await page.locator("main h1").click();
@@ -86,7 +135,7 @@ const root = path.resolve(__dirname, "..");
     assert.equal(await chip.evaluate((el) => getComputedStyle(el).webkitLineClamp), "2");
     await page.setViewportSize({ width: 1360, height: 900 });
     assert.equal(await chip.evaluate((el) => getComputedStyle(el).webkitLineClamp), "none", "넓은 화면은 한 줄");
-    console.log("PASS: 입력칸 대비·고대비 선택 표시, 날짜 이름(보이는 글자 먼저), 상시 낭독 영역·알림 8초·닫기, 검색 건수 낭독, / 단축키 제거·Ctrl+K 유지, 좁은 폭 2줄");
+    console.log("PASS: 입력칸 대비·고대비 선택 표시, 날짜 이름(보이는 글자 먼저), 상시 낭독 영역·같은 문구 재안내·알림 8초(포커스 중 유지)·키보드 닫기와 포커스 복귀, 검색 건수 낭독, / 단축키 제거·Ctrl+K 유지, 좁은 폭 2줄");
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });

@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
-- **Task Card**: TASK-A11Y-02 review(검증자 codex, 재개 위치는 카드). 그 외 이번 주기 카드(PANEL·POLISH·EDITOR-01·02·DATES-01·CALENDAR-04)는 교차 승인 완료. 다음 후보: TASK-LABELS-01, TASK-LIST-02
-- **Latest Pushed Commit**: a1fbae4 - wip(TASK-A11Y-02): 상태 안내를 화면낭독기가 놓치지 않게(A5) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: src/style.css, src/main.tsx, src/components/{Briefing,Patrols,Tasks,Personal}.tsx, src/components/calendar/MonthGrid.tsx, tests/desktop-a11y-smoke.cjs(신규), tests/desktop-recurrence-smoke.cjs, tests/ui-review.cjs, package.json, .github/workflows/windows-build.yml. 한국어 기록 docs/work-log/2026-10-18-claude-2.md
-- **Changed Interfaces / Schema Diff**: 데이터 v3·IPC 변경 없음. '/' 단축키 제거(Ctrl+K 유지). 날짜 버튼 접근 이름 형식 변경(보이는 글자 먼저)
-- **Test Status**: Linux Node 22: npm test 91/91, npm run test:desktop 10개 진입점 통과, 화면 검사 150·실패 0, 업무 흐름 11/11
-- **Remaining Work for Gemini**: Codex: A11Y-02 검증. 기관 PC: 고대비 테마·NVDA 확인. 사용자: PR #1 병합 승인, '추가/등록', 주말 합계, SCHEMA-01, 양식 질문
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1). Codex 검증 브랜치 task/task-review-a11y-02(04e4a4d, 착수 기록만 푸시됨)
+- **Task Card**: TASK-A11Y-02 review(검증자 codex) — Codex 발견 2건을 Claude가 보완. TASK-REVIEW-A11Y-02 in-progress(Codex, 환경 시작 실패로 중단)
+- **Latest Pushed Commit**: 1e22ac6 - feat(TASK-A11Y-02): 날짜 이름·좁은 화면 2줄·'/' 단축키 정리와 접근성 검사 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: src/main.tsx(알림 {message, sequence}, 접근 가능한 닫기·포커스 복귀·포커스 중 타이머 정지), tests/desktop-a11y-smoke.cjs(재안내·타이머 재시작·키보드 닫기 회귀). 한국어 기록 docs/work-log/2026-10-18-claude-2.md
+- **Changed Interfaces / Schema Diff**: 앱 내부 알림 상태만 변경. 데이터 v3·IPC 변경 없음
+- **Test Status**: Linux Node 22: npm test 91/91, npm run test:desktop 10개 진입점 통과, 화면 검사 150·실패 0. 새 회귀는 보완 전 실패·보완 후 통과
+- **Remaining Work for Gemini**: Codex: 환경 재연결 후 이전 환경의 미푸시 diff는 버리고 이 커밋 기준으로 TASK-REVIEW-A11Y-02 검증 재개. 같은 환경 오류가 반복되면 서비스 지원에 전달. 사용자: PR #1 병합 승인 등 결정 6가지
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
