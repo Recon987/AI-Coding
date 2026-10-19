@@ -44,6 +44,6 @@ TASK-ARCH-MODULAR-01 Step C-2. [보정 명세](../specs/modular-ax/implementatio
 - 측정: Playwright `fill`은 긴 글에서 매우 느리다(1만 자 1.7초, 3만 자 16초). 앱은 10만 자 입력을 0.2초에 받는다. 실제 앱 검사는 사람처럼 클립보드 붙여 넣기로 10만 자를 넣는다.
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 153/153(스니펫 새 4개), `npm run test:desktop` 종료 0(진입점 15개 + 감사 3개, 새 desktop-snippets-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 변화 없음). Windows 39291699887(4d46ed2) **실패**: desktop-snippets-smoke 복사 비교에서 Windows 클립보드가 줄 끝을 CRLF로 바꿔(Chromium이 Windows 관례대로 \n→\r\n 변환) 바이트 비교가 어긋남. 앱 결함이 아니라 플랫폼 줄 끝 차이이므로 검사를 Windows에서만 줄 끝을 맞춘 뒤 비교하도록 고침(다른 글자는 모두 그대로 비교). 재실행 결과는 아래에 기록.
+2026-10-19 Linux(Node 22): `npm test` 153/153(스니펫 새 4개), `npm run test:desktop` 종료 0(진입점 15개 + 감사 3개, 새 desktop-snippets-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 변화 없음). Windows 39291699887(4d46ed2) **실패**: desktop-snippets-smoke 복사 비교에서 Windows 클립보드가 줄 끝을 CRLF로 바꿔(Chromium이 Windows 관례대로 \n→\r\n 변환) 바이트 비교가 어긋남. 앱 결함이 아니라 플랫폼 줄 끝 차이이므로 검사를 Windows에서만 줄 끝을 맞춘 뒤 비교하도록 고침(다른 글자는 모두 그대로 비교). 재실행 Windows 39292805648(ea03a4a, 06a9f4d 보완 포함) 성공: 소스·설치본 실제 앱 검사(스니펫 검사 포함) 통과.
 
 ## 검증 기록

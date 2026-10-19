@@ -39,6 +39,6 @@ TASK-ARCH-MODULAR-01 Step C-3. [보정 명세](../specs/modular-ax/implementatio
 - 작성 기준일은 저장 파일을 쓰는 본체의 날짜다. 화면 미리보기도 같은 날 기준이며 자정을 넘겨 화면을 열어 둔 경우만 하루 차이가 날 수 있다(다시 열면 맞춰짐).
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 158/158(보고서 새 5개), `npm run test:desktop` 종료 0(진입점 16개 + 감사 3개, 새 desktop-axreport-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 변화 없음). Windows는 푸시 후 수동 실행(AXDESK-02의 CRLF 검사 보완과 함께).
+2026-10-19 Linux(Node 22): `npm test` 158/158(보고서 새 5개), `npm run test:desktop` 종료 0(진입점 16개 + 감사 3개, 새 desktop-axreport-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 변화 없음). Windows 39292805648(ea03a4a, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사(보고서·스니펫 검사 포함) 통과.
 
 ## 검증 기록
