@@ -1,0 +1,72 @@
+{
+  "baseline": "20cdc3c4431f7d055397d61aef3ab6fe982e9e9a",
+  "platform": "linux",
+  "cases": [
+    {
+      "mode": "cancel",
+      "passed": true,
+      "diskAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "visibleAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "alert": [],
+      "protectionCopies": 5
+    },
+    {
+      "mode": "invalid",
+      "passed": true,
+      "diskAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "visibleAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "alert": [
+        "Error invoking remote method 'restore': SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+      ],
+      "protectionCopies": 5
+    },
+    {
+      "mode": "before-commit",
+      "passed": true,
+      "diskAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "visibleAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "alert": [
+        "Error invoking remote method 'restore': Error: 감사 ENOSPC"
+      ],
+      "protectionCopies": 6
+    },
+    {
+      "mode": "after-commit-listing",
+      "passed": false,
+      "diskAfterRestore": [
+        "가상 백업에서 복원한 메모"
+      ],
+      "visibleAfterRestore": [
+        "가상 복원 전 메모"
+      ],
+      "alert": [
+        "Error invoking remote method 'restore': Error: 감사 EACCES: 복원 후 보호본 목록 읽기 실패"
+      ],
+      "protectionCopies": 6,
+      "diskAfterNextSave": [
+        "가상 복원 직후 추가 메모",
+        "가상 복원 전 메모"
+      ],
+      "lastGoodAfterNextSave": [
+        "가상 복원 직후 추가 메모",
+        "가상 복원 전 메모"
+      ],
+      "backupUnchanged": true,
+      "failure": "복원 후 정상 저장이 복원된 기록을 지우면 안 됨"
+    }
+  ],
+  "errors": [],
+  "externalRequests": []
+}
