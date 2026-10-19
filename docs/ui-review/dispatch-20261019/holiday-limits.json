@@ -1,0 +1,30 @@
+{
+  "reference": "afc3825",
+  "cases": [
+    {
+      "mode": "direct",
+      "passed": false,
+      "unhandledErrors": [
+        "추가 공휴일은 1,000개 이하의 목록이어야 합니다."
+      ],
+      "status": "",
+      "validation": [],
+      "dataUnchanged": true,
+      "draft": "가상 초과",
+      "failure": "한도 검증은 처리되지 않은 예외를 발생시키면 안 됨\n+ actual - expected\n\n+ [\n+   '추가 공휴일은 1,000개 이하의 목록이어야 합니다.'\n+ ]\n- []\n"
+    },
+    {
+      "mode": "paste",
+      "passed": false,
+      "unhandledErrors": [
+        "추가 공휴일은 1,000개 이하의 목록이어야 합니다."
+      ],
+      "status": "",
+      "validation": [],
+      "dataUnchanged": true,
+      "draft": "2030-01-01,가상 초과",
+      "failure": "한도 검증은 처리되지 않은 예외를 발생시키면 안 됨\n+ actual - expected\n\n+ [\n+   '추가 공휴일은 1,000개 이하의 목록이어야 합니다.'\n+ ]\n- []\n"
+    }
+  ],
+  "externalRequests": []
+}

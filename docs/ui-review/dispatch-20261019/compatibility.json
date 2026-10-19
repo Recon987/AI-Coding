@@ -1,0 +1,15 @@
+{
+  "oldReaderCommit": "90eba070c43ae9416b4630889a5d6fde659856f0",
+  "oldReaderLevel": 1,
+  "currentReaderLevel": 2,
+  "referralOldReader": {
+    "blocked": true,
+    "recoveryPrompts": 0,
+    "errorNotices": 1,
+    "sourceUnchanged": true,
+    "noCorruptCopies": true
+  },
+  "customHolidayUnknownKeysOldReaderRoundtrip": true,
+  "briefingRanges": 6,
+  "customHolidayBriefingRange": true
+}
