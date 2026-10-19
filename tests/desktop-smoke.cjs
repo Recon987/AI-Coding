@@ -41,13 +41,22 @@ const { empty } = require("../shared/model.mjs");
       }
     };
     page.on("dialog", acceptDialogs);
-    // Confirmation widgets are native UI in Electron; keep choices deterministic.
-    await page.addInitScript(() => {
-      window.confirm = () => true;
-    });
-    await page.evaluate(() => {
-      window.confirm = () => true;
-    });
+    // The in-app confirmation dialog really renders; this only presses its button
+    // (confirm by default, cancel when __parkConfirmAnswer is false) and counts prompts.
+    const autoConfirm = () => {
+      window.__parkConfirmAnswer = true;
+      window.__parkConfirmCount = 0;
+      new MutationObserver(() => {
+        const dialog = document.querySelector("dialog.confirm-dialog[open]");
+        if (!dialog || dialog.dataset.parkAnswered || window.__parkConfirmManual) return;
+        dialog.dataset.parkAnswered = "1";
+        window.__parkConfirmCount++;
+        const [cancel, accept] = dialog.querySelectorAll(".confirm-actions button");
+        setTimeout(() => (window.__parkConfirmAnswer ? accept : cancel).click());
+      }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
+    };
+    await page.addInitScript(autoConfirm);
+    await page.evaluate(autoConfirm);
     const nav = async (name) => {
       const editor = page.locator(".sheet[open]");
       if (await editor.count())
@@ -63,6 +72,23 @@ const { empty } = require("../shared/model.mjs");
       await page.keyboard.press("Control+k");
       await page.getByLabel("기록 통합 검색", { exact: true }).fill(query);
     };
+    // TASK-EDITOR-02: an invalid coordinate no longer disables 저장; pressing it keeps the
+    // sheet open, explains the problem and moves focus to the marked field.
+    const saveBlocked = async (name) => {
+      const before = (await page.evaluate(() => window.workdesk.load())).patrols.length;
+      await page.locator(".sheet[open]").getByRole("button", { name, exact: true }).click();
+      await page.locator(".sheet[open] .notice.error").waitFor();
+      await page.waitForFunction(() => document.activeElement?.getAttribute("aria-invalid") === "true");
+      assert.ok(
+        await page.evaluate(() =>
+          (document.activeElement.getAttribute("aria-describedby") ?? "")
+            .split(" ")
+            .some((id) => document.getElementById(id)?.classList.contains("coordinate-error")),
+        ),
+        "오류 문구가 칸과 연결됨",
+      );
+      assert.equal((await page.evaluate(() => window.workdesk.load())).patrols.length, before);
+    };
     const manage = async (name) => {
       await page.locator(".data-menu > summary").click();
       await page
@@ -77,8 +103,8 @@ const { empty } = require("../shared/model.mjs");
     // First use must offer working actions; merely visiting it never adds sample data.
     const firstUse = page.getByRole("region", { name: "업무 시작 안내", exact: true });
     await firstUse.waitFor();
-    assert.equal(await firstUse.getByRole("button").count(), 3);
-    for (const [action, title] of [["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
+    assert.equal(await firstUse.getByRole("button").count(), 4);
+    for (const [action, title] of [["순찰 기록", "순찰 기록 등록"], ["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
       await firstUse.getByRole("button", { name: action, exact: true }).click();
       const dialog = page.getByRole("dialog", { name: title, exact: true });
       await dialog.waitFor();
@@ -134,21 +160,19 @@ const { empty } = require("../shared/model.mjs");
       await page.getByLabel("내용", { exact: true }).inputValue(),
       "검색 후에도 유지할 내용",
     );
-    // Stub only the confirmation widget; actual dirty/cancel code runs unchanged.
+    // Choose "계속 작성" in the real confirmation dialog; the draft must stay.
     await page.evaluate(() => {
-      window.__parkPromptCount = 0;
-      window.confirm = () => {
-        window.__parkPromptCount++;
-        return false;
-      };
+      window.__parkConfirmCount = 0;
+      window.__parkConfirmAnswer = false;
     });
     await page
       .locator(".sheet[open]")
       .getByRole("button", { name: "취소", exact: true })
       .click();
-    assert.equal(await page.evaluate(() => window.__parkPromptCount), 1);
+    await page.waitForFunction(() => window.__parkConfirmCount === 1);
+    await page.getByRole("alertdialog").waitFor({ state: "hidden" });
     await page.evaluate(() => {
-      window.confirm = () => true;
+      window.__parkConfirmAnswer = true;
     });
     assert.equal(
       await page.getByLabel("제목", { exact: true }).inputValue(),
@@ -198,9 +222,9 @@ const { empty } = require("../shared/model.mjs");
     await page.getByLabel("전화번호").fill("000-0000");
     await page.getByLabel("전달 내용").fill("문의 처리 기록");
     await page.getByRole("button", { name: "저장", exact: true }).click();
-    await page.getByRole("button", { name: "처리 완료", exact: true }).click();
+    await page.getByRole("button", { name: /^처리 완료 · / }).click();
     await page
-      .getByRole("button", { name: "미처리로 변경", exact: true })
+      .getByRole("button", { name: /^미처리로 변경 · / })
       .waitFor();
     await nav("현장 순찰");
     await add("순찰 기록 추가");
@@ -213,26 +237,11 @@ const { empty } = require("../shared/model.mjs");
     await page.locator(".coordinate-details > summary").click();
     // DD input: partial, malformed and out-of-range values block saving.
     await page.getByLabel("위도 (DD)", { exact: true }).fill("37.5");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "순찰 저장", exact: true })
-        .isEnabled(),
-      false,
-    );
+    await saveBlocked("순찰 저장");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("181");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "순찰 저장", exact: true })
-        .isEnabled(),
-      false,
-    );
+    await saveBlocked("순찰 저장");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("0x7f");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "순찰 저장", exact: true })
-        .isEnabled(),
-      false,
-    );
+    await saveBlocked("순찰 저장");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("127.25");
     assert.equal(
       await page.getByLabel("DMS 변환 결과").textContent(),
@@ -281,7 +290,7 @@ const { empty } = require("../shared/model.mjs");
     );
     await page.getByRole("button", { name: "취소", exact: true }).click();
     await page
-      .getByRole("button", { name: "인수인계로 연결", exact: true })
+      .getByRole("button", { name: /^인수인계로 연결 · / })
       .click();
     await page
       .getByRole("heading", { name: "업무 수정", exact: true })
@@ -334,10 +343,10 @@ const { empty } = require("../shared/model.mjs");
       .locator(".sheet[open]")
       .getByRole("button", { name: "취소", exact: true })
       .click();
-    await page.getByRole("button", { name: "조치 완료", exact: true }).click();
+    await page.getByRole("button", { name: /^조치 완료 · / }).click();
     await page.getByRole("button", { name: "완료", exact: true }).click();
     await page
-      .getByRole("button", { name: "다시 진행", exact: true })
+      .getByRole("button", { name: /^다시 진행 · / })
       .waitFor();
     // Assert all records using the actual preload read path.
     let data = await page.evaluate(() => window.workdesk.load());
@@ -385,7 +394,7 @@ const { empty } = require("../shared/model.mjs");
       1,
     );
     await nav("현장 순찰");
-    await page.getByRole("button", { name: "수정", exact: true }).click();
+    await page.getByRole("button", { name: "수정 · 오전 탐방로 순찰", exact: true }).click();
     await page.getByLabel("기록 제목").fill("오전 탐방로 순찰 수정");
     assert.equal(
       await page.getByLabel("경도 (DD)", { exact: true }).inputValue(),
@@ -393,12 +402,7 @@ const { empty } = require("../shared/model.mjs");
     );
     await page.getByLabel("좌표 입력 형식").selectOption("dms");
     await page.getByLabel("위도 분", { exact: true }).fill("60");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "변경 저장", exact: true })
-        .isEnabled(),
-      false,
-    );
+    await saveBlocked("변경 저장");
     await page.getByLabel("위도 분", { exact: true }).fill("45");
     await page.getByLabel("위도 방향").selectOption("S");
     await page.getByLabel("경도 방향").selectOption("W");
@@ -461,7 +465,7 @@ const { empty } = require("../shared/model.mjs");
         .coordinates,
       undefined,
     );
-    await optional.getByRole("button", { name: "수정", exact: true }).click();
+    await optional.getByRole("button", { name: /^수정 · / }).click();
     await page.locator(".coordinate-details > summary").click();
     await page.getByLabel("위도 (DD)", { exact: true }).fill("0");
     await page.getByLabel("경도 (DD)", { exact: true }).fill("0");
@@ -473,7 +477,7 @@ const { empty } = require("../shared/model.mjs");
         .coordinates,
       { latitude: 0, longitude: 0 },
     );
-    await optional.getByRole("button", { name: "수정", exact: true }).click();
+    await optional.getByRole("button", { name: /^수정 · / }).click();
     await page
       .getByRole("button", { name: "좌표 지우기", exact: true })
       .click();
@@ -552,8 +556,7 @@ const { empty } = require("../shared/model.mjs");
       .inputValue();
     await page
       .getByRole("button", {
-        name: `시험 직원 ${officeDate} 근무 편집`,
-        exact: true,
+        name: new RegExp(`^\\S.* · 시험 직원 ${Number(officeDate.slice(5, 7))}\\. ${Number(officeDate.slice(8))}\\. .* 근무 편집$`),
       })
       .click();
     assert.equal(
@@ -704,7 +707,7 @@ const { empty } = require("../shared/model.mjs");
       if (failed) await app.evaluate(({ app }) => app.exit(1)).catch(() => {});
       else await app.close();
     }
-    fs.rmSync(dir, { recursive: true, force: true });
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 })().catch((error) => {
   console.error(error);

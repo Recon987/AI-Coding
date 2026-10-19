@@ -1,17 +1,46 @@
-import { formatCoordinates } from "../../shared/model.mjs";
+import { matches, searchText } from "../../shared/search.mjs";
+import {
+  describeObservations,
+  formatCoordinates,
+  newPatrolDraft,
+  OBSERVATION_OUTCOMES,
+  observationTypes,
+  PATROL_KINDS,
+  patrolAutoTitle,
+} from "../../shared/model.mjs";
+import { ObservationEditor, PatrolSummary } from "./Observations";
+import { FormExport } from "./FormExport";
+import { ListHeader, ListRow, rowKeys } from "./ListRow";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { CoordinateInput } from "./CoordinateInput";
-import { useState } from "react";
-import type { Data, Patrol, Save, Task } from "../types";
+import { useId, useState } from "react";
+import type { Data, Patrol, PatrolKind, Save, Task } from "../types";
 import {
   Empty,
   Field,
+  focusFirstInvalid,
   formatTime,
   localInput,
   riskNames,
   SectionHead,
   Tag,
 } from "../ui";
+import { askConfirm } from "../confirm";
+type PrefillField = "observer" | "kind" | "zone" | "route";
+/** Fields a new draft took from `from`, as [field, label, value] for the hint. */
+function prefillOf(from: Patrol | undefined, value: Patrol) {
+  if (!from) return null;
+  const fields = (
+    [
+      ["route", "순찰 구간", value.route],
+      ["observer", "기록자", value.observer],
+      ["kind", "순찰 종류", value.kind ? PATROL_KINDS[value.kind] : ""],
+      ["zone", "담당구역", value.zone ?? ""],
+    ] as [PrefillField, string, string][]
+  ).filter(([, , v]) => v);
+  return fields.length ? { from: from.title, fields } : null;
+}
+
 export function Patrols({
   data,
   save,
@@ -25,16 +54,12 @@ export function Patrols({
   initialId?: string;
   openTask: (id: string) => void;
 }) {
-  const blank = (): Patrol => ({
-    id: "",
-    title: "",
-    at: new Date().toISOString(),
-    route: "",
-    observer: "",
-    findings: "",
-    action: "",
-    risk: "normal",
-  });
+  // New records start from the last patrol added on this PC (recorder, kind, zone;
+  // TASK-PANEL-01 D2). Last added, not latest `at`: a late entry of an old patrol or a
+  // mistyped future time must not pin the defaults.
+  const latest = data.patrols.at(-1);
+  const blank = (from: Patrol | undefined = latest, route = ""): Patrol =>
+    newPatrolDraft(from, { route });
   const initial = data.patrols.find((p) => p.id === initialId);
   const editor = useEditorDraft(
     initial || blank(),
@@ -42,10 +67,25 @@ export function Patrols({
   );
   const { draft, setDraft } = editor;
   const [editorKey, setEditorKey] = useState(0);
+  const prefillHint = useId();
+  // Which record filled which fields of a new draft; UI state only, never saved.
+  const [prefill, setPrefill] = useState(() =>
+    initial ? null : prefillOf(latest, blank()),
+  );
+  const filled = (field: PrefillField) =>
+    !draft.id && prefill?.fields.some(([key]) => key === field) ? prefillHint : undefined;
+  const startNew = (from = latest, route = "") => {
+    const value = blank(from, route);
+    setPrefill(prefillOf(from, value));
+    return resetDraft(value);
+  };
   const [coordinateError, setCoordinateError] = useState("");
-  const resetDraft = (value: Patrol) => {
-    if (editor.openEditor(value)) {
+  const [observationError, setObservationError] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const resetDraft = async (value: Patrol) => {
+    if (await editor.openEditor(value)) {
       setCoordinateError("");
+      setObservationError(false);
       setEditorKey((key) => key + 1);
     }
   };
@@ -53,22 +93,29 @@ export function Patrols({
   const patch = (values: Partial<Patrol>) =>
     setDraft((current) => ({ ...current, ...values }));
   const rows = [...data.patrols]
-    .filter((p) =>
-      `${p.title} ${p.route} ${p.observer} ${p.findings} ${p.action} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`
-        .toLowerCase()
-        .includes(query.trim().toLowerCase()),
-    )
+    .filter((p) => matches(searchText.patrol(p), query))
     .sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (coordinateError) return;
-    const item = {
+    if (coordinateError || observationError) {
+      // The save button stays usable; it explains and moves to the problem instead.
+      editor.setSaveError("좌표 형식이 맞지 않는 칸이 있습니다. 표시된 칸을 고친 뒤 저장하세요.");
+      focusFirstInvalid(e.currentTarget as HTMLFormElement);
+      return;
+    }
+    const item: Patrol = {
       ...draft,
       id: draft.id || crypto.randomUUID(),
-      title: draft.title.trim(),
+      title: draft.title.trim() || patrolAutoTitle(draft),
       route: draft.route.trim(),
       observer: draft.observer.trim(),
+      zone: draft.zone?.trim(),
+      observations: draft.observations?.map((o) => ({ ...o, type: o.type.trim(), note: o.note.trim() })),
     };
+    // Optional fields stay absent when unused, so older records keep their shape.
+    if (!item.kind) delete item.kind;
+    if (!item.zone) delete item.zone;
+    if (!item.observations?.length) delete item.observations;
     if (!item.title || !item.route || !item.observer) return;
     if (
       await save({
@@ -108,14 +155,21 @@ export function Patrols({
   }
   return (
     <div className="workspace-grid">
+      {exporting && (
+        <FormExport data={data} busy={busy} onClose={() => setExporting(false)} />
+      )}
+      <PatrolSummary data={data} />
       <section className="panel records">
         <SectionHead eyebrow="FIELD JOURNAL" title="현장에서 남긴 기록">
           <div className="editor-header-actions">
             <Tag>{data.patrols.length}건</Tag>
+            <button disabled={busy} onClick={() => setExporting(true)}>
+              양식 출력
+            </button>
             <button
               className="primary"
               disabled={busy}
-              onClick={() => resetDraft(blank())}
+              onClick={() => startNew()}
             >
               순찰 기록 추가
             </button>
@@ -127,6 +181,9 @@ export function Patrols({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <p className="list-count" role="status" aria-atomic="true">
+          {query.trim() ? `${rows.length}건 표시` : ""}
+        </p>
         {!rows.length && (
           <Empty>
             {query.trim() ? (
@@ -140,90 +197,96 @@ export function Patrols({
             )}
           </Empty>
         )}
-        {rows.map((p) => (
-          <article className="record" key={p.id}>
-            <details className="record-details">
-              <summary>
-                <div className="record-top">
-                  <Tag
-                    tone={
-                      p.risk === "urgent"
-                        ? "red"
-                        : p.risk === "attention"
-                          ? "amber"
-                          : ""
-                    }
-                  >
-                    {riskNames[p.risk]}
-                  </Tag>
-                  <span className="muted">{formatTime(p.at)}</span>
-                </div>
-                <h3>{p.title}</h3>
-                <p className="record-preview">
-                  {p.route} · {p.findings || "별도 확인 사항 없음"}
-                </p>
-              </summary>
-              <div className="record-detail-body">
-                <p className="route-line">{p.route}</p>
-                <p className="record-body">
-                  {p.findings || "별도 확인 사항 없음"}
-                </p>
-                {p.action && (
-                  <p className="action-note">
-                    <strong>현장 조치</strong> {p.action}
-                  </p>
-                )}
-                {p.coordinates && (
-                  <p className="coordinate-summary">
-                    {formatCoordinates(p.coordinates)}
-                    <br />
-                    {formatCoordinates(p.coordinates, "dms")}
-                  </p>
-                )}
-                <p className="source">기록자 · {p.observer}</p>
-              </div>
-            </details>
-            <div className="record-actions">
-              <button
-                className="primary small"
-                disabled={busy}
-                onClick={() => handover(p)}
-              >
-                {data.tasks.some((t) => t.patrolId === p.id && !t.done)
-                  ? "후속 조치 보기"
-                  : "인수인계로 연결"}
-              </button>
-              <button disabled={busy} onClick={() => resetDraft(p)}>
-                수정
-              </button>
-              <button
-                className="text-button danger"
-                disabled={busy}
-                onClick={async () => {
-                  if (
-                    confirm(
-                      "순찰 기록을 삭제할까요? 연결된 인수인계 내용은 유지하고 연결만 해제합니다.",
-                    )
-                  ) {
+        <div className="row-list" onKeyDown={rowKeys}>
+          {rows.length > 0 && <ListHeader />}
+          {rows.map((p) => (
+            <ListRow
+              key={p.id}
+              busy={busy}
+              when={formatTime(p.at)}
+              status={
+                <Tag tone={p.risk === "urgent" ? "danger" : p.risk === "attention" ? "warning" : ""}>
+                  {riskNames[p.risk]}
+                </Tag>
+              }
+              kind={
+                <>
+                  {p.kind ? PATROL_KINDS[p.kind] : "순찰"}
+                  {p.zone && <small className="zone-label">구역 {p.zone}</small>}
+                </>
+              }
+              title={p.title}
+              subtitle={`${p.observations?.length ? `${describeObservations(p.observations)} · ` : ""}${p.route}`}
+              owner={p.observer}
+              actions={[
+                {
+                  label: data.tasks.some((t) => t.patrolId === p.id && !t.done)
+                    ? "후속 조치 보기"
+                    : "인수인계로 연결",
+                  primary: true,
+                  onClick: () => handover(p),
+                },
+                { label: "수정", onClick: () => resetDraft(p) },
+                // 화면에는 짧게, 화면낭독기에는 전체 이름(TASK-LIST-02).
+                { label: "새 순찰", ariaLabel: `이 기록으로 새 순찰 · ${p.title}`, onClick: () => startNew(p, p.route) },
+                {
+                  label: "삭제",
+                  tone: "danger",
+                  onClick: async () => {
                     if (
-                      await save({
-                        ...data,
-                        patrols: data.patrols.filter((x) => x.id !== p.id),
-                        tasks: data.tasks.map((t) =>
-                          t.patrolId === p.id ? { ...t, patrolId: null } : t,
-                        ),
+                      await askConfirm({
+                        message: "순찰 기록을 삭제할까요?",
+                        detail: "연결된 인수인계 내용은 유지하고 연결만 해제합니다.",
+                        confirmLabel: "삭제",
+                        danger: true,
                       })
                     ) {
-                      if (draft.id === p.id) editor.finishEditor();
+                      if (
+                        await save({
+                          ...data,
+                          patrols: data.patrols.filter((x) => x.id !== p.id),
+                          tasks: data.tasks.map((t) =>
+                            t.patrolId === p.id ? { ...t, patrolId: null } : t,
+                          ),
+                        })
+                      ) {
+                        if (draft.id === p.id) editor.finishEditor();
+                      }
                     }
-                  }
-                }}
-              >
-                삭제
-              </button>
-            </div>
-          </article>
-        ))}
+                  },
+                },
+              ]}
+            >
+              <p className="route-line">{p.route}</p>
+              <p className="record-body">{p.findings || "별도 확인 사항 없음"}</p>
+              {p.action && (
+                <p className="action-note">
+                  <strong>현장 조치</strong> {p.action}
+                </p>
+              )}
+              {!!p.observations?.length && (
+                <ul className="observation-list">
+                  {p.observations.map((o) => (
+                    <li key={o.id}>
+                      <strong>{o.type}</strong> {o.count}건 · {OBSERVATION_OUTCOMES[o.outcome]}
+                      {o.note && ` · ${o.note}`}
+                      {o.coordinates && (
+                        <span className="coordinate-summary">{formatCoordinates(o.coordinates)}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {p.coordinates && (
+                <p className="coordinate-summary">
+                  {formatCoordinates(p.coordinates)}
+                  <br />
+                  {formatCoordinates(p.coordinates, "dms")}
+                </p>
+              )}
+            </ListRow>
+          ))}
+        </div>
       </section>
       {editor.isOpen && (
         <EditorDialog
@@ -235,7 +298,7 @@ export function Patrols({
         >
           <form className="editor" onSubmit={submit}>
             <div className="editor-header-actions">
-              <button className="primary" disabled={busy || !!coordinateError}>
+              <button className="primary" disabled={busy}>
                 {draft.id ? "변경 저장" : "순찰 저장"}
               </button>
               <button
@@ -247,23 +310,48 @@ export function Patrols({
               </button>
             </div>
             <p className="editor-intro">
-              제목·구간·기록자는 필수입니다. 저장 후 인수인계로 연결할 수
-              있습니다.
+              저장 후 인수인계로 연결할 수 있습니다.
             </p>
-            <Field label="기록 제목">
-              <input
-                required
-                maxLength={500}
-                autoFocus
-                value={draft.title}
-                onChange={(e) => patch({ title: e.target.value })}
-                placeholder="예: 오전 탐방로 순찰"
-              />
-            </Field>
+            {!draft.id && prefill && (
+              <p id={prefillHint} className="editor-hint">
+                ‘{prefill.from}’에서 가져옴:{" "}
+                {prefill.fields.map(([, label, value]) => `${label} ${value}`).join(" · ")}. 다른
+                사람·구역이면 바꾸세요.
+              </p>
+            )}
+            <div className="form-row">
+              <Field label="순찰 종류">
+                <select
+                  autoFocus
+                  aria-describedby={filled("kind")}
+                  value={draft.kind ?? ""}
+                  onChange={(e) =>
+                    patch({ kind: (e.target.value || null) as PatrolKind | null })
+                  }
+                >
+                  <option value="">선택 안 함</option>
+                  {Object.entries(PATROL_KINDS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="담당구역 번호">
+                <input
+                  maxLength={50}
+                  aria-describedby={filled("zone")}
+                  value={draft.zone ?? ""}
+                  onChange={(e) => patch({ zone: e.target.value })}
+                  placeholder="선택 · 예: 3-2"
+                />
+              </Field>
+            </div>
             <Field label="순찰 구간">
               <input
                 required
                 maxLength={500}
+                aria-describedby={filled("route")}
                 value={draft.route}
                 onChange={(e) => patch({ route: e.target.value })}
                 placeholder="출발 거점 → 점검 구간 → 도착 거점"
@@ -274,6 +362,7 @@ export function Patrols({
                 <input
                   required
                   maxLength={100}
+                  aria-describedby={filled("observer")}
                   value={draft.observer}
                   onChange={(e) => patch({ observer: e.target.value })}
                 />
@@ -338,6 +427,25 @@ export function Patrols({
                 maxLength={20000}
                 value={draft.action}
                 onChange={(e) => patch({ action: e.target.value })}
+              />
+            </Field>
+            <ObservationEditor
+              key={`observations-${editorKey}`}
+              value={draft.observations ?? []}
+              suggestions={observationTypes(data)}
+              busy={busy}
+              onChange={(observations) => patch({ observations })}
+              onErrorChange={(hasError) => {
+                setObservationError(hasError);
+                editor.setExtraDirty(hasError);
+              }}
+            />
+            <Field label="기록 제목 (선택, 비우면 자동)">
+              <input
+                maxLength={500}
+                value={draft.title}
+                onChange={(e) => patch({ title: e.target.value })}
+                placeholder={patrolAutoTitle(draft)}
               />
             </Field>
           </form>

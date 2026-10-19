@@ -9,46 +9,62 @@ import { createRoot } from "react-dom/client";
 import {
   empty,
   normalize,
-  formatCoordinates,
-  RECURRENCE_LABEL,
+  activeControls,
+  dayKey,
 } from "../shared/model.mjs";
 import type { Data, Page } from "./types";
 import { formatDate } from "../shared/format.mjs";
+import { searchRecords } from "../shared/search.mjs";
 import { hasDirtyDrafts, subscribeDirty } from "./drafts";
 import { DesktopSettings } from "./components/DesktopSettings";
 import { Office } from "./components/Office";
 import { Briefing } from "./components/Briefing";
 import { Patrols } from "./components/Patrols";
+import { Controls } from "./components/Controls";
 import { Tasks } from "./components/Tasks";
 import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
 import { Icon } from "./components/Icon";
 import { Empty, SectionHead, Tag } from "./ui";
 import "./style.css";
+import { ConfirmHost, discardChanges, isConfirmOpen } from "./confirm";
+// Five task groups plus help pinned at the bottom (TASK-NAV-01).
 const sections: {
   label: string;
   pages: { id: Page; label: string }[];
+  footer?: boolean;
 }[] = [
   {
-    label: "업무 흐름",
+    label: "오늘",
     pages: [
       { id: "briefing", label: "업무 브리핑" },
-      { id: "office", label: "사무소 현황" },
-      { id: "patrol", label: "현장 순찰" },
-      { id: "handover", label: "인수인계" },
-      { id: "submission", label: "제출 기한" },
       { id: "calendar", label: "월간 일정" },
     ],
   },
   {
-    label: "나의 기록",
+    label: "현장",
+    pages: [
+      { id: "patrol", label: "현장 순찰" },
+      { id: "controls", label: "탐방로 통제" },
+    ],
+  },
+  {
+    label: "할 일",
+    pages: [
+      { id: "handover", label: "인수인계" },
+      { id: "submission", label: "제출 기한" },
+    ],
+  },
+  { label: "사무소", pages: [{ id: "office", label: "사무소 현황" }] },
+  {
+    label: "기록",
     pages: [
       { id: "calls", label: "전화메모" },
       { id: "notes", label: "업무 메모" },
       { id: "folders", label: "바로가기" },
-      { id: "about", label: "앱 안내" },
     ],
   },
+  { label: "", footer: true, pages: [{ id: "about", label: "앱 안내" }] },
 ];
 const pageNames = Object.fromEntries(
   sections.flatMap((s) => s.pages.map((p) => [p.id, p.label])),
@@ -57,6 +73,7 @@ const subtitles: Record<Page, string> = {
   office: "직원별 근무·휴무·당직·거점 배치를 일별·주간으로 확인합니다.",
   briefing: "순찰에서 사무실까지, 오늘 이어갈 업무를 확인하세요.",
   patrol: "현장의 확인 사항과 조치 내용을 기록하고 다음 업무로 연결합니다.",
+  controls: "산불·기상특보·공사 등으로 통제 중인 구간과 기간을 기록합니다.",
   handover: "남은 조치와 담당자, 마감일을 한눈에 확인합니다.",
   submission: "서류 제출 기한을 일정과 함께 관리합니다.",
   calendar: "일정·순찰·인수인계·제출 기한과 공휴일·반복 일정을 확인합니다.",
@@ -96,22 +113,44 @@ function App() {
       setQuery("");
     }
   }, [searchOpen]);
-  const [feedback, setFeedback] = useState("");
+  // A sequence number makes a repeated message ("변경 사항을 저장했습니다." twice) a new
+  // announcement and restarts the timer (TASK-A11Y-02, found in Codex review).
+  const [feedback, setFeedbackState] = useState({ message: "", sequence: 0 });
+  const [feedbackFocused, setFeedbackFocused] = useState(false);
+  const feedbackReturn = useRef<HTMLElement | null>(null);
+  const setFeedback = useCallback(
+    (message: string) =>
+      setFeedbackState((previous) => ({ message, sequence: previous.sequence + 1 })),
+    [],
+  );
+  const dismissFeedback = useCallback(() => {
+    const target = feedbackReturn.current;
+    feedbackReturn.current = null;
+    setFeedbackFocused(false);
+    setFeedbackState((previous) => ({ ...previous, message: "" }));
+    // Closing from the keyboard returns focus to where the user was working.
+    if (target?.isConnected) target.focus();
+  }, []);
   useEffect(() => {
-    if (!feedback) return;
-    const timer = setTimeout(() => setFeedback(""), 4500);
+    // Long enough to read at 125% zoom; paused while the close button has focus.
+    if (!feedback.message || feedbackFocused) return;
+    // Clear only the message this timer was started for: an older timer that fires in
+    // the gap before React cancels it must not erase a newer message (seen on Windows).
+    const sequence = feedback.sequence;
+    const timer = setTimeout(
+      () =>
+        setFeedbackState((previous) =>
+          previous.sequence === sequence ? { ...previous, message: "" } : previous,
+        ),
+      8000,
+    );
     return () => clearTimeout(timer);
-  }, [feedback]);
+  }, [feedback, feedbackFocused]);
   useEffect(() => {
+    // Ctrl/Cmd+K only: a bare "/" fired by dictation or a screen reader's browse mode
+    // opened search mid-task and could not be switched off (WCAG 2.1.4, TASK-A11Y-02).
     const shortcut = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement;
-      const editing = target.matches(
-        "input, textarea, select, [contenteditable=true]",
-      );
-      if (
-        ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") ||
-        (event.key === "/" && !editing)
-      ) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setSearchOpen(true);
         searchInput.current?.focus();
@@ -126,7 +165,11 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        if (api) setData(normalize(await api.load()));
+        if (api) {
+          setData(normalize(await api.load()));
+          const notice = await api.takeNotice();
+          if (notice) setError(notice);
+        }
         else {
           const raw = localStorage.getItem("park-workdesk-demo");
           const parsed = raw ? JSON.parse(raw) : empty();
@@ -153,11 +196,11 @@ function App() {
       setBusy(true);
       try {
         const validated = normalize(next);
-        if (api) await api.save(validated);
-        else
+        const saved = api ? await api.save(validated) : undefined;
+        if (!api)
           localStorage.setItem("park-workdesk-demo", JSON.stringify(validated));
         setData(validated);
-        setError("");
+        setError(saved ? saved.warning : "");
         setFeedback("변경 사항을 저장했습니다.");
         return true;
       } catch (e) {
@@ -174,13 +217,9 @@ function App() {
     },
     [api],
   );
-  function navigate(next: Page, id?: string) {
-    if (saving.current) return;
-    if (
-      hasDirtyDrafts() &&
-      !confirm("저장하지 않은 변경 사항이 있습니다. 내용을 버리고 이동할까요?")
-    )
-      return;
+  async function navigate(next: Page, id?: string) {
+    if (saving.current || isConfirmOpen()) return;
+    if (hasDirtyDrafts() && !(await discardChanges("이동할까요?"))) return;
     setSearchOpen(false);
     setPage(next);
     setFocusId(id);
@@ -200,8 +239,11 @@ function App() {
           setPage("briefing");
           setFeedback("백업 자료를 복원했습니다.");
         }
-      } else await api?.backup();
-      setError("");
+        setError((await api?.takeNotice()) ?? "");
+      } else {
+        await api?.backup();
+        setError("");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "백업 작업에 실패했습니다.");
     } finally {
@@ -228,45 +270,10 @@ function App() {
       setError("폴더를 선택하지 못했습니다.");
     }
   }
-  const searchRows = [
-    ...data.patrols.map((p) => ({
-      id: p.id,
-      page: "patrol" as Page,
-      title: p.title,
-      text: `${p.route} ${p.observer} ${p.findings} ${p.action} ${p.coordinates ? `${formatCoordinates(p.coordinates)} ${formatCoordinates(p.coordinates, "dms")}` : ""}`,
-    })),
-    ...data.tasks.map((t) => ({
-      id: t.id,
-      page: t.kind as Page,
-      title: t.title,
-      text: `${t.body} ${t.assignee} ${t.destination}`,
-    })),
-    ...data.events.map((e) => ({
-      id: e.id,
-      page: "calendar" as Page,
-      title: e.title,
-      text:
-        e.recurrence && e.recurrence !== "none"
-          ? `${RECURRENCE_LABEL[e.recurrence]} 반복 ${e.repeatUntil || ""}`
-          : "",
-    })),
-    ...data.notes.map((n) => ({
-      id: n.id,
-      page: "notes" as Page,
-      title: n.title,
-      text: n.body,
-    })),
-    ...data.calls.map((c) => ({
-      id: c.id,
-      page: "calls" as Page,
-      title: c.title,
-      text: `${c.body} ${c.phone}`,
-    })),
-  ].filter((r) =>
-    `${r.title} ${r.text}`.toLowerCase().includes(query.trim().toLowerCase()),
-  );
+  const searchRows = searchRecords(data, query);
   return (
     <div className="app">
+      <ConfirmHost />
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-symbol" aria-hidden="true">
@@ -280,12 +287,15 @@ function App() {
         </div>
         <nav>
           {sections.map((section) => (
-            <div className="nav-section" key={section.label}>
-              <p>{section.label}</p>
+            <div
+              className={`nav-section ${section.footer ? "nav-footer" : ""}`}
+              key={section.label || "footer"}
+            >
+              {section.label && <p>{section.label}</p>}
               {section.pages.map((p) => (
                 <button
                   key={p.id}
-                  disabled={busy}
+                  aria-disabled={busy || undefined}
                   className={page === p.id ? "active" : ""}
                   aria-current={page === p.id ? "page" : undefined}
                   onClick={() => navigate(p.id)}
@@ -295,7 +305,9 @@ function App() {
                   {p.label}
                   {(() => {
                     const count =
-                      p.id === "calls"
+                      p.id === "controls"
+                        ? activeControls(data, dayKey()).length
+                        : p.id === "calls"
                         ? data.calls.filter((c) => !c.done).length
                         : ["handover", "submission"].includes(p.id)
                           ? data.tasks.filter((t) => t.kind === p.id && !t.done)
@@ -313,7 +325,7 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <span className="version">공원 업무 수첩 · v0.6.1</span>
+          <span className="version">공원 업무 수첩 · v0.8.0</span>
         </div>
       </aside>
       <main>
@@ -397,10 +409,41 @@ function App() {
               알림·폴더 열기·파일 내보내기는 데스크톱에서 지원합니다.
             </div>
           )}
-          {feedback && (
-            <div className="save-feedback" role="status">
+          {/* Always-present live region: screen readers miss regions inserted with their text. */}
+          <div className="sr-only" role="status" aria-atomic="true">
+            {feedback.message && (
+              <span key={feedback.sequence} data-sequence={feedback.sequence}>
+                {feedback.message}
+              </span>
+            )}
+          </div>
+          {feedback.message && (
+            <div
+              className="save-feedback"
+              onFocus={(event) => {
+                setFeedbackFocused(true);
+                if (!event.currentTarget.contains(event.relatedTarget))
+                  feedbackReturn.current = event.relatedTarget instanceof HTMLElement
+                    ? event.relatedTarget
+                    : null;
+              }}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget))
+                  setFeedbackFocused(false);
+              }}
+            >
               <Icon name="check" size={16} />
-              {feedback}
+              {/* Already read out by the status region above. */}
+              <span aria-hidden="true">{feedback.message}</span>
+              <button
+                type="button"
+                className="save-feedback-close"
+                aria-label="알림 닫기"
+                title="알림 닫기"
+                onClick={dismissFeedback}
+              >
+                ×
+              </button>
             </div>
           )}
           {error && (
@@ -430,6 +473,15 @@ function App() {
                   busy={busy}
                   initialId={focusId}
                   openTask={(id) => navigate("handover", id)}
+                />
+              )}
+              {page === "controls" && (
+                <Controls
+                  key={page + focusId}
+                  data={data}
+                  save={save}
+                  busy={busy}
+                  initialId={focusId}
                 />
               )}
               {(page === "handover" || page === "submission") && (
@@ -558,7 +610,7 @@ function App() {
                     </p>
                     <h3>검색 바로가기</h3>
                     <p>
-                      Ctrl+K 또는 / 키로 통합 검색을 엽니다. 검색창에서 Esc를
+                      Ctrl+K로 통합 검색을 엽니다. 검색창에서 Esc를
                       누르면 원래 화면으로 돌아갑니다.
                     </p>
                   </section>
@@ -595,9 +647,11 @@ function App() {
           </button>
         </div>
         <div className="search-results">
+          <p className="search-count" role="status" aria-atomic="true">
+            {query.trim() ? `검색 결과 ${searchRows.length}건` : ""}
+          </p>
           {query.trim() ? (
             <>
-              <p className="search-count">검색 결과 {searchRows.length}건</p>
               {searchRows.slice(0, 100).map((row) => (
                 <button
                   className="search-result"

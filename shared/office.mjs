@@ -1,3 +1,4 @@
+import { validDateKey } from "./dates.mjs";
 export const officeCollections = [
   "organizations",
   "employees",
@@ -19,14 +20,8 @@ const text = (value, max = 120) =>
   typeof value === "string" && value.length <= max;
 const required = (value, max = 120) =>
   text(value, max) && value.trim().length > 0;
-export function validDate(value) {
-  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value))
-    return false;
-  const date = new Date(value + "T12:00:00Z");
-  return (
-    Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value
-  );
-}
+/** Same rule as shared/dates.mjs (kept for existing imports). */
+export const validDate = validDateKey;
 export function validateOffice(data) {
   const sets = {};
   for (const key of officeCollections) {

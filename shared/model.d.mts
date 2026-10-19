@@ -4,6 +4,10 @@ import type {
   Event,
   EventRecurrence,
   HolidayEntry,
+  Control,
+  Observation,
+  Patrol,
+  PatrolKind,
 } from "../src/types";
 export const collections: string[];
 export const RECURRENCE: EventRecurrence[];
@@ -18,6 +22,10 @@ export function expandEventOccurrences(
   event: Event,
   range?: { startDate?: string; endDate?: string },
 ): CalendarItem[];
+/** Adds only real recurring dates; removes existing history after rule edits. Cannot reopen a globally done series. */
+export function setOccurrenceDone(event: Event, date: string, completed: boolean): Event;
+/** Returns a copy; exclusions win over completion. Existing historical dates can be removed after rule edits. */
+export function setOccurrenceExcluded(event: Event, date: string, excluded: boolean): Event;
 export function calendarItems(
   data: Data,
   range?: { startDate?: string; endDate?: string },
@@ -27,6 +35,28 @@ export function reminderItems(
   now?: number,
 ): { id: string; title: string; at: string; done: boolean }[];
 export function briefing(data: Data, date: string): string;
+export const PATROL_KINDS: Record<PatrolKind, string>;
+export const OBSERVATION_OUTCOMES: Record<Observation["outcome"], string>;
+export const DEFAULT_OBSERVATION_TYPES: string[];
+export function observationTypes(data: Data): string[];
+export type ObservationSummaryRow = {
+  type: string;
+  count: number;
+  entries: number;
+  guidance: number;
+  fine: number;
+  other: number;
+};
+export function patrolSummary(
+  data: Data,
+  range: { startDate: string; endDate: string },
+): {
+  patrols: number;
+  byKind: { kind: PatrolKind | null; label: string; count: number }[];
+  observations: ObservationSummaryRow[];
+  totalCount: number;
+};
+export function describeObservations(observations?: Observation[]): string;
 
 export type CoordinateAxis = "latitude" | "longitude";
 export type Coordinates = { latitude: number; longitude: number };
@@ -52,3 +82,8 @@ export function formatCoordinates(
   input: Coordinates,
   format?: "dd" | "dms",
 ): string;
+export const CONTROL_REASONS: Record<Control["reason"], string>;
+/** Closures in effect on a local YYYY-MM-DD date, sorted by start. */
+export function activeControls(data: Data, date: string): Control[];
+export function patrolAutoTitle(patrol: Patrol): string;
+export function newPatrolDraft(from: Patrol | undefined, options?: { route?: string; at?: string }): Patrol;

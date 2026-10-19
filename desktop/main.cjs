@@ -14,28 +14,33 @@ const path = require("node:path");
 const fs = require("node:fs");
 const store = require("./store.cjs");
 const { briefing, reminderItems } = require("../shared/model.mjs");
+const { buildForm } = require("../shared/forms.mjs");
 const { createDesktopLifecycle } = require("./lifecycle.cjs");
 const { createNotifier } = require("./notifications.cjs");
+const { openDataFile } = require("./recovery.cjs");
 let win, file, timer;
+// A warning raised outside a renderer call (startup, restore), shown once after load.
+let pendingNotice = "";
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
     if (process.platform === "win32")
       app.setAppUserModelId("local.park.workdesk");
     file = path.join(app.getPath("userData"), "workdesk.json");
-    try {
-      store.read(file);
-      store.migrateFile(file);
-    } catch {
-      dialog.showErrorBox(
-        "데이터 읽기 실패",
-        "기존 데이터를 보호하기 위해 시작을 중단합니다. 사용자 데이터 폴더의 workdesk.json을 확인하세요.",
-      );
+    const notify = (text) => (pendingNotice = text);
+    if (!(await openDataFile({ file, store, dialog, notify }))) {
       app.quit();
       return;
     }
     ipcMain.handle("load", () => store.read(file));
-    ipcMain.handle("save", (_, data) => store.write(file, data));
+    ipcMain.handle("take-notice", () => {
+      const text = pendingNotice;
+      pendingNotice = "";
+      return text;
+    });
+    ipcMain.handle("save", (_, data) =>
+      store.write(file, data, { keepLastGood: true }),
+    );
     ipcMain.handle("choose-folder", async () => {
       const r = await dialog.showOpenDialog(win, {
         properties: ["openDirectory"],
@@ -62,6 +67,31 @@ else {
       });
       return true;
     });
+    // The renderer only names the form and period; content comes from stored data.
+    ipcMain.handle("export-form", async (_, request) => {
+      if (
+        !request ||
+        typeof request !== "object" ||
+        Object.keys(request).some(
+          (key) => !["form", "startDate", "endDate", "format"].includes(key),
+        )
+      )
+        throw new Error("양식 출력 요청을 확인하세요.");
+      const { filename, content } = buildForm(store.read(file), request);
+      const result = await dialog.showSaveDialog(win, {
+        defaultPath: filename,
+        filters:
+          request.format === "csv"
+            ? [{ name: "CSV (엑셀)", extensions: ["csv"] }]
+            : [{ name: "텍스트", extensions: ["txt"] }],
+      });
+      if (result.canceled || !result.filePath) return false;
+      fs.writeFileSync(result.filePath, "\ufeff" + content, {
+        encoding: "utf8",
+        mode: 0o600,
+      });
+      return true;
+    });
     ipcMain.handle("backup", async () => {
       const r = await dialog.showSaveDialog(win, {
         defaultPath: "공원업무수첩-백업.json",
@@ -77,7 +107,7 @@ else {
       if (r.canceled) return null;
       if (fs.statSync(r.filePaths[0]).size > 20 * 1024 * 1024)
         throw new Error("20MB 이하의 백업을 선택하세요.");
-      const data = store.read(r.filePaths[0]);
+      const data = store.read(r.filePaths[0], { required: true });
       const answer = await dialog.showMessageBox(win, {
         type: "question",
         buttons: ["취소", "복원"],
@@ -91,7 +121,8 @@ else {
         file + ".before-restore-" + Date.now() + ".json",
         store.read(file),
       );
-      store.write(file, data);
+      const saved = store.write(file, data, { keepLastGood: true });
+      if (saved?.warning) notify(saved.warning);
       return data;
     });
     win = new BrowserWindow({
@@ -157,6 +188,9 @@ else {
       for (const notification of notifications) notification.close();
       notifications.clear();
     });
+  }).catch((error) => {
+    dialog.showErrorBox("시작 실패", `업무 자료를 보존한 상태에서 시작을 중단합니다. ${error.message}`);
+    app.quit();
   });
   app.on("window-all-closed", () => {
     clearInterval(timer);

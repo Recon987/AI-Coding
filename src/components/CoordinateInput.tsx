@@ -102,6 +102,7 @@ export function CoordinateInput({
   const [raw, setRaw] = useState(() => rawValues(initial ?? null));
   const [error, setError] = useState("");
   const helpId = useId();
+  const errorId = useId();
   function update(next: Raw) {
     setRaw(next);
     try {
@@ -167,6 +168,7 @@ export function CoordinateInput({
                 maxLength={32}
                 value={raw[axis]}
                 aria-invalid={!!error}
+                aria-describedby={error ? errorId : undefined}
                 onChange={(e) => update({ ...raw, [axis]: e.target.value })}
                 placeholder={axis === "latitude" ? "예: 37.5" : "예: 127.25"}
               />
@@ -191,6 +193,7 @@ export function CoordinateInput({
                     maxLength={32}
                     value={raw[axis][key]}
                     aria-invalid={!!error}
+                aria-describedby={error ? errorId : undefined}
                     onChange={(e) =>
                       update({
                         ...raw,
@@ -236,7 +239,7 @@ export function CoordinateInput({
       )}
       <div aria-live="polite">
         {error ? (
-          <p className="coordinate-error" role="alert">
+          <p className="coordinate-error" role="alert" id={errorId}>
             {error}
           </p>
         ) : (

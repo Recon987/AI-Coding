@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-15",
+  "viewport": "1280x800",
+  "note": "Shortest designed path on fictional data. Typed characters use realistic short Korean entries.",
+  "tasks": [
+    {
+      "id": "T1",
+      "name": "출근 확인: 기한 경과·오늘 마감과 오늘 당직자 확인",
+      "result": "완료",
+      "clicks": 1,
+      "fields": 0,
+      "typed": 0,
+      "pageMoves": 1,
+      "offscreen": 0,
+      "ms": 172,
+      "note": "기한·마감은 홈에서 바로 보이나 당직자는 사무소 현황으로 이동해야 보인다"
+    },
+    {
+      "id": "T2",
+      "name": "현장 복귀 후 순찰 기록(주의 등급, 구간·확인·조치)",
+      "result": "완료",
+      "clicks": 5,
+      "fields": 6,
+      "typed": 39,
+      "pageMoves": 1,
+      "offscreen": 1,
+      "ms": 456,
+      "note": "구간·기록자를 매번 직접 입력. 순찰 종류·위반 유형 선택지가 없어 '샛길 계도'는 자유 텍스트로만 남음"
+    },
+    {
+      "id": "T3",
+      "name": "방금 순찰에서 인수인계 만들기(담당·마감)",
+      "result": "완료",
+      "clicks": 3,
+      "fields": 2,
+      "typed": 19,
+      "pageMoves": 2,
+      "offscreen": 0,
+      "ms": 355,
+      "note": "순찰 내용이 본문으로 이어져 재입력은 없음"
+    },
+    {
+      "id": "T4",
+      "name": "제출 기한 등록(제출처·마감)",
+      "result": "완료",
+      "clicks": 3,
+      "fields": 3,
+      "typed": 32,
+      "pageMoves": 1,
+      "offscreen": 0,
+      "ms": 372,
+      "note": ""
+    },
+    {
+      "id": "T5",
+      "name": "이번 주 샛길 출입 단속 건수 집계",
+      "result": "실패",
+      "clicks": 1,
+      "fields": 1,
+      "typed": 2,
+      "pageMoves": 1,
+      "offscreen": 0,
+      "ms": 126,
+      "note": "집계 기능 없음 — 검색은 기록 1건을 찾지만 건수(2명)·유형·기간 합계를 낼 수 없음"
+    },
+    {
+      "id": "T6",
+      "name": "오늘 통제 중인 탐방로 구간 확인",
+      "result": "실패",
+      "clicks": 0,
+      "fields": 0,
+      "typed": 0,
+      "pageMoves": 0,
+      "offscreen": 0,
+      "ms": 0,
+      "note": "통제 구간 개념 없음 — 메모·일정 제목에 적어 둔 경우 검색으로만 찾을 수 있음"
+    },
+    {
+      "id": "T7",
+      "name": "전화 메모 회신 처리",
+      "result": "완료",
+      "clicks": 2,
+      "fields": 0,
+      "typed": 0,
+      "pageMoves": 1,
+      "offscreen": 0,
+      "ms": 170,
+      "note": ""
+    },
+    {
+      "id": "T8",
+      "name": "퇴근 전 오늘 브리핑 미리보기",
+      "result": "완료",
+      "clicks": 1,
+      "fields": 0,
+      "typed": 0,
+      "pageMoves": 0,
+      "offscreen": 0,
+      "ms": 98,
+      "note": "TXT 내보내기는 +1클릭과 저장 대화상자"
+    }
+  ],
+  "errors": []
+}

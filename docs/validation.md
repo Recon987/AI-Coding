@@ -1,5 +1,59 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## A11Y-02 독립 검증 재개 — 2026-10-19
+
+최종 보완746b478, [PR #8](https://github.com/Recon987/AI-Coding/pull/8). Node24 단위91/91·desktop10·UI150/실패0/오류0/외부요청0·흐름11/11 통과. 원격 보완을 검증하고 재진입 복귀 P2를 추가 재현·최소 보완(새 회귀 전 실패·후 통과)했다. [Windows39184848329](https://github.com/Recon987/AI-Coding/actions/runs/39184848329) 단위91·소스10/패키지9 각 PASS·A11Y 양쪽 PASS·예외0, NSIS/portable·체크섬·업로드 확인. [검증 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39184848329/artifacts/12157428954). 증빙 커밋은 실행 코드를 바꾸지 않는다. [복구·정적/실행 검토 구분·화면·제약](reviews/2026-10-19-codex-a11y02.md). Codex 추가 보완은 Claude 교차 확인 대기, 실제 NVDA/기관 고대비 미실행.
+
+## LIST-02 / Codex 독립 검증과 폭 경계 보완 (2026-10-19)
+
+실행 소스986910a, [PR #9](https://github.com/Recon987/AI-Coding/pull/9). 원본c0369c5가 기존 검사를 통과했지만1101px 순찰 제목 칸0px를 독립 재현했다. 목록 전용 좁은 배치 전환을1279px로 높이고 실제 Electron 회귀를 추가했다. 수정 전 실패→후 통과. 1280px 행67px 유지·1101px 제목780px 복구.
+
+보완본 Linux Node24 단위91/91·desktop10개 진입점·화면150개 실패0/오류0/외부요청0·업무흐름11/11 통과. 7개 폭/배율×6개 목록 제목·버튼 노출·모양 회귀, 별도18조합의 펼침/Tab/방향키·좁은 상세 들여쓰기/메모 빈 열 확인 통과. 원본 Windows39184733043 소스10/패키지9 PASS 확인. 보완본 [Windows39185832387](https://github.com/Recon987/AI-Coding/actions/runs/39185832387) 성공, 단위91/91·소스10개/패키지9개 진입점 각 PASS·예외0, NSIS/portable·SHA256SUMS·업로드 완료. [시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39185832387/artifacts/12157753983)(GitHub 로그인·보관14일). 소스/패키지 목록 PASS2회·전체PASS23개·예외0을 로그로 확인했다. [상세·전후 화면](reviews/2026-10-19-codex-list02.md).
+
+별도 A11Y 복구 검증은 [PR #8](https://github.com/Recon987/AI-Coding/pull/8), 소스746b478·문서788071a·Windows39184848329 성공에 보존했다. Codex 작성 보완은 각각 Claude의 교차 확인과 통합이 남아 있다. main 미병합.
+
+
+## v0.8.0 / TASK-CALENDAR-04 (검증 브랜치, main 미병합)
+
+최종 소스86bd62c, [PR #7](https://github.com/Recon987/AI-Coding/pull/7). Linux Node24.19의 단위91/91, desktop9진입점, 화면150/실패0/오류0/외부요청0, 업무 흐름11/11 통과. 월/주/목록 표시 분리 후 기존 회귀부터 통과시켰고 툴바 압축 후 실제 화면/전체 desktop을 다시 검사했다. 새 달력 검사는 윤년·월말·연도·18개월 이동, 이동/선택 구분, Enter/Space 기록 포커스와 Shift+Tab 복귀, 탭·편집 취소, CSS 폭 기준2열/1열·실제125% 확대와 자료 불변을 확인한다.
+
+최종 소스86bd62c의 [Windows39128793988](https://github.com/Recon987/AI-Coding/actions/runs/39128793988) 성공. 단위91·소스9진입점·패키지8진입점의 각 PASS와 예외0을 로그로 확인했고 NSIS/portable·SHA256SUMS·업로드도 완료했다. [v0.8.0 시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39128793988/artifacts/12136379775)(GitHub 로그인·보관14일). 시작 복구는 소스에서만 실행한다. 증빙 후속 커밋은 실행 코드를 바꾸지 않는다. [역할 분담·중단 범위·전후 캡처·검토 상태](reviews/2026-10-18-codex-calendar04.md), [작업 기록](work-log/2026-10-18-codex-calendar04.md). 최종 독립 검증자는 Claude이며 에이전트 크레딧 부족으로 중단된 후속 검토를 승인으로 기록하지 않는다. 소스/자동 검사와 기관 실기기 화면낭독기·절전·OS 토스트는 구분한다.
+
+
+## DATES-01 / Codex 날짜 계산 독립 검증
+
+기준75f04e9와 작은 월말 보완을 Node24에서 검증했다. 단위91/91을5TZ 각각, desktop8진입점·UI142/오류0/외부요청0·업무흐름11/11 통과. 독립 자료1800회 교차 읽기/원문 보존, 현대 날짜2412개, 정상 자료600개, 실제 서울/뉴욕 DST·월경계 화면 연동 승인. 0~99년 월말P3 회귀는 수정 전 실패→후 통과, 별도132개 경계 재승인. [검토 기록](reviews/2026-10-18-codex-dates.md). 원본75f04e9 Windows39107140819 성공 조회. 최초 보완39110532993은 API상 success이나 중간 패키지 검사 실패가 덮여 전체 통과로 채택하지 않았다. 각 검사 종료 코드 즉시 실패와 임시 폴더 제한 재시도/최초 오류 로깅을 보완했다. 최종928e78e의 [Windows39110892545](https://github.com/Recon987/AI-Coding/actions/runs/39110892545) 성공(2분46초): 단위91·소스8진입점·패키지7진입점 모두 각 PASS/예외0, NSIS/portable·SHA256SUMS·업로드 확인. [검증 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39110892545/artifacts/12129919918). 최종 증빙 커밋은 문서만 수정한다.
+
+## EDITOR-01·02 / Codex 독립 검증과 오류 보완
+
+Claude9e2d719 기준 Node24 단위89·전체Electron·UI142·흐름11 통과, Windows39105341497도 성공. 추가 독립 검사에서 접힌 좌표 오류 칸 이동 실패·CSV 지연 저장 중 탭 이동에 따른 초안 유실을 재현했다. 두 경로를 보완하고 새 실제 Electron3개가 수정 전 실패→수정 후 통과했다. 보완본 npm test89/89·test:desktop8진입점·UI142/오류0/외부요청0·흐름11/11 및 독립 재검토 통과. [검토·재현·실제 화면](reviews/2026-10-18-codex-editor.md). 보완 소스f97aaf3의 [Windows39105905136](https://github.com/Recon987/AI-Coding/actions/runs/39105905136) 성공(2분13초): 단위89·소스8진입점·NSIS/portable·패키지의 신규3회귀/기존검사·SHA256SUMS·업로드. 각 PASS를 로그에서 확인했다. [검증 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39105905136/artifacts/12128711616). 증빙 후속 커밋은 문서만 바꾼다.
+
+## TASK-POLISH-01·TASK-PANEL-01 / Codex 최신 독립 검증
+
+Claude ad40b18을 Node24.19.0에서 재검증했다. npm test **89/89**, npm run test:desktop 전체7진입점(콘솔8시나리오), 화면142개/오류0/외부요청0, 업무흐름11/11 모두 통과. 자료33개·모델17개·정상자료600개 시간대 교차·별도 실제 Electron의 입력/초안/달력 탭 검토도 승인. [상세 검토·화면·제약](reviews/2026-10-18-codex-panel.md).
+
+동일 ad40b18의 [Windows39102593618](https://github.com/Recon987/AI-Coding/actions/runs/39102593618) 성공과 각 소스/패키지 스모크 PASS를 로그로 확인했다. 단위89·NSIS/portable·SHA256SUMS·업로드 포함. [v0.7.0 최신 검증 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39102593618/artifacts/12127536294). 이 검증 브랜치는 앱 코드를 바꾸지 않으며 카드·증빙·과업 해설만 수정한다. main은 아직 미병합.
+
+## v0.7.0 / TASK-CALENDAR-02 (검증 브랜치, main 미병합)
+
+Node24 npm test **81/81**, npm run test:desktop **전체 통과**. 회차별 완료·제외/복원·다음 회차 알림·브리핑 TXT·기존 전체완료 해제·반복 해제 취소·초안/저장 실패·지연 저장 입력 잠금·백업 복원·재실행을 실제 Electron에서 확인했다. 전용 모델11개 UTC/서울/뉴욕 통과, 최종 희소 배열/과거 제외일 보완 후 세 시간대 모두 재검증. UI142/오류0/외부요청0, 업무흐름10/10. [교차 검토와 실제 화면](reviews/2026-10-16-calendar02.md). Windows 소스 `4a10c2cb4f5dfc1eb7f540b7feb7085218b7908e`의 [Actions38898226246](https://github.com/Recon987/AI-Coding/actions/runs/38898226246) 성공(2분47초): 81개·소스 Electron 전체·NSIS/portable 생성·패키징된 EXE 회차/기존 스모크·SHA256SUMS·업로드. 각 스모크 PASS를 로그에서 확인했다. 시작 복구는 소스 검사에 포함되며 패키징 EXE에서는 -r 주입 미지원으로 제외한다. [v0.7.0 시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/38898226246/artifacts/12044503916), GitHub 로그인·보관14일. 이 결과를 기록하는 후속 커밋은 문서만 바꾼다.
+
+## Claude PR #1 독립 검증·보완
+
+기준73c938e: Node24.19 npm test64/64, 전체test:desktop 통과. 실패 경로 재현 후 검증 브랜치에서 자료 복구·보호본 실패 의미·예정 통제 해제·양식 타입·주간/목록 등록 모달을 보완했다. 보완본 npm test70/70, npm run test:desktop 통과(새 회귀 포함), UI142/오류0/외부요청0, 업무흐름10/10. 상세 [검토 기록](reviews/2026-10-16-codex-claude.md). 보완 소스 b03d6cf의 [Windows38896149700](https://github.com/Recon987/AI-Coding/actions/runs/38896149700) 성공: 70개·소스/패키지 Electron·NSIS/portable·SHA256SUMS·업로드. [검증 브랜치 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38896149700/artifacts/12044371028), main 미병합. 원본 Windows38889183811과 구분한다.
+
+## TASK-CONFIRM-01 / 앱 안 확인창 (미병합, 2026-10-16)
+
+- 수정 전: 미저장 편집창을 '닫기 ×'·Esc로 닫으면 Linux 헤드리스 Electron이 SIGTRAP으로 종료(브라우저 확인창 경로).
+- 수정 후: `window.confirm` 0곳. Linux Node 22 `npm test` 47/47, `npm run test:desktop` 통과(desktop-confirm-smoke: 닫기×·Esc·취소 × 계속 작성/버리기, 확인창 안 Esc, 삭제 취소/확인, 브라우저 확인창 0, 비정상 종료 0).
+- desktop-smoke는 confirm 대체를 없애고 실제 확인창 버튼을 누른다. Windows 패키지 EXE 검증 단계에 confirm 스모크 추가(미실행).
+
+## TASK-DATA-01 / 자료 손상 복구 (미병합, 2026-10-16)
+
+- Linux Node 22: `npm test` 47/47 (recovery.test.cjs 7개: 마지막 정상본 갱신 범위, 정상 파일 무변경, 손상·빈 파일·20MB 초과·잘못된 백업·보관 실패), `npm run test:desktop` 통과(신규 desktop-recovery-smoke: 실제 Electron에서 손상 파일 보관 → 복구 대화상자 → 마지막 정상본으로 시작 → 자료 표시).
+- 시작 전 대화상자는 개발용 Electron의 `-r` 옵션으로 테스트 스텁을 주입해 응답한다. 패키징된 EXE에는 이 옵션이 없어 Windows 패키지 스모크는 이 시나리오를 실행하지 않는다.
+- Windows Actions·실기기 정전 시험은 미실행.
+
 ## v0.6.1 / TASK-UX-03
 
 세 분야 독립 검토·직접 협의·상대 교차 검토를 거쳐 첫 사용 흐름·날짜/시간·달력을 개선했다. npm test **37/37**, npm run test:desktop **통과**. 첫 사용3행동·부분자료 보존·달력 접근 이름을 실제 Electron에서 검사했다. 서울/뉴욕 날짜·자정·윤일·연말 변환도 검증했다. UI 검사는 before83개, after134개 통과, 페이지 오류0·외부요청0. 동일 가상 자료/임시프로필/4해상도·확대 조건과 전후 증빙은 [검토 기록](review-rounds/TASK-UX-03.md)에 있다. 소스 `887ca68b46dba8792f0c944fa7e5f785f8baf97e`의 [Windows Actions38844487365](https://github.com/Recon987/AI-Coding/actions/runs/38844487365)는 성공했다. 잠금 설치·37개 검사·소스 Electron·설치형/portable 빌드·패키징된 EXE의 확장 스모크·SHA256SUMS·업로드 모두 통과했다. [v0.6.1 다운로드](https://github.com/Recon987/AI-Coding/actions/runs/38844487365/artifacts/12023060736), GitHub 로그인·보관14일. 이번 증빙 후속 커밋은 문서만 수정한다.

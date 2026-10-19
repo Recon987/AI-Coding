@@ -188,3 +188,23 @@ test("CSV 미리보기에서 중복·깨진 참조·허용하지 않는 상태·
   );
   assert.equal(JSON.stringify(data), before);
 });
+
+// TASK-PANEL-01 D1: the morning briefing text carries duty staff and yesterday's enforcement.
+test("브리핑 텍스트에 당직자(이름)·근무 건수·전날 단속 요약이 들어가고, 조직 자료가 없으면 근무 절을 생략한다", () => {
+  const { briefing } = require("../shared/model.mjs");
+  const data = fixture();
+  data.patrols.push({
+    id: "p1", title: "전날 단속", at: new Date("2026-10-14T12:00:00").toISOString(), route: "계곡", observer: "가상 담당",
+    findings: "", action: "", risk: "normal", kind: "enforcement",
+    observations: [{ id: "o1", type: "흡연", count: 2, outcome: "guidance", note: "" }],
+  });
+  const text = briefing(data, "2026-10-15");
+  assert.match(text, /근무·당직 \(당직 1명\)\n- 숙직: 시험 직원\n- 근무·출장 1 · 휴무·연가 0 · 미등록 1 \(직원 2명\)/);
+  assert.doesNotMatch(text, /미등록 직원/, "당직자 외 이름은 넣지 않음");
+  assert.match(text, /전날 단속·확인 \(2026-10-14, 총 2건\)\n- 흡연 2건 \(계도 2, 과태료 부과 0, 기타 조치 0\)/);
+  assert.match(text, /당직 직원 이름이 포함되어 있습니다/);
+  const plain = briefing(empty(), "2026-10-15");
+  assert.doesNotMatch(plain, /근무·당직|당직 직원 이름/);
+  assert.match(plain, /전날 단속·확인 \(2026-10-14, 총 0건\)/);
+  assert.throws(() => briefing(empty(), "2026-02-30"), /브리핑 날짜/);
+});

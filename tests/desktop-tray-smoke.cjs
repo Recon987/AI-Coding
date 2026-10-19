@@ -1,4 +1,4 @@
-// Real Electron lifecycle/IPC/storage; only OS notification and confirmation widgets are doubled.
+// Real Electron lifecycle/IPC/storage; only OS notification and quit-confirmation widgets are doubled.
 const { _electron: electron } = require("playwright");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -126,12 +126,16 @@ module.exports = async function traySmoke() {
     // native Tray is constructed (no JS exception). Actual Tray construction and
     // hide/reopen run on Windows CI; injectable policy tests cover Linux logic.
     if (process.platform !== "linux") {
-      await toggle.check();
+      // The box turns on only after the main process has created the native tray,
+      // which can lag behind the click in the packaged app; wait for that state.
+      await toggle.click();
       await page
         .getByText("트레이 상주 켜짐 · 창을 숨겨도 알림을 확인합니다.", {
           exact: true,
         })
-        .waitFor();
+        .waitFor({ timeout: 15000 });
+      if (!(await toggle.isChecked()))
+        throw new Error("트레이 상주 설정이 켜짐으로 바뀌지 않았습니다.");
     } else
       console.log(
         "UNRUN: native tray creation/hide/reopen on headless Linux; required on Windows CI",
@@ -260,8 +264,13 @@ module.exports = async function traySmoke() {
     console.log(
       "PASS: PC 설정·resume24h·요약·완료/미래 제외·영구 중복 방지·미저장 종료 취소/승인; 실제 트레이 닫기/복귀는 Windows에서 검증",
     );
+  } catch (error) {
+    // 정리 중 파일 잠금 오류가 나더라도 최초 검사 실패를 로그에 남긴다.
+    console.error("트레이 검사 본문 실패:", error);
+    throw error;
   } finally {
     if (app) await app.evaluate(({ app }) => app.exit(1)).catch(() => {});
-    fs.rmSync(dir, { recursive: true, force: true });
+    // Windows가 종료 직후 잠시 점유한 파일은 제한적으로 재시도한다.
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 };

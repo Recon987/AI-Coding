@@ -7,11 +7,13 @@ import {
   holidayName,
   RECURRENCE_LABEL,
   collections,
+  activeControls,
 } from "../../shared/model.mjs";
 import type { Data, Page } from "../types";
-import { formatClock, formatTime, SectionHead, Tag } from "../ui";
-import { officeSummary } from "../../shared/office.mjs";
+import { formatDate, formatTime, itemClock, SectionHead, Tag } from "../ui";
+import { dutyTypes, officeRows, officeSummary } from "../../shared/office.mjs";
 import { Icon } from "./Icon";
+import { addDays, weekDays } from "../../shared/dates.mjs";
 
 export function Briefing({
   data,
@@ -24,6 +26,11 @@ export function Briefing({
 }) {
   const today = dayKey();
   const office = officeSummary(data, today);
+  // Today's duty staff and closures for the status strip (TASK-HOME-02).
+  const dutyToday = officeRows(data, today).filter(
+    (r) => r.assignment && r.assignment.duty !== "none",
+  );
+  const closuresToday = activeControls(data, today);
   const [date, setDate] = useState(today);
   const [message, setMessage] = useState("");
   const [showText, setShowText] = useState(false);
@@ -42,16 +49,10 @@ export function Briefing({
   const calls = data.calls.filter((c) => !c.done);
   const rows =
     filter === "overdue" ? overdue : filter === "today" ? dueToday : tasks;
-  const weekStart = new Date(`${date}T12:00:00`);
-  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
-  const week = Array.from({ length: 7 }, (_, index) => {
-    const day = new Date(weekStart);
-    day.setDate(day.getDate() + index);
-    return day;
-  });
+  const week = weekDays(date);
   const items = calendarItems(data, {
-    startDate: dayKey(week[0]),
-    endDate: dayKey(week[6]),
+    startDate: week[0],
+    endDate: week[6],
   });
   const daily = items.filter((i) => dayKey(new Date(i.at)) === date);
   const holiday = holidayName(date);
@@ -60,9 +61,7 @@ export function Briefing({
     setExpandedDay(false);
   }
   function moveDay(offset: number) {
-    const next = new Date(`${date}T12:00:00`);
-    next.setDate(next.getDate() + offset);
-    chooseDate(dayKey(next));
+    chooseDate(addDays(date, offset));
   }
   const firstUse = collections.every(
     (name) => data[name as Exclude<keyof Data, "version">].length === 0,
@@ -77,7 +76,7 @@ export function Briefing({
           <p className="eyebrow">나의 업무 공간</p>
           <h2>오늘의 업무를 시작하세요</h2>
           <p>
-            일정, 연락, 사무소 근무를 한곳에서 챙기세요.
+            순찰, 일정, 연락, 사무소 근무를 한곳에서 챙기세요.
             <br />
             필요한 기록 하나부터 시작하면 됩니다.
           </p>
@@ -85,6 +84,7 @@ export function Briefing({
         <div className="start-actions">
           {(
             [
+              ["patrol", "순찰 기록", "현장에서 본 것과 조치를 바로 남기기"],
               ["calendar", "일정 등록", "회의와 마감 시간을 놓치지 않도록"],
               ["calls", "전화메모 작성", "통화 내용과 회신할 일을 빠르게"],
               [
@@ -143,24 +143,55 @@ export function Briefing({
   return (
     <>
       <div className="briefing-toolbar">
-        <p className="briefing-kicker">
-          오늘 마감 <strong>{dueToday.length}건</strong>
-          <span>·</span>기한 경과{" "}
-          <strong className={overdue.length ? "text-danger" : ""}>
-            {overdue.length}건
-          </strong>
-        </p>
-        <button
-          className="text-button daily-jump"
-          onClick={() => {
-            const target = document.getElementById("briefing-daily");
-            target?.scrollIntoView({ block: "start" });
-            target?.focus();
-          }}
-        >
-          선택일 일정 {daily.length}건 보기
-          <Icon name="arrow" size={14} />
-        </button>
+        <div className="today-strip" role="group" aria-label="오늘 상태">
+          <button
+            className={`today-tile ${overdue.length ? "danger" : ""}`}
+            onClick={() => setFilter("overdue")}
+          >
+            <span>기한 경과</span>
+            <strong>{overdue.length}건</strong>
+          </button>
+          <button
+            className={`today-tile ${dueToday.length ? "warning" : ""}`}
+            onClick={() => setFilter("today")}
+          >
+            <span>오늘 마감</span>
+            <strong>{dueToday.length}건</strong>
+          </button>
+          <button
+            className={`today-tile ${closuresToday.length ? "control" : ""}`}
+            onClick={() => navigate("controls")}
+            aria-label={`오늘 통제 ${closuresToday.length}곳${closuresToday.length ? `: ${closuresToday.map((c) => c.title).join(", ")}` : ""}`}
+          >
+            <span>오늘 통제</span>
+            <strong>{closuresToday.length}곳</strong>
+            {closuresToday[0] && (
+              <small title={closuresToday.map((c) => c.title).join(" · ")}>
+                {closuresToday[0].title}
+                {closuresToday.length > 1 && ` 외 ${closuresToday.length - 1}`}
+              </small>
+            )}
+          </button>
+          <button
+            className="today-tile"
+            onClick={() => navigate("office")}
+            aria-label={`오늘 당직 ${dutyToday.length ? dutyToday.map((r) => `${dutyTypes[r.assignment!.duty]} ${r.employee.name}`).join(", ") : "등록 없음"}`}
+          >
+            <span>오늘 당직</span>
+            <strong>{dutyToday.length ? `${dutyToday.length}명` : "—"}</strong>
+            <small
+              title={dutyToday
+                .map((r) => `${dutyTypes[r.assignment!.duty]} ${r.employee.name}`)
+                .join(" · ")}
+            >
+              {dutyToday.length
+                ? dutyToday
+                    .map((r) => `${dutyTypes[r.assignment!.duty]} ${r.employee.name}`)
+                    .join(" · ")
+                : "등록 없음"}
+            </small>
+          </button>
+        </div>
         <details className="briefing-actions">
           <summary className="primary">
             <Icon name="plus" size={16} />새 기록
@@ -274,9 +305,9 @@ export function Briefing({
               <Tag
                 tone={
                   Date.parse(t.at) < Date.now()
-                    ? "red"
+                    ? "danger"
                     : dayKey(new Date(t.at)) === today
-                      ? "amber"
+                      ? "warning"
                       : ""
                 }
               >
@@ -308,38 +339,29 @@ export function Briefing({
             tabIndex={-1}
           >
             <SectionHead
-              title={date === today ? "오늘의 일정과 기록" : "선택한 날의 기록"}
+              title={date === today ? "오늘의 일정과 기록" : `${formatDate(date, { year: false })} 기록`}
             >
               <div className="daily-controls">
-                <button aria-label="이전 날짜" onClick={() => moveDay(-1)}>
+                <button aria-label="이전 주" onClick={() => moveDay(-7)}>
                   ‹
                 </button>
-                <input
-                  className="date-picker"
-                  aria-label="브리핑 날짜"
-                  type="date"
-                  required
-                  value={date}
-                  onChange={(e) => {
-                    if (e.target.value) chooseDate(e.target.value);
-                  }}
-                />
-                <button aria-label="다음 날짜" onClick={() => moveDay(1)}>
+                <button onClick={() => chooseDate(today)}>오늘</button>
+                <button aria-label="다음 주" onClick={() => moveDay(7)}>
                   ›
                 </button>
-                <button onClick={() => chooseDate(today)}>오늘</button>
               </div>
             </SectionHead>
             <div className="week-strip" aria-label="주간 날짜 선택">
-              {week.map((day) => {
-                const key = dayKey(day);
+              {week.map((key) => {
+                const day = new Date(`${key}T12:00:00`);
                 const count = items.filter(
                   (i) => dayKey(new Date(i.at)) === key,
                 ).length;
                 return (
                   <button
                     key={key}
-                    aria-label={`${key} 기록 ${count}건`}
+                    // Starts with what is on the button (요일·날짜), not an ISO key (TASK-A11Y-02).
+                    aria-label={`${day.toLocaleDateString("ko-KR", { weekday: "short" })} ${day.getDate()}일, ${formatDate(key, { weekday: false })} 기록 ${count}건`}
                     aria-pressed={date === key}
                     className={`${date === key ? "selected" : ""} ${today === key ? "is-today" : ""}`}
                     onClick={() => chooseDate(key)}
@@ -354,7 +376,7 @@ export function Briefing({
               })}
             </div>
             <div className="day-counts">
-              {holiday && <Tag tone="red">{holiday}</Tag>}
+              {holiday && <Tag tone="holiday">{holiday}</Tag>}
               <span>
                 일정 <b>{daily.filter((i) => i.category === "일정").length}</b>
               </span>
@@ -381,9 +403,9 @@ export function Briefing({
                   className="timeline-row"
                   key={row.key}
                   disabled={busy}
-                  onClick={() => navigate(row.page as Page, row.id)}
+                  onClick={() => navigate(row.page as Page, row.page === "calendar" && row.recurrence && row.recurrence !== "none" ? `occurrence:${dayKey(new Date(row.at))}:${row.id}` : row.id)}
                 >
-                  <time>{formatClock(row.at)}</time>
+                  <time>{itemClock(row)}</time>
                   <div>
                     <strong className={row.done ? "done" : ""}>
                       {row.title}
@@ -472,6 +494,14 @@ export function Briefing({
                 <br />
                 당직·숙직 <strong>{office.duty}명</strong> · 미등록{" "}
                 <strong>{office.unregistered}명</strong>
+                {dutyToday.length > 0 && (
+                  <span className="office-duty-names">
+                    오늘 당직:{" "}
+                    {dutyToday
+                      .map((r) => `${dutyTypes[r.assignment!.duty]} ${r.employee.name}`)
+                      .join(" · ")}
+                  </span>
+                )}
               </p>
             ) : (
               <p>

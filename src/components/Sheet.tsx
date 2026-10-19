@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 
+import { discardChanges, isConfirmOpen } from "../confirm";
 import { setDraftDirty } from "../drafts";
 
 export function Sheet({
@@ -9,6 +10,9 @@ export function Sheet({
   children,
   dirty = false,
   className = "",
+  size = "md",
+  closeButton = true,
+  submitShortcut = false,
 }: {
   title: string;
   onClose: () => void;
@@ -16,6 +20,12 @@ export function Sheet({
   children: ReactNode;
   dirty?: boolean;
   className?: string;
+  /** sm 480px for short forms (memo, call), md 600px otherwise. */
+  size?: "sm" | "md";
+  /** Editors close with their own 취소 button and Esc (TASK-EDITOR-01). */
+  closeButton?: boolean;
+  /** Ctrl+Enter submits the sheet's form; shows the hint in the header. */
+  submitShortcut?: boolean;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const draftId = useId();
@@ -40,6 +50,10 @@ export function Sheet({
         window.getComputedStyle(field).visibility !== "hidden",
     );
     firstField?.focus();
+    if (submitShortcut)
+      element
+        ?.querySelector("form .editor-header-actions button:not([type=button])")
+        ?.setAttribute("aria-keyshortcuts", "Control+Enter");
     return () => {
       element?.close();
       previous?.focus();
@@ -54,34 +68,46 @@ export function Sheet({
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
-  const requestClose = () => {
-    if (
-      !busy &&
-      (!dirty ||
-        confirm("저장하지 않은 변경 사항이 있습니다. 변경을 버리고 닫을까요?"))
-    )
-      onClose();
+  const requestClose = async () => {
+    if (busy || isConfirmOpen()) return;
+    if (!dirty || (await discardChanges())) onClose();
+  };
+  const submitOnShortcut = (event: React.KeyboardEvent<HTMLDialogElement>) => {
+    if (!submitShortcut || event.key !== "Enter" || !(event.ctrlKey || event.metaKey)) return;
+    if (busy || isConfirmOpen()) return;
+    const form = dialog.current?.querySelector("form");
+    if (!form) return;
+    event.preventDefault();
+    form.requestSubmit();
   };
   return (
     <dialog
       ref={dialog}
-      className={`sheet ${className}`}
+      className={`sheet sheet-${size} ${className}`}
       aria-label={title}
+      onKeyDown={submitOnShortcut}
       onCancel={(event) => {
         event.preventDefault();
-        requestClose();
+        void requestClose();
       }}
     >
       <header className="sheet-header">
         <h2>{title}</h2>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={requestClose}
-          aria-label={`${title} 닫기`}
-        >
-          닫기 ×
-        </button>
+        {submitShortcut && (
+          <small className="shortcut-hint" aria-hidden="true">
+            Ctrl+Enter 저장
+          </small>
+        )}
+        {closeButton && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={requestClose}
+            aria-label={`${title} 닫기`}
+          >
+            닫기
+          </button>
+        )}
       </header>
       {children}
     </dialog>

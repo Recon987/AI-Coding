@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { dayKey } from "../../shared/model.mjs";
 import { formatDate } from "../../shared/format.mjs";
+import { addDays, weekDays } from "../../shared/dates.mjs";
 import {
   officeRows,
   officeSummary,
@@ -13,6 +14,7 @@ import { Icon } from "./Icon";
 import { OfficeDirectory } from "./OfficeDirectory";
 import { OfficeImport } from "./OfficeImport";
 import { Sheet } from "./Sheet";
+import { askConfirm, discardChanges } from "../confirm";
 const officeTabs = [
   ["board", "근무현황"],
   ["employees", "직원 관리"],
@@ -56,13 +58,7 @@ export function Office({
             : ["off", "leave"].includes(r.assignment?.workType ?? ""));
     return matches && status;
   });
-  const weekStart = new Date(`${date}T12:00:00`);
-  weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
-  const week = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(weekStart);
-    d.setDate(d.getDate() + i);
-    return dayKey(d);
-  });
+  const week = weekDays(date);
   const weekRows = Array.from(
     new Map(
       week
@@ -95,9 +91,7 @@ export function Office({
     );
   }
   function moveDay(offset: number) {
-    const next = new Date(`${date}T12:00:00`);
-    next.setDate(next.getDate() + offset);
-    setDate(dayKey(next));
+    setDate(addDays(date, offset));
   }
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -120,7 +114,7 @@ export function Office({
     } else
       setFormError("저장하지 못했습니다. 입력값과 저장 위치를 확인하세요.");
   }
-  function closeDraft() {
+  async function closeDraft() {
     if (!draft) return;
     const changed = draft.id
       ? JSON.stringify(draft) !==
@@ -131,7 +125,7 @@ export function Office({
         !!draft.note;
     if (
       changed &&
-      !confirm("저장하지 않은 변경 사항이 있습니다. 내용을 버릴까요?")
+      !(await discardChanges("닫을까요?"))
     )
       return;
     setDraft(null);
@@ -148,11 +142,13 @@ export function Office({
             aria-controls={`office-panel-${value}`}
             tabIndex={tab === value ? 0 : -1}
             aria-selected={tab === value}
+            aria-disabled={busy || undefined}
             onKeyDown={(event) => {
               const key = event.key;
               if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(key))
                 return;
               event.preventDefault();
+              if (busy) return;
               const nextIndex =
                 key === "Home"
                   ? 0
@@ -167,8 +163,9 @@ export function Office({
               document.getElementById(`office-tab-${next}`)?.focus();
             }}
             key={value}
-            disabled={busy}
-            onClick={() => setTab(value)}
+            onClick={() => {
+              if (!busy) setTab(value);
+            }}
             className={tab === value ? "selected" : ""}
           >
             {label}
@@ -382,7 +379,7 @@ export function Office({
                               <td>
                                 {row.assignment?.duty &&
                                 row.assignment.duty !== "none" ? (
-                                  <Tag tone="amber">
+                                  <Tag tone="duty">
                                     {dutyTypes[row.assignment.duty]}
                                   </Tag>
                                 ) : (
@@ -452,21 +449,25 @@ export function Office({
                                     }
                                   >
                                     <button
-                                      disabled={busy}
+                                      aria-disabled={busy || undefined}
                                       className={`week-cell ${entry?.workType ?? "missing"}`}
-                                      aria-label={`${row.employee.name} ${day} 근무 편집`}
-                                      onClick={() => edit(row.employee.id, day)}
+                                      onClick={() => {
+                                        if (!busy) edit(row.employee.id, day);
+                                      }}
                                     >
+                                      {/* The visible shift is read first; who/when follow (TASK-PANEL-01 A1). */}
                                       <span>
                                         {entry
                                           ? workTypes[entry.workType]
                                           : "—"}
                                       </span>
                                       {entry?.duty && entry.duty !== "none" && (
-                                        <small>{dutyTypes[entry.duty]}</small>
+                                        <small className="duty-line">
+                                          {dutyTypes[entry.duty]}
+                                        </small>
                                       )}
                                       {entry?.baseId && (
-                                        <small>
+                                        <small className="base-line">
                                           {
                                             data.bases.find(
                                               (b) => b.id === entry.baseId,
@@ -474,6 +475,12 @@ export function Office({
                                           }
                                         </small>
                                       )}
+                                      <span className="sr-only">
+                                        {entry ? "" : " 미등록"} ·{" "}
+                                        {row.employee.name}{" "}
+                                        {formatDate(day, { year: false })} 근무
+                                        편집
+                                      </span>
                                     </button>
                                   </td>
                                 );
@@ -613,9 +620,12 @@ export function Office({
                   className="text-button danger"
                   onClick={async () => {
                     if (
-                      confirm(
-                        "이 날짜의 근무 기록을 지울까요? 미등록으로 표시됩니다.",
-                      ) &&
+                      (await askConfirm({
+                        message: "이 날짜의 근무 기록을 지울까요?",
+                        detail: "미등록으로 표시됩니다.",
+                        confirmLabel: "지우기",
+                        danger: true,
+                      })) &&
                       (await save({
                         ...data,
                         assignments: data.assignments.filter(

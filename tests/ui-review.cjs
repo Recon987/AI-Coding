@@ -169,6 +169,16 @@ async function geometry(page) {
         await nav(label);
         const metrics = await capture(name);
         if (name === "calendar") {
+          const calendarLayout = await page.evaluate(() => {
+            const panel = document.querySelector(".calendar-view-panel").getBoundingClientRect();
+            const agenda = document.querySelector(".calendar-agenda").getBoundingClientRect();
+            return { width: innerWidth, sideBySide: Math.abs(panel.y - agenda.y) < 1 && panel.right < agenda.x,
+              stacked: agenda.y > panel.bottom, tabStops: document.querySelectorAll('.calendar-day[tabindex="0"]').length,
+              rows: document.querySelectorAll('.calendar-month-grid [role="row"]').length,
+              cells: document.querySelectorAll('.calendar-month-grid [role="gridcell"]').length };
+          });
+          check("달력: CSS 화면 폭에 맞춰 두 열 또는 한 열 배치", calendarLayout.width >= 900 ? calendarLayout.sideBySide : calendarLayout.stacked, calendarLayout);
+          check("달력: 42칸·7행과 날짜 Tab 정지점 하나", calendarLayout.rows === 7 && calendarLayout.cells === 42 && calendarLayout.tabStops === 1, calendarLayout);
           const chips = await page.locator(".calendar-chip").evaluateAll((elements) => elements.map((element) => ({
             text: element.textContent.trim(),
             tooltip: element.getAttribute("title") || "",
@@ -177,17 +187,17 @@ async function geometry(page) {
           check("calendar: titles lead the visible chip text", chips.length > 0 && chips.every((chip) => !/^(일정|순찰|인계|제출)\s*[·:]/.test(chip.text) && chip.text.includes("가상")), chips);
           check("calendar: complete titles, type and 24h time remain available", chips.every((chip) => chip.tooltip.includes(chip.text.replace(/^↻\s*/, "")) && /\d{2}:\d{2}/.test(chip.tooltip) && /일정|순찰|인계|제출/.test(chip.tooltip) && chip.dayName.includes(chip.text.replace(/^↻\s*/, ""))), chips);
           if (date.startsWith("2026-10-")) {
-            const holiday = page.getByRole("button", { name: /^2026-10-03 .*개천절/ });
+            const holiday = page.getByRole("button", { name: /^3일, 2026\. 10\. 3\. .*개천절/ });
             const holidayColor = await holiday.locator(".day-number").evaluate((element) => getComputedStyle(element).color);
-            const fridayHolidayColor = await page.getByRole("button", { name: /^2026-10-09 .*한글날/ }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
-            const saturdayColor = await page.getByRole("button", { name: /^2026-10-10 / }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
+            const fridayHolidayColor = await page.getByRole("button", { name: /^9일, 2026\. 10\. 9\. .*한글날/ }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
+            const saturdayColor = await page.getByRole("button", { name: /^10일, 2026\. 10\. 10\. / }).locator(".day-number").evaluate((element) => getComputedStyle(element).color);
             check("calendar: a Saturday public holiday retains holiday meaning and color", holidayColor === fridayHolidayColor && holidayColor !== saturdayColor, { holidayColor, fridayHolidayColor, saturdayColor });
           }
           const dateButton = page.locator(".calendar-day").filter({ has: page.locator(".calendar-chip") }).first();
           await dateButton.focus();
           await page.keyboard.press("Enter");
           check("calendar: keyboard can select a date", await dateButton.getAttribute("aria-pressed") === "true");
-          await page.getByRole("button", { name: /^선택 날짜 기록 \d+건 보기$/ }).click();
+          await page.waitForFunction(() => document.activeElement?.classList.contains("calendar-agenda"));
           const agenda = page.getByRole("region", { name: "선택 날짜 기록", exact: true });
           const categories = await agenda.locator(".agenda-row > .tag").allTextContents();
           check("calendar: selected records are focused with explicit types", await agenda.evaluate((element) => element === document.activeElement) && categories.length > 0 && categories.every((category) => /일정|순찰|인계|제출/.test(category)), categories);
@@ -217,8 +227,8 @@ async function geometry(page) {
       await seed(empty());
       const emptyHome = await capture("empty-home");
       const start = page.getByRole("region", { name: "업무 시작 안내", exact: true });
-      check("first use: one introduction replaces empty dashboard", await start.count() === 1 && emptyHome.firstUse.primaryActions === 3 && emptyHome.firstUse.oldEmptyPanels === 0, emptyHome.firstUse);
-      for (const [action, dialogName] of [["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
+      check("first use: one introduction replaces empty dashboard", await start.count() === 1 && emptyHome.firstUse.primaryActions === 4 && emptyHome.firstUse.oldEmptyPanels === 0, emptyHome.firstUse);
+      for (const [action, dialogName] of [["순찰 기록", "순찰 기록 등록"], ["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
         const button = start.getByRole("button", { name: action, exact: true });
         const box = await button.boundingBox();
         check(`first use: ${action} is visible without scrolling`, box && box.x >= 0 && box.y >= 0 && box.x + box.width <= emptyHome.viewport.width && box.y + box.height <= emptyHome.viewport.height, box);

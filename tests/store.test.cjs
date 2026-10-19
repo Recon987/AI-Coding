@@ -367,7 +367,8 @@ test("반복 일정은 복제 저장 없이 기간별 회차를 파생하고 월
   const monthly = {
     id: "em",
     title: "월간 안전점검",
-    at: "2026-01-31T09:30:00+09:00",
+    // Local wall-clock times (no offset): occurrences are local days in every zone.
+    at: new Date("2026-01-31T09:30:00").toISOString(),
     done: false,
     recurrence: "monthly",
     repeatUntil: "2026-04-30",
@@ -388,7 +389,7 @@ test("반복 일정은 복제 저장 없이 기간별 회차를 파생하고 월
   const leapYearly = {
     id: "ey",
     title: "윤년 시설점검",
-    at: "2028-02-29T10:00:00+09:00",
+    at: new Date("2028-02-29T10:00:00").toISOString(),
     done: false,
     recurrence: "yearly",
     repeatUntil: "2030-03-01",
@@ -418,7 +419,8 @@ test("잘못된 반복 주기와 시작일 이전 종료일·비반복 종료일
     { ...baseEvent, recurrence: "hourly" },
     { ...baseEvent, repeatUntil: "2026-10-20" },
     { ...baseEvent, recurrence: "none", repeatUntil: "2026-10-20" },
-    { ...baseEvent, recurrence: "weekly", repeatUntil: "2026-10-14" },
+    // Reading allows one day of zone slack (TASK-PANEL-01 S1); the editor checks the local day.
+    { ...baseEvent, recurrence: "weekly", repeatUntil: "2026-10-13" },
     { ...baseEvent, recurrence: "weekly", repeatUntil: "2026-02-30" },
   ]) {
     assert.throws(() => normalize({ ...empty(), events: [invalid] }));

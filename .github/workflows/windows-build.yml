@@ -8,6 +8,20 @@ on:
       - "shared/**"
       - "desktop/**"
       - "tests/**"
+      - "scripts/**"
+      - "package*.json"
+      - "index.html"
+      - "vite.config.mts"
+      - "tsconfig.json"
+      - ".github/workflows/windows-build.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "shared/**"
+      - "desktop/**"
+      - "tests/**"
+      - "scripts/**"
       - "package*.json"
       - "index.html"
       - "vite.config.mts"
@@ -39,7 +53,20 @@ jobs:
         shell: pwsh
         run: |
           $env:PARK_TEST_EXECUTABLE = (Resolve-Path "release/win-unpacked/공원 업무 수첩.exe").Path
-          node tests/desktop-smoke.cjs
+          foreach ($testFile in @(
+            "tests/desktop-smoke.cjs",
+            "tests/desktop-confirm-smoke.cjs",
+            "tests/desktop-forms-smoke.cjs",
+            "tests/desktop-list-smoke.cjs",
+            "tests/desktop-recurrence-smoke.cjs",
+            "tests/desktop-notice-smoke.cjs",
+            "tests/desktop-editor-smoke.cjs",
+            "tests/desktop-calendar-smoke.cjs",
+            "tests/desktop-a11y-smoke.cjs"
+          )) {
+            node $testFile
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
       - name: Calculate checksums
         shell: pwsh
         run: |
