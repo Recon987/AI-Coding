@@ -422,10 +422,15 @@ function App() {
               className="save-feedback"
               onFocus={(event) => {
                 setFeedbackFocused(true);
-                if (!feedbackReturn.current)
-                  feedbackReturn.current = event.relatedTarget as HTMLElement | null;
+                if (!event.currentTarget.contains(event.relatedTarget))
+                  feedbackReturn.current = event.relatedTarget instanceof HTMLElement
+                    ? event.relatedTarget
+                    : null;
               }}
-              onBlur={() => setFeedbackFocused(false)}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget))
+                  setFeedbackFocused(false);
+              }}
             >
               <Icon name="check" size={16} />
               {/* Already read out by the status region above. */}

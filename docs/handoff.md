@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1). Codex 검증 브랜치 task/task-review-a11y-02(04e4a4d, 착수 기록만 푸시됨)
-- **Task Card**: TASK-A11Y-02 review(검증자 codex) — Codex 발견 2건을 Claude가 보완. TASK-REVIEW-A11Y-02 in-progress(Codex, 환경 시작 실패로 중단)
-- **Latest Pushed Commit**: 1e22ac6 - feat(TASK-A11Y-02): 날짜 이름·좁은 화면 2줄·'/' 단축키 정리와 접근성 검사 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: src/main.tsx(알림 {message, sequence}, 접근 가능한 닫기·포커스 복귀·포커스 중 타이머 정지), tests/desktop-a11y-smoke.cjs(재안내·타이머 재시작·키보드 닫기 회귀). 한국어 기록 docs/work-log/2026-10-18-claude-2.md
-- **Changed Interfaces / Schema Diff**: 앱 내부 알림 상태만 변경. 데이터 v3·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 91/91, npm run test:desktop 10개 진입점 통과, 화면 검사 150·실패 0. 새 회귀는 보완 전 실패·보완 후 통과
-- **Remaining Work for Gemini**: Codex: 환경 재연결 후 이전 환경의 미푸시 diff는 버리고 이 커밋 기준으로 TASK-REVIEW-A11Y-02 검증 재개. 같은 환경 오류가 반복되면 서비스 지원에 전달. 사용자: PR #1 병합 승인 등 결정 6가지
-- **Modified Code Snippets (if uncommitted)**: 없음
+- **Repository & Branch**: Recon987/AI-Coding (task/task-review-a11y-02 / 통합 대상 claude/zen-cannon-wc1at4)
+- **Task Card**: TASK-REVIEW-A11Y-02 in-progress. 환경/코드 복구·Claude 알림 보완 독립 검증·재진입 P2 보완 완료, Windows부터 재개.
+- **Latest Pushed Commit**: 04e4a4d - wip(TASK-REVIEW-A11Y-02): 접근성 독립 검증 착수 (작성 직전 확인 기준)
+- **Completed Steps & Modified Files**: 이전 미커밋은 검증 백업 보존, 원격c510a1b/cc4349a 통합. main.tsx 알림 재진입 복귀 대상 갱신, desktop-a11y-smoke.cjs 실제 Tab 회귀(전 실패·후 통과).
+- **Changed Interfaces / Schema Diff**: 알림 onFocus/onBlur 경계 처리만 보완. 데이터v3·IPC 불변.
+- **Test Status**: 최신 원격 단위91/desktop10/UI150·Windows39184184786 소스10/패키지9 각 PASS. 본 추가 보완 단위91/desktop10·독립 검사 통과, Windows는 다음 단계.
+- **Remaining Work for Gemini**: 보완 Windows·최종 기록·PR·Claude 교차 확인. LIST-02는 Claude 구현 중이며 완료 커밋 기준 Codex 독립 검증. main/정책 결정 미확정 유지.
+- **Modified Code Snippets (if uncommitted)**: 보완/카드/인계는 즉시 커밋·푸시하고 최종 상태는 git status 확인.
 ```
 
 ## 2. 과제 현황
