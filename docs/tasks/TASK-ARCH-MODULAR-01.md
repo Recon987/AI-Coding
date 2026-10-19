@@ -1,9 +1,9 @@
 ---
 id: TASK-ARCH-MODULAR-01
 title: 모듈형 플랫폼·AX Desk 개편 명세 보정 및 후속 구현
-status: blocked
+status: ready
 role: orchestrator
-owner: codex
+owner: none
 verifier: claude
 branch: task/task-arch-modular-01
 depends: TASK-SCHEMA-01, TASK-BRIEF-02, TASK-LABELS-01, TASK-FORMS-02, TASK-HOLIDAY-01, TASK-BACKUP-02
@@ -19,14 +19,14 @@ updated: 2026-10-19
 ## 완료 조건·단계
 - [x] 첨부 원문 보관·main/검증 브랜치 상태 확인
 - [x] 현재 앱0.8.0·version3 저장 계약과 대조한 보정 명세 작성
-- [ ] 선행 BK-01·HL-01 보완 및후속6카드 독립 검증·main 병합 완료 확인
+- [x] 선행 BK-01·HL-01 보완 및 후속 6카드 main 병합(2026-10-19 사용자 승인, PR #13). BK-01·HL-01의 Codex 독립 재검증은 병합 뒤
 - [ ] Step A: 선택적 modules·AX 모델과 무손실 전환/백업 검증
 - [ ] Step B: 코어4종·기존 기능 보존·내장 모듈 관리/동적 메뉴 검증
 - [ ] Step C: AX 사업·스니펫·보고서 초안과 브리핑/내보내기 검증
 - [ ] 단계별 npm test·test:desktop·독립 검증·Windows 확인 후 통합
 
 ## 재개 위치
-보정 명세 docs/specs/modular-ax/implementation.md와전용 인계 handoff.md를 읽는다. BK-01·HL-01 보완·후속6카드 검증·main 병합 여부를 확인한다. 미충족이면 blocked를 유지한다. 충족 후 당시 최신main SHA를 고정하고 feat/modular-architecture 및 Step별 task 브랜치/카드를 만든다(추가worktree 없음).
+2026-10-19 Claude(총괄)가 Step A~C를 하위 카드 5장으로 나눴다: TASK-MODULES-01(Step A) → TASK-MODULES-02(Step B) → TASK-AXDESK-01·02·03(Step C). 이 카드는 묶음 카드이며 하위 카드가 모두 done이면 done. 사용자 지정 브랜치 feat/modular-architecture는 클라우드 세션 제약으로 claude/zen-cannon-wc1at4를 쓴다(README 3장 규칙).
 
 ## 테스트 상태
 main1474d76 기반 문서 브랜치 Node24: npm test91/91·npm run test:desktop10개 진입점 통과(타입/빌드 포함). 원문 SHA256 대조 일치·보드/공백 검사 통과. 제품 코드는 변경하지 않았으며 AX 신규 기능·AX 검사·개편 Windows 빌드는 미구현/미실행.
