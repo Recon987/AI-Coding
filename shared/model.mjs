@@ -1,4 +1,6 @@
 import { addDays, earliestLocalDay, previousWorkday } from "./dates.mjs";
+import { validateModules } from "./applets.mjs";
+import { validateAxProjects, validateAxSnippets } from "./ax.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
   dutyTypes,
@@ -18,7 +20,9 @@ const personalCollections = [
 ];
 // Added after v3 shipped; files without it load as an empty list (TASK-CONTROL-01).
 // customHolidays: user-entered holidays (임시공휴일, later election days), TASK-HOLIDAY-01.
-const optionalCollections = ["controls", "customHolidays"];
+// axProjects/axSnippets: AX Desk (TASK-MODULES-01). The `modules` setting is an object,
+// not a collection, and is written only once the user changes it.
+const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets"];
 export const collections = [
   ...personalCollections,
   ...optionalCollections,
@@ -95,6 +99,8 @@ export const empty = () => ({
   tasks: [],
   controls: [],
   customHolidays: [],
+  axProjects: [],
+  axSnippets: [],
   organizations: [],
   employees: [],
   bases: [],
@@ -301,6 +307,9 @@ function normalizeContent(input) {
   }
   const customHolidays = data.customHolidays === undefined ? [] : data.customHolidays;
   validateCustomHolidays(customHolidays);
+  const axProjects = validateAxProjects(data.axProjects === undefined ? [] : data.axProjects);
+  const axSnippets = validateAxSnippets(data.axSnippets === undefined ? [] : data.axSnippets);
+  if (data.modules !== undefined) validateModules(data.modules);
   for (const key of personalCollections) {
     ensure(
       Array.isArray(data[key]) && data[key].length <= 10000,
@@ -442,7 +451,7 @@ function normalizeContent(input) {
   );
   // Top-level keys this version does not know are kept as they are, so saving here
   // does not delete what a newer version added (TASK-SCHEMA-01). The app never reads them.
-  const known = new Set(["version", "minReader", ...collections]);
+  const known = new Set(["version", "minReader", "modules", ...collections]);
   const extra = Object.keys(input).filter((key) => !known.has(key));
   ensure(
     extra.length <= MAX_EXTRA_KEYS &&
@@ -455,9 +464,12 @@ function normalizeContent(input) {
     ...Object.fromEntries(extra.map((key) => [key, input[key]])),
     version: 3,
     ...(input.minReader !== undefined || minReader > 1 ? { minReader } : {}),
+    ...(data.modules !== undefined ? { modules: data.modules } : {}),
     ...Object.fromEntries(collections.map((key) => [key, data[key]])),
     controls,
     customHolidays,
+    axProjects,
+    axSnippets,
   };
 }
 

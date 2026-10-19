@@ -8,6 +8,7 @@ const path = require("node:path");
 const model = require("../shared/model.mjs");
 const office = require("../shared/office.mjs");
 const forms = require("../shared/forms.mjs");
+const ax = require("../shared/ax.mjs");
 
 const ALLOWED = {
   risk: ["normal", "attention", "urgent"],
@@ -17,6 +18,10 @@ const ALLOWED = {
   recurrence: ["none", "daily", "weekly", "monthly", "yearly"],
   workType: ["work", "off", "leave", "trip", "base"],
   duty: ["none", "day", "night"],
+  // AX Desk (TASK-MODULES-01): new collections only, so no READER_VERSION change.
+  axZone: ["hq", "west", "north", "institute", "other"],
+  axStage: ["planning", "contract", "execution", "done"],
+  axSnippetCategory: ["gee", "python", "prompt", "policy"],
 };
 const MAPS = {
   risk: model.RISK_LABEL,
@@ -26,6 +31,9 @@ const MAPS = {
   recurrence: model.RECURRENCE_LABEL,
   workType: office.workTypes,
   duty: office.dutyTypes,
+  axZone: ax.AX_ZONES,
+  axStage: ax.AX_STAGES,
+  axSnippetCategory: ax.AX_SNIPPET_CATEGORIES,
 };
 // The TS union each set must equal (src/types.ts), found by its declaration text.
 const TYPE_SOURCES = {
@@ -36,6 +44,9 @@ const TYPE_SOURCES = {
   recurrence: /type EventRecurrence =((?:\s*\|\s*"\w+")+);/,
   workType: /workType: ((?:"\w+"\s*\|?\s*)+);/,
   duty: /duty: ((?:"\w+"\s*\|?\s*)+);/,
+  axZone: /type AxZone = ((?:"\w+"\s*\|?\s*)+);/,
+  axStage: /type AxStage = ((?:"\w+"\s*\|?\s*)+);/,
+  axSnippetCategory: /type AxSnippetCategory = ((?:"\w+"\s*\|?\s*)+);/,
 };
 
 test("허용값 스냅샷: 라벨 맵 키가 고정 목록과 같다(라벨 추가 = 자료 형식 확장)", () => {
@@ -71,6 +82,14 @@ function withValue(name, value) {
     data.controls.push({ id: "c1", title: "가상 통제", zone: null, reason: value, start: "2026-10-19", end: null, note: "" });
   if (name === "recurrence")
     data.events.push({ id: "e1", title: "가상 일정", at: "2026-10-19T09:00:00+09:00", done: false, recurrence: value });
+  if (name === "axZone" || name === "axStage")
+    data.axProjects.push({
+      id: "p1", title: "가상 사업", zone: name === "axZone" ? value : "hq", stage: name === "axStage" ? value : "planning",
+      budgetTotal: 0, budgetExecuted: 0, manager: "", partner: "", nextMilestone: "", nextMilestoneDate: null,
+      risks: "", notes: "", updatedAt: "2026-10-19T09:00:00+09:00",
+    });
+  if (name === "axSnippetCategory")
+    data.axSnippets.push({ id: "s1", title: "가상", category: value, tags: [], snippet: "", description: "", updatedAt: "2026-10-19T09:00:00+09:00" });
   if (name === "workType" || name === "duty") {
     const workType = name === "workType" ? value : "work";
     data.organizations.push({ id: "org", code: "ORG", name: "가상 사무소", parentId: null });

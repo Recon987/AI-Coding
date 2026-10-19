@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main 병합)
-- **Task Card**: SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02 done(사용자 승인 병합). REVIEW-DATA-SAFETY-01 done. 다음 TASK-ARCH-MODULAR-01
-- **Latest Pushed Commit**: 293f658 - fix(TASK-HOLIDAY-01): 공휴일 한도 초과를 화면 안내로 처리(HL-01) (이 문서를 포함한 최종 해시·main 병합 커밋은 응답 패킷 참조)
-- **Completed Steps & Modified Files**: 카드 6장 done, loop-log 7주기, 작업 기록 23장, handoff
-- **Changed Interfaces / Schema Diff**: 이번 커밋 없음(문서). 병합 범위의 자료 변경: 선택 필드 minReader(읽기 수준 2), 선택 컬렉션 customHolidays, 단속 조치 referral. 데이터 v3 유지
-- **Test Status**: 293f658 Linux: npm test 131/131, test:desktop 12개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows 39260014172 결과 확인 후 병합
-- **Remaining Work for Gemini**: Codex: BK-01·HL-01 사후 독립 재검증. Claude: ARCH-MODULAR-01(PR #12 보정 명세) 착수
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1eb40aa(PR #13, 7주기 병합)
+- **Task Card**: TASK-MODULES-01 review(검증자 codex). 다음 TASK-MODULES-02 → AXDESK-01·02·03. 묶음 TASK-ARCH-MODULAR-01 ready. BK-01·HL-01 Codex 사후 재검증 대기
+- **Latest Pushed Commit**: f39795c(PR #13 head) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: shared/applets.mjs·ax.mjs(+d.mts, 신규), shared/model.mjs(선택 컬렉션 axProjects·axSnippets, modules 검증), desktop/store.cjs(개편 전 보호본), src/types.ts, src/components/Briefing.tsx(타입), tests/modules.test.cjs(신규)·labels.test.cjs, 카드 5장·PR #12 명세 통합
+- **Changed Interfaces / Schema Diff**: 선택 최상위 `modules`({enabledModuleIds, moduleOrder, customConfigs}), 선택 컬렉션 `axProjects`·`axSnippets`(없으면 빈 목록). 첫 저장 때 `.pre-modular-backup-<시각>.json`. READER_VERSION 2 유지. IPC 변경 없음
+- **Test Status**: Linux Node 22: npm test 142/142, npm run test:desktop 12개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행
+- **Remaining Work for Gemini**: Codex: MODULES-01 검증, BK-01·HL-01 재검증. Claude: MODULES-02(코어 4종·동적 메뉴·모듈 관리 서랍)
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
