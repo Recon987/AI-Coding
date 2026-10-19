@@ -1,5 +1,14 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## LIST-02 / Codex 독립 검증과 폭 경계 보완 (2026-10-19)
+
+실행 소스986910a, [PR #9](https://github.com/Recon987/AI-Coding/pull/9). 원본c0369c5가 기존 검사를 통과했지만1101px 순찰 제목 칸0px를 독립 재현했다. 목록 전용 좁은 배치 전환을1279px로 높이고 실제 Electron 회귀를 추가했다. 수정 전 실패→후 통과. 1280px 행67px 유지·1101px 제목780px 복구.
+
+보완본 Linux Node24 단위91/91·desktop10개 진입점·화면150개 실패0/오류0/외부요청0·업무흐름11/11 통과. 7개 폭/배율×6개 목록 제목·버튼 노출·모양 회귀, 별도18조합의 펼침/Tab/방향키·좁은 상세 들여쓰기/메모 빈 열 확인 통과. 원본 Windows39184733043 소스10/패키지9 PASS 확인. 보완본 [Windows39185832387](https://github.com/Recon987/AI-Coding/actions/runs/39185832387) 성공, 단위91/91·소스10개/패키지9개 진입점 각 PASS·예외0, NSIS/portable·SHA256SUMS·업로드 완료. [시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39185832387/artifacts/12157753983)(GitHub 로그인·보관14일). 소스/패키지 목록 PASS2회·전체PASS23개·예외0을 로그로 확인했다. [상세·전후 화면](reviews/2026-10-19-codex-list02.md).
+
+별도 A11Y 복구 검증은 [PR #8](https://github.com/Recon987/AI-Coding/pull/8), 소스746b478·문서788071a·Windows39184848329 성공에 보존했다. Codex 작성 보완은 각각 Claude의 교차 확인과 통합이 남아 있다. main 미병합.
+
+
 ## v0.8.0 / TASK-CALENDAR-04 (검증 브랜치, main 미병합)
 
 최종 소스86bd62c, [PR #7](https://github.com/Recon987/AI-Coding/pull/7). Linux Node24.19의 단위91/91, desktop9진입점, 화면150/실패0/오류0/외부요청0, 업무 흐름11/11 통과. 월/주/목록 표시 분리 후 기존 회귀부터 통과시켰고 툴바 압축 후 실제 화면/전체 desktop을 다시 검사했다. 새 달력 검사는 윤년·월말·연도·18개월 이동, 이동/선택 구분, Enter/Space 기록 포커스와 Shift+Tab 복귀, 탭·편집 취소, CSS 폭 기준2열/1열·실제125% 확대와 자료 불변을 확인한다.

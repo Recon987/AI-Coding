@@ -31,7 +31,7 @@ hover 전용 노출(기각).
 - [x] 4. 행 높이 72px 이하 검사·화면 확인·기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기. 검증자는 tests/desktop-list-smoke.cjs의 'TASK-LIST-02' 측정 부분과 1280x800·1000px 화면을 확인한다.
+Codex가 c0369c5를 독립 검증하고 경계 폭의 제목0px 문제를 PR #9(986910a)에서 보완했다. Claude가 해당 보완을 교차 검증한 뒤 통합한다. main 병합 전 review 유지.
 
 ## 구현 내용
 - `src/components/ListRow.tsx`: `RowAction.primary`(상태 변경 동작만 테두리 버튼), 그 밖은 글자 버튼, `tone: "danger"`는 빨간 글자. 전에는 '첫 번째 버튼'이 무조건 테두리였다. `ListHeader`에 `plain`(제목 열만) 추가, 머리줄을 `.row-list` 안에 둔다.
@@ -44,3 +44,6 @@ hover 전용 노출(기각).
 2026-10-19 Linux(Node 22): `npm test` 91/91 통과, `npm run test:desktop` 10개 진입점 모두 통과(목록 검사에 행 높이 ≤72px·같은 줄·오른쪽 끝 정렬·버튼 모양 규칙·메모 상태 열 없음 추가), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 측정 전부 완료(T2c 순찰 복사 3클릭·1칸·5자 유지). Windows 자동 검사는 푸시 후 결과 확인 필요.
 
 ## 검증 기록
+
+### 2026-10-19 Codex 독립 검증
+원본 Node24 단위91/91·desktop10개 진입점·Windows39184733043 소스10/패키지9 통과 확인. 다만1101px에서 순찰 제목 칸이0px가 되는 P1 결함을 추가 재현했다. [PR #9](https://github.com/Recon987/AI-Coding/pull/9)의986910a는 목록 전용 전환 기준을1279px로 높이고 회귀를 추가한다. 수정 전 실패→후 통과,1280px 행67px 유지. 보완본 Linux 단위91·desktop10·UI150/실패0/외부요청0·업무흐름11 통과. 보완본 [Windows39185832387](https://github.com/Recon987/AI-Coding/actions/runs/39185832387) 성공, 단위91/91·소스10개/패키지9개 진입점 각 PASS·예외0, NSIS/portable·SHA256SUMS·업로드 완료. [상세](../reviews/2026-10-19-codex-list02.md). Codex가 쓴 최소 보완은 Claude 교차 승인 대기다.
