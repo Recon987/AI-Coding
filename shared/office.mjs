@@ -13,6 +13,14 @@ export const workTypes = {
   base: "거점근무",
 };
 export const dutyTypes = { none: "없음", day: "주간당직", night: "숙직" };
+// Summary groups for work types (TASK-LABELS-01): one place for screens and briefing.
+export const WORK_GROUPS = { working: ["work", "base", "trip"], off: ["off", "leave"] };
+/** "working" | "off" | null for a work type (null when unknown or unregistered). */
+export function workGroup(workType) {
+  if (WORK_GROUPS.working.includes(workType)) return "working";
+  if (WORK_GROUPS.off.includes(workType)) return "off";
+  return null;
+}
 const check = (condition, message) => {
   if (!condition) throw new Error(message);
 };
@@ -156,11 +164,8 @@ export function officeSummary(data, date, organizationId = "") {
     total: rows.length,
     registered: rows.filter((r) => r.assignment).length,
     unregistered: rows.filter((r) => !r.assignment).length,
-    working: rows.filter((r) =>
-      ["work", "base", "trip"].includes(r.assignment?.workType),
-    ).length,
-    off: rows.filter((r) => ["off", "leave"].includes(r.assignment?.workType))
-      .length,
+    working: rows.filter((r) => workGroup(r.assignment?.workType) === "working").length,
+    off: rows.filter((r) => workGroup(r.assignment?.workType) === "off").length,
     duty: rows.filter((r) => r.assignment && r.assignment.duty !== "none")
       .length,
   };

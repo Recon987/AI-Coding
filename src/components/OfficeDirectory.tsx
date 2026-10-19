@@ -4,6 +4,7 @@ import type { Data, Save } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
 import { Icon } from "./Icon";
 import { confirmDelete } from "../confirm";
+import { SAVE } from "../../shared/labels.mjs";
 type Kind = "organizations" | "employees" | "bases";
 const labels = { organizations: "조직", employees: "직원", bases: "거점" };
 type Draft = {
@@ -207,7 +208,7 @@ export function OfficeDirectory({
                   (kind !== "organizations" && !data.organizations.length)
                 }
               >
-                {label} 저장
+                {SAVE}
               </button>
               <button
                 type="button"

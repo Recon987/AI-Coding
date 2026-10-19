@@ -5,7 +5,8 @@ import {
   dayKey,
   formatCoordinates,
   holidayName,
-  RECURRENCE_LABEL,
+  isRecurring,
+  recurrenceText,
   collections,
   activeControls,
 } from "../../shared/model.mjs";
@@ -14,6 +15,7 @@ import { formatDate, formatTime, itemClock, SectionHead, Tag } from "../ui";
 import { dutyTypes, officeRows, officeSummary } from "../../shared/office.mjs";
 import { Icon } from "./Icon";
 import { addDays, weekDays } from "../../shared/dates.mjs";
+import { addLabel, TARGET } from "../../shared/labels.mjs";
 
 export function Briefing({
   data,
@@ -55,7 +57,7 @@ export function Briefing({
     endDate: week[6],
   });
   const daily = items.filter((i) => dayKey(new Date(i.at)) === date);
-  const holiday = holidayName(date);
+  const holiday = holidayName(date, data.customHolidays);
   function chooseDate(value: string) {
     setDate(value);
     setExpandedDay(false);
@@ -64,7 +66,7 @@ export function Briefing({
     chooseDate(addDays(date, offset));
   }
   const firstUse = collections.every(
-    (name) => data[name as Exclude<keyof Data, "version">].length === 0,
+    (name) => data[name as Exclude<keyof Data, "version" | "minReader">].length === 0,
   );
   if (firstUse)
     return (
@@ -84,9 +86,9 @@ export function Briefing({
         <div className="start-actions">
           {(
             [
-              ["patrol", "순찰 기록", "현장에서 본 것과 조치를 바로 남기기"],
-              ["calendar", "일정 등록", "회의와 마감 시간을 놓치지 않도록"],
-              ["calls", "전화메모 작성", "통화 내용과 회신할 일을 빠르게"],
+              ["patrol", addLabel(TARGET.patrol), "현장에서 본 것과 조치를 바로 남기기"],
+              ["calendar", addLabel(TARGET.event), "회의와 마감 시간을 놓치지 않도록"],
+              ["calls", addLabel(TARGET.call), "통화 내용과 회신할 일을 빠르게"],
               [
                 "office",
                 "근무현황판 준비",
@@ -403,7 +405,7 @@ export function Briefing({
                   className="timeline-row"
                   key={row.key}
                   disabled={busy}
-                  onClick={() => navigate(row.page as Page, row.page === "calendar" && row.recurrence && row.recurrence !== "none" ? `occurrence:${dayKey(new Date(row.at))}:${row.id}` : row.id)}
+                  onClick={() => navigate(row.page as Page, row.page === "calendar" && isRecurring(row) ? `occurrence:${dayKey(new Date(row.at))}:${row.id}` : row.id)}
                 >
                   <time>{itemClock(row)}</time>
                   <div>
@@ -412,9 +414,7 @@ export function Briefing({
                     </strong>
                     <small>
                       {row.category}
-                      {row.recurrence && row.recurrence !== "none"
-                        ? ` · ${RECURRENCE_LABEL[row.recurrence]} 반복`
-                        : ""}
+                      {isRecurring(row) ? ` · ${recurrenceText(row)}` : ""}
                       {row.done ? " · 완료" : ""}
                     </small>
                     {coordinates && (

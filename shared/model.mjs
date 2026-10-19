@@ -1,4 +1,4 @@
-import { addDays, earliestLocalDay } from "./dates.mjs";
+import { addDays, earliestLocalDay, previousWorkday } from "./dates.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
   dutyTypes,
@@ -17,7 +17,8 @@ const personalCollections = [
   "tasks",
 ];
 // Added after v3 shipped; files without it load as an empty list (TASK-CONTROL-01).
-const optionalCollections = ["controls"];
+// customHolidays: user-entered holidays (임시공휴일, later election days), TASK-HOLIDAY-01.
+const optionalCollections = ["controls", "customHolidays"];
 export const collections = [
   ...personalCollections,
   ...optionalCollections,
@@ -38,6 +39,21 @@ export const RECURRENCE_LABEL = {
   monthly: "매월",
   yearly: "매년",
 };
+/** True when the event repeats (recurrence set and not "none"). */
+export function isRecurring(event) {
+  return Boolean(event?.recurrence) && event.recurrence !== "none";
+}
+/** "매주 반복", with " (~YYYY-MM-DD)" when `until` and an end date exist; "" if not recurring. */
+export function recurrenceText(event, { until = false } = {}) {
+  if (!isRecurring(event)) return "";
+  return `${RECURRENCE_LABEL[event.recurrence]} 반복${until && event.repeatUntil ? ` (~${event.repeatUntil})` : ""}`;
+}
+// Patrol risk labels: the single source for screens, forms and validation (TASK-LABELS-01).
+export const RISK_LABEL = {
+  normal: "일반 기록",
+  attention: "확인 필요",
+  urgent: "우선 확인",
+};
 // Patrol kinds and observation outcomes are optional v3 fields (TASK-PATROL-02).
 export const PATROL_KINDS = {
   safety: "안전 순찰",
@@ -51,6 +67,8 @@ export const PATROL_KINDS = {
 export const OBSERVATION_OUTCOMES = {
   guidance: "계도",
   fine: "과태료 부과",
+  // Reader level 2 (TASK-FORMS-02): apps before it reject this value, so files using it carry minReader 2.
+  referral: "고발·인계",
   other: "기타 조치",
 };
 // Suggestions only: people may type any type; fine amounts are never stored.
@@ -76,6 +94,7 @@ export const empty = () => ({
   patrols: [],
   tasks: [],
   controls: [],
+  customHolidays: [],
   organizations: [],
   employees: [],
   bases: [],
@@ -96,7 +115,7 @@ function validateOccurrenceMetadata(event) {
   for (const key of ["completedDates", "excludedDates"]) {
     if (event[key] === undefined) continue;
     ensure(
-      event.recurrence && event.recurrence !== "none" && RECURRENCE.includes(event.recurrence),
+      isRecurring(event) && RECURRENCE.includes(event.recurrence),
       "회차별 완료·제외일은 반복 일정에만 설정할 수 있습니다.",
     );
     const dates = event[key];
@@ -196,12 +215,55 @@ export function dayKey(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+// TASK-SCHEMA-01: the highest `minReader` this app understands. A later app that
+// stores something older readers would misread or drop raises the file's minReader
+// above this; such a file opens read-only here and is never written back.
+// Reader levels: 1 = TASK-SCHEMA-01; 2 = observation outcome "referral" (TASK-FORMS-02).
+export const READER_VERSION = 2;
+const MAX_EXTRA_KEYS = 100;
+const RESERVED_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+export const NEWER_DATA_MESSAGE =
+  "이 자료는 더 새 버전의 공원 업무 수첩에서 저장되었습니다. 자료를 보호하기 위해 이 버전에서는 저장·복원하지 않습니다. 새 버전 앱으로 여세요.";
+function newerDataError(detail = "") {
+  const error = new Error(detail ? `${NEWER_DATA_MESSAGE} ${detail}` : NEWER_DATA_MESSAGE);
+  error.code = "NEWER_DATA";
+  return error;
+}
+/** True when the file declares a reader newer than this app (TASK-SCHEMA-01). */
+export function isNewerData(input) {
+  return Boolean(input) && typeof input === "object" &&
+    Number.isInteger(input.minReader) && input.minReader > READER_VERSION;
+}
+
 // v1/v2 -> v3 is additive and returns a new object without modifying the input.
-export function normalize(input) {
+// allowNewer: read (never write) a file from a newer app when its content still
+// passes this version's checks; otherwise it fails with code NEWER_DATA.
+export function normalize(input, { allowNewer = false } = {}) {
   ensure(
     input && typeof input === "object" && [1, 2, 3].includes(input.version),
     "지원하지 않는 데이터 버전입니다.",
   );
+  if (input.minReader !== undefined)
+    ensure(
+      Number.isInteger(input.minReader) && input.minReader >= 1 && input.minReader <= 1000000,
+      "자료의 읽기 버전(minReader)을 확인하세요.",
+    );
+  if (isNewerData(input)) {
+    if (!allowNewer) throw newerDataError();
+    try {
+      return normalizeContent(input);
+    } catch (error) {
+      throw newerDataError(`(이 버전이 모르는 내용: ${error.message})`);
+    }
+  }
+  return normalizeContent(input);
+}
+/** Lowest reader level that understands this content (see READER_VERSION). */
+function readerNeeded(data) {
+  const referral = data.patrols.some((p) => p.observations?.some((o) => o.outcome === "referral"));
+  return referral ? 2 : 1;
+}
+function normalizeContent(input) {
   const personal =
     input.version === 1 ? { ...input, patrols: [], tasks: [] } : input;
   const data =
@@ -237,6 +299,8 @@ export function normalize(input) {
     ensure(row.zone === null || string(row.zone, 50), "담당구역 번호는 50자 이하로 입력하세요.");
     ensure(string(row.note, 2000), "통제 메모는 2,000자 이하로 입력하세요.");
   }
+  const customHolidays = data.customHolidays === undefined ? [] : data.customHolidays;
+  validateCustomHolidays(customHolidays);
   for (const key of personalCollections) {
     ensure(
       Array.isArray(data[key]) && data[key].length <= 10000,
@@ -268,7 +332,7 @@ export function normalize(input) {
             "반복 종료일 형식을 확인하세요.",
           );
           ensure(
-            row.recurrence && row.recurrence !== "none",
+            isRecurring(row),
             "반복 종료일은 반복 주기가 설정된 일정에만 지정할 수 있습니다.",
           );
           // Reading must not depend on this PC's time zone: the editor checked the
@@ -335,7 +399,7 @@ export function normalize(input) {
           "순찰 내용을 확인하세요.",
         );
         ensure(
-          ["normal", "attention", "urgent"].includes(row.risk),
+          Object.hasOwn(RISK_LABEL, row.risk),
           "확인 등급을 확인하세요.",
         );
       }
@@ -376,24 +440,99 @@ export function normalize(input) {
     ),
     "후속 조치에 연결된 순찰 기록이 없습니다.",
   );
-  // Keep only known collections, so unrelated import metadata cannot become application state.
+  // Top-level keys this version does not know are kept as they are, so saving here
+  // does not delete what a newer version added (TASK-SCHEMA-01). The app never reads them.
+  const known = new Set(["version", "minReader", ...collections]);
+  const extra = Object.keys(input).filter((key) => !known.has(key));
+  ensure(
+    extra.length <= MAX_EXTRA_KEYS &&
+      extra.every((key) => key.length <= 64 && !RESERVED_KEYS.has(key)),
+    "자료의 최상위 항목 이름을 확인하세요.",
+  );
+  // Never lowered: a value kept from the file, raised when the content needs a newer reader.
+  const minReader = Math.max(input.minReader ?? 1, readerNeeded(data));
   return {
+    ...Object.fromEntries(extra.map((key) => [key, input[key]])),
     version: 3,
+    ...(input.minReader !== undefined || minReader > 1 ? { minReader } : {}),
     ...Object.fromEntries(collections.map((key) => [key, data[key]])),
     controls,
+    customHolidays,
   };
 }
 
 const SOLAR_HOLIDAYS = [
   { month: 1, day: 1, name: "신정", subRule: "none" },
   { month: 3, day: 1, name: "삼일절", subRule: "weekend" },
+  // 2026 공휴일법 개정(TASK-HOLIDAY-01, docs/research/holidays.md): 관공서 규정상 대체공휴일 적용.
+  { month: 5, day: 1, name: "노동절", subRule: "weekend", from: 2026 },
   { month: 5, day: 5, name: "어린이날", subRule: "weekend" },
   { month: 6, day: 6, name: "현충일", subRule: "none" },
+  { month: 7, day: 17, name: "제헌절", subRule: "weekend", from: 2026 },
   { month: 8, day: 15, name: "광복절", subRule: "weekend" },
   { month: 10, day: 3, name: "개천절", subRule: "weekend" },
   { month: 10, day: 9, name: "한글날", subRule: "weekend" },
   { month: 12, day: 25, name: "성탄절", subRule: "weekend" },
 ];
+
+// Election days and one-off holidays already fixed by law or decree (no substitutes).
+// Later ones are added by the user (customHolidays) once announced.
+const FIXED_HOLIDAYS = [
+  { date: "2025-01-27", name: "임시공휴일" },
+  { date: "2025-06-03", name: "대통령선거일" },
+  { date: "2026-06-03", name: "지방선거일" },
+  { date: "2028-04-12", name: "국회의원선거일" },
+];
+const MAX_CUSTOM_HOLIDAYS = 1000;
+/** Throws unless `list` is a valid customHolidays list: unique ids and dates, names up to 30 characters. */
+export function validateCustomHolidays(list) {
+  ensure(
+    Array.isArray(list) && list.length <= MAX_CUSTOM_HOLIDAYS,
+    `추가 공휴일은 ${MAX_CUSTOM_HOLIDAYS.toLocaleString("ko-KR")}개 이하의 목록이어야 합니다.`,
+  );
+  const ids = new Set();
+  const dates = new Set();
+  for (const row of list) {
+    ensure(row && required(row.id, 100) && !ids.has(row.id), "추가 공휴일의 ID를 확인하세요.");
+    ensure(validDate(row.date), "추가 공휴일 날짜는 실제로 있는 YYYY-MM-DD여야 합니다.");
+    ensure(!dates.has(row.date), `추가 공휴일 날짜가 중복됩니다: ${row.date}`);
+    ensure(required(row.name, 30), "추가 공휴일 이름은 1~30자로 입력하세요.");
+    ids.add(row.id);
+    dates.add(row.date);
+  }
+  return list;
+}
+/**
+ * Parses pasted lines "YYYY-MM-DD,이름" (comma or tab; blank lines ignored) into new
+ * customHolidays rows. Dates already in `existing` are skipped. Any bad line rejects
+ * the whole paste, so nothing is half-imported (TASK-HOLIDAY-01).
+ */
+export function parseHolidayLines(text, existing = [], makeId = () => crypto.randomUUID()) {
+  const taken = new Set(existing.map((h) => h.date));
+  const rows = [];
+  const errors = [];
+  let skipped = 0;
+  String(text ?? "").split(/\r?\n/).forEach((line, index) => {
+    if (!line.trim()) return;
+    const match = /^\s*(\d{4}-\d{2}-\d{2})\s*[,\t]\s*(.+?)\s*$/.exec(line);
+    if (!match) return errors.push(`${index + 1}번째 줄: 'YYYY-MM-DD,이름' 형식이 아닙니다.`);
+    const [, date, name] = match;
+    if (!validDate(date)) return errors.push(`${index + 1}번째 줄: 없는 날짜입니다 (${date}).`);
+    if (name.length > 30) return errors.push(`${index + 1}번째 줄: 이름은 30자 이하로 입력하세요.`);
+    if (taken.has(date)) return skipped++;
+    taken.add(date);
+    rows.push({ id: makeId(), date, name });
+  });
+  // HL-01 (Codex review 2026-10-19): the limit is a message, not an exception.
+  if (!errors.length && existing.length + rows.length > MAX_CUSTOM_HOLIDAYS)
+    errors.push(
+      `공휴일은 최대 ${MAX_CUSTOM_HOLIDAYS.toLocaleString("ko-KR")}개까지 등록할 수 있습니다. 지금 ${existing.length.toLocaleString("ko-KR")}개가 있어 ${rows.length.toLocaleString("ko-KR")}개를 더 넣을 수 없습니다. 지난 공휴일을 지운 뒤 다시 등록하세요.`,
+    );
+  if (!errors.length) validateCustomHolidays([...existing, ...rows]);
+  return { rows: errors.length ? [] : rows, skipped, errors };
+}
+/** Years covered by the lunar holiday table; other years have solar holidays only. */
+export const LUNAR_TABLE_YEARS = { first: 2025, last: 2035 };
 
 // 오프라인 음력 법정공휴일 표 (2025~2035년, 설날 연휴·부처님오신날·추석 연휴)
 const LUNAR_HOLIDAYS_BY_YEAR = {
@@ -504,20 +643,42 @@ const parseLocalDate = (dateStr) => {
   return new Date(y, m - 1, d);
 };
 
-export function holidaysForYear(year) {
+/**
+ * Built-in holidays of `year` plus the user's `custom` ones (data.customHolidays).
+ * User holidays are added as they are: they never create substitute holidays.
+ */
+export function holidaysForYear(year, custom = []) {
+  const builtIn = builtInHolidays(year);
+  const own = custom.filter((h) => h.date.startsWith(`${year}-`));
+  if (!own.length) return builtIn;
+  const byDate = new Map(builtIn.map((h) => [h.date, h]));
+  for (const h of own) {
+    const existing = byDate.get(h.date);
+    byDate.set(h.date, existing
+      ? { ...existing, name: `${existing.name} · ${h.name}`, custom: true }
+      : { date: h.date, name: h.name, substitute: false, custom: true });
+  }
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+function builtInHolidays(year) {
   ensure(
     Number.isInteger(year) && year >= 1970 && year <= 2100,
     "공휴일 조회 연도를 확인하세요.",
   );
   if (holidayCache.has(year)) return holidayCache.get(year);
   const raw = [
-    ...SOLAR_HOLIDAYS.map((h) => ({
+    ...SOLAR_HOLIDAYS.filter((h) => !h.from || year >= h.from).map((h) => ({
       date: `${year}-${String(h.month).padStart(2, "0")}-${String(h.day).padStart(2, "0")}`,
       name: h.name,
       subRule: h.subRule,
       group: h.name,
     })),
     ...(LUNAR_HOLIDAYS_BY_YEAR[year] || []),
+    ...FIXED_HOLIDAYS.filter((h) => h.date.startsWith(`${year}-`)).map((h) => ({
+      ...h,
+      subRule: "none",
+      group: h.name,
+    })),
   ];
   const byDate = new Map();
   for (const item of raw) {
@@ -531,25 +692,35 @@ export function holidaysForYear(year) {
     groups.get(item.group).push(item);
   }
   const substitutes = [];
+  // Holidays sharing a weekday lose one day per extra holiday, so a day where two
+  // overlap yields one substitute, not two (2025-05-05 → 5-06 only; 2028-10-03 → 10-05 only).
+  const overlapSubs = new Map();
+  const takeOverlap = (date) => {
+    const groupsThatDay = new Set((byDate.get(date) || []).map((i) => i.group)).size;
+    const used = overlapSubs.get(date) ?? 0;
+    if (used >= groupsThatDay - 1) return false;
+    overlapSubs.set(date, used + 1);
+    return true;
+  };
   for (const [, items] of groups) {
     const rule = items[0].subRule;
     if (rule === "none") continue;
     let needsSub = false;
     for (const item of items) {
       const dow = parseLocalDate(item.date).getDay();
-      const sameDayItems = byDate.get(item.date) || [];
-      const overlapsOther = sameDayItems.some(
-        (other) => other.group !== item.group,
-      );
-      if (rule === "weekend" && (dow === 0 || dow === 6 || overlapsOther)) {
-        needsSub = true;
-        break;
-      }
-      if (rule === "sunday" && (dow === 0 || overlapsOther)) {
+      if ((rule === "weekend" && (dow === 0 || dow === 6)) || (rule === "sunday" && dow === 0)) {
         needsSub = true;
         break;
       }
     }
+    if (!needsSub)
+      for (const item of items) {
+        const overlapsOther = (byDate.get(item.date) || []).some((other) => other.group !== item.group);
+        if (overlapsOther && takeOverlap(item.date)) {
+          needsSub = true;
+          break;
+        }
+      }
     if (needsSub) {
       const lastDateStr = items[items.length - 1].date;
       const cursor = parseLocalDate(lastDateStr);
@@ -588,10 +759,10 @@ export function holidaysForYear(year) {
   return sorted;
 }
 
-export function holidayName(date) {
+export function holidayName(date, custom = []) {
   ensure(validDate(date), "공휴일 조회 날짜를 확인하세요.");
   const year = Number(date.slice(0, 4));
-  const found = holidaysForYear(year).find((h) => h.date === date);
+  const found = holidaysForYear(year, custom).find((h) => h.date === date);
   return found ? found.name : null;
 }
 
@@ -709,7 +880,7 @@ export function expandEventOccurrences(event, range = {}) {
 function changeOccurrenceDate(event, date, key, enabled) {
   ensure(typeof enabled === "boolean", "회차 상태는 참 또는 거짓이어야 합니다.");
   ensure(validDate(date), "변경할 회차 날짜를 확인하세요.");
-  ensure(event.recurrence && event.recurrence !== "none", "반복 일정의 회차만 변경할 수 있습니다.");
+  ensure(isRecurring(event), "반복 일정의 회차만 변경할 수 있습니다.");
   validateOccurrenceMetadata(event);
   const dates = new Set(event[key] ?? []);
   // Historical dates may survive a rule edit. Removing an existing date is safe
@@ -855,7 +1026,7 @@ export function patrolSummary(data, { startDate, endDate }) {
     byKind.set(kind, (byKind.get(kind) ?? 0) + 1);
     for (const o of p.observations ?? []) {
       const type = o.type.trim();
-      const row = byType.get(type) ?? { type, count: 0, entries: 0, guidance: 0, fine: 0, other: 0 };
+      const row = byType.get(type) ?? { type, count: 0, entries: 0, ...Object.fromEntries(Object.keys(OBSERVATION_OUTCOMES).map((key) => [key, 0])) };
       row.count += o.count;
       row.entries += 1;
       row[o.outcome] += o.count;
@@ -881,9 +1052,19 @@ export function describeObservations(observations = []) {
     .join(", ");
 }
 
+/** Days the briefing's enforcement section covers: last working day through yesterday. */
+export function enforcementRange(date, custom = []) {
+  ensure(validDate(date), "브리핑 날짜를 확인하세요.");
+  return {
+    startDate: previousWorkday(date, (key) => holidayName(key, custom) !== null),
+    endDate: addDays(date, -1),
+  };
+}
+
 export function briefing(data, date) {
   ensure(validDate(date), "브리핑 날짜를 확인하세요.");
-  const holiday = holidayName(date);
+  const custom = data.customHolidays ?? [];
+  const holiday = holidayName(date, custom);
   const when = formatTime;
   const due = data.tasks.filter(
     (t) => !t.done && dayKey(new Date(t.at)) <= date,
@@ -900,8 +1081,10 @@ export function briefing(data, date) {
   const duty = officeRows(data, date).filter(
     (r) => r.assignment && r.assignment.duty !== "none",
   );
-  const yesterday = addDays(date, -1);
-  const enforcement = patrolSummary(data, { startDate: yesterday, endDate: yesterday });
+  // Since the last working day (TASK-BRIEF-02): Tuesday shows Monday, Monday shows
+  // Friday–Sunday, and the day after a holiday includes the holiday too.
+  const { startDate: since, endDate: yesterday } = enforcementRange(date, custom);
+  const enforcement = patrolSummary(data, { startDate: since, endDate: yesterday });
   return [
     `공원 업무 수첩 | ${date}${holiday ? ` (${holiday})` : ""} 업무 브리핑`,
     "개인 기록 기준 · 공식 결재/근무현황 자료 아님",
@@ -923,7 +1106,7 @@ export function briefing(data, date) {
     `일정 (${events.length})`,
     ...events.map(
       (e) =>
-        `- [${e.done ? "완료" : "예정"}${e.recurrence && e.recurrence !== "none" ? `/${RECURRENCE_LABEL[e.recurrence]}` : ""}] ${when(e.at)} ${e.title}`,
+        `- [${e.done ? "완료" : "예정"}${isRecurring(e) ? `/${RECURRENCE_LABEL[e.recurrence]}` : ""}] ${when(e.at)} ${e.title}`,
     ),
     "",
     `순찰 기록 (${patrols.length})`,
@@ -938,7 +1121,9 @@ export function briefing(data, date) {
         `- [${t.kind === "submission" ? "제출" : "인계"}] ${t.title} | 담당: ${t.assignee || "미지정"} | 마감: ${when(t.at)}\n  ${t.body}`,
     ),
     "",
-    `전날 단속·확인 (${yesterday}, 총 ${enforcement.totalCount}건)`,
+    since === yesterday
+      ? `전날 단속·확인 (${yesterday}, 총 ${enforcement.totalCount}건)`
+      : `직전 근무일 이후 단속·확인 (${since} ~ ${yesterday}, 총 ${enforcement.totalCount}건)`,
     ...enforcement.observations.map(
       (r) =>
         `- ${r.type} ${r.count}건 (${Object.entries(OBSERVATION_OUTCOMES)

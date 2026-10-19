@@ -5,6 +5,7 @@ import type { Control, Data, Save } from "../types";
 import { Empty, Field, focusFirstInvalid, SectionHead, Tag } from "../ui";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { ListHeader, ListRow, rowKeys } from "./ListRow";
+import { addLabel, editorTitle, SAVE, TARGET } from "../../shared/labels.mjs";
 
 type Filter = "active" | "upcoming" | "ended";
 const state = (c: Control, today: string): Filter =>
@@ -92,7 +93,7 @@ export function Controls({
         <SectionHead title="탐방로 통제">
           <div className="editor-header-actions">
             <button className="primary" disabled={busy} onClick={() => editor.openEditor(blank())}>
-              통제 등록
+              {addLabel(TARGET.control)}
             </button>
           </div>
         </SectionHead>
@@ -167,7 +168,7 @@ export function Controls({
       </section>
       {editor.isOpen && (
         <EditorDialog
-          title={draft.id ? "통제 수정" : "통제 등록"}
+          title={editorTitle(TARGET.control, Boolean(draft.id))}
           busy={busy}
           dirty={editor.dirty}
           onClose={editor.finishEditor}
@@ -176,7 +177,7 @@ export function Controls({
           <form className="editor" onSubmit={submit}>
             <div className="editor-header-actions">
               <button className="primary" disabled={busy}>
-                {draft.id ? "변경 저장" : "통제 저장"}
+                {SAVE}
               </button>
               <button type="button" disabled={busy} onClick={editor.closeEditor}>
                 취소

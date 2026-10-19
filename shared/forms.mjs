@@ -7,6 +7,7 @@ import {
   OBSERVATION_OUTCOMES,
   PATROL_KINDS,
   patrolSummary,
+  RISK_LABEL as RISK,
 } from "./model.mjs";
 import { daysInclusive } from "./dates.mjs";
 import { validDate } from "./office.mjs";
@@ -16,7 +17,6 @@ export const FORMS = {
   "enforcement-log": "단속·계도 기록",
 };
 export const FORM_FORMATS = ["txt", "csv"];
-const RISK = { normal: "일반 기록", attention: "확인 필요", urgent: "우선 확인" };
 const MAX_DAYS = 366;
 const NOTICE = "추천 양식 · 공식 서식 아님 · 개인 기록 기준";
 
@@ -137,7 +137,10 @@ function enforcementLog(data, { startDate, endDate, format }) {
     "",
     `유형별 합계 (총 ${summary.totalCount}건)`,
     ...summary.observations.map(
-      (r) => `- ${r.type}: ${r.count}건 (계도 ${r.guidance}, 과태료 부과 ${r.fine}, 기타 ${r.other})`,
+      (r) =>
+        `- ${r.type}: ${r.count}건 (${Object.entries(OBSERVATION_OUTCOMES)
+          .map(([key, label]) => `${label} ${r[key]}`)
+          .join(", ")})`,
     ),
   ].join("\n") + "\n";
 }

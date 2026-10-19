@@ -180,9 +180,9 @@ export function PatrolSummary({ data }: { data: Data }) {
               <tr key={row.type}>
                 <th scope="row">{row.type}</th>
                 <td>{row.count}</td>
-                <td>{row.guidance}</td>
-                <td>{row.fine}</td>
-                <td>{row.other}</td>
+                {(Object.keys(OBSERVATION_OUTCOMES) as Observation["outcome"][]).map((key) => (
+                  <td key={key}>{row[key]}</td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -190,7 +190,7 @@ export function PatrolSummary({ data }: { data: Data }) {
             <tr>
               <th scope="row">합계</th>
               <td>{summary.totalCount}</td>
-              <td colSpan={3} />
+              <td colSpan={Object.keys(OBSERVATION_OUTCOMES).length} />
             </tr>
           </tfoot>
         </table>

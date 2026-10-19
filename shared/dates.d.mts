@@ -8,3 +8,7 @@ export function periodRange(
   today: string,
 ): { startDate: string; endDate: string };
 export function earliestLocalDay(at: string): string;
+/** True on Saturday or Sunday. */
+export function isWeekend(key: string): boolean;
+/** Closest earlier working day, skipping weekends and `isHoliday` days (at most 31 days back). */
+export function previousWorkday(key: string, isHoliday?: (key: string) => boolean): string;

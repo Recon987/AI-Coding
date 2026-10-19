@@ -201,10 +201,42 @@ test("브리핑 텍스트에 당직자(이름)·근무 건수·전날 단속 요
   const text = briefing(data, "2026-10-15");
   assert.match(text, /근무·당직 \(당직 1명\)\n- 숙직: 시험 직원\n- 근무·출장 1 · 휴무·연가 0 · 미등록 1 \(직원 2명\)/);
   assert.doesNotMatch(text, /미등록 직원/, "당직자 외 이름은 넣지 않음");
-  assert.match(text, /전날 단속·확인 \(2026-10-14, 총 2건\)\n- 흡연 2건 \(계도 2, 과태료 부과 0, 기타 조치 0\)/);
+  assert.match(text, /전날 단속·확인 \(2026-10-14, 총 2건\)\n- 흡연 2건 \(계도 2, 과태료 부과 0, 고발·인계 0, 기타 조치 0\)/);
   assert.match(text, /당직 직원 이름이 포함되어 있습니다/);
   const plain = briefing(empty(), "2026-10-15");
   assert.doesNotMatch(plain, /근무·당직|당직 직원 이름/);
   assert.match(plain, /전날 단속·확인 \(2026-10-14, 총 0건\)/);
   assert.throws(() => briefing(empty(), "2026-02-30"), /브리핑 날짜/);
+});
+
+// TASK-BRIEF-02: Monday and the day after a holiday cover everything since the last working day.
+test("브리핑 단속 절은 직전 근무일부터 어제까지 합계(화=월, 월=금~일, 연휴 다음 날=연휴 포함)", () => {
+  const { briefing, enforcementRange } = require("../shared/model.mjs");
+  const { previousWorkday, isWeekend } = require("../shared/dates.mjs");
+  assert.equal(isWeekend("2026-10-17"), true);
+  assert.equal(isWeekend("2026-10-19"), false);
+  assert.equal(previousWorkday("2026-10-19"), "2026-10-16");
+  assert.equal(previousWorkday("2026-10-21", () => true), "2026-09-20", "잘못된 판정에도 31일 안에서 멈춤");
+  const cases = [
+    ["2026-10-20", "2026-10-19", "2026-10-19"], // 화요일
+    ["2026-10-19", "2026-10-16", "2026-10-18"], // 월요일
+    ["2026-10-06", "2026-10-02", "2026-10-05"], // 개천절 대체공휴일 다음 날
+    ["2026-09-28", "2026-09-23", "2026-09-27"], // 추석 연휴 다음 월요일
+    ["2026-02-19", "2026-02-13", "2026-02-18"], // 설 연휴 다음 날
+    ["2026-10-18", "2026-10-16", "2026-10-17"], // 일요일에 보는 경우
+  ];
+  for (const [date, startDate, endDate] of cases)
+    assert.deepEqual(enforcementRange(date), { startDate, endDate }, date);
+  const data = empty();
+  const patrol = (id, day, count) => ({
+    id, title: `가상 단속 ${id}`, at: new Date(`${day}T10:00:00`).toISOString(), route: "가상 구간", observer: "가상 담당",
+    findings: "", action: "", risk: "normal", kind: "enforcement",
+    observations: [{ id: `${id}-o`, type: "흡연", count, outcome: "guidance", note: "" }],
+  });
+  data.patrols.push(patrol("thu", "2026-10-15", 9), patrol("fri", "2026-10-16", 1), patrol("sat", "2026-10-17", 2), patrol("sun", "2026-10-18", 3));
+  const monday = briefing(data, "2026-10-19");
+  assert.match(monday, /직전 근무일 이후 단속·확인 \(2026-10-16 ~ 2026-10-18, 총 6건\)\n- 흡연 6건 \(계도 6/);
+  assert.doesNotMatch(monday, /전날 단속·확인/);
+  assert.match(briefing(data, "2026-10-16"), /전날 단속·확인 \(2026-10-15, 총 9건\)/, "평일 연속은 어제 하루 그대로");
+  assert.throws(() => enforcementRange("2026-02-30"), /브리핑 날짜/);
 });

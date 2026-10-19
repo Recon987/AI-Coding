@@ -1,6 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const { empty, normalize } = require("../shared/model.mjs");
+const { empty, normalize, isNewerData } = require("../shared/model.mjs");
 const MAX_BYTES = 20 * 1024 * 1024;
 // Antivirus, indexing or sync tools on Windows can hold a file for a moment.
 const TRANSIENT = new Set(["EPERM", "EBUSY", "EACCES"]);
@@ -20,7 +20,8 @@ function withRetry(action) {
     }
   }
 }
-function read(file, { required = false } = {}) {
+// allowNewer: only for showing a newer app's file read-only; write() never accepts it.
+function read(file, { required = false, allowNewer = false } = {}) {
   let stat;
   try { stat = fs.statSync(file); }
   catch (error) {
@@ -31,7 +32,7 @@ function read(file, { required = false } = {}) {
   if (stat.size > MAX_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
   const bytes = withRetry(() => fs.readFileSync(file));
   if (bytes.length > MAX_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
-  return normalize(JSON.parse(bytes.toString("utf8")));
+  return normalize(JSON.parse(bytes.toString("utf8")), { allowNewer });
 }
 // Write, flush to disk, then rename so a power loss leaves either the old or the new file.
 function durableReplace(file, payload) {
@@ -88,7 +89,8 @@ function write(file, data, { keepLastGood = false } = {}) {
 function migrateFile(file) {
   if (!fs.existsSync(file)) return;
   const original = JSON.parse(fs.readFileSync(file, "utf8"));
-  normalize(original);
+  // A newer app's v3 file is never converted here; read-only handling is in recovery.cjs.
+  normalize(original, { allowNewer: true });
   if ([1, 2].includes(original.version)) {
     // Byte-for-byte original, never replace a prior migration backup.
     // A later v1/v2 file gets its own copy instead of reusing an older backup name.
@@ -98,6 +100,57 @@ function migrateFile(file) {
     fs.copyFileSync(file, backup, fs.constants.COPYFILE_EXCL);
     return write(file, original, { keepLastGood: true });
   }
+}
+// Copies made before each restore (TASK-BACKUP-02). Only "<file>.before-restore-<ms>.json"
+// counts; v1/v2 conversion backups, corrupt copies and .last-good are never touched.
+const RESTORE_KEEP = 5;
+function restoreCopies(file) {
+  const dir = path.dirname(file);
+  const prefix = path.basename(file) + ".before-restore-";
+  let names;
+  try {
+    names = fs.readdirSync(dir);
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+  return names
+    .filter((name) => name.startsWith(prefix) && /^\d+\.json$/.test(name.slice(prefix.length)))
+    .map((name) => ({ file: path.join(dir, name), at: Number(name.slice(prefix.length, -5)) }))
+    .sort((a, b) => a.at - b.at);
+}
+/**
+ * A new, unused protection-copy path for a restore at `now`. The number is never below
+ * an existing copy's, so the new copy always sorts newest even after the PC clock was
+ * once set ahead (BK-01, Codex review 2026-10-19).
+ */
+function restoreCopyPath(file, now = Date.now(), existing = restoreCopies(file)) {
+  let at = Math.max(now, ...existing.map((c) => c.at + 1));
+  while (fs.existsSync(`${file}.before-restore-${at}.json`)) at++;
+  return `${file}.before-restore-${at}.json`;
+}
+/** The copies a prune would delete: the oldest beyond `keep`, never one listed in `protect`. */
+function restoreCopiesToPrune(copies, keep = RESTORE_KEEP, protect = []) {
+  const kept = copies.filter((c) => protect.includes(c.file));
+  const others = copies.filter((c) => !protect.includes(c.file));
+  return others.slice(0, Math.max(0, others.length - Math.max(0, keep - kept.length)));
+}
+/**
+ * Deletes the oldest restore copies beyond `keep`, never the files in `protect` (the copy
+ * just made). A file that cannot be deleted is reported, not thrown.
+ */
+function pruneRestoreCopies(file, keep = RESTORE_KEEP, protect = []) {
+  const removed = [];
+  const failed = [];
+  for (const copy of restoreCopiesToPrune(restoreCopies(file), keep, protect)) {
+    try {
+      withRetry(() => fs.unlinkSync(copy.file));
+      removed.push(copy);
+    } catch {
+      failed.push(copy);
+    }
+  }
+  return { removed, failed };
 }
 function due(events, now, seen) {
   return events.filter(
@@ -111,10 +164,16 @@ function due(events, now, seen) {
 module.exports = {
   empty,
   validate: normalize,
+  isNewerData,
   read,
   write,
   migrateFile,
   lastGoodFile,
+  RESTORE_KEEP,
+  restoreCopies,
+  restoreCopyPath,
+  restoreCopiesToPrune,
+  pruneRestoreCopies,
   isTransientLock,
   retry,
   due,

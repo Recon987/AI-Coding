@@ -5,6 +5,8 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { empty } = require("../shared/model.mjs");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 const root = path.resolve(__dirname, "..");
 
 (async () => {
@@ -192,7 +194,7 @@ const root = path.resolve(__dirname, "..");
     );
     await page.getByRole("button", { name: "오늘", exact: true }).click();
     assert.equal(await selected(), "2028-02-29");
-    const add = page.getByRole("button", { name: "일정 추가", exact: true });
+    const add = page.getByRole("button", { name: L.addLabel(L.TARGET.event), exact: true });
     await add.click();
     await page.getByRole("dialog").waitFor();
     await page.keyboard.press("Escape");

@@ -8,6 +8,8 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { REVIEW_DATE, reviewFixture } = require("./review-fixture.cjs");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 
 const root = path.resolve(__dirname, "..");
 const output = path.resolve(process.env.PARK_FLOW_OUT || path.join(os.tmpdir(), "park-workdesk-flows.json"));
@@ -105,14 +107,14 @@ function counter(page) {
 
     await task("T2", "현장 복귀 후 순찰 기록(주의 등급, 구간·확인·조치)", async (t) => {
       await t.click(nav("현장 순찰"));
-      await t.click(page.getByRole("button", { name: "순찰 기록 추가", exact: true }));
+      await t.click(page.getByRole("button", { name: L.addLabel(L.TARGET.patrol), exact: true }));
       await t.fill(page.getByLabel("기록 제목"), "오후 계곡 순찰");
       await t.fill(page.getByLabel("순찰 구간"), "계곡안내소 → 쉼터");
       await t.fill(page.getByLabel("기록자"), "홍길동");
       await t.select(page.getByLabel("확인 등급"), "attention");
       await t.fill(page.getByLabel("확인 사항"), "샛길 출입 2명 계도");
       await t.fill(page.getByLabel("현장 조치"), "출입금지 안내");
-      await t.click(sheet().getByRole("button", { name: "순찰 저장", exact: true }));
+      await t.click(sheet().getByRole("button", { name: L.SAVE, exact: true }));
       await page.getByRole("heading", { name: "오후 계곡 순찰", exact: true }).waitFor();
       return "제목·구간·기록자 등을 직접 입력하는 비교 기준. 기본값·단속 유형 선택·복사 입력은 T2b/T2c에서 별도 확인";
     });
@@ -123,18 +125,18 @@ function counter(page) {
       await t.click(record.getByRole("button", { name: /^인수인계로 연결 · / }));
       await t.fill(page.getByLabel("담당자", { exact: true }), "김담당");
       await t.fill(page.getByLabel("마감 일시"), "2026-10-16T09:00");
-      await t.click(sheet().getByRole("button", { name: /^(변경 저장|업무 등록)$/ }));
+      await t.click(sheet().getByRole("button", { name: L.SAVE, exact: true }));
       await sheet().waitFor({ state: "hidden" });
       return "순찰 내용이 본문으로 이어져 재입력은 없음";
     });
 
     await task("T4", "제출 기한 등록(제출처·마감)", async (t) => {
       await t.click(nav("제출 기한"));
-      await t.click(page.getByRole("button", { name: "제출 기한 추가", exact: true }));
+      await t.click(page.getByRole("button", { name: L.addLabel(L.TARGET.submission), exact: true }));
       await t.fill(page.getByLabel("업무 제목"), "주간 순찰 실적 제출");
       await t.fill(page.getByLabel("제출처"), "자원보전부");
       await t.fill(page.getByLabel("마감 일시"), "2026-10-17T17:00");
-      await t.click(sheet().getByRole("button", { name: "업무 등록", exact: true }));
+      await t.click(sheet().getByRole("button", { name: L.SAVE, exact: true }));
       await sheet().waitFor({ state: "hidden" });
     });
 
@@ -151,7 +153,7 @@ function counter(page) {
       await t.click(row.locator(".observation-location > summary"));
       await t.fill(row.getByLabel("위도 (DD)", { exact: true }), "37.6512");
       await t.fill(row.getByLabel("경도 (DD)", { exact: true }), "126.9771");
-      await t.click(sheet().getByRole("button", { name: "변경 저장", exact: true }));
+      await t.click(sheet().getByRole("button", { name: L.SAVE, exact: true }));
       await sheet().waitFor({ state: "hidden" });
       return "유형은 제안 목록에서 고를 수 있음(datalist). 조치 기본값은 계도";
     });
@@ -164,7 +166,7 @@ function counter(page) {
       assert.equal(await page.getByLabel("담당구역 번호").inputValue(), "3-2");
       assert.match(await page.locator(".editor-hint").textContent(), /^‘오후 계곡 순찰’에서 가져옴: 순찰 구간 계곡안내소 → 쉼터 · 기록자 홍길동 · 순찰 종류 단속 · 담당구역 3-2\./);
       await t.fill(page.getByLabel("확인 사항"), "이상 없음");
-      await t.click(sheet().getByRole("button", { name: "순찰 저장", exact: true }));
+      await t.click(sheet().getByRole("button", { name: L.SAVE, exact: true }));
       await sheet().waitFor({ state: "hidden" });
       const saved = (await page.evaluate(() => window.workdesk.load())).patrols.find((p) => p.findings === "이상 없음");
       assert.match(saved.title, /^단속 3-2구역 \d{2}:\d{2}$/);
@@ -186,7 +188,7 @@ function counter(page) {
       await t.click(page.getByRole("button", { name: "통제 등록", exact: true }));
       await t.fill(page.getByLabel("통제 구간·대상"), "계곡 탐방로 전 구간");
       await t.select(page.getByLabel("통제 사유"), "weather");
-      await t.click(sheet().getByRole("button", { name: "통제 저장", exact: true }));
+      await t.click(sheet().getByRole("button", { name: L.SAVE, exact: true }));
       await sheet().waitFor({ state: "hidden" });
       return "시작일 기본값 오늘, 종료일 비우면 해제 시까지";
     });

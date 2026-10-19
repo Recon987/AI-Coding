@@ -55,3 +55,16 @@ test("다음 카드는 진행 중 카드를 먼저, 그다음 의존이 끝난 �
   cards.push(p({ status: "in-progress", owner: "codex" }, "TASK-A-04"));
   assert.equal(nextFor(cards, "codex").id, "TASK-A-04");
 });
+
+test("사용자가 승인한 의존 예외는 검증 대기(review) 의존 카드에만 통한다", async () => {
+  const { parseCard, validateCards } = await load();
+  const parse = (text, id) => parseCard(text, `docs/tasks/${id}.md`);
+  const body = "## 의존 예외\n- 의존 예외: TASK-A-01 (사용자 승인 2026-10-19, 검증 전 착수)\n## 재개 위치\n다음\n";
+  const dependent = parse(card({ id: "TASK-A-02", branch: "task/task-a-02", status: "in-progress", depends: "TASK-A-01" }, body), "TASK-A-02");
+  const inReview = parse(card({ status: "review", owner: "claude", verifier: "codex" }), "TASK-A-01");
+  assert.deepEqual(validateCards([inReview, dependent]), []);
+  const notBuilt = parse(card({ status: "ready" }), "TASK-A-01");
+  assert.match(validateCards([notBuilt, dependent]).join("\n"), /아직 done이 아닙니다/);
+  const unapproved = parse(card({ id: "TASK-A-02", branch: "task/task-a-02", status: "in-progress", depends: "TASK-A-01" }, "- 의존 예외: TASK-A-01\n## 재개 위치\n다음\n"), "TASK-A-02");
+  assert.match(validateCards([inReview, unapproved]).join("\n"), /아직 done이 아닙니다/, "승인 날짜 없는 줄은 예외가 아님");
+});

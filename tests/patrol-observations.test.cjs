@@ -75,8 +75,8 @@ test("기간 집계는 현지 날짜 기준으로 유형별 건수와 조치를 
     { kind: null, label: "종류 미지정", count: 1 },
   ]);
   assert.deepEqual(summary.observations, [
-    { type: "흡연", count: 3, entries: 2, guidance: 2, fine: 0, other: 1 },
-    { type: "샛길·출입금지구역 출입", count: 3, entries: 1, guidance: 0, fine: 3, other: 0 },
+    { type: "흡연", count: 3, entries: 2, guidance: 2, fine: 0, referral: 0, other: 1 },
+    { type: "샛길·출입금지구역 출입", count: 3, entries: 1, guidance: 0, fine: 3, referral: 0, other: 0 },
   ].sort((a, b) => b.count - a.count || a.type.localeCompare(b.type, "ko")));
   assert.equal(summary.totalCount, 6);
   assert.throws(() => patrolSummary(data, { startDate: "2026-13-01", endDate: "2026-10-18" }), /기간/);

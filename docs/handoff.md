@@ -10,17 +10,19 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main 병합, PR Recon987/AI-Coding#1)
-- **Task Card**: 2026-10-19 사용자가 결정을 Claude 추천에 위임. review 29장 → done(main 병합). ready: TASK-SCHEMA-01(P1, 다음 착수), TASK-BRIEF-02, TASK-LABELS-01('등록' 통일). backlog: TASK-FORMS-02('고발·인계', SCHEMA-01 뒤)
-- **Latest Pushed Commit**: c80d64f - docs(TASK-REVIEW-LIST-02): Codex 보완 2건 교차 검증 승인과 통합 기록 (이 문서를 포함한 최종 해시와 main 병합 커밋은 응답 패킷 참조)
-- **Completed Steps & Modified Files**: 카드 상태·결정 기록(docs/tasks/*, TASK-BRIEF-02 신규), docs/research/forms-draft.md 피드백 기록, loop-log 6 정리, 한국어 작업 기록 14장
-- **Changed Interfaces / Schema Diff**: 없음(문서만). 데이터 v3·IPC 변경 없음
-- **Test Status**: 병합 전 c80d64f Linux(npm test 91/91, test:desktop 10개 진입점, 화면 150, 업무 과업 11)·Windows 39186549462 통과. 문서 커밋은 PR #1 Windows 재확인 후 병합
-- **Remaining Work for Gemini**: 다음 구현 TASK-SCHEMA-01(minReader·모르는 최상위 키 보존). 그다음 BRIEF-02 → LABELS-01 → FORMS-02
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main 병합)
+- **Task Card**: SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02 done(사용자 승인 병합). REVIEW-DATA-SAFETY-01 done. 다음 TASK-ARCH-MODULAR-01
+- **Latest Pushed Commit**: 293f658 - fix(TASK-HOLIDAY-01): 공휴일 한도 초과를 화면 안내로 처리(HL-01) (이 문서를 포함한 최종 해시·main 병합 커밋은 응답 패킷 참조)
+- **Completed Steps & Modified Files**: 카드 6장 done, loop-log 7주기, 작업 기록 23장, handoff
+- **Changed Interfaces / Schema Diff**: 이번 커밋 없음(문서). 병합 범위의 자료 변경: 선택 필드 minReader(읽기 수준 2), 선택 컬렉션 customHolidays, 단속 조치 referral. 데이터 v3 유지
+- **Test Status**: 293f658 Linux: npm test 131/131, test:desktop 12개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows 39260014172 결과 확인 후 병합
+- **Remaining Work for Gemini**: Codex: BK-01·HL-01 사후 독립 재검증. Claude: ARCH-MODULAR-01(PR #12 보정 명세) 착수
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황
+
+**2026-10-19 두 번째 main 병합**: 7주기 카드 6장(SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02)과 Codex 자료 안전 감사(PR #10·#11)를 사용자 승인으로 병합. BK-01·HL-01 보완의 Codex 독립 재검증은 병합 뒤에 받는다. 다음 작업은 TASK-ARCH-MODULAR-01([보정 명세](specs/modular-ax/implementation.md)).
 
 **2026-10-19 main 병합**: PR #1(검증 끝난 카드 29장)을 main에 병합했다. 사용자 결정 7건(Claude 추천 위임)은 [작업 기록 14장](work-log/2026-10-18-claude-2.md)과 각 카드에 있다. 아래 문단은 병합 전 기록이다.
 
@@ -72,3 +74,8 @@ Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-
 ## A11Y-02 복구·검증 결과 보존
 
 환경 복구 후 기존 미푸시 변경을 별도 보관하고 Claude의 동등 수정·타이머 경합 보완을 검증했다. 추가 알림 재진입 포커스 문제는 [PR #8](https://github.com/Recon987/AI-Coding/pull/8) 실행746b478·최종 문서788071a에 보존했다. Linux 단위91·desktop10·UI150·흐름11, Windows39184848329 소스10/패키지9 모두 통과했다. 환경 오류로 검증 중단이라는 이전 기록을 대체한다. 이 LIST 브랜치는 PR #8을 포함하지 않으므로 총괄이 두 결과를 각각 통합한다.
+
+
+## DS-01 재감사·후속6카드 독립 검증(2026-10-19)
+
+DS-01은 afc3825에서 승인됐다. 자료 안전성 **감사 카드**는 사용자 요청대로done이다. 제품6카드는4승인·2반려로 전체 main 병합은 보류한다. [최종 검토](reviews/2026-10-19-codex-dispatch.md). BK-01은 시계 역행 때 새 복원 직전 보호본을 즉시 지우는 P1, HL-01은 공휴일 한도 초과 시 화면 안내 없는 미처리 예외 P2다. Claude가 BACKUP-02 진행 중 → HOLIDAY-01 ready 순으로 보완한다. 기존 자동 검사 성공은 이 새 경계 실패를 포함하지 않는다.

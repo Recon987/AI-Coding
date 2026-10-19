@@ -7,6 +7,8 @@ const os = require("node:os");
 const path = require("node:path");
 const { empty } = require("../shared/model.mjs");
 const { REVIEW_DATE, reviewFixture } = require("./review-fixture.cjs");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 
 const root = path.resolve(__dirname, "..");
 const date = process.env.PARK_REVIEW_DATE || REVIEW_DATE;
@@ -162,9 +164,9 @@ async function geometry(page) {
       const office = await capture("office-directory");
       check("office directory: registration form hidden by default", office.defaultVisibleForms.length === 0 && office.openDialogs.length === 0, office.defaultVisibleForms);
       for (const [label, name, add] of [
-        ["현장 순찰", "patrol", "순찰 기록 추가"],
-        ["업무 메모", "notes", "메모 추가"],
-        ["월간 일정", "calendar", "일정 추가"],
+        ["현장 순찰", "patrol", L.addLabel(L.TARGET.patrol)],
+        ["업무 메모", "notes", L.addLabel(L.TARGET.note)],
+        ["월간 일정", "calendar", L.addLabel(L.TARGET.event)],
       ]) {
         await nav(label);
         const metrics = await capture(name);
@@ -228,7 +230,7 @@ async function geometry(page) {
       const emptyHome = await capture("empty-home");
       const start = page.getByRole("region", { name: "업무 시작 안내", exact: true });
       check("first use: one introduction replaces empty dashboard", await start.count() === 1 && emptyHome.firstUse.primaryActions === 4 && emptyHome.firstUse.oldEmptyPanels === 0, emptyHome.firstUse);
-      for (const [action, dialogName] of [["순찰 기록", "순찰 기록 등록"], ["일정 등록", "일정 등록"], ["전화메모 작성", "전화메모 등록"]]) {
+      for (const [action, dialogName] of [L.TARGET.patrol, L.TARGET.event, L.TARGET.call].map((target) => [L.addLabel(target), L.addLabel(target)])) {
         const button = start.getByRole("button", { name: action, exact: true });
         const box = await button.boundingBox();
         check(`first use: ${action} is visible without scrolling`, box && box.x >= 0 && box.y >= 0 && box.x + box.width <= emptyHome.viewport.width && box.y + box.height <= emptyHome.viewport.height, box);

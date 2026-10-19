@@ -7,6 +7,7 @@ import {
   officeSummary,
   workTypes,
   dutyTypes,
+  workGroup,
 } from "../../shared/office.mjs";
 import type { Assignment, Data, Save } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
@@ -15,6 +16,7 @@ import { OfficeDirectory } from "./OfficeDirectory";
 import { OfficeImport } from "./OfficeImport";
 import { Sheet } from "./Sheet";
 import { askConfirm, discardChanges } from "../confirm";
+import { SAVE } from "../../shared/labels.mjs";
 const officeTabs = [
   ["board", "근무현황"],
   ["employees", "직원 관리"],
@@ -53,9 +55,7 @@ export function Office({
         ? !r.assignment
         : filter === "duty"
           ? !!r.assignment && r.assignment.duty !== "none"
-          : filter === "working"
-            ? ["work", "base", "trip"].includes(r.assignment?.workType ?? "")
-            : ["off", "leave"].includes(r.assignment?.workType ?? ""));
+          : workGroup(r.assignment?.workType) === filter);
     return matches && status;
   });
   const week = weekDays(date);
@@ -608,7 +608,7 @@ export function Office({
             </Field>
             <div className="sheet-actions">
               <button className="primary" disabled={busy}>
-                근무 저장
+                {SAVE}
               </button>
               <button type="button" disabled={busy} onClick={closeDraft}>
                 취소

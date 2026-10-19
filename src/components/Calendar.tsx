@@ -9,6 +9,9 @@ import {
   dayKey,
   holidayName,
   RECURRENCE_LABEL,
+  isRecurring,
+  LUNAR_TABLE_YEARS,
+  recurrenceText,
 } from "../../shared/model.mjs";
 import type {
   CalendarItem,
@@ -33,6 +36,7 @@ import { MonthGrid } from "./calendar/MonthGrid";
 import { WeekView } from "./calendar/WeekView";
 import { ListView } from "./calendar/ListView";
 import { askConfirm, confirmDelete } from "../confirm";
+import { addLabel, editorTitle, SAVE, TARGET } from "../../shared/labels.mjs";
 type View = "month" | "week" | "list";
 const VIEWS: [View, string][] = [
   ["month", "월간"],
@@ -101,8 +105,6 @@ export function Calendar({
     (n, e) => n + (e.excludedDates?.length || 0),
     0,
   );
-  const isRecurring = (event: Event | CalendarItem) =>
-    !!event.recurrence && event.recurrence !== "none";
   const occurrenceDay = (item: CalendarItem) =>
     item.occurrenceDate || dayKey(new Date(item.at));
   async function persistEvent(next: Event) {
@@ -288,7 +290,7 @@ export function Calendar({
       setMonth(next);
     setGridFocusRequest((n) => n + 1);
   }
-  const selectedHoliday = holidayName(selected);
+  const selectedHoliday = holidayName(selected, data.customHolidays);
   // Week (Mon–Sun around the selected day) and 30-day list views (TASK-CALENDAR-03).
   const [view, setView] = useState<View>("month");
   // Arrow/Home/End move between view tabs and select them (roving tabindex).
@@ -357,7 +359,7 @@ export function Calendar({
       requestAnimationFrame(focusAgenda);
   }
   const draftStartDay = dayKey(new Date(draft.at));
-  const activeRecurrence = draft.recurrence && draft.recurrence !== "none";
+  const activeRecurrence = isRecurring(draft);
   const invalidRepeatUntil =
     Boolean(activeRecurrence) &&
     Boolean(draft.repeatUntil) &&
@@ -382,7 +384,7 @@ export function Calendar({
     )
       return;
     const recFields =
-      draft.recurrence && draft.recurrence !== "none"
+      isRecurring(draft)
         ? {
             recurrence: draft.recurrence,
             repeatUntil: draft.repeatUntil || null,
@@ -472,7 +474,7 @@ export function Calendar({
             disabled={busy}
             onClick={() => editor.openEditor(blank())}
           >
-            일정 추가
+            {addLabel(TARGET.event)}
           </button>
         </div>
         <div
@@ -498,8 +500,18 @@ export function Calendar({
         </div>
       </header>
       <section className="panel calendar-view-panel">
+        {(() => {
+          // TASK-HOLIDAY-01: outside the lunar table, 설·추석·부처님오신날 are missing.
+          const shownYear = view === "month" ? year : Number(selected.slice(0, 4));
+          return shownYear < LUNAR_TABLE_YEARS.first || shownYear > LUNAR_TABLE_YEARS.last ? (
+            <p className="calendar-note" role="note">
+              {shownYear}년은 음력 공휴일(설·추석·부처님오신날)이 표에 없습니다. 필요한 날은 자료 관리 → 공휴일 관리에서 등록하세요.
+            </p>
+          ) : null;
+        })()}
         {view === "week" && (
           <WeekView
+            customHolidays={data.customHolidays}
             days={weekDays}
             selected={selected}
             items={viewItems}
@@ -508,10 +520,11 @@ export function Calendar({
           />
         )}
         {view === "list" && (
-          <ListView startDate={selected} items={viewItems} onOpen={openItem} />
+          <ListView startDate={selected} items={viewItems} customHolidays={data.customHolidays} onOpen={openItem} />
         )}
         {view === "month" && (
           <MonthGrid
+            customHolidays={data.customHolidays}
             days={days}
             monthIndex={monthIndex}
             items={items}
@@ -552,9 +565,7 @@ export function Calendar({
                 </button>
                 <small>
                   <time dateTime={i.at}>{itemClock(i)}</time>
-                  {i.recurrence && i.recurrence !== "none"
-                    ? ` · ${RECURRENCE_LABEL[i.recurrence]} 반복${i.repeatUntil ? ` (~${i.repeatUntil})` : ""}`
-                    : ""}
+                  {isRecurring(i) ? ` · ${recurrenceText(i, { until: true })}` : ""}
                 </small>
               </div>
               {i.page === "calendar" && completionControls(i)}
@@ -622,7 +633,7 @@ export function Calendar({
       )}
       {editor.isOpen && (
         <EditorDialog
-          title={draft.id ? "일정 수정" : "일정 등록"}
+          title={editorTitle(TARGET.event, Boolean(draft.id))}
           busy={busy}
           dirty={editor.dirty}
           onClose={editor.finishEditor}
@@ -672,7 +683,7 @@ export function Calendar({
 
             <div className="editor-header-actions">
               <button className="primary" disabled={busy}>
-                {draft.id ? "변경 저장" : "일정 저장"}
+                {SAVE}
               </button>
               <button
                 type="button"

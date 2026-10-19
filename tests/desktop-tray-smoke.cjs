@@ -4,6 +4,8 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+// Button wording comes from the app (TASK-LABELS-01 U6).
+const L = require("../shared/labels.mjs");
 
 module.exports = async function traySmoke() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "park-tray-test-"));
@@ -216,7 +218,7 @@ module.exports = async function traySmoke() {
       .locator("nav")
       .getByRole("button", { name: "업무 메모", exact: true })
       .click();
-    await page.getByRole("button", { name: "메모 추가", exact: true }).click();
+    await page.getByRole("button", { name: L.addLabel(L.TARGET.note), exact: true }).click();
     await page
       .getByLabel("제목", { exact: true })
       .fill("종료 취소로 보호할 초안");
