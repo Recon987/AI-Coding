@@ -1,9 +1,9 @@
 ---
 id: TASK-AXDESK-02
 title: AX Desk GIS·AI 스니펫 보관함
-status: backlog
+status: in-progress
 role: builder
-owner: none
+owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: TASK-AXDESK-01
@@ -13,6 +13,9 @@ updated: 2026-10-19
 
 ## 배경
 TASK-ARCH-MODULAR-01 Step C-2. [보정 명세](../specs/modular-ax/implementation.md) 5장 '스니펫 보관함'.
+
+## 의존 예외
+- 의존 예외: TASK-AXDESK-01 (사용자 승인 2026-10-19, "이어서 AXDESK-02 진행해" — AXDESK-01은 Codex 기능 승인 후 MODULES-01 재검증 대기로 review. 검증에서 바뀌는 점은 이 카드에도 반영)
 
 ## 완료 조건
 - [ ] 분류(GEE/Python/프롬프트/법령·지침) 필터, 제목·태그·설명·본문 검색, 등록·수정·삭제
@@ -28,7 +31,7 @@ TASK-ARCH-MODULAR-01 Step C-2. [보정 명세](../specs/modular-ax/implementatio
 - [ ] 2. 예제·검사·기록
 
 ## 재개 위치
-AXDESK-01 완료 후.
+1단계: AX 모듈에 두 번째 화면(Page "ax-snippets", 보기 전환)을 붙이고 src/components/AxSnippets.tsx에 분류 필터·검색·등록/수정/삭제·복사를 만든다.
 
 ## 테스트 상태
 미실행
