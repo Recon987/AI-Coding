@@ -1,7 +1,7 @@
 ---
 id: TASK-BRIEF-02
 title: 월요일·연휴 다음 날 브리핑의 '전날 단속'을 직전 근무일부터 어제까지 합계로
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -28,7 +28,7 @@ TASK-PANEL-01 D1로 브리핑에 '전날 단속·확인'(어제 하루)이 들�
 - [x] 2. briefing() 기간·제목 적용 + 테스트, 화면·TXT 확인
 
 ## 재개 위치
-Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
+**완료**: 2026-10-19 Codex 독립 검증 승인(PR #11) 후 사용자 승인으로 main에 병합. 이전 메모: Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
 
 ## 구현 내용·검증 요점
 - `shared/dates.mjs`: `isWeekend(key)`, `previousWorkday(key, isHoliday)` — 공휴일 표는 model.mjs에 있어 판정 함수를 인자로 받는다(순환 import 없음). 잘못된 판정에도 31일 안에서 멈춤.

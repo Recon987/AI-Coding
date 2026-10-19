@@ -10,17 +10,19 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76. Codex PR #11(11d098a) 통합
-- **Task Card**: BACKUP-02(BK-01 보완)·HOLIDAY-01(HL-01 보완) review — Codex 재검증 대기. SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02는 Codex 승인(PR #11). REVIEW-DATA-SAFETY-01 done. ARCH-MODULAR-01 blocked(PR #12, 이 두 보완·main 병합 뒤 착수)
-- **Latest Pushed Commit**: 5ba80dc - fix(TASK-BACKUP-02): 시계가 앞서 있던 보호본 때문에 새 복원 보호본이 지워지던 결함(BK-01) 수정 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: BK-01 — desktop/store.cjs(restoreCopyPath 최댓값+1, restoreCopiesToPrune, pruneRestoreCopies protect), desktop/main.cjs. HL-01 — shared/model.mjs parseHolidayLines 한도 안내, src/components/HolidayManager.tsx 예외 처리. 감사 tests/desktop-backup-clock-audit.cjs·tests/desktop-holiday-limits-audit.cjs를 test:desktop·Windows 검사에 편입
-- **Changed Interfaces / Schema Diff**: store `restoreCopyPath(file, now, existing?)`, 새 `restoreCopiesToPrune`, `pruneRestoreCopies(file, keep, protect?)`. 자료 형식·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 131/131, npm run test:desktop 12개 진입점 + 감사 9/9(자료 안전 5·시계 2·공휴일 한도 2), 화면 검사 150·실패 0, 업무 과업 11/11. 수정 전 두 감사 실패 재현. Windows는 푸시 후 수동 실행
-- **Remaining Work for Gemini**: Codex: BK-01·HL-01 재검증 → 사용자 승인으로 main 병합 → ARCH-MODULAR-01(PR #12 보정 명세) 착수
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main 병합)
+- **Task Card**: SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02 done(사용자 승인 병합). REVIEW-DATA-SAFETY-01 done. 다음 TASK-ARCH-MODULAR-01
+- **Latest Pushed Commit**: 293f658 - fix(TASK-HOLIDAY-01): 공휴일 한도 초과를 화면 안내로 처리(HL-01) (이 문서를 포함한 최종 해시·main 병합 커밋은 응답 패킷 참조)
+- **Completed Steps & Modified Files**: 카드 6장 done, loop-log 7주기, 작업 기록 23장, handoff
+- **Changed Interfaces / Schema Diff**: 이번 커밋 없음(문서). 병합 범위의 자료 변경: 선택 필드 minReader(읽기 수준 2), 선택 컬렉션 customHolidays, 단속 조치 referral. 데이터 v3 유지
+- **Test Status**: 293f658 Linux: npm test 131/131, test:desktop 12개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows 39260014172 결과 확인 후 병합
+- **Remaining Work for Gemini**: Codex: BK-01·HL-01 사후 독립 재검증. Claude: ARCH-MODULAR-01(PR #12 보정 명세) 착수
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황
+
+**2026-10-19 두 번째 main 병합**: 7주기 카드 6장(SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02)과 Codex 자료 안전 감사(PR #10·#11)를 사용자 승인으로 병합. BK-01·HL-01 보완의 Codex 독립 재검증은 병합 뒤에 받는다. 다음 작업은 TASK-ARCH-MODULAR-01([보정 명세](specs/modular-ax/implementation.md)).
 
 **2026-10-19 main 병합**: PR #1(검증 끝난 카드 29장)을 main에 병합했다. 사용자 결정 7건(Claude 추천 위임)은 [작업 기록 14장](work-log/2026-10-18-claude-2.md)과 각 카드에 있다. 아래 문단은 병합 전 기록이다.
 

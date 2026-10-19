@@ -1,7 +1,7 @@
 ---
 id: TASK-SCHEMA-01
 title: 앱 버전 혼용 보호: minReader 필드·알 수 없는 키 보존(S2)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -37,7 +37,7 @@ updated: 2026-10-19
 - [x] 5. 테스트: tests/schema.test.cjs(8), tests/desktop-schema-smoke.cjs(소스·패키지 양쪽), 기록
 
 ## 재개 위치
-Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
+**완료**: 2026-10-19 Codex 독립 검증 승인(PR #11) 후 사용자 승인으로 main에 병합. 이전 메모: Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
 
 ## 구현 내용·검증 요점
 - `shared/model.mjs`: `READER_VERSION = 1`. `minReader`는 1~1,000,000 정수만 허용, 있으면 그대로 보존(없으면 만들지 않음). `minReader > READER_VERSION`이면 기본 `normalize`는 code `NEWER_DATA`로 거부, `{ allowNewer: true }`는 나머지 검사를 통과할 때만 읽기 결과를 돌려준다(실패도 `NEWER_DATA`).

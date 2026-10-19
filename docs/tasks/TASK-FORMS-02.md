@@ -1,7 +1,7 @@
 ---
 id: TASK-FORMS-02
 title: 추천 양식 v2 — 단속 조치에 '고발·인계' 추가
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -32,7 +32,7 @@ FORMS-01 v1(순찰일지·단속·계도 기록 출력)과 초안(docs/research/
 - [x] 4. 테스트(허용값 스냅샷 갱신·minReader 자동 기록·구버전 보호 왕복)·기록
 
 ## 재개 위치
-Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
+**완료**: 2026-10-19 Codex 독립 검증 승인(PR #11) 후 사용자 승인으로 main에 병합. 이전 메모: Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
 
 ## 구현 내용·검증 요점
 - `shared/model.mjs`: `OBSERVATION_OUTCOMES.referral = "고발·인계"`(계도·과태료 부과 다음, 기타 조치 앞). `READER_VERSION` 1 → 2. 저장 결과의 `minReader` = max(파일에 있던 값, 내용이 요구하는 값). '고발·인계'가 하나라도 있으면 2, 없으면 지금처럼 필드 없음. 한 번 올라간 값은 낮추지 않는다(지운 뒤에도 2 유지 — 구버전에서 읽기 전용이 되는 것뿐이라 안전 쪽).

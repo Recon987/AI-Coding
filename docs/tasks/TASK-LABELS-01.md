@@ -1,7 +1,7 @@
 ---
 id: TASK-LABELS-01
 title: 라벨·허용값 단일화(C3)·누락 테스트(C8)·버튼 문구 상수화(U6)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -34,7 +34,7 @@ updated: 2026-10-19
 - [x] 5. 전체 검사·화면 확인·기록
 
 ## 재개 위치
-Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
+**완료**: 2026-10-19 Codex 독립 검증 승인(PR #11) 후 사용자 승인으로 main에 병합. 이전 메모: Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
 
 ## 구현 내용·검증 요점
 - C3: `shared/model.mjs`에 `RISK_LABEL`(검증 허용값도 이 맵), `isRecurring`, `recurrenceText`; `shared/office.mjs`에 `WORK_GROUPS`, `workGroup`. 중복이던 `ui.tsx riskNames`·`forms.mjs RISK`·반복 판정 13곳·근무 그룹 2곳을 이 함수로 바꿈. 화면 문구(라벨 값)는 바꾸지 않음.

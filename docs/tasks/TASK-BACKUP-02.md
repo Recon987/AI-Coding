@@ -1,7 +1,7 @@
 ---
 id: TASK-BACKUP-02
 title: 복원 보호본 보관 개수 제한
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -30,7 +30,7 @@ updated: 2026-10-19
 - [x] 2. 테스트·문서
 
 ## 재개 위치
-BK-01 보완 완료(Codex PR #11 반려 사유), Codex 재검증 대기.
+**완료**: 2026-10-19 Codex 반려(PR #11) 사유를 보완했고 Codex 재검증 전에 사용자 승인으로 main에 병합. 이전 메모: BK-01 보완 완료(Codex PR #11 반려 사유), Codex 재검증 대기.
 
 ## 구현 내용·검증 요점
 - `desktop/store.cjs`: `RESTORE_KEEP = 5`, `restoreCopies(file)`(이름이 정확히 `<파일>.before-restore-<숫자>.json`인 것만, 숫자 = 시각 순), `restoreCopyPath(file, now)`(같은 시각이면 다음 숫자), `pruneRestoreCopies(file, keep)`(오래된 것부터 지우고, 지우지 못한 파일은 throw 없이 보고).
@@ -58,3 +58,6 @@ Codex 반려(PR #11, P1): PC 시계가 앞서 있던 때 만든 보호본 5개�
 - `restoreCopyPath(file, now, existing)`: 새 보호본 숫자를 기존 최댓값+1 이상으로 — 항상 가장 새것.
 - `restoreCopiesToPrune(copies, keep, protect)`: 확인창 안내와 실제 정리가 같은 함수를 쓴다. `pruneRestoreCopies(file, keep, protect)`는 방금 만든 보호본을 어떤 경우에도 지우지 않는다.
 - 결과: 시계 감사 2/2(과거·미래 보호본), 단위 130/130(새 BK-01 테스트), 복원 실제 앱 검사·DS-01 감사 유지. 감사 2개(시계·공휴일 한도)를 test:desktop·Windows 검사 목록에 편입.
+
+### 2026-10-19 main 병합(사용자 승인)
+사용자가 "main 병합 승인할게"로 병합을 승인했다. 보완(BK-01)은 Codex의 재현 감사가 고치기 전 실패·고친 뒤 통과했지만 **Codex의 독립 재검증은 병합 뒤에 받는다**. 문제가 나오면 새 카드로 처리한다.
