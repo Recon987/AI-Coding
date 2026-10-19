@@ -3,6 +3,7 @@
 // in the in-app dialog; no native JS dialog may appear and the app must stay alive.
 // Build first: npm run build && node tests/desktop-confirm-smoke.cjs
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -38,7 +39,7 @@ const root = path.resolve(__dirname, "..");
       dialog.dismiss().catch(() => {});
     });
     await page.locator("main h1").waitFor();
-    const nav = (name) => page.locator("nav").getByRole("button", { name, exact: true });
+    const nav = (name) => ({ click: () => goTo(page, name) });
     const sheet = page.locator(".sheet[open]");
     const confirmBox = page.getByRole("alertdialog");
     const openDraft = async () => {

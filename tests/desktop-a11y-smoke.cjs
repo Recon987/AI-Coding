@@ -2,6 +2,7 @@
 // narrow-width wrapping in the real Electron app.
 // Build first: npm run build && node tests/desktop-a11y-smoke.cjs
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -32,7 +33,7 @@ const root = path.resolve(__dirname, "..");
     await page.evaluate((value) => window.workdesk.save(value), reviewFixture(REVIEW_DATE));
     await page.reload();
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
-    const nav = (name) => page.locator("nav").getByRole("button", { name, exact: true }).click();
+    const nav = (name) => goTo(page, name);
 
     // A4: field edges reach 3:1 (#7f8f88) and forced colours keep the selected state visible.
     await nav("현장 순찰");

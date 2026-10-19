@@ -2,6 +2,7 @@
 // Only the OS save dialog is answered; the file is written by the app itself.
 // Build first: npm run build && node tests/desktop-forms-smoke.cjs
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -48,7 +49,7 @@ const root = path.resolve(__dirname, "..");
     await page.reload();
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
 
-    await page.locator("nav").getByRole("button", { name: "현장 순찰", exact: true }).click();
+    await goTo(page, "현장 순찰");
     await page.getByRole("button", { name: "양식 출력", exact: true }).click();
     const preview = page.getByLabel("양식 미리보기");
     await preview.waitFor();

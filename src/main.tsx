@@ -468,36 +468,7 @@ function App() {
 {formatDate(new Date())}
             </time>
           </div>
-          {currentApplet && currentApplet.pages.length > 1 && (
-            <nav className="page-switch" aria-label={`${currentApplet.name} 보기`}>
-              {(currentApplet.pages as Page[]).map((id) => (
-                <button
-                  key={id}
-                  type="button"
-                  aria-disabled={busy || undefined}
-                  className={page === id ? "selected" : ""}
-                  aria-current={page === id ? "page" : undefined}
-                  onClick={() => page !== id && navigate(id)}
-                >
-                  {pageNames[id]}
-                </button>
-              ))}
-            </nav>
-          )}
-          {hiddenModule && (
-            <p className="hidden-module-note" role="note">
-              {hiddenModule.name} 모듈은 메뉴에서 숨겨져 있습니다. 자료는 그대로이며 모듈 관리에서 다시 켤 수 있습니다.{" "}
-              <button type="button" className="text-button" onClick={() => setModulesOpen(true)}>
-                모듈 관리 열기
-              </button>
-            </p>
-          )}
-          {!api && (
-            <div className="notice">
-              화면 체험 중입니다. 브라우저 기록은 데스크톱 앱과 별개이며,
-              알림·폴더 열기·파일 내보내기는 데스크톱에서 지원합니다.
-            </div>
-          )}
+          {/* Toast before the page switch: Tab from the top bar reaches it first (fixed position). */}
           {/* Always-present live region: screen readers miss regions inserted with their text. */}
           <div className="sr-only" role="status" aria-atomic="true">
             {feedback.message && (
@@ -533,6 +504,36 @@ function App() {
               >
                 ×
               </button>
+            </div>
+          )}
+          {currentApplet && currentApplet.pages.length > 1 && (
+            <nav className="page-switch" aria-label={`${currentApplet.name} 보기`}>
+              {(currentApplet.pages as Page[]).map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-disabled={busy || undefined}
+                  className={page === id ? "selected" : ""}
+                  aria-current={page === id ? "page" : undefined}
+                  onClick={() => page !== id && navigate(id)}
+                >
+                  {pageNames[id]}
+                </button>
+              ))}
+            </nav>
+          )}
+          {hiddenModule && (
+            <p className="hidden-module-note" role="note">
+              {hiddenModule.name} 모듈은 메뉴에서 숨겨져 있습니다. 자료는 그대로이며 모듈 관리에서 다시 켤 수 있습니다.{" "}
+              <button type="button" className="text-button" onClick={() => setModulesOpen(true)}>
+                모듈 관리 열기
+              </button>
+            </p>
+          )}
+          {!api && (
+            <div className="notice">
+              화면 체험 중입니다. 브라우저 기록은 데스크톱 앱과 별개이며,
+              알림·폴더 열기·파일 내보내기는 데스크톱에서 지원합니다.
             </div>
           )}
           {readOnly && (

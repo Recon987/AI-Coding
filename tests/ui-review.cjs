@@ -2,6 +2,7 @@
 // Build first: npm run build && node tests/ui-review.cjs
 // PARK_REVIEW_DIR=/tmp/review PARK_REVIEW_STAGE=after PARK_REVIEW_STRICT=1 node tests/ui-review.cjs
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
@@ -129,8 +130,7 @@ async function geometry(page) {
       });
     };
     const nav = async (name) => {
-      await page.locator("nav").getByRole("button", { name, exact: true }).click();
-      await page.locator("main h1").waitFor();
+      await goTo(page, name);
     };
     for (const viewport of viewports) {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });

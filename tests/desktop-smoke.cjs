@@ -1,5 +1,6 @@
 // Actual Electron and file storage; native path dialogs are deterministic test doubles.
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -63,10 +64,7 @@ const L = require("../shared/labels.mjs");
       const editor = page.locator(".sheet[open]");
       if (await editor.count())
         await editor.getByRole("button", { name: "취소", exact: true }).click();
-      await page
-        .locator("nav")
-        .getByRole("button", { name, exact: true })
-        .click();
+      await goTo(page, name);
     };
     const add = (name) =>
       page.getByRole("button", { name, exact: true }).click();
@@ -679,10 +677,7 @@ const L = require("../shared/labels.mjs");
       await reopened.evaluate(() => window.workdesk.load()),
       saved,
     );
-    await reopened
-      .locator("nav")
-      .getByRole("button", { name: "바로가기", exact: true })
-      .click();
+    await goTo(reopened, "바로가기");
     await app.evaluate(({ dialog }, folder) => {
       dialog.showOpenDialog = async () => ({
         canceled: false,

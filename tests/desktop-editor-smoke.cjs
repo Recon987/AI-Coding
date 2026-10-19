@@ -1,5 +1,6 @@
 // 실제 Electron에서 접힌 오류 칸과 지연/실패 저장의 초안 보존을 검증한다.
 const { _electron: electron } = require("playwright");
+const { goTo, menuButton } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -42,7 +43,7 @@ async function withApp(check) {
 
 async function collapsedError(observation) {
   await withApp(async (app, page) => {
-    await page.locator("nav").getByRole("button", { name: "현장 순찰", exact: true }).click();
+    await goTo(page, "현장 순찰");
     await page.getByRole("button", { name: L.addLabel(L.TARGET.patrol), exact: true }).click();
     await page.getByLabel("순찰 구간", { exact: true }).fill("가상 탐방로");
     await page.getByLabel("기록자", { exact: true }).fill("가상 직원");
@@ -78,7 +79,7 @@ async function collapsedError(observation) {
 
 async function pendingImport() {
   await withApp(async (app, page) => {
-    await page.locator("nav").getByRole("button", { name: "사무소 현황", exact: true }).click();
+    await goTo(page, "사무소 현황");
     const importTab = page.getByRole("tab", { name: "파일 반입", exact: true });
     const boardTab = page.getByRole("tab", { name: "근무현황", exact: true });
     await importTab.click();
@@ -107,7 +108,7 @@ async function pendingImport() {
     assert.equal(await importTab.evaluate((el) => document.activeElement === el), true);
     assert.equal(await importTab.evaluate((el) => el.disabled), false, "native disabled 없이 포커스 유지");
     assert.equal(await importTab.getAttribute("aria-disabled"), "true");
-    await page.locator("nav").getByRole("button", { name: "월간 일정", exact: true }).evaluate((el) => el.click());
+    await menuButton(page, "월간 일정").evaluate((el) => el.click());
     assert.equal(await page.getByRole("heading", { name: "사무소 현황", exact: true }).count(), 1, "상위 메뉴도 대기 중 이동 금지");
     assert.equal(await app.evaluate(() => globalThis.__editorSaveCalls), 1);
     await app.evaluate(() => globalThis.__editorRelease());
