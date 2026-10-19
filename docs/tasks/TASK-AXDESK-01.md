@@ -41,6 +41,6 @@ TASK-ARCH-MODULAR-01 Step C-1. [보정 명세](../specs/modular-ax/implementatio
 - 모듈을 꺼도 마일스톤은 달력·브리핑에 남는다(명세 4장: 숨김 = 메뉴만). 달력에서 열면 숨김 안내와 함께 원본 편집 창이 열린다. 알림(reminder)은 추가하지 않았다(명세: 별도 결정 없이 알림 정책 추가 금지).
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 147/147(새 ax-desk 5개), `npm run test:desktop` 14개 진입점(새 desktop-axdesk-smoke) + 감사 9/9, 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 MODULES-02와 같음). Windows는 푸시 후 수동 실행.
+2026-10-19 Linux(Node 22): `npm test` 147/147(새 ax-desk 5개), `npm run test:desktop` 14개 진입점(새 desktop-axdesk-smoke) + 감사 9/9, 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 MODULES-02와 같음). Windows 39264945738(e6fd498, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사(새 AX 검사 포함) 통과.
 
 ## 검증 기록

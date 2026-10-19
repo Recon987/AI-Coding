@@ -12,10 +12,10 @@
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1eb40aa(PR #13, Windows 39261191057 성공)
 - **Task Card**: TASK-AXDESK-01 review(검증자 codex, MODULES-02 의존 예외). TASK-MODULES-01·02 review(Windows 39261289803·39263527042 성공). 다음 TASK-AXDESK-02 → 03. BK-01·HL-01 Codex 사후 재검증 대기
-- **Latest Pushed Commit**: 582d10e(AXDESK-01 체크포인트) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Latest Pushed Commit**: e6fd498(AXDESK-01 구현, Windows 39264945738 성공) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
 - **Completed Steps & Modified Files**: src/components/AxDesk.tsx(사업 목록·편집·집행률), shared/ax.mjs(milestoneItems·milestoneTitle +d.mts), shared/model.mjs(calendarItems에 AX 파생, briefing AX 구역), shared/search.mjs(ax +d.mts), shared/labels.mjs(TARGET.axProject +d.mts), src/ui.tsx(종일·ax 색), ListRow(머리글 이름), calendar/MonthGrid(범례), Briefing(AX 건수), style.css, tests/ax-desk.test.cjs·desktop-axdesk-smoke.cjs(신규), package.json·windows-build.yml
 - **Changed Interfaces / Schema Diff**: 자료 형식 변경 없음(MODULES-01의 axProjects 사용). 달력 항목 분류 "AX"(key `ax:<id>`, page "ax", 종일). 브리핑 문구에 "AX 사업 마일스톤 (n)" 구역(그날 있을 때만). IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 147/147, npm run test:desktop 14개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행
+- **Test Status**: Linux Node 22: npm test 147/147, npm run test:desktop 14개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows 39264945738(e6fd498) 성공
 - **Remaining Work for Gemini**: Codex: MODULES-01·02·AXDESK-01 검증, BK-01·HL-01 재검증. 사용자: "마지막 화면 기억", "브리핑에 이번 주 마일스톤·마일스톤 알림" 여부. Claude: AXDESK-02
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
