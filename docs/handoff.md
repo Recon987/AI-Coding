@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-review-a11y-02 / 통합 대상 claude/zen-cannon-wc1at4)
-- **Task Card**: TASK-REVIEW-A11Y-02 in-progress. 환경/코드 복구·Claude 알림 보완 독립 검증·재진입 P2 보완 완료, Windows부터 재개.
-- **Latest Pushed Commit**: 04e4a4d - wip(TASK-REVIEW-A11Y-02): 접근성 독립 검증 착수 (작성 직전 확인 기준)
-- **Completed Steps & Modified Files**: 이전 미커밋은 검증 백업 보존, 원격c510a1b/cc4349a 통합. main.tsx 알림 재진입 복귀 대상 갱신, desktop-a11y-smoke.cjs 실제 Tab 회귀(전 실패·후 통과).
-- **Changed Interfaces / Schema Diff**: 알림 onFocus/onBlur 경계 처리만 보완. 데이터v3·IPC 불변.
-- **Test Status**: 최신 원격 단위91/desktop10/UI150·Windows39184184786 소스10/패키지9 각 PASS. 본 추가 보완 단위91/desktop10·독립 검사 통과, Windows는 다음 단계.
-- **Remaining Work for Gemini**: 보완 Windows·최종 기록·PR·Claude 교차 확인. LIST-02는 Claude 구현 중이며 완료 커밋 기준 Codex 독립 검증. main/정책 결정 미확정 유지.
-- **Modified Code Snippets (if uncommitted)**: 보완/카드/인계는 즉시 커밋·푸시하고 최종 상태는 git status 확인.
+- **Repository & Branch**: Recon987/AI-Coding (task/task-review-a11y-02 / PR #8 → claude/zen-cannon-wc1at4)
+- **Task Card**: TASK-REVIEW-A11Y-02 review. 연결/이전 변경 복구·원격 보완 검증·재진입 P2 보완 완료, Claude 교차 확인.
+- **Latest Pushed Commit**: 746b478 - fix(TASK-REVIEW-A11Y-02): 알림 재진입 시 최근 포커스로 복귀 (작성 직전 원격)
+- **Completed Steps & Modified Files**: main.tsx onFocus/onBlur 경계, desktop-a11y-smoke.cjs 실제 Tab 재진입 회귀. 카드·검토·작업기록·validation·화면/진단 증빙.
+- **Changed Interfaces / Schema Diff**: 알림 진입 시 복귀 대상만 최신화, 내부 포커스 이동 유지. 데이터v3·IPC 불변.
+- **Test Status**: Node24 단위91/desktop10/UI150(오류0·외부요청0)/흐름11 통과. 746b478 Windows39184848329 소스10/패키지9 각 PASS·A11Y 양쪽 PASS·예외0, artifact12157428954.
+- **Remaining Work for Gemini**: Claude PR #8 교차 확인. LIST-02는 c0369c5 구현 완료·Codex 독립 검증 이어가기. main/기관 실기기/사용자 정책 결정 별도.
+- **Modified Code Snippets (if uncommitted)**: 없음. 이전 미커밋은 /workspace/recovery/a11y02-20261019에 검증 보존하고 원격 후속 보완으로 대체.
 ```
 
 ## 2. 과제 현황
