@@ -728,8 +728,13 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 
 /* Scannable record rows (TASK-LIST-01): 일시 · 상태 · 유형 · 제목 · 담당. */
 .records { --row-cols: 136px 92px 112px minmax(0, 1fr) 120px; --row-gap: 12px; }
-.list-header { display: grid; grid-template-columns: var(--row-cols); gap: var(--row-gap); padding: 6px 24px 6px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: var(--fs-xs); font-weight: 600; }
-.list-row { padding: 10px 0; }
+/* TASK-LIST-02: 동작 버튼은 행 오른쪽 같은 줄. 두 번째 열 너비를 모든 행이 공유(subgrid)해 버튼이 세로로 맞는다. */
+.row-list { display: grid; grid-template-columns: minmax(0, 1fr) max-content; column-gap: 16px; }
+.list-header { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; padding: 6px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: var(--fs-xs); font-weight: 600; }
+.list-header-cols { display: grid; grid-template-columns: var(--row-cols); gap: var(--row-gap); padding-right: 24px; }
+.list-row { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: start; padding: 10px 0; }
+.list-row > .record-details { min-width: 0; }
+.list-row > .record-actions { flex-wrap: nowrap; justify-content: flex-end; margin-top: 0; }
 .list-row > .record-details > summary { display: grid; grid-template-columns: var(--row-cols); gap: var(--row-gap); align-items: center; }
 .list-row > .record-details > summary:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; border-radius: 4px; }
 .row-when { color: var(--muted); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -742,21 +747,27 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .list-row .record-details[open] .row-main h3 { white-space: normal; }
 .row-owner { overflow: hidden; color: var(--muted); font-size: var(--fs-sm); text-overflow: ellipsis; white-space: nowrap; }
 .list-row > .record-details > .record-detail-body { margin-left: calc(136px + 92px + 112px + 3 * var(--row-gap)); }
-.list-row > .record-actions { margin-left: calc(136px + 92px + 112px + 3 * var(--row-gap)); }
 .list-row.finished .row-main h3 { color: var(--muted); }
 /* Lists without dates (memos, calls): 상태 · 제목 · 번호. */
-.list-header.compact, .row-list.compact { --row-cols: 92px minmax(0, 1fr) 150px; }
+.row-list.compact { --row-cols: 92px minmax(0, 1fr) 150px; }
 .row-list.compact .row-when, .row-list.compact .row-kind { display: none; }
-.row-list.compact .list-row > .record-details > .record-detail-body, .row-list.compact .list-row > .record-actions { margin-left: calc(92px + var(--row-gap)); }
+.row-list.compact .list-row > .record-details > .record-detail-body { margin-left: calc(92px + var(--row-gap)); }
+/* 업무 메모: 상태·담당 열이 없다(TASK-LIST-02). */
+.row-list.compact.plain { --row-cols: minmax(0, 1fr); }
+.row-list.plain .row-status, .row-list.plain .row-owner { display: none; }
+.row-list.compact.plain .list-row > .record-details > .record-detail-body { margin-left: 0; }
 @media (max-width: 1100px) {
   .list-header { display: none; }
+  .row-list { display: block; }
+  .list-row { display: block; }
+  .list-row > .record-actions { flex-wrap: wrap; justify-content: flex-start; margin-top: 8px; }
   .list-row > .record-details > summary { grid-template-columns: auto auto minmax(0, 1fr); grid-template-areas: "when status kind" "main main main" "owner owner owner"; row-gap: 4px; }
   .row-when { grid-area: when; }
   .row-status { grid-area: status; }
   .row-kind { grid-area: kind; flex-direction: row; gap: 6px; }
   .row-main { grid-area: main; }
   .row-owner { grid-area: owner; }
-  .list-row > .record-details > .record-detail-body, .list-row > .record-actions { margin-left: 0; }
+  .list-row > .record-details > .record-detail-body, .row-list.compact .list-row > .record-details > .record-detail-body { margin-left: 0; }
 }
 .control-record .row-when { white-space: normal; }
 

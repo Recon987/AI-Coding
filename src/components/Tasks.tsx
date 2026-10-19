@@ -144,8 +144,8 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
             )}
           </Empty>
         )}
-        {rows.length > 0 && <ListHeader />}
         <div className="row-list" onKeyDown={rowKeys}>
+          {rows.length > 0 && <ListHeader />}
           {rows.map((t) => {
             const overdue = !t.done && Date.parse(t.at) < Date.now();
             return (
@@ -177,6 +177,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
                 actions={[
                   {
                     label: t.done ? "다시 진행" : isSubmission ? "제출 완료" : "조치 완료",
+                    primary: true,
                     onClick: () => toggle(t),
                   },
                   { label: "수정", onClick: () => editor.openEditor(t) },

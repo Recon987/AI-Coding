@@ -110,9 +110,36 @@ const root = path.resolve(__dirname, "..");
     await page.keyboard.press("Escape");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
     const pages = ["현장 순찰", "탐방로 통제", "인수인계", "제출 기한", "전화메모", "업무 메모"];
+    // TASK-LIST-02: 1280x800 기준으로 행 높이와 버튼 위치를 잰다.
+    await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setContentSize(1280, 800));
+    await page.waitForFunction(() => window.innerWidth === 1280);
     for (const name of pages) {
       await page.locator("nav").getByRole("button", { name, exact: true }).click();
       await page.getByRole("heading", { name, level: 1 }).waitFor();
+      const layout = await page.locator(".row-list .list-row").evaluateAll((rows) =>
+        rows.map((row) => {
+          const box = row.getBoundingClientRect();
+          const summary = row.querySelector(":scope > .record-details > summary").getBoundingClientRect();
+          const actions = row.querySelector(":scope > .record-actions");
+          const buttons = [...actions.querySelectorAll("button")];
+          return {
+            height: box.height,
+            sameLine: actions.getBoundingClientRect().top < summary.bottom && actions.getBoundingClientRect().left >= summary.right,
+            right: Math.round(actions.getBoundingClientRect().right),
+            classes: buttons.map((b) => b.className),
+          };
+        }),
+      );
+      assert.ok(layout.length >= 2, `${name}: 행 배치 측정`);
+      for (const row of layout) {
+        assert.ok(row.sameLine, `${name}: 동작 버튼이 행 오른쪽 같은 줄`);
+        assert.equal(row.right, layout[0].right, `${name}: 동작 열 오른쪽 끝 정렬`);
+        assert.equal(row.classes.at(-1), "text-button danger", `${name}: 삭제는 빨간 글자 버튼`);
+        assert.ok(row.classes.slice(1).every((c) => c.startsWith("text-button")), `${name}: 첫 동작 외에는 글자 버튼`);
+        if (name === "현장 순찰" || name === "업무 메모") assert.ok(row.height <= 72, `${name}: 행 높이 ${row.height}px ≤ 72px`);
+      }
+      if (name === "업무 메모") assert.equal(await page.locator(".row-list .row-status:visible").count(), 0, "업무 메모: 상태 열 없음");
+      if (name === "현장 순찰") assert.equal(await page.locator(".row-list .record-actions button", { hasText: "새 순찰" }).first().textContent().then((t) => t.trim()), "새 순찰");
       const primaries = await page.locator("main .primary:visible").count();
       assert.equal(primaries, 1, `${name}: 진한 버튼은 1개 (${primaries}개)`);
       const rows = page.locator(".row-list .list-row > .record-details > summary");

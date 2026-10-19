@@ -115,14 +115,14 @@ export function Personal({
             )}
           </Empty>
         )}
-        {rows.length > 0 && <ListHeader compact ownerLabel={mode === "calls" ? "전화번호" : ""} />}
-        <div className="row-list compact" onKeyDown={rowKeys}>
+        <div className={`row-list compact ${mode === "calls" ? "" : "plain"}`} onKeyDown={rowKeys}>
+          {rows.length > 0 && (mode === "calls" ? <ListHeader compact ownerLabel="전화번호" /> : <ListHeader compact plain />)}
           {rows.map((n) => (
             <ListRow
               key={n.id}
               busy={busy}
               done={mode === "calls" && n.done}
-              status={mode === "calls" ? <Tag tone={n.done ? "" : "warning"}>{n.done ? "처리 완료" : "미처리"}</Tag> : <Tag>메모</Tag>}
+              status={mode === "calls" ? <Tag tone={n.done ? "" : "warning"}>{n.done ? "처리 완료" : "미처리"}</Tag> : undefined}
               title={n.title}
               subtitle={n.body || "내용 없음"}
               owner={mode === "calls" ? n.phone || "번호 없음" : ""}
@@ -131,6 +131,7 @@ export function Personal({
                   ? [
                       {
                         label: n.done ? "미처리로 변경" : "처리 완료",
+                        primary: true,
                         onClick: async () => {
                           if (
                             (await save({

@@ -4,6 +4,8 @@ export type RowAction = {
   label: string;
   onClick: () => void;
   tone?: "danger";
+  /** 상태를 바꾸는 동작(처리 완료·오늘 해제 등)은 테두리 버튼, 나머지는 글자 버튼(TASK-LIST-02). */
+  primary?: boolean;
   /** Overrides the default accessible name "<label> · <row title>". */
   ariaLabel?: string;
 };
@@ -61,7 +63,7 @@ export function ListRow({
             // aria-disabled keeps keyboard focus on the button while a save runs (TASK-EDITOR-02).
             aria-disabled={busy || undefined}
             aria-label={action.ariaLabel}
-            className={action.tone === "danger" ? "text-button danger" : index === 0 ? "" : "text-button"}
+            className={action.tone === "danger" ? "text-button danger" : action.primary ? "" : "text-button"}
             onClick={() => {
               if (!busy) action.onClick();
             }}
@@ -88,15 +90,30 @@ export function rowKeys(event: KeyboardEvent<HTMLElement>) {
   next.focus();
 }
 
-/** compact: lists without a date (memos, calls) show 상태 · 제목 · ownerLabel only. */
-export function ListHeader({ compact = false, ownerLabel = "담당" }: { compact?: boolean; ownerLabel?: string }) {
+/**
+ * compact: lists without a date (memos, calls) show 상태 · 제목 · ownerLabel only.
+ * plain: memos have no status or owner, so only 제목 remains (TASK-LIST-02).
+ * Render it inside `.row-list` so its columns line up with the rows and the action column.
+ */
+export function ListHeader({
+  compact = false,
+  plain = false,
+  ownerLabel = "담당",
+}: {
+  compact?: boolean;
+  plain?: boolean;
+  ownerLabel?: string;
+}) {
   return (
-    <div className={`list-header ${compact ? "compact" : ""}`} aria-hidden="true">
-      {!compact && <span>일시</span>}
-      <span>상태</span>
-      {!compact && <span>유형</span>}
-      <span>제목</span>
-      <span>{ownerLabel}</span>
+    <div className="list-header" aria-hidden="true">
+      <div className="list-header-cols">
+        {!compact && !plain && <span>일시</span>}
+        {!plain && <span>상태</span>}
+        {!compact && !plain && <span>유형</span>}
+        <span>제목</span>
+        {!plain && <span>{ownerLabel}</span>}
+      </div>
+      <span />
     </div>
   );
 }

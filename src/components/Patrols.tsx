@@ -197,8 +197,8 @@ export function Patrols({
             )}
           </Empty>
         )}
-        {rows.length > 0 && <ListHeader />}
         <div className="row-list" onKeyDown={rowKeys}>
+          {rows.length > 0 && <ListHeader />}
           {rows.map((p) => (
             <ListRow
               key={p.id}
@@ -223,10 +223,12 @@ export function Patrols({
                   label: data.tasks.some((t) => t.patrolId === p.id && !t.done)
                     ? "후속 조치 보기"
                     : "인수인계로 연결",
+                  primary: true,
                   onClick: () => handover(p),
                 },
                 { label: "수정", onClick: () => resetDraft(p) },
-                { label: "이 기록으로 새 순찰", onClick: () => startNew(p, p.route) },
+                // 화면에는 짧게, 화면낭독기에는 전체 이름(TASK-LIST-02).
+                { label: "새 순찰", ariaLabel: `이 기록으로 새 순찰 · ${p.title}`, onClick: () => startNew(p, p.route) },
                 {
                   label: "삭제",
                   tone: "danger",

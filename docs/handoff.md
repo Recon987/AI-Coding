@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1). Codex 검증 브랜치 task/task-review-a11y-02(04e4a4d, 착수 기록만 푸시됨)
-- **Task Card**: TASK-A11Y-02 review(검증자 codex) — Codex 발견 2건을 Claude가 보완. TASK-REVIEW-A11Y-02 in-progress(Codex, 환경 시작 실패로 중단)
-- **Latest Pushed Commit**: 1e22ac6 - feat(TASK-A11Y-02): 날짜 이름·좁은 화면 2줄·'/' 단축키 정리와 접근성 검사 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: src/main.tsx(알림 {message, sequence}, 접근 가능한 닫기·포커스 복귀·포커스 중 타이머 정지), tests/desktop-a11y-smoke.cjs(재안내·타이머 재시작·키보드 닫기 회귀). 한국어 기록 docs/work-log/2026-10-18-claude-2.md
-- **Changed Interfaces / Schema Diff**: 앱 내부 알림 상태만 변경. 데이터 v3·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 91/91, npm run test:desktop 10개 진입점 통과, 화면 검사 150·실패 0. 새 회귀는 보완 전 실패·보완 후 통과
-- **Remaining Work for Gemini**: Codex: 환경 재연결 후 이전 환경의 미푸시 diff는 버리고 이 커밋 기준으로 TASK-REVIEW-A11Y-02 검증 재개. 같은 환경 오류가 반복되면 서비스 지원에 전달. 사용자: PR #1 병합 승인 등 결정 6가지
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
+- **Task Card**: TASK-LIST-02 review(검증자 codex). TASK-A11Y-02 review(검증자 codex, TASK-REVIEW-A11Y-02는 Codex 환경 오류로 중단)
+- **Latest Pushed Commit**: cc4349a - wip(TASK-LIST-02): 카드 착수와 단계 나누기 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: src/components/ListRow.tsx(RowAction.primary, ListHeader plain·`.row-list` 안 배치), src/style.css(.row-list 2열 subgrid, 좁은 화면 아래 배치), Controls/Patrols/Personal/Tasks.tsx(머리줄 위치, 상태 변경 동작 primary, 순찰 '새 순찰' 축약, 메모 상태 열 제거), tests/desktop-list-smoke.cjs(행 높이·정렬·모양 측정). 한국어 기록 docs/work-log/2026-10-18-claude-2.md 12장
+- **Changed Interfaces / Schema Diff**: 화면 컴포넌트 props만(RowAction.primary, ListHeader.plain). 데이터 v3·IPC 변경 없음
+- **Test Status**: Linux Node 22: npm test 91/91, npm run test:desktop 10개 진입점 통과, 화면 검사 150·실패 0, 업무 과업 측정 전부 완료. Windows 자동 검사는 푸시 후 확인
+- **Remaining Work for Gemini**: Codex: TASK-LIST-02·A11Y-02 검증. 사용자: PR #1 병합 승인, '추가'/'등록', 월요일 브리핑 범위, SCHEMA-01 승인, 양식 질문 4개, PR #3~#7 닫기, 다음 카드(LABELS-01) 선택
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

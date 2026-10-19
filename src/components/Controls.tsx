@@ -124,8 +124,8 @@ export function Controls({
                 : "종료된 통제가 없습니다."}
           </Empty>
         )}
-        {rows.length > 0 && <ListHeader ownerLabel="담당구역" />}
         <div className="row-list" onKeyDown={rowKeys}>
+          {rows.length > 0 && <ListHeader ownerLabel="담당구역" />}
           {rows.map((c) => (
             <ListRow
               key={c.id}
@@ -143,8 +143,9 @@ export function Controls({
               subtitle={c.note || undefined}
               owner={c.zone ?? "—"}
               actions={[
+                // 상태 변경 동작을 맨 앞에 두어 다른 목록과 순서를 맞춘다(TASK-LIST-02).
+                ...(state(c, today) === "active" ? [{ label: "오늘 해제", primary: true, onClick: () => lift(c) }] : []),
                 { label: "수정", onClick: () => editor.openEditor(c) },
-                ...(state(c, today) === "active" ? [{ label: "오늘 해제", onClick: () => lift(c) }] : []),
                 {
                   label: "삭제",
                   tone: "danger" as const,
