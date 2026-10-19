@@ -22,4 +22,6 @@ export function moduleOrder(data: Partial<Data>): string[];
 /** New settings showing these IDs in this order; unknown IDs and settings are carried over. */
 export function withModules(data: Partial<Data>, shownInOrder: string[]): ModuleSettings;
 /** Throws unless the setting is valid; unknown IDs/keys/settings are allowed and kept. */
+/** UTF-8 byte size of the JSON text. */
+export function jsonBytes(value: unknown): number;
 export function validateModules(modules: unknown): ModuleSettings;

@@ -1,7 +1,7 @@
 ---
 id: TASK-AXDESK-01
 title: AX Desk 권역별 사업 관리와 마일스톤 달력·브리핑 파생
-status: blocked
+status: review
 role: builder
 owner: claude
 verifier: codex
@@ -31,7 +31,7 @@ TASK-ARCH-MODULAR-01 Step C-1. [보정 명세](../specs/modular-ax/implementatio
 - [x] 2. 마일스톤 파생·검사·기록
 
 ## 재개 위치
-기능 검증 통과(e671160 / 실행 e6fd498). 선행 TASK-MODULES-01의 MOD-01 설정 바이트 한도 보완 때문에 통합은 blocked. 보완 후 선행 카드→MODULES-02→AXDESK-01 순서로 의존 상태를 복구하고 재검증 결과를 반영한다. AX 연도 경계 P3는 TASK-AX-DATES-01에 별도 기록했다. 다음 기능은 TASK-AXDESK-02이며 이번 검증에서 구현하지 않았다.
+Codex 기능 승인 받음(2026-10-19). 선행 MODULES-01의 MOD-01 보완을 Claude가 마쳐 review로 되돌렸다. MODULES-01 재검증이 통과하면 추가 구현 없이 done 가능.
 
 ## 구현 메모
 - 목록: 권역 단추(전체·본사·서부·북부·연구원·보전원·기타, 건수, aria-pressed), 단계 선택, 정렬(마일스톤 가까운 순·최근 수정·사업명·집행률), 검색(사업명·권역·단계·담당·협력기관·마일스톤·위험·메모). 열: 마일스톤 날짜 / 단계 / 권역 / 사업명 / 담당. 마일스톤 정렬은 진행 중 사업을 날짜순(지난 날짜 먼저, '지남' 표시) → 날짜 없음 → 완료 사업 순.

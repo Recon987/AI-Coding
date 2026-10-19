@@ -10,14 +10,14 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-review-modular-01 → claude/zen-cannon-wc1at4, 최종 대상 main). 검증 기준 e671160 / 실행 e6fd498, main 1eb40aa
-- **Task Card**: TASK-REVIEW-MODULAR-01 review(기록 교차 확인 Claude). MODULES-01 in-progress(MOD-01/P2 보완 요청), MODULES-02·AXDESK-01 기능 승인/의존 보완 대기 blocked
-- **Latest Pushed Commit**: 9502f80 - test(TASK-REVIEW-MODULAR-01): 설정 바이트·마일스톤 연도 경계 결함 재현 보존 (기록 포함 최종 해시는 응답/원격 HEAD 참조)
-- **Completed Steps & Modified Files**: 세 분야 독립 검토·기존 필수 검사·화면·Windows 증빙 대조·BK-01/HL-01 해결 승인. tests/modular-contract-audit.cjs 신규, docs/reviews/2026-10-19-codex-modular.md 및 증빙, 원 카드·validation·작업 기록
-- **Changed Interfaces / Schema Diff**: 제품 코드·IPC·데이터 형식 변경 없음. 새 경계 감사만 추가(기존 npm test와 분리)
-- **Test Status**: Linux Node24 npm test147/147, test:desktop17개 진입점(일반14+감사3/총9사례), UI150/150, 업무11/11 통과. Windows39261289803·39263527042·39264945738 성공과 SHA 확인, 최신 소스17/패키지16·감사 각각9/9. 추가 경계 감사는 MOD-01/AX-DATE-01 두 사례 실패
-- **Remaining Work for Gemini**: Claude는 MOD-01 한글 설정 UTF-8 64KB 제한·원본 보존 보완 후 재검증 요청. 선행→MODULES-02→AXDESK-01 상태 복구 후 main 병합 판단. AX-DATE-01/P3는 TASK-AX-DATES-01 후속. AXDESK-02는 구현하지 않음. 기존 마지막 화면 기억/AX 주간 브리핑·알림 정책 결정은 그대로
-- **Modified Code Snippets (if uncommitted)**: 없음(검토 기록 커밋 후 최종 패킷에 푸시 해시 확인)
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4, task/task-review-modular-01 45039a7을 fast-forward로 포함 / 병합 대상 main 1eb40aa). `task/task-modules-01-fix`는 원격에 없음(Codex 선점 미성립) — MOD-01은 작업 브랜치에서 보완
+- **Task Card**: TASK-MODULES-01 review(MOD-01 보완, Codex 재검증 대기). TASK-MODULES-02·AXDESK-01 review(Codex 기능 승인, MODULES-01 재검증만 남음). TASK-REVIEW-MODULAR-01 done(Claude 교차 확인). TASK-AX-DATES-01 backlog(P3, 사용자 승인 필요)
+- **Latest Pushed Commit**: 45039a7(Codex 검토 기록) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: shared/applets.mjs(`jsonBytes`, customConfigs 64KB를 UTF-8 바이트로) +d.mts, tests/modules.test.cjs(MOD-01 경계·기존 파일 보존 2개), 카드 4장·작업 기록 27장
+- **Changed Interfaces / Schema Diff**: 새 export `jsonBytes(value): number`. 자료 형식 변경 없음. 64KB를 넘는 한글 설정은 이제 저장 전 거부(배포본에는 해당 자료 없음). IPC 변경 없음
+- **Test Status**: Linux Node 22: npm test 149/149, npm run test:desktop 종료 0(17개 진입점), modular-contract-audit MOD-01 통과·AX-DATE-01 실패(P3 후속, 종료 1). Windows는 푸시 후 수동 실행
+- **Remaining Work for Gemini**: Codex(환경 재연결 후): MODULES-01 MOD-01 재검증 → 통과 시 MODULES-01·02·AXDESK-01 done 판단. 사용자: main 병합 승인, AX-DATES-01 착수 여부, 마지막 화면 기억·AX 주간 브리핑/알림 결정. Claude: 승인 시 병합, AXDESK-02
+- **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황

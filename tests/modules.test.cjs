@@ -193,3 +193,53 @@ test("⑩ 각 AX 목록 10,000건 한도", () => {
   assert.throws(() => validateAxProjects(many), /10,000건/);
   assert.doesNotThrow(() => validateAxProjects(many.slice(1)));
 });
+
+// MOD-01 (Codex 2026-10-19): the 64KB limit counts UTF-8 bytes, not characters.
+test("MOD-01: 모듈 설정 64KB는 UTF-8 바이트 기준(정확히 한도는 허용, 1바이트 초과는 거부)", () => {
+  const { validateModules, jsonBytes } = require("../shared/applets.mjs");
+  const LIMIT = 64 * 1024;
+  const settings = (text) => ({ enabledModuleIds: [], moduleOrder: [], customConfigs: { patrols: { text } } });
+  // {"patrols":{"text":"…"}} wraps the text in 23 bytes.
+  const frame = jsonBytes({ patrols: { text: "" } });
+  assert.equal(frame, 23);
+  assert.doesNotThrow(() => validateModules(settings("x".repeat(LIMIT - frame))), "ASCII 정확히 64KB");
+  assert.throws(() => validateModules(settings("x".repeat(LIMIT - frame + 1))), /64KB/);
+  // 한글 is 3 bytes: 65536 - 23 = 65,513 = 21,837 × 3 + 2, so 21,837 characters + 2 ASCII bytes is exactly 64KB.
+  const korean = "가".repeat(21837) + "xx";
+  assert.equal(jsonBytes({ patrols: { text: korean } }), LIMIT);
+  assert.doesNotThrow(() => validateModules(settings(korean)), "한글 정확히 64KB");
+  assert.throws(() => validateModules(settings(korean + "x")), /64KB/);
+  // Codex reproduction: 30,000 characters but 90,023 bytes.
+  assert.equal(jsonBytes({ patrols: { text: "가".repeat(30000) } }), 90023);
+  assert.throws(() => validateModules(settings("가".repeat(30000))), /64KB/);
+});
+
+test("MOD-01: 한도를 넘는 설정이 든 기존 파일은 원본 그대로 보관하고 이유를 알린 뒤 사용자가 고른다", async () => {
+  const { openDataFile } = require("../desktop/recovery.cjs");
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "workdesk-mod01-"));
+  try {
+    const file = path.join(dir, "workdesk.json");
+    const big = { ...store.empty(), modules: { enabledModuleIds: ["patrols"], moduleOrder: ["patrols"], customConfigs: { patrols: { text: "가".repeat(30000) } } } };
+    fs.writeFileSync(file, JSON.stringify(big));
+    const raw = fs.readFileSync(file);
+    const seen = [];
+    const dialog = {
+      async showMessageBox(options) {
+        seen.push(options);
+        return { response: options.cancelId };
+      },
+      async showOpenDialog() {
+        return { canceled: true, filePaths: [] };
+      },
+      showErrorBox() {},
+    };
+    assert.equal(await openDataFile({ file, store, dialog, now: () => Date.parse("2026-10-19T00:00:00Z") }), false);
+    assert.deepEqual(fs.readFileSync(file), raw, "종료를 고르면 원본을 바꾸지 않음");
+    const copies = fs.readdirSync(dir).filter((name) => name.includes(".corrupt-"));
+    assert.equal(copies.length, 1);
+    assert.deepEqual(fs.readFileSync(path.join(dir, copies[0])), raw, "바이트 그대로 보관");
+    assert.match(seen[0].detail, /모듈 설정은 64KB 이하여야 합니다/);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

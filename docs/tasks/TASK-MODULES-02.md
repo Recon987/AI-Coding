@@ -1,7 +1,7 @@
 ---
 id: TASK-MODULES-02
 title: 코어 4종·동적 모듈 메뉴·모듈 관리 서랍(Step B)
-status: blocked
+status: review
 role: builder
 owner: claude
 verifier: codex
@@ -34,7 +34,7 @@ AX Desk 화면 내용.
 - [x] 3. 숨김 모듈 링크·검사·기록
 
 ## 재개 위치
-기능 검증 통과(e671160 / 실행 e6fd498). 선행 TASK-MODULES-01의 MOD-01 설정 바이트 한도 보완 때문에 통합은 blocked. 보완 후 선행 카드→MODULES-02→AXDESK-01 순서로 의존 상태를 복구하고 재검증 결과를 반영한다. 서랍 저장 실패·현재 화면 유지·숨김 후 검색 진입·키보드 포커스 추가 검증도 통과했다.
+Codex 기능 승인 받음(2026-10-19). 선행 MODULES-01의 MOD-01 보완을 Claude가 마쳐 review로 되돌렸다. MODULES-01 재검증이 통과하면 추가 구현 없이 done 가능.
 
 ## 구현 메모
 - 사이드바 `<nav aria-label="주 메뉴">`: 기본(업무 브리핑·월간 일정·인수인계·제출 기한·업무·전화 메모) / 모듈(켠 것만, 저장 순서) / 모듈 관리·바로가기·앱 안내. 메뉴 글자는 짧은 이름(`인수인계·기한`, `메모·전화`), 접근 이름은 전체 이름.

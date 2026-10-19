@@ -95,6 +95,9 @@ const ID = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const RESERVED = new Set(["__proto__", "constructor", "prototype"]);
 const MAX_IDS = 100;
 const MAX_CONFIG_BYTES = 64 * 1024;
+const utf8 = new TextEncoder();
+/** Size of the JSON text in UTF-8 bytes, as written to disk (한글 is 3 bytes per character). */
+export const jsonBytes = (value) => utf8.encode(JSON.stringify(value)).length;
 const MAX_CONFIG_DEPTH = 6;
 const fail = (message) => {
   throw new Error(message);
@@ -140,7 +143,8 @@ export function validateModules(modules) {
   if (typeof configs !== "object" || configs === null || Array.isArray(configs)) fail("모듈 설정 형식을 확인하세요.");
   for (const id of Object.keys(configs)) if (!ID.test(id)) fail("모듈 설정의 모듈 ID 형식을 확인하세요.");
   checkJson(configs, 0);
-  if (JSON.stringify(configs).length > MAX_CONFIG_BYTES) fail("모듈 설정은 64KB 이하여야 합니다.");
+  // Bytes, not characters (MOD-01): 30,000 한글 characters are about 90KB on disk.
+  if (jsonBytes(configs) > MAX_CONFIG_BYTES) fail("모듈 설정은 64KB 이하여야 합니다.");
   for (const [key, value] of Object.entries(modules))
     if (!["enabledModuleIds", "moduleOrder", "customConfigs"].includes(key)) checkJson(value, 1);
   return modules;
