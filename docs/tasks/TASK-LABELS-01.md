@@ -43,6 +43,6 @@ updated: 2026-10-19
 - 테스트 11개 파일이 버튼 이름을 `shared/labels.mjs`에서 읽는다. README 문구도 갱신.
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 106/106(새 labels 6개), `npm run test:desktop` 11개 진입점 통과, 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행으로 확인.
+2026-10-19 Linux(Node 22): `npm test` 106/106(새 labels 6개), `npm run test:desktop` 11개 진입점 통과, 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows 수동 실행 [39220645418](https://github.com/Recon987/AI-Coding/actions/runs/39220645418)(49f5bb9) 성공.
 
 ## 검증 기록
