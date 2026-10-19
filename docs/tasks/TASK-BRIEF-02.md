@@ -1,11 +1,11 @@
 ---
 id: TASK-BRIEF-02
 title: 월요일·연휴 다음 날 브리핑의 '전날 단속'을 직전 근무일부터 어제까지 합계로
-status: ready
+status: in-progress
 role: builder
-owner: none
+owner: claude
 verifier: codex
-branch: task/task-brief-02
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
 updated: 2026-10-19
@@ -28,7 +28,7 @@ TASK-PANEL-01 D1로 브리핑에 '전날 단속·확인'(어제 하루)이 들�
 - [ ] 2. briefing() 기간·제목 적용 + 테스트, 화면·TXT 확인
 
 ## 재개 위치
-착수 전. shared/model.mjs 903행 근처 `yesterday` 계산.
+1단계: shared/dates.mjs에 `previousWorkday(date, isHoliday)`(공휴일 판정은 인자로 받아 순환 import 방지), shared/model.mjs briefing()의 `yesterday` 계산(950행 근처) 교체, tests/dates.test.cjs·tests/office.test.cjs.
 
 ## 테스트 상태
 미실행
