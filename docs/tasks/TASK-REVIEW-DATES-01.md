@@ -1,14 +1,14 @@
 ---
 id: TASK-REVIEW-DATES-01
 title: DATES-01 날짜 계산 단일화와 시간대 경계 독립 검증
-status: review
+status: done
 role: verifier
 owner: codex
 verifier: claude
 branch: task/task-review-dates-01
 depends:
 priority: P2
-updated: 2026-10-18
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -30,7 +30,7 @@ CALENDAR-04의 화면 개편, 새 스키마/암호화 정책·서버 연동·mai
 - [x] 4. 최종 증빙·푸시·인계
 
 ## 재개 위치
-2026-10-18 Claude가 확인·통합(PR #7 경유 fast-forward). main 병합 시 done.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: 2026-10-18 Claude가 확인·통합(PR #7 경유 fast-forward). main 병합 시 done.
 
 ## 테스트 상태
 - 기준75f04e9: Node24 단위91/91을5TZ 각각 통과, 전체Electron·UI142/오류0/외부요청0·흐름11/11 통과. Windows39107140819 성공 조회.

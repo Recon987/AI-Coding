@@ -1,14 +1,14 @@
 ---
 id: TASK-ORCH-01
 title: 에이전트 역할·과제 카드·개선 루프 운영 체계 도입
-status: review
+status: done
 role: orchestrator
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P0
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -33,7 +33,7 @@ Codex·Gemini·Claude가 모두 `main`에 직접 커밋하고 `docs/handoff.md` 
 - [ ] 5. Codex 검증
 
 ## 재개 위치
-Codex가 이 브랜치를 받아 `npm run board`, `npm test`를 실행하고 `docs/orchestration/README.md` 4장 순서대로 TASK-DATA-01을 선점해 본다. 막히는 규칙이 있으면 이 카드의 검증 기록에 적는다.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex가 이 브랜치를 받아 `npm run board`, `npm test`를 실행하고 `docs/orchestration/README.md` 4장 순서대로 TASK-DATA-01을 선점해 본다. 막히는 규칙이 있으면 이 카드의 검증 기록에 적는다.
 
 ## 테스트 상태
 2026-10-16 Linux(Node 22): `npm test` 통과, `npm run test:desktop` 통과(Linux 트레이 미실행). 숫자는 커밋 메시지·인계 패킷 참조.

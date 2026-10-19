@@ -1,14 +1,14 @@
 ---
 id: TASK-DATES-01
 title: 날짜·주간·기간 계산을 shared/dates.mjs로 단일화(C2) 후 달력 개편 준비
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
-updated: 2026-10-18
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -30,7 +30,7 @@ updated: 2026-10-18
 - [x] 4. 전체 검사·기록. 시간대에 기대던 기존 테스트 자료 2곳(store 반복 일정, office 브리핑)을 지역 시각으로 바꿔 5개 시간대 모두 통과
 
 ## 재개 위치
-Codex가 TASK-REVIEW-DATES-01에서 독립 검증 승인했다. [PR #6](https://github.com/Recon987/AI-Coding/pull/6)의 낮은 연도 월말/Windows 검사 신뢰성 보완과 함께 통합한다. 최종 Windows39110892545 각 소스/패키지 PASS 확인, 최초39110532993은 중간 실패 덮임으로 전체 통과 증빙에서 제외한다. 다음 후보 TASK-CALENDAR-04. main 병합 전 review 유지.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex가 TASK-REVIEW-DATES-01에서 독립 검증 승인했다. [PR #6](https://github.com/Recon987/AI-Coding/pull/6)의 낮은 연도 월말/Windows 검사 신뢰성 보완과 함께 통합한다. 최종 Windows39110892545 각 소스/패키지 PASS 확인, 최초39110532993은 중간 실패 덮임으로 전체 통과 증빙에서 제외한다. 다음 후보 TASK-CALENDAR-04. main 병합 전 review 유지.
 
 ## 테스트 상태
 Linux Node 22(2026-10-18): `npm test` 91/91을 Asia/Seoul·UTC·America/Los_Angeles·Pacific/Kiritimati·Pacific/Pago_Pago 5개 시간대에서 모두 통과(변경 전에는 LA에서 2~3건 실패). `npm run test:desktop` 8개 진입점 통과, 화면 검사 142·실패 0, 업무 흐름 11/11. Node 24·Windows Actions는 PR #1에서 확인.

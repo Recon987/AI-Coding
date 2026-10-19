@@ -1,14 +1,14 @@
 ---
 id: TASK-REVIEW-DOMAIN-01
 title: 국립공원공단 직무별 실제 업무 흐름 조사와 앱 적합성 검토
-status: review
+status: done
 role: domain
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P1
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -31,7 +31,7 @@ updated: 2026-10-16
 - [x] 4. 발견·제안·사용자 질문 정리
 
 ## 재개 위치
-Codex 검증: docs/research/knps-domain.md의 [확인] 출처가 실제로 해당 내용을 담는지 표본 확인, docs/reviews/2026-10-16-domain.md의 코드 근거(types.ts Patrol, briefing()) 대조. 사용자 답변(knps-domain.md 6장) 대기.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: docs/research/knps-domain.md의 [확인] 출처가 실제로 해당 내용을 담는지 표본 확인, docs/reviews/2026-10-16-domain.md의 코드 근거(types.ts Patrol, briefing()) 대조. 사용자 답변(knps-domain.md 6장) 대기.
 
 ## 테스트 상태
 문서 과제. 2026-10-16 `npm test` 통과(보드 검사 포함).

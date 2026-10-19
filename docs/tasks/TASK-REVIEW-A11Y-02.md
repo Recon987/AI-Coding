@@ -1,7 +1,7 @@
 ---
 id: TASK-REVIEW-A11Y-02
 title: A11Y-02 입력·상태 안내·키보드·좁은 화면 독립 검증
-status: review
+status: done
 role: verifier
 owner: codex
 verifier: claude
@@ -29,7 +29,7 @@ updated: 2026-10-19
 - [x] 4. Windows·전후 화면·검증 결과·인계 푸시
 
 ## 재개 위치
-Claude 교차 확인 승인·claude/zen-cannon-wc1at4 통합 완료(아래 검증 기록). 남은 일: 사용자 승인 후 main 병합.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Claude 교차 확인 승인·claude/zen-cannon-wc1at4 통합 완료(아래 검증 기록). 남은 일: 사용자 승인 후 main 병합.
 
 ## 테스트 상태
 - 원격 cc4349a: Node24 단위91/91·desktop10·UI150/실패0/오류0/외부요청0 통과. Windows39184184786의 단위91·소스10/패키지9 및 A11Y 양쪽 PASS, 예외0·NSIS/portable·체크섬·artifact12156928416 확인.

@@ -1,14 +1,14 @@
 ---
 id: TASK-A11Y-02
 title: 입력 테두리 대비·고대비 모드(A4)·상시 라이브 영역(A5)·좁은 폭 2줄(A6)·단축키(A8)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
-updated: 2026-10-18
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -35,7 +35,7 @@ updated: 2026-10-18
 - [x] 6. tests/desktop-a11y-smoke.cjs 신규(test:desktop·Windows 패키지 단계에 추가). recurrence-smoke가 날짜 이름 앞부분으로 칸을 찾던 것을 data-date로 바꾸고, 본문 오류가 정리 오류에 가려지지 않게 먼저 출력
 
 ## 재개 위치
-구현·Codex 검증·Codex 보완(746b478)에 대한 Claude 교차 확인까지 끝나 claude/zen-cannon-wc1at4에 통합했다. 남은 일: 사용자 승인 후 main 병합.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: 구현·Codex 검증·Codex 보완(746b478)에 대한 Claude 교차 확인까지 끝나 claude/zen-cannon-wc1at4에 통합했다. 남은 일: 사용자 승인 후 main 병합.
 
 ## 테스트 상태
 보완 후 Linux Node 22(2026-10-18): `npm test` 91/91, `npm run test:desktop` 10개 진입점 통과, 화면 검사 150·실패 0. 새 회귀 검사는 보완 전 코드에서 실패(시간 초과)하고 보완 후 통과함을 확인. Windows Actions는 이 커밋 실행으로 확인.

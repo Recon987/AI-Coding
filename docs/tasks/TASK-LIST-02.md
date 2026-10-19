@@ -1,7 +1,7 @@
 ---
 id: TASK-LIST-02
 title: 목록 행 동작 위치·모양 통일(U2)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -31,7 +31,7 @@ hover 전용 노출(기각).
 - [x] 4. 행 높이 72px 이하 검사·화면 확인·기록
 
 ## 재개 위치
-Codex 독립 검증과 Codex 보완(986910a, 1279px 전환)에 대한 Claude 교차 검증까지 끝나 claude/zen-cannon-wc1at4에 통합했다. 남은 일: 사용자 승인 후 main 병합.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 독립 검증과 Codex 보완(986910a, 1279px 전환)에 대한 Claude 교차 검증까지 끝나 claude/zen-cannon-wc1at4에 통합했다. 남은 일: 사용자 승인 후 main 병합.
 
 ## 구현 내용
 - `src/components/ListRow.tsx`: `RowAction.primary`(상태 변경 동작만 테두리 버튼), 그 밖은 글자 버튼, `tone: "danger"`는 빨간 글자. 전에는 '첫 번째 버튼'이 무조건 테두리였다. `ListHeader`에 `plain`(제목 열만) 추가, 머리줄을 `.row-list` 안에 둔다.

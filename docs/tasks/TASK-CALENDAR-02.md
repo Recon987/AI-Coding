@@ -1,14 +1,14 @@
 ---
 id: TASK-CALENDAR-02
 title: 반복 일정의 회차별 완료와 제외일
-status: review
+status: done
 role: builder
 owner: codex
 verifier: claude
 branch: task/task-calendar-02
 depends:
 priority: P1
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -29,7 +29,7 @@ updated: 2026-10-16
 - [x] 4. 테스트·문서
 
 ## 재개 위치
-Claude가 기존 검증·구현을 원 브랜치에 통합했고 ad40b18에서 재검증했다. PR #2는 병합 상태이며 PR #3 내용도 원 브랜치 조상에 포함된다. GitHub에서 열려 있는 PR #3의 상태만 총괄이 정리한다. main 병합 전이므로 review 유지하며 같은 내용을 다시 구현하지 않는다. 최신 독립 검증은 TASK-REVIEW-PANEL-01 참조.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Claude가 기존 검증·구현을 원 브랜치에 통합했고 ad40b18에서 재검증했다. PR #2는 병합 상태이며 PR #3 내용도 원 브랜치 조상에 포함된다. GitHub에서 열려 있는 PR #3의 상태만 총괄이 정리한다. main 병합 전이므로 review 유지하며 같은 내용을 다시 구현하지 않는다. 최신 독립 검증은 TASK-REVIEW-PANEL-01 참조.
 
 ## 테스트 상태
 - Node24 `npm test` **81/81**, `npm run test:desktop` 전체 통과(새 회차 스모크 포함).

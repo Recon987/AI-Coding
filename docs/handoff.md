@@ -10,17 +10,19 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1). Codex PR #8(task/task-review-a11y-02)·#9(task/task-review-list-02) 내용은 이 브랜치에 merge commit으로 통합됨
-- **Task Card**: TASK-LIST-02·TASK-A11Y-02·TASK-REVIEW-LIST-02·TASK-REVIEW-A11Y-02 모두 review — 구현·독립 검증·교차 검증 완료, main 병합(사용자 승인)만 남음
-- **Latest Pushed Commit**: c0369c5 - feat(TASK-LIST-02): 목록 행 동작 위치·모양 통일과 행 높이 축소 (통합 커밋을 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: Codex 보완 986910a(src/style.css 목록 전환 1279px, tests/desktop-list-smoke.cjs 경계 폭 회귀)·746b478(src/main.tsx 알림 재진입 복귀, tests/desktop-a11y-smoke.cjs) 교차 검증·통합. 카드 4개 검증 기록, 한국어 작업 기록 docs/work-log/2026-10-18-claude-2.md 13장
-- **Changed Interfaces / Schema Diff**: 없음(CSS 전환 기준, 알림 포커스 처리). 데이터 v3·IPC 변경 없음
-- **Test Status**: 통합본 Linux Node 22: npm test 91/91, npm run test:desktop 10개 진입점 통과, 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. 두 새 회귀는 보완 전 코드에서 실패 확인. Windows는 푸시 후 PR #1에서 확인
-- **Remaining Work for Gemini**: 사용자: PR #1 main 병합 승인, PR #3~#9 닫기(내용은 PR #1에 통합), '추가'/'등록', 월요일 브리핑 범위, SCHEMA-01 승인, 양식 질문 4개, 다음 카드(LABELS-01) 선택
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main 병합, PR Recon987/AI-Coding#1)
+- **Task Card**: 2026-10-19 사용자가 결정을 Claude 추천에 위임. review 29장 → done(main 병합). ready: TASK-SCHEMA-01(P1, 다음 착수), TASK-BRIEF-02, TASK-LABELS-01('등록' 통일). backlog: TASK-FORMS-02('고발·인계', SCHEMA-01 뒤)
+- **Latest Pushed Commit**: c80d64f - docs(TASK-REVIEW-LIST-02): Codex 보완 2건 교차 검증 승인과 통합 기록 (이 문서를 포함한 최종 해시와 main 병합 커밋은 응답 패킷 참조)
+- **Completed Steps & Modified Files**: 카드 상태·결정 기록(docs/tasks/*, TASK-BRIEF-02 신규), docs/research/forms-draft.md 피드백 기록, loop-log 6 정리, 한국어 작업 기록 14장
+- **Changed Interfaces / Schema Diff**: 없음(문서만). 데이터 v3·IPC 변경 없음
+- **Test Status**: 병합 전 c80d64f Linux(npm test 91/91, test:desktop 10개 진입점, 화면 150, 업무 과업 11)·Windows 39186549462 통과. 문서 커밋은 PR #1 Windows 재확인 후 병합
+- **Remaining Work for Gemini**: 다음 구현 TASK-SCHEMA-01(minReader·모르는 최상위 키 보존). 그다음 BRIEF-02 → LABELS-01 → FORMS-02
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황
+
+**2026-10-19 main 병합**: PR #1(검증 끝난 카드 29장)을 main에 병합했다. 사용자 결정 7건(Claude 추천 위임)은 [작업 기록 14장](work-log/2026-10-18-claude-2.md)과 각 카드에 있다. 아래 문단은 병합 전 기록이다.
 
 `npm run board`가 우선순위·담당·재개 위치를 출력한다. 백로그를 중복 기록하지 않는다. 기존 EDITOR-01·02 보완은 Claude 원 브랜치에 통합됐다. 최신 DATES-01도 Codex가 독립 검증했고 월말 경계/Windows 검사 신뢰성을 PR #6에서 보완했다. 최종928e78e의 Windows39110892545 소스/패키지 각 PASS 확인. 최초39110532993은 중간 실패가 덮인 실행이므로 전체 통과 증빙에서 제외한다. main 병합 전 review 유지. 후속 CALENDAR-04는 Codex가 PR #7에서 구현·Linux/Windows 자동 검사를 마쳐 Claude 독립 검증 대기다.
 

@@ -1,14 +1,14 @@
 ---
 id: TASK-CONFIRM-01
 title: 브라우저 확인창(window.confirm)을 앱 안 확인 UI로 대체하고 편집창 닫기 비정상 종료 해소
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: 
 priority: P1
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -29,7 +29,7 @@ updated: 2026-10-16
 - [x] 3. 테스트·문서: tests/desktop-confirm-smoke.cjs(수동 클릭), desktop-smoke는 confirm 대체 대신 실제 확인창 버튼 자동 클릭, Windows CI 패키지 단계에 추가
 
 ## 재개 위치
-Codex 검증: src/confirm.tsx, 12곳 비동기 전환(특히 EditorDialog.openEditor가 Promise<boolean>을 반환하도록 바뀐 것), tests/desktop-confirm-smoke.cjs, windows-build.yml 패키지 단계. Node 24 재실행과 PR Windows Actions 확인.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: src/confirm.tsx, 12곳 비동기 전환(특히 EditorDialog.openEditor가 Promise<boolean>을 반환하도록 바뀐 것), tests/desktop-confirm-smoke.cjs, windows-build.yml 패키지 단계. Node 24 재실행과 PR Windows Actions 확인.
 
 ## 테스트 상태
 2026-10-16 Linux Node 22: `npm test` 47/47, `npm run test:desktop` 통과(확인창 회귀 포함), review:ui strict 102 통과·외부 요청 0, review:flows 기존과 동일. Windows Actions 미실행.

@@ -1,14 +1,14 @@
 ---
 id: TASK-EDITOR-02
 title: 필드 필수/오류 연결(A3)·저장 중 포커스 유지(A2)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P1
-updated: 2026-10-18
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -31,7 +31,7 @@ TASK-EDITOR-01(review)에서 나눈 카드. 같은 브랜치에서 이어서 하
 - [x] 4. desktop-list-smoke(키보드 토글 후 포커스 유지, 통제 종료일 오류 칸 연결·포커스·필수 표시), desktop-smoke(좌표 오류 시 저장 안 됨·오류 칸 이동·문구 연결), 한국어 기록
 
 ## 재개 위치
-Codex 검증: src/ui.tsx `Field`(hint·error·필수 표시, aria-describedby/aria-invalid 병합)·`focusFirstInvalid`, src/components/{Controls,Calendar,Patrols,CoordinateInput,ListRow,Office}.tsx, src/main.tsx 메뉴, style.css `[aria-disabled="true"]`. 남은 한계: 브라우저 기본 required 말풍선은 그대로(noValidate 전환은 하지 않음), 홈 브리핑 화면의 완료 버튼 등 다른 즉시 동작은 disabled 유지. 실제 화면낭독기 확인은 기관 PC에서.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: src/ui.tsx `Field`(hint·error·필수 표시, aria-describedby/aria-invalid 병합)·`focusFirstInvalid`, src/components/{Controls,Calendar,Patrols,CoordinateInput,ListRow,Office}.tsx, src/main.tsx 메뉴, style.css `[aria-disabled="true"]`. 남은 한계: 브라우저 기본 required 말풍선은 그대로(noValidate 전환은 하지 않음), 홈 브리핑 화면의 완료 버튼 등 다른 즉시 동작은 disabled 유지. 실제 화면낭독기 확인은 기관 PC에서.
 
 ## 테스트 상태
 Linux Node 22(2026-10-18): `npm test` 89/89, `npm run test:desktop` 8개 통과, 화면 검사 142·실패 0·외부 요청 0, 업무 흐름 11/11. Node 24·Windows Actions는 PR #1에서 확인.

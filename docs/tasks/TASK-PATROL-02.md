@@ -1,14 +1,14 @@
 ---
 id: TASK-PATROL-02
 title: 순찰 종류·위반 유형 선택 필드와 기간별 집계
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: 
 priority: P1
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -35,7 +35,7 @@ updated: 2026-10-16
 - [x] 3. 테스트·문서: tests/patrol-observations.test.cjs, task-flows T2b·T5, README·architecture, 캡처 docs/ui-review/cycle2/patrol-*.png
 
 ## 재개 위치
-Codex 검증: shared/model.mjs normalize의 순찰 선택 필드 검증·patrolSummary, Observations.tsx, Patrols.tsx 저장 시 빈 선택 필드 제거, 측정 T2(부담 불변 5클릭·6칸·39자)·T2b·T5(1클릭). 사용자 피드백: 순찰 종류 7종과 기본 유형 10종이 실제 업무 용어와 맞는지.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: shared/model.mjs normalize의 순찰 선택 필드 검증·patrolSummary, Observations.tsx, Patrols.tsx 저장 시 빈 선택 필드 제거, 측정 T2(부담 불변 5클릭·6칸·39자)·T2b·T5(1클릭). 사용자 피드백: 순찰 종류 7종과 기본 유형 10종이 실제 업무 용어와 맞는지.
 
 ## 테스트 상태
 2026-10-16 Linux Node 22: `npm test` 55/55(TZ=UTC 포함), `npm run test:desktop` 통과, review:ui strict 134 통과·외부 요청 0, review:flows T5 완료(1클릭).

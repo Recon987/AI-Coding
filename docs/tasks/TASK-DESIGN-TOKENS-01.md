@@ -1,14 +1,14 @@
 ---
 id: TASK-DESIGN-TOKENS-01
 title: 디자인 토큰 정리: 글자 크기 5단계·의미 색·간격
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: 
 priority: P1
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -29,7 +29,7 @@ updated: 2026-10-16
 - [x] 3. 테스트·문서: tests/style-tokens.test.cjs
 
 ## 재개 위치
-Codex 검증: docs/ui-review/cycle1과 cycle2 캡처 비교(색만 바뀌고 배치 동일해야 함, 13px→14px로 메타 글자 소폭 확대), style-tokens 테스트, 대비 수치. 간격 4·8 배수 정리는 이 카드에서 하지 않음(TASK-LIST-01에서 컴포넌트와 함께).
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: docs/ui-review/cycle1과 cycle2 캡처 비교(색만 바뀌고 배치 동일해야 함, 13px→14px로 메타 글자 소폭 확대), style-tokens 테스트, 대비 수치. 간격 4·8 배수 정리는 이 카드에서 하지 않음(TASK-LIST-01에서 컴포넌트와 함께).
 
 ## 테스트 상태
 2026-10-16 Linux Node 22: `npm test` 50/50, `npm run test:desktop` 통과, review:ui strict(125% 포함) 134 통과·오류 0·외부 요청 0.

@@ -1,14 +1,14 @@
 ---
 id: TASK-POLISH-01
 title: Codex 검토의 비차단 후속 묶음(보호본 상태 표시·달력 탭 접근성·집계 기간 검증)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
-updated: 2026-10-17
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -30,7 +30,7 @@ updated: 2026-10-17
 - [x] 3. 홈 이름·집계 검증·테스트 — Briefing.tsx 사무소 근무 카드에 `office-duty-names`(전체 이름, 줄바꿈), model.mjs patrolSummary 역순 기간 거부. 검사: patrol-observations.test, desktop-list-smoke
 
 ## 재개 위치
-2026-10-18 Codex가 기준 ad40b18에서 독립 검증 승인. [독립 검토 기록](../reviews/2026-10-18-codex-panel.md)과 TASK-REVIEW-PANEL-01 브랜치의 증빙 문서를 통합한다. main 병합 전이므로 review 유지. 다음 구현 후보는 TASK-EDITOR-01이다.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: 2026-10-18 Codex가 기준 ad40b18에서 독립 검증 승인. [독립 검토 기록](../reviews/2026-10-18-codex-panel.md)과 TASK-REVIEW-PANEL-01 브랜치의 증빙 문서를 통합한다. main 병합 전이므로 review 유지. 다음 구현 후보는 TASK-EDITOR-01이다.
 
 ## 테스트 상태
 Linux Node 22(2026-10-17): `npm test` 82/82 통과, `npm run test:desktop` 8개 스모크 전체 통과(새 desktop-notice-smoke 포함), `PARK_REVIEW_ZOOM=1 PARK_REVIEW_STRICT=1 node tests/ui-review.cjs` 142 검사 실패 0·외부 요청 0. Node 24·Windows Actions는 PR #1에서 확인 필요.

@@ -1,14 +1,14 @@
 ---
 id: TASK-REVIEW-UX-01
 title: 핵심 과업별 조작 수·시간 측정과 사용 흐름 검토
-status: review
+status: done
 role: verifier
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P1
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -28,7 +28,7 @@ UI 수정(발견은 카드로 분리).
 - [x] 3. 결과와 발견 정리
 
 ## 재개 위치
-Codex 검증: Node 24에서 `npm run review:flows` 재실행해 수치 비교, U1(편집창 닫기 비정상 종료) 재현 절차를 Windows에서 확인.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: Node 24에서 `npm run review:flows` 재실행해 수치 비교, U1(편집창 닫기 비정상 종료) 재현 절차를 Windows에서 확인.
 
 ## 테스트 상태
 2026-10-16 Linux Node 22: `npm run review:flows` 오류 0(T5·T6은 기능 부재로 '실패' 기록), `npm test`·`npm run test:desktop` 결과는 커밋 메시지 참조.

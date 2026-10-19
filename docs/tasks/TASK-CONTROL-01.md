@@ -1,14 +1,14 @@
 ---
 id: TASK-CONTROL-01
 title: 탐방로 통제 구간 기록과 브리핑 '오늘 통제'
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: 
 priority: P1
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -29,7 +29,7 @@ updated: 2026-10-16
 - [x] 3. 테스트·문서: tests/controls.test.cjs, task-flows T6a·T6, README·architecture(이전 버전으로 되돌릴 때 통제 누락 위험 기록), 캡처 docs/ui-review/cycle2/controls·home-controls·calendar-controls.png
 
 ## 재개 위치
-Codex 검증: shared/model.mjs controls 검증·activeControls·controlDays·브리핑 절, Controls.tsx, Calendar.tsx 통제 표시 분리, main.tsx 배지. 데스크톱 스모크에는 통제 시나리오가 없고 review:flows T6a·T6으로만 확인됨(필요하면 스모크 추가).
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: shared/model.mjs controls 검증·activeControls·controlDays·브리핑 절, Controls.tsx, Calendar.tsx 통제 표시 분리, main.tsx 배지. 데스크톱 스모크에는 통제 시나리오가 없고 review:flows T6a·T6으로만 확인됨(필요하면 스모크 추가).
 
 ## 테스트 상태
 2026-10-16 Linux Node 22: TZ=UTC `npm test` 60/60, `npm run test:desktop` 통과, review:ui strict 134 통과·외부 요청 0, review:flows 10개 과업 모두 완료.

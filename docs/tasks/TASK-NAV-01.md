@@ -1,14 +1,14 @@
 ---
 id: TASK-NAV-01
 title: 사이드바 재구성과 첫 사용 행동에 순찰 기록 포함
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: 
 priority: P2
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -32,7 +32,7 @@ updated: 2026-10-16
 - [x] 3. 테스트·문서: desktop-smoke·ui-review 첫 사용 4개·순찰 기록 대화상자 검사(ui-review 134→142), 캡처 docs/ui-review/cycle2/nav-*.png
 
 ## 재개 위치
-Codex 검증: 메뉴 묶음 조정 근거(7→5+하단), 첫 사용 4행동, 960×680·1280×800 125% 메뉴 넘침 없음.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: 메뉴 묶음 조정 근거(7→5+하단), 첫 사용 4행동, 960×680·1280×800 125% 메뉴 넘침 없음.
 
 ## 테스트 상태
 2026-10-16 Linux Node 22: TZ=UTC `npm test` 64/64, `npm run test:desktop` 통과, review:ui strict 142 통과·외부 요청 0, review:flows 10/10.

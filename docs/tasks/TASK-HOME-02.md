@@ -1,14 +1,14 @@
 ---
 id: TASK-HOME-02
 title: 홈을 '오늘' 하나로 재구성: 상태 띠(당직·통제·미완료)와 시간순 목록
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -31,7 +31,7 @@ updated: 2026-10-16
 - [x] 3. 테스트·문서: desktop-list-smoke에 홈 검사, task-flows T1, 캡처 docs/ui-review/cycle2/home-strip-*.png
 
 ## 재개 위치
-Codex 검증: Briefing.tsx 상태 띠·주 단위 이동, 960px 2×2 타일, desktop-list-smoke 홈 검사, review:ui 첫 업무 행 293px. 이전 화면 cycle1/1280x800-home.png ↔ cycle2/home-strip-1280.png.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: Briefing.tsx 상태 띠·주 단위 이동, 960px 2×2 타일, desktop-list-smoke 홈 검사, review:ui 첫 업무 행 293px. 이전 화면 cycle1/1280x800-home.png ↔ cycle2/home-strip-1280.png.
 
 ## 테스트 상태
 2026-10-16 Linux Node 22: TZ=UTC `npm test` 64/64, `npm run test:desktop` 통과, review:ui strict 134 통과, review:flows 10/10(T1 0클릭).

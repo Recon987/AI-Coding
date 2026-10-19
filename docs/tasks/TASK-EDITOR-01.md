@@ -1,14 +1,14 @@
 ---
 id: TASK-EDITOR-01
 title: 편집 시트 머리 한 줄·Ctrl+Enter 저장·시트 크기(U1)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P1
-updated: 2026-10-18
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -31,7 +31,7 @@ updated: 2026-10-18
 - [x] 3. 양식 출력 시트 배치(파일로 저장·미리보기 복사·닫기를 위 한 줄로), desktop-confirm-smoke 갱신(닫기 버튼 없음, 머리 줄 위치, aria-keyshortcuts, textarea 안 Ctrl+Enter 저장)
 
 ## 재개 위치
-Codex 검증: src/components/Sheet.tsx(`size`, `closeButton`, `submitShortcut`: Ctrl/Cmd+Enter → form.requestSubmit, 확인창이 열려 있거나 저장 중이면 무시), src/components/EditorDialog.tsx, src/components/FormExport.tsx, src/style.css의 `.sheet .editor > .editor-header-actions`(position: fixed — 시트가 화면 오른쪽에 붙어 있다는 전제), tests/desktop-confirm-smoke.cjs. 125% 배율·960px에서 제목과 버튼이 겹치지 않는지 화면 확인. 다음 카드 TASK-EDITOR-02.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: src/components/Sheet.tsx(`size`, `closeButton`, `submitShortcut`: Ctrl/Cmd+Enter → form.requestSubmit, 확인창이 열려 있거나 저장 중이면 무시), src/components/EditorDialog.tsx, src/components/FormExport.tsx, src/style.css의 `.sheet .editor > .editor-header-actions`(position: fixed — 시트가 화면 오른쪽에 붙어 있다는 전제), tests/desktop-confirm-smoke.cjs. 125% 배율·960px에서 제목과 버튼이 겹치지 않는지 화면 확인. 다음 카드 TASK-EDITOR-02.
 
 ## 테스트 상태
 Linux Node 22(2026-10-18): `npm test` 89/89, `npm run test:desktop` 8개 통과, `PARK_REVIEW_ZOOM=1 PARK_REVIEW_STRICT=1 node tests/ui-review.cjs` 142·실패 0·외부 요청 0. 편집 창 머리 높이 128px(머리 68 + 고정 버튼 줄 60) → 68px. Node 24·Windows Actions는 PR #1에서 확인.

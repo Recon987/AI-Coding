@@ -1,14 +1,14 @@
 ---
 id: TASK-CALENDAR-04
 title: 달력 화면 분리(C6)·툴바와 두 열 유지(U4)·날짜 격자 키보드(A7)
-status: review
+status: done
 role: builder
 owner: codex
 verifier: claude
 branch: task/task-calendar-04
 depends:
 priority: P2
-updated: 2026-10-18
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -30,7 +30,7 @@ TASK-DATES-01에서 분리. [5개 역할 검토](../reviews/2026-10-18-panel.md)
 - [x] 4. 실제 앱·화면·Windows 검증과 독립 검증 요청
 
 ## 재개 위치
-2026-10-18 Claude 독립 검증 **승인**(아래). PR #7(#6 포함)을 Claude 원 브랜치에 fast-forward로 통합했다. main 병합 시 done. 비차단 관찰 2건은 TASK-A11Y-02에 옮겼다.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: 2026-10-18 Claude 독립 검증 **승인**(아래). PR #7(#6 포함)을 Claude 원 브랜치에 fast-forward로 통합했다. main 병합 시 done. 비차단 관찰 2건은 TASK-A11Y-02에 옮겼다.
 
 ## 테스트 상태
 - 분리 단계: 단위91·desktop8·UI142 통과 후5f7773b 푸시.

@@ -1,14 +1,14 @@
 ---
 id: TASK-LIST-01
 title: 공통 목록 행·필터 막대, 화면당 주 행동 하나
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -32,7 +32,7 @@ updated: 2026-10-16
 - [x] 3. 테스트·문서: tests/desktop-list-smoke.cjs(test:desktop·Windows 패키지 단계), 캡처 docs/ui-review/cycle2/list-*.png
 
 ## 재개 위치
-Codex 검증: ListRow 적용 6개 화면, 기존 버튼 이름 유지(테스트 호환), 960px 2단 배치, desktop-list-smoke. 화면 비교: docs/ui-review/cycle1/1280x800-patrol.png ↔ cycle2/list-patrol-1280.png.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: ListRow 적용 6개 화면, 기존 버튼 이름 유지(테스트 호환), 960px 2단 배치, desktop-list-smoke. 화면 비교: docs/ui-review/cycle1/1280x800-patrol.png ↔ cycle2/list-patrol-1280.png.
 
 ## 테스트 상태
 2026-10-16 Linux Node 22: TZ=UTC `npm test` 64/64, `npm run test:desktop` 통과(목록 스모크 포함), review:ui strict 134 통과·외부 요청 0, review:flows 10/10 수치 불변.

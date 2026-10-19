@@ -1,7 +1,7 @@
 ---
 id: TASK-REVIEW-LIST-02
 title: LIST-02 목록 행 동작·폭 경계·키보드 독립 검증
-status: review
+status: done
 role: verifier
 owner: codex
 verifier: claude
@@ -21,7 +21,7 @@ Claude 구현 c0369c50f12c7438f736672b0d76fed4a4cdcad1. 다른 작업을 중복 
 - [x] 발견 처리, 한국어 검토·작업 기록·인계·검증 요청(PR #9)
 
 ## 재개 위치
-Claude 교차 검증 승인·claude/zen-cannon-wc1at4 통합 완료(아래 검증 기록). 남은 일: 사용자 승인 후 main 병합.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Claude 교차 검증 승인·claude/zen-cannon-wc1at4 통합 완료(아래 검증 기록). 남은 일: 사용자 승인 후 main 병합.
 
 ## 테스트 상태
 원본: Node24 npm test91/91·test:desktop10개 진입점 통과. Windows39184733043 소스10·패키지9 진입점 각 PASS·예외0 확인. 추가 회귀는 보완 전 1101px 순찰 제목0px에서 실패, 전환 기준 보완 후 목록 검사 통과. 보완본: Node24 npm test91/91·test:desktop10개 진입점 통과(7개 폭/배율 × 6개 목록의 제목·버튼 경계·의미별 모양 포함). 화면150개 실패0·오류0·외부요청0, 업무흐름11/11, 별도18조합의 키보드·펼침 검사 통과. 보완본 [Windows39185832387](https://github.com/Recon987/AI-Coding/actions/runs/39185832387) 성공, 단위91/91·소스10개/패키지9개 진입점 각 PASS·예외0, NSIS/portable·SHA256SUMS·업로드 완료.

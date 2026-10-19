@@ -1,14 +1,14 @@
 ---
 id: TASK-DATA-01
 title: 손상된 업무 파일에서 앱을 복구할 수 있게 하고 저장을 디스크에 확정
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P0
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -33,7 +33,7 @@ updated: 2026-10-16
 - [x] 4. README·architecture·validation 갱신
 
 ## 재개 위치
-Codex 검증: desktop/store.cjs durableReplace·write(keepLastGood), desktop/recovery.cjs openDataFile, main.cjs save/restore의 keepLastGood, tests/recovery.test.cjs, tests/desktop-recovery-smoke.cjs. Node 24에서 npm test·test:desktop 재실행, PR의 Windows Actions 확인.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: desktop/store.cjs durableReplace·write(keepLastGood), desktop/recovery.cjs openDataFile, main.cjs save/restore의 keepLastGood, tests/recovery.test.cjs, tests/desktop-recovery-smoke.cjs. Node 24에서 npm test·test:desktop 재실행, PR의 Windows Actions 확인.
 
 ## 테스트 상태
 2026-10-16 Linux Node 22: `npm test` 47/47, `npm run test:desktop` 통과(복구 스모크 포함, 트레이 native 미실행). Windows Actions 미실행.

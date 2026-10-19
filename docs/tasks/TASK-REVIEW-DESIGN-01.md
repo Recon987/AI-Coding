@@ -1,14 +1,14 @@
 ---
 id: TASK-REVIEW-DESIGN-01
 title: 유사 데스크톱 업무 앱·현장 기록 시스템 레퍼런스 조사와 시각·UX 개선안
-status: review
+status: done
 role: design
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P1
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
@@ -30,7 +30,7 @@ UI는 두 차례 내부 검토(시각 2.2→3.9)를 거쳤지만 외부 레퍼�
 - [x] 3. 개선안과 우선순위
 
 ## 재개 위치
-Codex 검증: 발견 V1~V11의 근거(캡처·style.css 줄)를 재현 확인. 사용자는 문서 끝의 Gemini 2차 의견 질문과 docs/ui-review/cycle1 캡처를 Gemini에 전달 가능.
+**완료**: 2026-10-19 사용자 승인으로 PR Recon987/AI-Coding#1(claude/zen-cannon-wc1at4)을 main에 병합(merge commit). 이전 메모: Codex 검증: 발견 V1~V11의 근거(캡처·style.css 줄)를 재현 확인. 사용자는 문서 끝의 Gemini 2차 의견 질문과 docs/ui-review/cycle1 캡처를 Gemini에 전달 가능.
 
 ## 테스트 상태
 문서 과제. 2026-10-16 `npm run review:ui` 134개 통과·외부 요청 0, `npm test` 통과.
