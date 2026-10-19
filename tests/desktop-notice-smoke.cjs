@@ -46,15 +46,30 @@ const root = path.resolve(__dirname, "..");
     const restored = store.empty();
     restored.notes.push({ id: "n2", title: "복원 메모", body: "가상 백업" });
     store.write(backup, restored);
+    // TASK-BACKUP-02: five older protection copies exist; the restore keeps the newest five.
+    const oldCopies = [1, 2, 3, 4, 5].map((n) => `${file}.before-restore-${Date.UTC(2026, 0, n)}.json`);
+    for (const copy of oldCopies) fs.writeFileSync(copy, "{}");
     await app.evaluate(({ dialog }, picked) => {
       dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [picked] });
-      dialog.showMessageBox = async () => ({ response: 1 });
+      dialog.showMessageBox = async (...args) => {
+        globalThis.__restorePrompt = args.at(-1);
+        return { response: 1 };
+      };
     }, backup);
     await page.locator(".data-menu > summary").click();
     await page.locator(".data-menu").getByRole("button", { name: "복원", exact: true }).click();
     await page.getByRole("status").filter({ hasText: "백업 자료를 복원했습니다" }).waitFor();
     await alert.filter({ hasText: /자료는 저장했지만 자동 보호본을 갱신하지 못했습니다/ }).waitFor();
     assert.deepEqual(store.read(file), restored);
+    const prompt = await app.evaluate(() => globalThis.__restorePrompt);
+    assert.match(prompt.detail, /최근 5개만 보관/);
+    // Shown in the PC's local time, so the UTC midnight copy may read as the previous day.
+    assert.match(prompt.detail, /가장 오래된 보호본 1개\((2026-01-01|2025-12-31) \d{2}:\d{2}\)를 지웁니다/);
+    const left = store.restoreCopies(file);
+    assert.equal(left.length, 5, "복원 뒤 보호본 5개");
+    assert.equal(fs.existsSync(oldCopies[0]), false, "가장 오래된 것만 정리");
+    assert.ok(oldCopies.slice(1).every((copy) => fs.existsSync(copy)));
+    assert.deepEqual(JSON.parse(fs.readFileSync(left.at(-1).file, "utf8")), data, "새 보호본은 복원 전 자료");
 
     // Once the cause is gone the next save refreshes the copy.
     fs.rmdirSync(blocker);
@@ -63,7 +78,7 @@ const root = path.resolve(__dirname, "..");
       await window.workdesk.save(current);
     });
     assert.deepEqual(store.read(store.lastGoodFile(file)), restored);
-    console.log("PASS: 시작 시 보호본 준비 실패·복원 직후 보호본 실패를 화면 경고로 표시(1회)");
+    console.log("PASS: 시작 시 보호본 준비 실패·복원 직후 보호본 실패를 화면 경고로 표시(1회), 복원 보호본 최근 5개 유지(확인창 안내 뒤 정리)");
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });

@@ -101,6 +101,45 @@ function migrateFile(file) {
     return write(file, original, { keepLastGood: true });
   }
 }
+// Copies made before each restore (TASK-BACKUP-02). Only "<file>.before-restore-<ms>.json"
+// counts; v1/v2 conversion backups, corrupt copies and .last-good are never touched.
+const RESTORE_KEEP = 5;
+function restoreCopies(file) {
+  const dir = path.dirname(file);
+  const prefix = path.basename(file) + ".before-restore-";
+  let names;
+  try {
+    names = fs.readdirSync(dir);
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+  return names
+    .filter((name) => name.startsWith(prefix) && /^\d+\.json$/.test(name.slice(prefix.length)))
+    .map((name) => ({ file: path.join(dir, name), at: Number(name.slice(prefix.length, -5)) }))
+    .sort((a, b) => a.at - b.at);
+}
+/** A new, unused protection-copy path for a restore at `now`. */
+function restoreCopyPath(file, now = Date.now()) {
+  let at = now;
+  while (fs.existsSync(`${file}.before-restore-${at}.json`)) at++;
+  return `${file}.before-restore-${at}.json`;
+}
+/** Deletes the oldest restore copies beyond `keep`; a file that cannot be deleted is reported, not thrown. */
+function pruneRestoreCopies(file, keep = RESTORE_KEEP) {
+  const copies = restoreCopies(file);
+  const removed = [];
+  const failed = [];
+  for (const copy of copies.slice(0, Math.max(0, copies.length - keep))) {
+    try {
+      withRetry(() => fs.unlinkSync(copy.file));
+      removed.push(copy);
+    } catch {
+      failed.push(copy);
+    }
+  }
+  return { removed, failed };
+}
 function due(events, now, seen) {
   return events.filter(
     (e) =>
@@ -118,6 +157,10 @@ module.exports = {
   write,
   migrateFile,
   lastGoodFile,
+  RESTORE_KEEP,
+  restoreCopies,
+  restoreCopyPath,
+  pruneRestoreCopies,
   isTransientLock,
   retry,
   due,

@@ -11,12 +11,12 @@
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76
-- **Task Card**: TASK-SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01 review(모두 검증자 codex)
-- **Latest Pushed Commit**: 87d21a1 - wip(TASK-HOLIDAY-01): 사용자 공휴일 선택 컬렉션 customHolidays (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: HOLIDAY-01 — shared/model.mjs(노동절·제헌절·선거일, 겹침 대체 오류 수정, customHolidays·parseHolidayLines), src/components/HolidayManager.tsx(신규), src/main.tsx(자료 관리 메뉴), Calendar·MonthGrid·WeekView·ListView·Briefing, style.css, tests/holidays.test.cjs·tests/desktop-holiday-smoke.cjs(신규), docs/research/holidays.md, README·architecture
-- **Changed Interfaces / Schema Diff**: 선택 최상위 컬렉션 `customHolidays`(없으면 빈 목록). `holidaysForYear(year, custom?)`, `holidayName(date, custom?)`, `enforcementRange(date, custom?)`, 새 `LUNAR_TABLE_YEARS`, `validateCustomHolidays`, `parseHolidayLines`. 공휴일 결과 변경(노동절·제헌절·선거일 추가, 2025-05-07·2028-10-06 제거). IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 114/114, npm run test:desktop 12개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. Windows: 앞 4개 카드 성공, HOLIDAY-01은 푸시 후 수동 실행
-- **Remaining Work for Gemini**: Codex: 5개 카드 검증(SCHEMA-01 → FORMS-02 순서 권장). 검증 뒤 사용자 승인으로 main 병합. 기관: 노동절·제헌절·선거일을 관보로 최종 확인
+- **Task Card**: TASK-SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02 review(모두 검증자 codex)
+- **Latest Pushed Commit**: 3c74446 - wip(TASK-BACKUP-02): 카드 착수 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: BACKUP-02 — desktop/store.cjs(RESTORE_KEEP·restoreCopies·restoreCopyPath·pruneRestoreCopies), desktop/main.cjs(restore 확인창 안내·정리), src/main.tsx(앱 안내 문구), README, tests/backup-retention.test.cjs(신규), tests/desktop-notice-smoke.cjs
+- **Changed Interfaces / Schema Diff**: store 새 export 4개. 복원 보호본 최근 5개만 유지. 자료 형식·IPC 변경 없음
+- **Test Status**: Linux Node 22: npm test 116/116, npm run test:desktop 12개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. Windows: HOLIDAY-01·BACKUP-02는 수동 실행 결과 확인 필요
+- **Remaining Work for Gemini**: Codex: 6개 카드 검증(SCHEMA-01 → FORMS-02 순서 권장). 검증 뒤 사용자 승인으로 main 병합. 남은 backlog: SECURITY-01(P1, 암호화 설계), LAW-01·LEDGER-01·LOCATION-01(P3)
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

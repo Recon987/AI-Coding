@@ -118,6 +118,15 @@ else {
       if (fs.statSync(r.filePaths[0]).size > 20 * 1024 * 1024)
         throw new Error("20MB 이하의 백업을 선택하세요.");
       const data = store.read(r.filePaths[0], { required: true });
+      // TASK-BACKUP-02: only the newest RESTORE_KEEP protection copies are kept;
+      // the user is told which ones go before anything is replaced.
+      const copies = store.restoreCopies(file);
+      const goingAway = copies.slice(0, Math.max(0, copies.length + 1 - store.RESTORE_KEEP));
+      const stamp = (at) => {
+        const d = new Date(at);
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      };
       const answer = await dialog.showMessageBox(win, {
         type: "question",
         buttons: ["취소", "복원"],
@@ -125,14 +134,25 @@ else {
         cancelId: 0,
         message:
           "현재 데이터를 백업 내용으로 교체할까요? 교체 전 데이터는 자동 보관됩니다.",
+        detail: [
+          `복원 전 보호본은 최근 ${store.RESTORE_KEEP}개만 보관합니다.`,
+          goingAway.length
+            ? `복원하면 가장 오래된 보호본 ${goingAway.length}개(${goingAway.map((c) => stamp(c.at)).join(", ")})를 지웁니다. 필요하면 취소하고 먼저 다른 곳에 복사하세요.`
+            : "",
+        ].filter(Boolean).join("\n"),
       });
       if (answer.response !== 1) return null;
-      store.write(
-        file + ".before-restore-" + Date.now() + ".json",
-        store.read(file),
-      );
+      store.write(store.restoreCopyPath(file), store.read(file));
       const saved = store.write(file, data, { keepLastGood: true });
-      if (saved?.warning) notify(saved.warning);
+      // Pruning runs only after the restore committed; failing to delete is not a failed restore.
+      const pruned = store.pruneRestoreCopies(file);
+      const warnings = [
+        saved?.warning,
+        pruned.failed.length
+          ? `오래된 복원 보호본 ${pruned.failed.length}개를 지우지 못했습니다. 저장 폴더 권한을 확인하세요.`
+          : "",
+      ].filter(Boolean);
+      if (warnings.length) notify(warnings.join(" "));
       return data;
     });
     win = new BrowserWindow({
