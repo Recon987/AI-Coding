@@ -1,4 +1,4 @@
-import type { AxProject, AxSnippet, AxSnippetCategory, AxStage, AxZone } from "../src/types";
+import type { Data, AxProject, AxSnippet, AxSnippetCategory, AxStage, AxZone } from "../src/types";
 export const AX_ZONES: Record<AxZone, string>;
 export const AX_STAGES: Record<AxStage, string>;
 export const AX_SNIPPET_CATEGORIES: Record<AxSnippetCategory, string>;
@@ -24,3 +24,9 @@ export function milestoneItems(
   zone: AxZone;
   stage: AxStage;
 }[];
+/** The three built-in example snippets (text only, fixed IDs, `example: true`). */
+export const AX_EXAMPLE_SNIPPETS: Omit<AxSnippet, "updatedAt">[];
+/** True once the user added the examples; they are never added again automatically. */
+export function examplesAdded(data: Data): boolean;
+/** Data with the examples added (existing IDs skipped) and the AX module marked. Throws on an unreadable AX setting. */
+export function withExampleSnippets(data: Data, now?: string): Data;

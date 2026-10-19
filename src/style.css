@@ -910,3 +910,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
   .ax-bar > span { background: CanvasText; }
   .ax-bar > span.over { background: Highlight; }
 }
+/* GIS·AI 스니펫 (TASK-AXDESK-02): text only, scrolls instead of widening the page. */
+.snippet-code { max-height: 360px; margin: 0 0 8px; padding: 12px 14px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-sunken); color: var(--ink); font: var(--fs-xs)/1.55 Consolas, "D2Coding", "Courier New", monospace; white-space: pre; tab-size: 2; }
+.snippet-code:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.snippet-input { font: var(--fs-xs)/1.55 Consolas, "D2Coding", "Courier New", monospace; white-space: pre; tab-size: 2; }

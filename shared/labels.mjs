@@ -13,6 +13,7 @@ export const TARGET = {
   assignment: "근무",
   holiday: "공휴일",
   axProject: "AX 사업",
+  axSnippet: "스니펫",
 };
 export const SAVE = "저장";
 /** "<대상> 등록" for list buttons and new-record editors. */

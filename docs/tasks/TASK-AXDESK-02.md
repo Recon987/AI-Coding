@@ -27,13 +27,13 @@ TASK-ARCH-MODULAR-01 Step C-2. [보정 명세](../specs/modular-ax/implementatio
 코드 실행, 외부 호출.
 
 ## 진행 단계
-- [ ] 1. 목록·검색·복사
+- [x] 1. 목록·검색·복사
 - [ ] 2. 예제·검사·기록
 
 ## 재개 위치
-1단계: AX 모듈에 두 번째 화면(Page "ax-snippets", 보기 전환)을 붙이고 src/components/AxSnippets.tsx에 분류 필터·검색·등록/수정/삭제·복사를 만든다.
+2단계: 예제(shared/ax.mjs AX_EXAMPLE_SNIPPETS·withExampleSnippets, 빈 화면의 '예제 3개 넣기')는 코드 작성됨. 남은 일: tests/ax-desk.test.cjs에 예제·검색·왕복 검사, tests/desktop-snippets-smoke.cjs(복사 동일성·실패 안내·HTML 미해석·태그 오류·예제 재생성 없음·재실행), 전체 검사·기록.
 
 ## 테스트 상태
-미실행
+2026-10-19 체크포인트: tsc 통과, `npm test` 149/149(새 스니펫 검사 아직 없음), 화면 캡처로 빈 화면·목록·편집·768px 확인. test:desktop 미실행.
 
 ## 검증 기록

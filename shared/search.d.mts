@@ -1,4 +1,4 @@
-import type { AxProject, Call, Control, Data, Event, Note, Page, Patrol, Task } from "../src/types";
+import type { AxProject, AxSnippet, Call, Control, Data, Event, Note, Page, Patrol, Task } from "../src/types";
 export const searchText: {
   patrol(p: Patrol): string;
   control(c: Control): string;
@@ -7,6 +7,7 @@ export const searchText: {
   note(n: Note): string;
   call(c: Call): string;
   ax(p: AxProject): string;
+  axSnippet(s: AxSnippet): string;
 };
 export function matches(text: string, query: string): boolean;
 export function searchRecords(data: Data, query: string): { id: string; page: Page; title: string; text: string }[];

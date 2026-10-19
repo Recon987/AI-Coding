@@ -174,6 +174,7 @@ export type Page =
   | "notes"
   | "folders"
   | "ax"
+  | "ax-snippets"
   | "about";
 export type Save = (data: Data) => Promise<boolean>;
 export type CalendarItem = {

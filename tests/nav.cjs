@@ -14,6 +14,7 @@ const PAGE_IDS = {
   전화메모: "calls",
   "업무 메모": "notes",
   "AX 사업 관리": "ax",
+  "GIS·AI 스니펫": "ax-snippets",
   바로가기: "folders",
   "앱 안내": "about",
 };

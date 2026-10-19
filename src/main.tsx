@@ -30,6 +30,7 @@ import { HolidayManager } from "./components/HolidayManager";
 import { Icon } from "./components/Icon";
 import { AppletDrawer } from "./components/AppletDrawer";
 import { AxDesk } from "./components/AxDesk";
+import { AxSnippets } from "./components/AxSnippets";
 import { CORE_APPLETS, MODULE_APPLETS, visibleModules } from "../shared/applets.mjs";
 import { Empty, SectionHead, Tag } from "./ui";
 import "./style.css";
@@ -48,6 +49,7 @@ const pageNames: Record<Page, string> = {
   controls: "탐방로 통제",
   office: "사무소 현황",
   ax: "AX 사업 관리",
+  "ax-snippets": "GIS·AI 스니펫",
   folders: "바로가기",
   about: "앱 안내",
 };
@@ -55,7 +57,8 @@ type Applet = { id: string; name: string; navName?: string; icon: string; pages:
 const APPLETS: Applet[] = [...CORE_APPLETS, ...MODULE_APPLETS];
 const appletOf = (page: Page) => APPLETS.find((a) => a.pages.includes(page));
 const subtitles: Record<Page, string> = {
-  ax: "권역별 AX 사업, GIS·AI 스니펫, 보고서 초안을 관리합니다.",
+  ax: "권역별 AX 사업의 단계·사업비 집행·차기 마일스톤을 관리합니다.",
+  "ax-snippets": "자주 쓰는 GEE·Python 코드와 프롬프트, 법령·지침 문구를 보관하고 복사합니다.",
   office: "직원별 근무·휴무·당직·거점 배치를 일별·주간으로 확인합니다.",
   briefing: "순찰에서 사무실까지, 오늘 이어갈 업무를 확인하세요.",
   patrol: "현장의 확인 사항과 조치 내용을 기록하고 다음 업무로 연결합니다.",
@@ -616,6 +619,9 @@ function App() {
                 />
               )}
               {page === "ax" && <AxDesk key={page + focusId} data={data} save={save} busy={busy} initialId={focusId} />}
+              {page === "ax-snippets" && (
+                <AxSnippets key={page + focusId} data={data} save={save} busy={busy} initialId={focusId} />
+              )}
               {page === "folders" && (
                 <section className="panel">
                   <SectionHead title="자주 쓰는 업무 폴더">
