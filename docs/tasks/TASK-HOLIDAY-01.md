@@ -45,6 +45,6 @@ updated: 2026-10-19
 - 자료 호환: `customHolidays`는 구버전이 잘못 읽지 않는 새 최상위 항목이라 `READER_VERSION`을 올리지 않았다. SCHEMA-01 이후 앱은 모르는 최상위 항목을 보존한다. SCHEMA-01 이전 앱(v0.8.0 이하)은 이 항목을 지우므로 기존과 같이 백업 안내.
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 114/114(새 holidays 6개 — 표 관련 4개는 고치기 전 코드에서 실패 확인), `npm run test:desktop` 12개 진입점(새 desktop-holiday-smoke: 노동절·대체공휴일 달력, 등록·붙여 넣기 거부/건너뛰기·삭제, 2036년 안내), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. 960px 시트 화면 확인. Windows는 푸시 후 수동 실행.
+2026-10-19 Linux(Node 22): `npm test` 114/114(새 holidays 6개 — 표 관련 4개는 고치기 전 코드에서 실패 확인), `npm run test:desktop` 12개 진입점(새 desktop-holiday-smoke: 노동절·대체공휴일 달력, 등록·붙여 넣기 거부/건너뛰기·삭제, 2036년 안내), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. 960px 시트 화면 확인. Windows 수동 실행 [39229815744](https://github.com/Recon987/AI-Coding/actions/runs/39229815744)(ba96ffb) 성공.
 
 ## 검증 기록

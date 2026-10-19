@@ -39,6 +39,6 @@ updated: 2026-10-19
 - 앱 안내 문구·README 갱신. 새 IPC 없음.
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 116/116(새 backup-retention 2개: 7개 중 오래된 2개만 정리·다른 파일 보존·이름 충돌·삭제 실패 보고), `npm run test:desktop` 12개 진입점(desktop-notice-smoke에 실제 복원: 확인창 안내·5개 유지·가장 오래된 것만 정리·새 보호본 = 복원 전 자료, LA 시간대에서도 통과), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행.
+2026-10-19 Linux(Node 22): `npm test` 116/116(새 backup-retention 2개: 7개 중 오래된 2개만 정리·다른 파일 보존·이름 충돌·삭제 실패 보고), `npm run test:desktop` 12개 진입점(desktop-notice-smoke에 실제 복원: 확인창 안내·5개 유지·가장 오래된 것만 정리·새 보호본 = 복원 전 자료, LA 시간대에서도 통과), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows 수동 실행 [39230668333](https://github.com/Recon987/AI-Coding/actions/runs/39230668333)(20cdc3c) 성공.
 
 ## 검증 기록
