@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1)
-- **Task Card**: TASK-LIST-02 review(검증자 codex). TASK-A11Y-02 review(검증자 codex, TASK-REVIEW-A11Y-02는 Codex 환경 오류로 중단)
-- **Latest Pushed Commit**: cc4349a - wip(TASK-LIST-02): 카드 착수와 단계 나누기 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: src/components/ListRow.tsx(RowAction.primary, ListHeader plain·`.row-list` 안 배치), src/style.css(.row-list 2열 subgrid, 좁은 화면 아래 배치), Controls/Patrols/Personal/Tasks.tsx(머리줄 위치, 상태 변경 동작 primary, 순찰 '새 순찰' 축약, 메모 상태 열 제거), tests/desktop-list-smoke.cjs(행 높이·정렬·모양 측정). 한국어 기록 docs/work-log/2026-10-18-claude-2.md 12장
-- **Changed Interfaces / Schema Diff**: 화면 컴포넌트 props만(RowAction.primary, ListHeader.plain). 데이터 v3·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 91/91, npm run test:desktop 10개 진입점 통과, 화면 검사 150·실패 0, 업무 과업 측정 전부 완료. Windows 자동 검사는 푸시 후 확인
-- **Remaining Work for Gemini**: Codex: TASK-LIST-02·A11Y-02 검증. 사용자: PR #1 병합 승인, '추가'/'등록', 월요일 브리핑 범위, SCHEMA-01 승인, 양식 질문 4개, PR #3~#7 닫기, 다음 카드(LABELS-01) 선택
+- **Repository & Branch**: Recon987/AI-Coding (task/task-review-list-02 / 통합 대상 claude/zen-cannon-wc1at4, PR #9 / 최종 main)
+- **Task Card**: TASK-REVIEW-LIST-02 review. 원본 TASK-LIST-02 review. Claude의 Codex 보완 교차 검증·통합 대기
+- **Latest Pushed Commit**: 986910a - fix(TASK-REVIEW-LIST-02): 경계 폭에서 사라지는 순찰 제목 보완 (최종 문서 커밋은 응답 패킷 참조)
+- **Completed Steps & Modified Files**: Claude c0369c5 독립 검증, src/style.css의 목록 전용 전환 기준1100→1279px, tests/desktop-list-smoke.cjs에7개 폭/배율×6개 목록 회귀. docs/reviews/2026-10-19-codex-list02.md·docs/ui-review/list02/·한국어 작업 기록
+- **Changed Interfaces / Schema Diff**: Codex 보완은 CSS·검사만. 데이터 v3·IPC·저장 계약 변경 없음. 원본 RowAction.primary·ListHeader.plain 유지
+- **Test Status**: Node24 npm test91/91·test:desktop10개 진입점, UI150/실패0/오류0/외부요청0, 업무흐름11/11, 추가 키보드·펼침18조합 통과. 원본 Windows39184733043 성공. 보완본 Windows39185832387 단위91·소스10/패키지9개 진입점 각 PASS·예외0·NSIS/portable성공
+- **Remaining Work for Gemini**: Claude가 PR #9 보완을 교차 확인·통합. 별도 A11Y PR #8(실행746b478·증빙788071a·Windows39184848329 성공)도 보존·통합. main 병합과 기관 PC 실제 배율·NVDA 검증은 남음
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
@@ -61,3 +61,12 @@ Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-
 ## CALENDAR-04 검증 요청
 
 최종 소스86bd62c, [PR #7](https://github.com/Recon987/AI-Coding/pull/7), [Windows39128793988](https://github.com/Recon987/AI-Coding/actions/runs/39128793988), [v0.8.0 설치형·portable](https://github.com/Recon987/AI-Coding/actions/runs/39128793988/artifacts/12136379775). [초기 협의·직접 검사·전후 화면·독립 검증 상태](reviews/2026-10-18-codex-calendar04.md), [한국어 작업 기록](work-log/2026-10-18-codex-calendar04.md). Claude가 #7→#6→#1 순서로 검증·통합하며 main 병합 전 review를 유지한다.
+
+
+## LIST-02 독립 검증·폭 경계 보완
+
+[PR #9](https://github.com/Recon987/AI-Coding/pull/9), 실행 소스986910a, [Windows39185832387](https://github.com/Recon987/AI-Coding/actions/runs/39185832387) 성공, [시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39185832387/artifacts/12157753983). 1101px 순찰 제목0px 결함을 보완했고1280px 행67px은 유지했다. [발견·검사·전후 화면](reviews/2026-10-19-codex-list02.md), [작업 기록](work-log/2026-10-19-codex-list02.md). Claude의 교차 검증 후 통합하며 main은 미병합이다.
+
+## A11Y-02 복구·검증 결과 보존
+
+환경 복구 후 기존 미푸시 변경을 별도 보관하고 Claude의 동등 수정·타이머 경합 보완을 검증했다. 추가 알림 재진입 포커스 문제는 [PR #8](https://github.com/Recon987/AI-Coding/pull/8) 실행746b478·최종 문서788071a에 보존했다. Linux 단위91·desktop10·UI150·흐름11, Windows39184848329 소스10/패키지9 모두 통과했다. 환경 오류로 검증 중단이라는 이전 기록을 대체한다. 이 LIST 브랜치는 PR #8을 포함하지 않으므로 총괄이 두 결과를 각각 통합한다.

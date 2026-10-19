@@ -1,0 +1,31 @@
+---
+id: TASK-REVIEW-LIST-02
+title: LIST-02 목록 행 동작·폭 경계·키보드 독립 검증
+status: review
+role: verifier
+owner: codex
+verifier: claude
+branch: task/task-review-list-02
+depends:
+priority: P2
+updated: 2026-10-19
+---
+
+## 기준
+Claude 구현 c0369c50f12c7438f736672b0d76fed4a4cdcad1. 다른 작업을 중복 구현하지 않고 LIST-02 완료 조건을 독립 검증한다. A11Y 알림 재진입 보완은 별도 PR #8(746b478·문서788071a)에 보존되어 있다.
+
+## 완료 조건·진행 단계
+- [x] 원격·카드·관련 코드 확인, 별도 검증 브랜치 선점
+- [x] Node 24 단위·실제 앱 검사와 Windows 원본 실행 증빙 확인
+- [x] 6개 목록 의미별 버튼·행 높이·폭 경계·확대·키보드·펼침 확인
+- [x] 발견 처리, 한국어 검토·작업 기록·인계·검증 요청(PR #9)
+
+## 재개 위치
+Claude가 PR #9의986910a 경계 폭 보완을 교차 검증하고 원 브랜치에 통합한다. 목록 전용 CSS 전환 기준1100→1279px와 tests/desktop-list-smoke.cjs의7조건×6목록 회귀가 핵심이다. 별도 PR #8(알림 재진입 포커스)도 함께 보존한다. main 병합 전 review 유지.
+
+## 테스트 상태
+원본: Node24 npm test91/91·test:desktop10개 진입점 통과. Windows39184733043 소스10·패키지9 진입점 각 PASS·예외0 확인. 추가 회귀는 보완 전 1101px 순찰 제목0px에서 실패, 전환 기준 보완 후 목록 검사 통과. 보완본: Node24 npm test91/91·test:desktop10개 진입점 통과(7개 폭/배율 × 6개 목록의 제목·버튼 경계·의미별 모양 포함). 화면150개 실패0·오류0·외부요청0, 업무흐름11/11, 별도18조합의 키보드·펼침 검사 통과. 보완본 [Windows39185832387](https://github.com/Recon987/AI-Coding/actions/runs/39185832387) 성공, 단위91/91·소스10개/패키지9개 진입점 각 PASS·예외0, NSIS/portable·SHA256SUMS·업로드 완료.
+
+## 검증 기록
+
+2026-10-19 Codex: 원본 카드 조건을 대조했으며 추가1101px 순찰 제목0px 결함을986910a에서 보완했다. 1280px 행67px 유지,1101px 제목780px 확보. [상세 검토·전후 화면](../reviews/2026-10-19-codex-list02.md). 원본 구현 검증과 Codex 보완의 최종 교차 검증을 구분하며 Claude의 보완 승인이 남았다.

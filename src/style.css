@@ -756,7 +756,8 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .row-list.compact.plain { --row-cols: minmax(0, 1fr); }
 .row-list.plain .row-status, .row-list.plain .row-owner { display: none; }
 .row-list.compact.plain .list-row > .record-details > .record-detail-body { margin-left: 0; }
-@media (max-width: 1100px) {
+/* 1280px 미만은 고정 메타 열과 순찰 동작 4개를 한 줄에 두면 제목 공간이 사라진다. */
+@media (max-width: 1279px) {
   .list-header { display: none; }
   .row-list { display: block; }
   .list-row { display: block; }
