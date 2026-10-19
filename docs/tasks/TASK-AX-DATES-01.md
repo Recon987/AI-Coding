@@ -41,7 +41,7 @@ TASK-REVIEW-MODULAR-01의 AX-DATE-01. shared/ax.mjs milestoneItems는 검증이 
 - 참고(이 카드 밖, 기존 문제): TZ=America/New_York·Pacific/Honolulu에서 tests/schema.test.cjs의 '고발·인계' 검사(139번) 하나가 바꾸기 전 코드에서도 실패한다. 한국 시각 고정 자료를 현지 날짜로 집계하는 검사 쪽 시간대 의존이다.
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 161/161(새 low-years 3개 + 공휴일 계약 변경 반영). 시간대 5종(서울·UTC·뉴욕·키리티마티·호놀룰루): 서울·UTC·키리티마티 161/161, 뉴욕·호놀룰루 160/161(위 기존 139번만, 바꾸기 전에도 실패). `tests/modular-contract-audit.cjs` 5개 시간대 모두 종료 0(MOD-01·AX-DATE-01 통과). `npm run test:desktop` 종료 0(진입점 17개 + 감사 3개, 새 desktop-low-years-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행.
+2026-10-19 Linux(Node 22): `npm test` 161/161(새 low-years 3개 + 공휴일 계약 변경 반영). 시간대 5종(서울·UTC·뉴욕·키리티마티·호놀룰루): 서울·UTC·키리티마티 161/161, 뉴욕·호놀룰루 160/161(위 기존 139번만, 바꾸기 전에도 실패). `tests/modular-contract-audit.cjs` 5개 시간대 모두 종료 0(MOD-01·AX-DATE-01 통과). `npm run test:desktop` 종료 0(진입점 17개 + 감사 3개, 새 desktop-low-years-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11. Windows 39297684401(7c2a067, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사(새 낮은 연도 검사 포함) 통과.
 
 ## 검증 기록
 구현 전. 우선순위 P3 후속이며 TASK-AXDESK-01의 정상 업무 기능 승인과 분리한다.

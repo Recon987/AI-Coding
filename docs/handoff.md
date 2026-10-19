@@ -12,10 +12,10 @@
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main 1eb40aa)
 - **Task Card**: TASK-AX-DATES-01 review(검증자 codex, 사용자 승인 착수). TASK-MODULES-01 review(MOD-01 재검증 대기). TASK-MODULES-02·AXDESK-01 review(Codex 기능 승인). TASK-AXDESK-02·03 review(Windows 39292805648 성공)
-- **Latest Pushed Commit**: ed92172(AXDESK-03 Windows 기록) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Latest Pushed Commit**: 7c2a067(AX-DATES-01 구현, Windows 39297684401 성공) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
 - **Completed Steps & Modified Files**: shared/dates.mjs(`localDate`)+d.mts, shared/model.mjs(dayKey 4자리, parseLocalDate·controlDays·반복 회차에 localDate, HOLIDAY_TABLE_YEARS·표 밖 빈 목록, 사용자 공휴일 4자리 접두)+d.mts, shared/ax.mjs(milestoneItems), src/components/Calendar.tsx(월 격자, 표 범위 안내), docs/architecture.md, tests/low-years.test.cjs·desktop-low-years-smoke.cjs(신규), tests/store.test.cjs(공휴일 표 밖 계약), package.json·windows-build.yml
 - **Changed Interfaces / Schema Diff**: 새 export `localDate`, `HOLIDAY_TABLE_YEARS`. `dayKey`가 1000년 미만도 4자리. `holidaysForYear`는 1970~2100 밖 정수 연도에 예외 대신 기본 공휴일 없음(사용자 공휴일만) — 계약 변경. 자료 형식·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 161/161(5개 시간대 중 뉴욕·호놀룰루는 기존 schema 139번 1건 실패, 변경 전에도 동일), modular-contract-audit 5개 시간대 종료 0, npm run test:desktop 종료 0(진입점 17 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행
+- **Test Status**: Linux Node 22: npm test 161/161(5개 시간대 중 뉴욕·호놀룰루는 기존 schema 139번 1건 실패, 변경 전에도 동일), modular-contract-audit 5개 시간대 종료 0, npm run test:desktop 종료 0(진입점 17 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows 39297684401(7c2a067) 성공
 - **Remaining Work for Gemini**: Codex: MODULES-01 재검증, AXDESK-02·03·AX-DATES-01 검증(공휴일 표 밖 계약 변경 확인). 사용자: 스니펫 예제 방식, main 병합 승인, 마지막 화면 기억·AX 주간 브리핑/알림 결정, schema 139번 시간대 의존 후속 여부
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
