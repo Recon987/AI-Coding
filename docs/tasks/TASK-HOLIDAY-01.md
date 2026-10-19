@@ -1,18 +1,21 @@
 ---
 id: TASK-HOLIDAY-01
 title: 선거일·임시공휴일 반영과 공휴일 표 범위 밖 안내
-status: backlog
+status: in-progress
 role: builder
-owner: none
-verifier: claude
-branch: task/task-holiday-01
+owner: claude
+verifier: codex
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
-updated: 2026-10-16
+updated: 2026-10-19
 ---
 
 ## 배경
 공직선거법상 임기만료 선거일(관공서 공휴일)이 표에 없다. 임시공휴일은 미리 알 수 없고 음력 표는 2035년까지라 2036년 이후 음력 공휴일이 경고 없이 빠진다. 최근 공휴일 관련 법 개정 여부도 확인이 필요하다.
+
+## 착수
+2026-10-19 사용자 요청("이어서 HOLIDAY-01 진행해")으로 backlog에서 바로 착수.
 
 ## 완료 조건
 - [ ] 확정된 선거일 반영(출처 기록)
@@ -29,7 +32,7 @@ updated: 2026-10-16
 - [ ] 3. UI 안내·테스트
 
 ## 재개 위치
-착수 전.
+1단계: 선거일·임시공휴일·공휴일 법 개정 확인(출처 기록), 결과는 docs/research/holidays.md. 2025년 표에 2025-01-27 임시공휴일·2025-06-03 대통령선거가 빠져 있음.
 
 ## 테스트 상태
 미실행
