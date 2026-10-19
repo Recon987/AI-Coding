@@ -153,6 +153,63 @@ const root = path.resolve(__dirname, "..");
       assert.equal(await rows.nth(0).evaluate((el) => el.parentElement.open), true, `${name}: Enter로 펼침`);
       await page.keyboard.press("Enter");
     }
+    // TASK-REVIEW-LIST-02: 경계 폭에서 제목 칸이 0px로 사라지는 회귀를 막는다.
+    // 1280px의 행 높이 기준은 위에서 검사하며, 좁은 화면·확대에서는 행이 늘어나도 된다.
+    for (const { width, zoom } of [
+      { width: 1101, zoom: 1 }, { width: 1200, zoom: 1 },
+      { width: 1279, zoom: 1 }, { width: 1280, zoom: 1 },
+      { width: 1100, zoom: 1 }, { width: 960, zoom: 1 },
+      { width: 1280, zoom: 1.25 },
+    ]) {
+      await app.evaluate(({ BrowserWindow }, { width, zoom }) => {
+        const win = BrowserWindow.getAllWindows()[0];
+        win.setContentSize(width, 800);
+        win.webContents.setZoomFactor(zoom);
+      }, { width, zoom });
+      await page.waitForFunction((expected) => Math.abs(innerWidth - expected) <= 1, width / zoom);
+      for (const name of pages) {
+        await page.locator("nav").getByRole("button", { name, exact: true }).click();
+        await page.getByRole("heading", { name, level: 1 }).waitFor();
+        const checks = await page.locator(".row-list").evaluate((list) => {
+          const box = list.getBoundingClientRect();
+          return [...list.querySelectorAll(".list-row")].map((row) => {
+            const title = row.querySelector(".row-main");
+            const buttons = [...row.querySelectorAll(".record-actions button")];
+            return {
+              titleWidth: title.getBoundingClientRect().width,
+              // 버튼이 잘리거나 숨겨지는 대신 필요한 만큼 다음 줄로 내려가야 한다.
+              buttons: buttons.map((button) => {
+                const b = button.getBoundingClientRect();
+                const style = getComputedStyle(button);
+                return {
+                  label: button.firstChild.textContent.trim(), className: button.className,
+                  visible: b.width > 0 && b.height > 0 && style.visibility !== "hidden" && Number(style.opacity) > 0,
+                  inside: b.left >= box.left - 1 && b.right <= box.right + 1,
+                };
+              }),
+              nestedButtons: row.querySelector("summary").querySelectorAll("button").length,
+            };
+          });
+        });
+        assert.ok(checks.length, `${name}: 경계 폭 검사 자료`);
+        for (const row of checks) {
+          assert.ok(row.titleWidth >= 96, `${name} ${width}px/${zoom}: 제목 최소 여섯 글자 공간 (${row.titleWidth}px)`);
+          assert.equal(row.nestedButtons, 0, "펼침 동작과 행 버튼 분리");
+          for (const button of row.buttons) {
+            assert.ok(button.visible && button.inside, `${name} ${width}px/${zoom}: ${button.label} 항상 표시·목록 안`);
+            const expected = button.label === "삭제" ? "text-button danger"
+              : ["수정", "새 순찰"].includes(button.label) ? "text-button" : "";
+            assert.equal(button.className, expected, `${name}: ${button.label} 의미에 따른 모양`);
+          }
+        }
+      }
+    }
+    await app.evaluate(({ BrowserWindow }) => {
+      const win = BrowserWindow.getAllWindows()[0];
+      win.webContents.setZoomFactor(1);
+      win.setContentSize(1280, 800);
+    });
+    await page.waitForFunction(() => innerWidth === 1280);
     // Future closures cannot be 'lifted today' into a still-active future one-day record.
     await page.locator("nav").getByRole("button", { name: "탐방로 통제", exact: true }).click();
     await page.getByRole("tab", { name: /^예정/ }).click();
