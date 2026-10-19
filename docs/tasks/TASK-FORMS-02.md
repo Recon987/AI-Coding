@@ -41,6 +41,6 @@ FORMS-01 v1(순찰일지·단속·계도 기록 출력)과 초안(docs/research/
 - 위반자 인적사항·과태료 금액은 여전히 기록하지 않는다.
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 108/108(새 2: minReader 자동 기록·낮추지 않음·집계·TXT/CSV, 보드 의존 예외), `npm run test:desktop` 11개 진입점, 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. 실제 앱에서 저장 파일 minReader 2와 960px 집계표 확인. Windows는 푸시 후 수동 실행.
+2026-10-19 Linux(Node 22): `npm test` 108/108(새 2: minReader 자동 기록·낮추지 않음·집계·TXT/CSV, 보드 의존 예외), `npm run test:desktop` 11개 진입점, 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. 실제 앱에서 저장 파일 minReader 2와 960px 집계표 확인. Windows 수동 실행 [39226923903](https://github.com/Recon987/AI-Coding/actions/runs/39226923903)(7b02d5d) 성공.
 
 ## 검증 기록

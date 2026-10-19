@@ -12,10 +12,10 @@
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1474d76
 - **Task Card**: TASK-SCHEMA-01·TASK-BRIEF-02·TASK-LABELS-01·TASK-FORMS-02 review(모두 검증자 codex). FORMS-02는 사용자 승인 의존 예외(SCHEMA-01 검증 전 착수)
-- **Latest Pushed Commit**: f65ee53 - wip(TASK-FORMS-02): 사용자 승인 의존 예외로 착수 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Latest Pushed Commit**: 7b02d5d - feat(TASK-FORMS-02): 단속 조치에 '고발·인계' 추가와 읽기 수준 2(minReader) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
 - **Completed Steps & Modified Files**: FORMS-02 — shared/model.mjs(referral, READER_VERSION 2, minReader 자동 기록, 집계 열), shared/forms.mjs(합계 문구), src/types.ts, src/components/Observations.tsx(집계표 열), tests(schema·labels·office·patrol-observations·board), scripts/board.mjs(의존 예외), docs/orchestration/README.md 4장
 - **Changed Interfaces / Schema Diff**: 단속 조치 허용값에 `referral` 추가(자료 형식 확장, minReader 2). `READER_VERSION` 2. 집계 행 `referral` 필드. IPC 변경 없음, 데이터 v3 유지
-- **Test Status**: Linux Node 22: npm test 108/108, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. Windows: SCHEMA-01·BRIEF-02·LABELS-01 성공, FORMS-02는 푸시 후 수동 실행
+- **Test Status**: Linux Node 22: npm test 108/108, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0, 업무 과업 11/11. Windows: SCHEMA-01·BRIEF-02·LABELS-01 성공, FORMS-02 39226923903 성공
 - **Remaining Work for Gemini**: Codex: 4개 카드 검증(SCHEMA-01 먼저). 검증 뒤 사용자 승인으로 main 병합. 다음 후보 TASK-HOLIDAY-01(선거일·임시공휴일), TASK-BACKUP-02
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
