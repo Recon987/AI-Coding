@@ -104,6 +104,8 @@ export type Assignment = {
 };
 export type Data = {
   version: 3;
+  /** TASK-SCHEMA-01: lowest app reader version that may write this file. Absent = 1. */
+  minReader?: number;
   notes: Note[];
   events: Event[];
   calls: Call[];

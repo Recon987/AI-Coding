@@ -13,7 +13,7 @@ const {
 const path = require("node:path");
 const fs = require("node:fs");
 const store = require("./store.cjs");
-const { briefing, reminderItems } = require("../shared/model.mjs");
+const { briefing, reminderItems, NEWER_DATA_MESSAGE } = require("../shared/model.mjs");
 const { buildForm } = require("../shared/forms.mjs");
 const { createDesktopLifecycle } = require("./lifecycle.cjs");
 const { createNotifier } = require("./notifications.cjs");
@@ -28,19 +28,27 @@ else {
       app.setAppUserModelId("local.park.workdesk");
     file = path.join(app.getPath("userData"), "workdesk.json");
     const notify = (text) => (pendingNotice = text);
-    if (!(await openDataFile({ file, store, dialog, notify }))) {
+    const opened = await openDataFile({ file, store, dialog, notify });
+    if (!opened) {
       app.quit();
       return;
     }
-    ipcMain.handle("load", () => store.read(file));
+    // TASK-SCHEMA-01: a newer app's file can be viewed; store.write() refuses to save it.
+    const readOnly = opened === "read-only";
+    const readData = () => store.read(file, { allowNewer: readOnly });
+    ipcMain.handle("load", () => readData());
     ipcMain.handle("take-notice", () => {
       const text = pendingNotice;
       pendingNotice = "";
       return text;
     });
-    ipcMain.handle("save", (_, data) =>
-      store.write(file, data, { keepLastGood: true }),
-    );
+    const refuseWhenReadOnly = () => {
+      if (readOnly) throw new Error(NEWER_DATA_MESSAGE);
+    };
+    ipcMain.handle("save", (_, data) => {
+      refuseWhenReadOnly();
+      return store.write(file, data, { keepLastGood: true });
+    });
     ipcMain.handle("choose-folder", async () => {
       const r = await dialog.showOpenDialog(win, {
         properties: ["openDirectory"],
@@ -48,14 +56,14 @@ else {
       return r.canceled ? null : r.filePaths[0];
     });
     ipcMain.handle("open-folder", async (_, id) => {
-      const folder = store.read(file).folders.find((f) => f.id === id);
+      const folder = readData().folders.find((f) => f.id === id);
       if (!folder || !fs.statSync(folder.path).isDirectory())
         throw new Error("폴더를 찾을 수 없습니다.");
       const error = await shell.openPath(folder.path);
       if (error) throw new Error(error);
     });
     ipcMain.handle("export-briefing", async (_, date) => {
-      const body = briefing(store.read(file), date);
+      const body = briefing(readData(), date);
       const result = await dialog.showSaveDialog(win, {
         defaultPath: `업무브리핑-${date}.txt`,
         filters: [{ name: "텍스트", extensions: ["txt"] }],
@@ -77,7 +85,7 @@ else {
         )
       )
         throw new Error("양식 출력 요청을 확인하세요.");
-      const { filename, content } = buildForm(store.read(file), request);
+      const { filename, content } = buildForm(readData(), request);
       const result = await dialog.showSaveDialog(win, {
         defaultPath: filename,
         filters:
@@ -93,6 +101,7 @@ else {
       return true;
     });
     ipcMain.handle("backup", async () => {
+      refuseWhenReadOnly();
       const r = await dialog.showSaveDialog(win, {
         defaultPath: "공원업무수첩-백업.json",
         filters: [{ name: "JSON", extensions: ["json"] }],
@@ -100,6 +109,7 @@ else {
       if (!r.canceled && r.filePath) store.write(r.filePath, store.read(file));
     });
     ipcMain.handle("restore", async () => {
+      refuseWhenReadOnly();
       const r = await dialog.showOpenDialog(win, {
         properties: ["openFile"],
         filters: [{ name: "JSON", extensions: ["json"] }],
@@ -157,7 +167,7 @@ else {
     win.loadFile(path.join(__dirname, "../dist/index.html"));
     const notifications = new Set();
     const notifier = createNotifier({
-      readItems: (now) => reminderItems(store.read(file), now),
+      readItems: (now) => reminderItems(readData(), now),
       file: path.join(app.getPath("userData"), "notification-receipts.json"),
       supported: () => Notification.isSupported(),
       show: (options, onFailure) => {

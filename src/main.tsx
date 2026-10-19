@@ -9,6 +9,8 @@ import { createRoot } from "react-dom/client";
 import {
   empty,
   normalize,
+  isNewerData,
+  NEWER_DATA_MESSAGE,
   activeControls,
   dayKey,
 } from "../shared/model.mjs";
@@ -82,6 +84,8 @@ const subtitles: Record<Page, string> = {
   folders: "자주 사용하는 업무 폴더를 바로 엽니다.",
   about: "저장 위치, 알림과 백업 사용 방법을 확인하세요.",
 };
+const READ_ONLY_BLOCKED =
+  "읽기 전용 자료라 저장·백업·복원을 하지 않았습니다. 새 버전 앱에서 작업하세요.";
 function App() {
   const [data, setData] = useState<Data>(empty),
     [page, setPage] = useState<Page>("briefing"),
@@ -89,6 +93,8 @@ function App() {
     [ready, setReady] = useState(false),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
+    // TASK-SCHEMA-01: a newer app's file is shown but never saved from this version.
+    [readOnly, setReadOnly] = useState(false),
     [query, setQuery] = useState("");
   const [, setClock] = useState(0);
   useEffect(() => {
@@ -166,7 +172,10 @@ function App() {
     (async () => {
       try {
         if (api) {
-          setData(normalize(await api.load()));
+          const loaded = await api.load();
+          const newer = isNewerData(loaded);
+          setReadOnly(newer);
+          setData(normalize(loaded, { allowNewer: newer }));
           const notice = await api.takeNotice();
           if (notice) setError(notice);
         }
@@ -192,6 +201,10 @@ function App() {
   const save = useCallback(
     async (next: Data) => {
       if (saving.current) return false;
+      if (readOnly) {
+        setError(READ_ONLY_BLOCKED);
+        return false;
+      }
       saving.current = true;
       setBusy(true);
       try {
@@ -215,7 +228,7 @@ function App() {
         setBusy(false);
       }
     },
-    [api],
+    [api, readOnly],
   );
   async function navigate(next: Page, id?: string) {
     if (saving.current || isConfirmOpen()) return;
@@ -228,6 +241,10 @@ function App() {
   }
   async function backup(restore = false) {
     if (saving.current) return;
+    if (readOnly) {
+      setError(READ_ONLY_BLOCKED);
+      return;
+    }
     saving.current = true;
     setBusy(true);
     try {
@@ -333,23 +350,25 @@ function App() {
           <span className="workspace-title">업무 공간</span>
           <div className="top-actions">
             <span
-              className={`save-indicator ${dirty ? "unsaved" : ""}`}
+              className={`save-indicator ${dirty || readOnly ? "unsaved" : ""}`}
               role="status"
               data-state={
-                busy ? "busy" : dirty ? "unsaved" : ready ? "ready" : "loading"
+                readOnly ? "read-only" : busy ? "busy" : dirty ? "unsaved" : ready ? "ready" : "loading"
               }
             >
               <Icon
-                name={busy ? "clock" : dirty ? "notes" : "check"}
+                name={readOnly ? "notes" : busy ? "clock" : dirty ? "notes" : "check"}
                 size={14}
               />
-              {busy
-                ? "처리 중"
-                : dirty
-                  ? "저장되지 않은 변경"
-                  : ready
-                    ? "이 PC에 저장"
-                    : "불러오는 중"}
+              {readOnly
+                ? "읽기 전용"
+                : busy
+                  ? "처리 중"
+                  : dirty
+                    ? "저장되지 않은 변경"
+                    : ready
+                      ? "이 PC에 저장"
+                      : "불러오는 중"}
             </span>
             <button
               className="global-search"
@@ -444,6 +463,11 @@ function App() {
               >
                 ×
               </button>
+            </div>
+          )}
+          {readOnly && (
+            <div role="alert" className="error read-only-notice">
+              읽기 전용: {NEWER_DATA_MESSAGE}
             </div>
           )}
           {error && (

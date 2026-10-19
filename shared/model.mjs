@@ -196,12 +196,49 @@ export function dayKey(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+// TASK-SCHEMA-01: the highest `minReader` this app understands. A later app that
+// stores something older readers would misread or drop raises the file's minReader
+// above this; such a file opens read-only here and is never written back.
+export const READER_VERSION = 1;
+const MAX_EXTRA_KEYS = 100;
+const RESERVED_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+export const NEWER_DATA_MESSAGE =
+  "이 자료는 더 새 버전의 공원 업무 수첩에서 저장되었습니다. 자료를 보호하기 위해 이 버전에서는 저장·복원하지 않습니다. 새 버전 앱으로 여세요.";
+function newerDataError(detail = "") {
+  const error = new Error(detail ? `${NEWER_DATA_MESSAGE} ${detail}` : NEWER_DATA_MESSAGE);
+  error.code = "NEWER_DATA";
+  return error;
+}
+/** True when the file declares a reader newer than this app (TASK-SCHEMA-01). */
+export function isNewerData(input) {
+  return Boolean(input) && typeof input === "object" &&
+    Number.isInteger(input.minReader) && input.minReader > READER_VERSION;
+}
+
 // v1/v2 -> v3 is additive and returns a new object without modifying the input.
-export function normalize(input) {
+// allowNewer: read (never write) a file from a newer app when its content still
+// passes this version's checks; otherwise it fails with code NEWER_DATA.
+export function normalize(input, { allowNewer = false } = {}) {
   ensure(
     input && typeof input === "object" && [1, 2, 3].includes(input.version),
     "지원하지 않는 데이터 버전입니다.",
   );
+  if (input.minReader !== undefined)
+    ensure(
+      Number.isInteger(input.minReader) && input.minReader >= 1 && input.minReader <= 1000000,
+      "자료의 읽기 버전(minReader)을 확인하세요.",
+    );
+  if (isNewerData(input)) {
+    if (!allowNewer) throw newerDataError();
+    try {
+      return normalizeContent(input);
+    } catch (error) {
+      throw newerDataError(`(이 버전이 모르는 내용: ${error.message})`);
+    }
+  }
+  return normalizeContent(input);
+}
+function normalizeContent(input) {
   const personal =
     input.version === 1 ? { ...input, patrols: [], tasks: [] } : input;
   const data =
@@ -376,9 +413,19 @@ export function normalize(input) {
     ),
     "후속 조치에 연결된 순찰 기록이 없습니다.",
   );
-  // Keep only known collections, so unrelated import metadata cannot become application state.
+  // Top-level keys this version does not know are kept as they are, so saving here
+  // does not delete what a newer version added (TASK-SCHEMA-01). The app never reads them.
+  const known = new Set(["version", "minReader", ...collections]);
+  const extra = Object.keys(input).filter((key) => !known.has(key));
+  ensure(
+    extra.length <= MAX_EXTRA_KEYS &&
+      extra.every((key) => key.length <= 64 && !RESERVED_KEYS.has(key)),
+    "자료의 최상위 항목 이름을 확인하세요.",
+  );
   return {
+    ...Object.fromEntries(extra.map((key) => [key, input[key]])),
     version: 3,
+    ...(input.minReader !== undefined ? { minReader: input.minReader } : {}),
     ...Object.fromEntries(collections.map((key) => [key, data[key]])),
     controls,
   };

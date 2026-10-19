@@ -5,6 +5,7 @@ const path = require("node:path");
 // else is written, and is never deleted. Returns false when the app should quit.
 // notify(text) receives warnings the renderer should show once it has loaded.
 const SEED_FAILED = "마지막 정상본(자동 보호본)을 만들지 못했습니다. 업무 자료는 정상이며 다음 저장 때 다시 시도합니다. 저장 공간과 권한을 확인하고 수동 백업을 만드세요.";
+// Returns false (quit), true (normal) or "read-only" (a newer app's file, TASK-SCHEMA-01).
 async function openDataFile({ file, store, dialog, now = Date.now, logger = console, notify = () => {} }) {
   // One read path: a file held by another program is not damaged, so it gets a
   // retry prompt instead of the recovery flow.
@@ -12,11 +13,21 @@ async function openDataFile({ file, store, dialog, now = Date.now, logger = cons
     try {
       if (!fs.existsSync(file) && fs.existsSync(store.lastGoodFile(file)))
         throw new Error("업무 자료 파일이 없지만 마지막 정상본이 남아 있습니다.");
-      store.read(file);
+      const data = store.read(file, { allowNewer: true });
+      // A newer app's file is healthy: no corrupt copy, no conversion, no protection copy.
+      if (store.isNewerData(data)) return "read-only";
       const migrated = store.migrateFile(file);
       if (migrated?.warning) notify(migrated.warning);
       break;
     } catch (error) {
+      if (error?.code === "NEWER_DATA") {
+        // Not damaged either, and the recovery flow could overwrite it with an older copy.
+        dialog.showErrorBox(
+          "새 버전 자료",
+          `${error.message}\n업무 자료 파일은 바꾸지 않았습니다.`,
+        );
+        return false;
+      }
       if (!store.isTransientLock(error))
         return recover({ file, store, dialog, now, notify, reason: error });
       const { response } = await dialog.showMessageBox({

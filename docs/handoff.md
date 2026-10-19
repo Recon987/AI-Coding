@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main 병합, PR Recon987/AI-Coding#1)
-- **Task Card**: 2026-10-19 사용자가 결정을 Claude 추천에 위임. review 29장 → done(main 병합). ready: TASK-SCHEMA-01(P1, 다음 착수), TASK-BRIEF-02, TASK-LABELS-01('등록' 통일). backlog: TASK-FORMS-02('고발·인계', SCHEMA-01 뒤)
-- **Latest Pushed Commit**: c80d64f - docs(TASK-REVIEW-LIST-02): Codex 보완 2건 교차 검증 승인과 통합 기록 (이 문서를 포함한 최종 해시와 main 병합 커밋은 응답 패킷 참조)
-- **Completed Steps & Modified Files**: 카드 상태·결정 기록(docs/tasks/*, TASK-BRIEF-02 신규), docs/research/forms-draft.md 피드백 기록, loop-log 6 정리, 한국어 작업 기록 14장
-- **Changed Interfaces / Schema Diff**: 없음(문서만). 데이터 v3·IPC 변경 없음
-- **Test Status**: 병합 전 c80d64f Linux(npm test 91/91, test:desktop 10개 진입점, 화면 150, 업무 과업 11)·Windows 39186549462 통과. 문서 커밋은 PR #1 Windows 재확인 후 병합
-- **Remaining Work for Gemini**: 다음 구현 TASK-SCHEMA-01(minReader·모르는 최상위 키 보존). 그다음 BRIEF-02 → LABELS-01 → FORMS-02
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). PR #1은 2026-10-19 main에 병합(1474d76), PR #3·#7 닫음
+- **Task Card**: TASK-SCHEMA-01 review(검증자 codex). 다음 ready: TASK-BRIEF-02, TASK-LABELS-01. backlog: TASK-FORMS-02(SCHEMA-01 뒤)
+- **Latest Pushed Commit**: 1474d76 - Merge PR #1 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: shared/model.mjs(READER_VERSION·isNewerData·normalize allowNewer·모르는 최상위 키 보존), desktop/store.cjs·recovery.cjs·main.cjs(읽기 전용 시작·쓰기 거부), src/main.tsx(읽기 전용 표시·차단), tests/schema.test.cjs, tests/desktop-schema-smoke.cjs, package.json·windows-build.yml, AGENTS.md·docs/architecture.md 규칙
+- **Changed Interfaces / Schema Diff**: 최상위 선택 필드 `minReader?: number`(없으면 기존과 동일), 모르는 최상위 키 보존. `normalize(input, { allowNewer })`, `openDataFile` 반환값에 "read-only" 추가. IPC·preload 변경 없음. 데이터 v3 유지
+- **Test Status**: Linux Node 22: npm test 99/99, npm run test:desktop 11개 진입점, 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. Windows는 푸시 후 확인
+- **Remaining Work for Gemini**: Codex: TASK-SCHEMA-01 검증. 다음 구현 TASK-BRIEF-02 → TASK-LABELS-01 → TASK-FORMS-02
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

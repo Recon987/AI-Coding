@@ -1,6 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const { empty, normalize } = require("../shared/model.mjs");
+const { empty, normalize, isNewerData } = require("../shared/model.mjs");
 const MAX_BYTES = 20 * 1024 * 1024;
 // Antivirus, indexing or sync tools on Windows can hold a file for a moment.
 const TRANSIENT = new Set(["EPERM", "EBUSY", "EACCES"]);
@@ -20,7 +20,8 @@ function withRetry(action) {
     }
   }
 }
-function read(file, { required = false } = {}) {
+// allowNewer: only for showing a newer app's file read-only; write() never accepts it.
+function read(file, { required = false, allowNewer = false } = {}) {
   let stat;
   try { stat = fs.statSync(file); }
   catch (error) {
@@ -31,7 +32,7 @@ function read(file, { required = false } = {}) {
   if (stat.size > MAX_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
   const bytes = withRetry(() => fs.readFileSync(file));
   if (bytes.length > MAX_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
-  return normalize(JSON.parse(bytes.toString("utf8")));
+  return normalize(JSON.parse(bytes.toString("utf8")), { allowNewer });
 }
 // Write, flush to disk, then rename so a power loss leaves either the old or the new file.
 function durableReplace(file, payload) {
@@ -88,7 +89,8 @@ function write(file, data, { keepLastGood = false } = {}) {
 function migrateFile(file) {
   if (!fs.existsSync(file)) return;
   const original = JSON.parse(fs.readFileSync(file, "utf8"));
-  normalize(original);
+  // A newer app's v3 file is never converted here; read-only handling is in recovery.cjs.
+  normalize(original, { allowNewer: true });
   if ([1, 2].includes(original.version)) {
     // Byte-for-byte original, never replace a prior migration backup.
     // A later v1/v2 file gets its own copy instead of reusing an older backup name.
@@ -111,6 +113,7 @@ function due(events, now, seen) {
 module.exports = {
   empty,
   validate: normalize,
+  isNewerData,
   read,
   write,
   migrateFile,

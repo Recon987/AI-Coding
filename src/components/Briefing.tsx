@@ -64,7 +64,7 @@ export function Briefing({
     chooseDate(addDays(date, offset));
   }
   const firstUse = collections.every(
-    (name) => data[name as Exclude<keyof Data, "version">].length === 0,
+    (name) => data[name as Exclude<keyof Data, "version" | "minReader">].length === 0,
   );
   if (firstUse)
     return (

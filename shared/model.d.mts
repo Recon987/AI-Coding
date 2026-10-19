@@ -13,7 +13,12 @@ export const collections: string[];
 export const RECURRENCE: EventRecurrence[];
 export const RECURRENCE_LABEL: Record<EventRecurrence, string>;
 export function empty(): Data;
-export function normalize(input: unknown): Data;
+export const READER_VERSION: number;
+export const NEWER_DATA_MESSAGE: string;
+/** True when the file declares a reader (minReader) newer than this app. */
+export function isNewerData(input: unknown): boolean;
+/** allowNewer: read-only use of a newer app's file; failures carry code "NEWER_DATA". */
+export function normalize(input: unknown, options?: { allowNewer?: boolean }): Data;
 export function dayKey(date?: Date): string;
 export function holidaysForYear(year: number): HolidayEntry[];
 export function holidayName(date: string): string | null;
