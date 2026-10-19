@@ -1,7 +1,7 @@
 ---
 id: TASK-BACKUP-02
 title: 복원 보호본 보관 개수 제한
-status: review
+status: in-progress
 role: builder
 owner: claude
 verifier: codex
@@ -30,7 +30,7 @@ updated: 2026-10-19
 - [x] 2. 테스트·문서
 
 ## 재개 위치
-구현 완료, Codex 검증 대기.
+Codex 검증 반려(BK-01, P1): 미래 시각의 기존 보호본이 있을 때 새 복원 직전 보호본을 정리 과정에서 지운다. desktop/store.cjs restoreCopyPath·pruneRestoreCopies와 main.cjs의 사전 삭제 안내가 동일한 보존/삭제 대상을 선택하도록 보완한다. tests/desktop-backup-clock-audit.cjs의 정상/시계 역행2경로를 통과시킨 뒤 재검증한다.
 
 ## 구현 내용·검증 요점
 - `desktop/store.cjs`: `RESTORE_KEEP = 5`, `restoreCopies(file)`(이름이 정확히 `<파일>.before-restore-<숫자>.json`인 것만, 숫자 = 시각 순), `restoreCopyPath(file, now)`(같은 시각이면 다음 숫자), `pruneRestoreCopies(file, keep)`(오래된 것부터 지우고, 지우지 못한 파일은 throw 없이 보고).
@@ -45,3 +45,10 @@ updated: 2026-10-19
 
 ### 2026-10-19 Codex 감사 DS-01 보완 (Claude)
 Codex 자료 안전성 감사(PR #10)가 이 카드의 결함을 찾았다: 복원 확정 뒤 보호본 정리 단계의 목록 읽기 오류가 예외로 올라가 화면이 복원 전 자료로 남고, 다음 저장이 복원을 되돌렸다. `desktop/main.cjs` 정리 단계를 경고로 바꾸고 `src/main.tsx`가 복원 실패 시 디스크를 다시 읽도록 고쳤다. 감사 검사를 정식 검사에 편입. Windows 39232674307(afc3825) 성공. 상세는 TASK-REVIEW-DATA-SAFETY-01 검증 기록.
+
+### 2026-10-19 Codex 독립 검증 — DS-01 승인 / BK-01(P1) 반려
+DS-01은 afc3825에서 Linux·Windows 소스/패키지 감사5/5로 해소됨을 확인했다. 다만 별도 검증에서 PC 시계를 되돌려 기존 보호본5개의 파일명 시각이 현재보다 미래인 상황이면, 이번 복원 직전 보호본이 가장 작은 시각으로 생성되어 pruneRestoreCopies가 즉시 삭제한다. 주파일·last-good는 복원본으로 바뀌고 현재 복원 직전 자료는 어느 보호본에도 남지 않는다. 확인창은 기존 미래 보호본1개를 지운다고 안내하지만 실제로는 방금 만든 보호본을 지우므로 안내와 실제 삭제 대상도 다르다. 정상 과거 보호본 대조는 통과, 미래 시각 조건은 실패(독립 실제 앱1/2). OS 시계는 바꾸지 않고 임시 가상 파일 이름으로 재현했다. [결과](../ui-review/dispatch-20261019/backup-clock.json).
+
+수정 조건: 이번 복원 직전 보호본은 항상 남기고, 오래된 보호본 중 정리할 대상을 사전 안내와 일치시킨다. 시간 역행·이름 충돌·정리 실패에서도 원본 보호와 최근5개 정책을 함께 검증한다. 제품 코드는 Codex가 수정하지 않았다.
+
+- [ ] BK-01: 시계 역행에서도 이번 복원 직전 보호본 보존·안내한 기존 보호본만 정리

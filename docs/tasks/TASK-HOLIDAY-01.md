@@ -1,7 +1,7 @@
 ---
 id: TASK-HOLIDAY-01
 title: 선거일·임시공휴일 반영과 공휴일 표 범위 밖 안내
-status: review
+status: ready
 role: builder
 owner: claude
 verifier: codex
@@ -34,7 +34,7 @@ updated: 2026-10-19
 - [x] 5. 테스트·기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기.
+Codex 검증 반려(HL-01), BACKUP-02의 BK-01 처리 후 순차 보완 대기: src/components/HolidayManager.tsx의 store()에서 parseHolidayLines가 던지는 한도 검증 예외를 화면 오류로 처리한다. 1,000개 상태의 직접 등록/붙여 넣기 모두 안내·초안 보존·자료 불변을 보장한 뒤 재검증한다. tests/desktop-holiday-limits-audit.cjs가 현재2개 경로에서 실패한다.
 
 ## 구현 내용·검증 요점
 - 조사: docs/research/holidays.md(출처 포함). 관보 원문은 기관에서 최종 확인 필요.
@@ -48,3 +48,8 @@ updated: 2026-10-19
 2026-10-19 Linux(Node 22): `npm test` 114/114(새 holidays 6개 — 표 관련 4개는 고치기 전 코드에서 실패 확인), `npm run test:desktop` 12개 진입점(새 desktop-holiday-smoke: 노동절·대체공휴일 달력, 등록·붙여 넣기 거부/건너뛰기·삭제, 2036년 안내), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. 960px 시트 화면 확인. Windows 수동 실행 [39229815744](https://github.com/Recon987/AI-Coding/actions/runs/39229815744)(ba96ffb) 성공.
 
 ## 검증 기록
+
+### 2026-10-19 Codex 독립 검증 — HL-01(P2) 반려
+기준afc3825. 기존 npm test129/129·desktop13개 진입점(자료 감사 포함)과 Windows39232674307은 통과했다. 그러나 추가 공휴일1,000개 상태에서 직접 등록/붙여 넣기로1개를 더 넣으면 parseHolidayLines의 한도 예외를 HolidayManager.store가 잡지 않아 처리되지 않은 renderer 예외가 발생하고 화면 오류 안내가 없다. 기존 자료와 초안은 보존된다. 신규 독립 실제 앱 검사 tests/desktop-holiday-limits-audit.cjs는2경로 모두 이 조건에서 실패(종료1). 제품 코드는 수정하지 않았다. 재개 위치의 오류 안내 보완 후 신규2/2와 전체검사·Windows 재검증이 필요하다. [증빙](../ui-review/dispatch-20261019/holiday-limits.json).
+
+- [ ] HL-01: 한도 초과를 화면에 안내하고 처리되지 않은 예외 없이 직접 등록·붙여 넣기2경로를 거부

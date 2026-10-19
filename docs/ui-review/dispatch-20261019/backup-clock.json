@@ -1,0 +1,68 @@
+{
+  "reference": "afc3825",
+  "cases": [
+    {
+      "mode": "past-copies",
+      "passed": true,
+      "prompt": "복원 전 보호본은 최근 5개만 보관합니다.\n복원하면 가장 오래된 보호본 1개(2020-01-01 00:00)를 지웁니다. 필요하면 취소하고 먼저 다른 곳에 복사하세요.",
+      "restored": true,
+      "lastGoodRestored": true,
+      "retained": [
+        {
+          "name": "workdesk.json.before-restore-1577836860000.json",
+          "title": "가상 기존 보호본 2"
+        },
+        {
+          "name": "workdesk.json.before-restore-1577836920000.json",
+          "title": "가상 기존 보호본 3"
+        },
+        {
+          "name": "workdesk.json.before-restore-1577836980000.json",
+          "title": "가상 기존 보호본 4"
+        },
+        {
+          "name": "workdesk.json.before-restore-1577837040000.json",
+          "title": "가상 기존 보호본 5"
+        },
+        {
+          "name": "workdesk.json.before-restore-1792403937787.json",
+          "title": "가상 이번 복원 직전 자료"
+        }
+      ],
+      "originalProtected": true,
+      "oldCopiesKept": 4
+    },
+    {
+      "mode": "future-copies",
+      "passed": false,
+      "prompt": "복원 전 보호본은 최근 5개만 보관합니다.\n복원하면 가장 오래된 보호본 1개(2027-10-19 09:58)를 지웁니다. 필요하면 취소하고 먼저 다른 곳에 복사하세요.",
+      "restored": true,
+      "lastGoodRestored": true,
+      "retained": [
+        {
+          "name": "workdesk.json.before-restore-1823939937904.json",
+          "title": "가상 기존 보호본 1"
+        },
+        {
+          "name": "workdesk.json.before-restore-1823939997904.json",
+          "title": "가상 기존 보호본 2"
+        },
+        {
+          "name": "workdesk.json.before-restore-1823940057904.json",
+          "title": "가상 기존 보호본 3"
+        },
+        {
+          "name": "workdesk.json.before-restore-1823940117904.json",
+          "title": "가상 기존 보호본 4"
+        },
+        {
+          "name": "workdesk.json.before-restore-1823940177904.json",
+          "title": "가상 기존 보호본 5"
+        }
+      ],
+      "originalProtected": false,
+      "oldCopiesKept": 5,
+      "failure": "이번 복원 직전 자료를 새 보호본에 남겨야 함\n\nfalse !== true\n"
+    }
+  ]
+}

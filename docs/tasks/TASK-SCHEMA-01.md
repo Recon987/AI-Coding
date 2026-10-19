@@ -37,7 +37,7 @@ updated: 2026-10-19
 - [x] 5. 테스트: tests/schema.test.cjs(8), tests/desktop-schema-smoke.cjs(소스·패키지 양쪽), 기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기. 검증자는 아래 '검증 요점'을 대조한다.
+Codex 독립 검증 승인(기준afc3825). 제품 카드는 main 병합 전 review 유지. 전체 병합은 별도 HOLIDAY-01의 HL-01·BACKUP-02의 BK-01 반려 사항 보완 후 총괄이 진행한다.
 
 ## 구현 내용·검증 요점
 - `shared/model.mjs`: `READER_VERSION = 1`. `minReader`는 1~1,000,000 정수만 허용, 있으면 그대로 보존(없으면 만들지 않음). `minReader > READER_VERSION`이면 기본 `normalize`는 code `NEWER_DATA`로 거부, `{ allowNewer: true }`는 나머지 검사를 통과할 때만 읽기 결과를 돌려준다(실패도 `NEWER_DATA`).
@@ -51,3 +51,7 @@ updated: 2026-10-19
 2026-10-19 Linux(Node 22): `npm test` 99/99(새 schema 8개), `npm run test:desktop` 11개 진입점 통과(새 desktop-schema-smoke: 새 버전 파일 바이트 불변·손상 사본/보호본 없음·UI/IPC 저장·백업·복원 거부, 현재 파일 UI 저장 후 모르는 키 보존), 화면 검사 150개 실패 0·외부 요청 0, 업무 과업 11/11. Windows 1차 수동 실행 39187832768(b9047a7)은 데스크톱 검사 단계에서 멈춰 취소했다: 새 검사가 저장 거부된 편집 초안을 연 채 앱을 닫아 Windows의 "저장하지 않은 변경" 기본 확인창이 떠서 대기(검사 결함, 앱 동작은 의도대로). 검사가 초안을 버린 뒤 닫도록 고쳤다(90eba07). 재실행 [39188503229](https://github.com/Recon987/AI-Coding/actions/runs/39188503229) 성공(소스·패키지 앱 검사 모두 포함).
 
 ## 검증 기록
+
+### 2026-10-19 Codex 독립 검증 — 승인
+minReader·모르는 최상위 항목 보존·읽기 전용 IPC 가드·원본/파일 목록 보존을 대조했다. 실제 reader1 코드로 referral/minReader2 자료를 손상 복구 없이 거부하고 customHolidays 등 미지 항목을 저장 후 보존하는 교차 검사도 통과했다. 현재 READER_VERSION은 FORMS-02가 반영된2다.
+Node24 단위129/129(감사13 포함), 실제 앱13개 진입점(감사5/5 포함), 화면150/실패0/외부요청0·업무흐름11/11 통과. 개별 Windows 커밋/실행 성공과 누적afc3825의39232674307(소스13/패키지12·감사 각5/5)을 확인했다. [일괄 검토·증빙·병합 판정](../reviews/2026-10-19-codex-dispatch.md). 이 카드 승인과 전체 main 병합 승인을 구분한다.
