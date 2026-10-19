@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (task/task-review-list-02 / 통합 대상 claude/zen-cannon-wc1at4, PR #9 / 최종 main)
-- **Task Card**: TASK-REVIEW-LIST-02 review. 원본 TASK-LIST-02 review. Claude의 Codex 보완 교차 검증·통합 대기
-- **Latest Pushed Commit**: 986910a - fix(TASK-REVIEW-LIST-02): 경계 폭에서 사라지는 순찰 제목 보완 (최종 문서 커밋은 응답 패킷 참조)
-- **Completed Steps & Modified Files**: Claude c0369c5 독립 검증, src/style.css의 목록 전용 전환 기준1100→1279px, tests/desktop-list-smoke.cjs에7개 폭/배율×6개 목록 회귀. docs/reviews/2026-10-19-codex-list02.md·docs/ui-review/list02/·한국어 작업 기록
-- **Changed Interfaces / Schema Diff**: Codex 보완은 CSS·검사만. 데이터 v3·IPC·저장 계약 변경 없음. 원본 RowAction.primary·ListHeader.plain 유지
-- **Test Status**: Node24 npm test91/91·test:desktop10개 진입점, UI150/실패0/오류0/외부요청0, 업무흐름11/11, 추가 키보드·펼침18조합 통과. 원본 Windows39184733043 성공. 보완본 Windows39185832387 단위91·소스10/패키지9개 진입점 각 PASS·예외0·NSIS/portable성공
-- **Remaining Work for Gemini**: Claude가 PR #9 보완을 교차 확인·통합. 별도 A11Y PR #8(실행746b478·증빙788071a·Windows39184848329 성공)도 보존·통합. main 병합과 기관 PC 실제 배율·NVDA 검증은 남음
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main, PR Recon987/AI-Coding#1). Codex PR #8(task/task-review-a11y-02)·#9(task/task-review-list-02) 내용은 이 브랜치에 merge commit으로 통합됨
+- **Task Card**: TASK-LIST-02·TASK-A11Y-02·TASK-REVIEW-LIST-02·TASK-REVIEW-A11Y-02 모두 review — 구현·독립 검증·교차 검증 완료, main 병합(사용자 승인)만 남음
+- **Latest Pushed Commit**: c0369c5 - feat(TASK-LIST-02): 목록 행 동작 위치·모양 통일과 행 높이 축소 (통합 커밋을 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: Codex 보완 986910a(src/style.css 목록 전환 1279px, tests/desktop-list-smoke.cjs 경계 폭 회귀)·746b478(src/main.tsx 알림 재진입 복귀, tests/desktop-a11y-smoke.cjs) 교차 검증·통합. 카드 4개 검증 기록, 한국어 작업 기록 docs/work-log/2026-10-18-claude-2.md 13장
+- **Changed Interfaces / Schema Diff**: 없음(CSS 전환 기준, 알림 포커스 처리). 데이터 v3·IPC 변경 없음
+- **Test Status**: 통합본 Linux Node 22: npm test 91/91, npm run test:desktop 10개 진입점 통과, 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. 두 새 회귀는 보완 전 코드에서 실패 확인. Windows는 푸시 후 PR #1에서 확인
+- **Remaining Work for Gemini**: 사용자: PR #1 main 병합 승인, PR #3~#9 닫기(내용은 PR #1에 통합), '추가'/'등록', 월요일 브리핑 범위, SCHEMA-01 승인, 양식 질문 4개, 다음 카드(LABELS-01) 선택
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

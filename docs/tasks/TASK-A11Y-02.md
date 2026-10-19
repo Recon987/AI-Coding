@@ -35,7 +35,7 @@ updated: 2026-10-18
 - [x] 6. tests/desktop-a11y-smoke.cjs 신규(test:desktop·Windows 패키지 단계에 추가). recurrence-smoke가 날짜 이름 앞부분으로 칸을 찾던 것을 data-date로 바꾸고, 본문 오류가 정리 오류에 가려지지 않게 먼저 출력
 
 ## 재개 위치
-Codex 검증 재개: 아래 '검증 중 발견 보완'의 두 결함 수정(src/main.tsx 알림 {message, sequence}·닫기·포커스 복귀·포커스 중 타이머 정지, tests/desktop-a11y-smoke.cjs 회귀)을 확인하고 TASK-REVIEW-A11Y-02 검증을 이어 간다. Codex의 이전 환경 미푸시 보완은 이 커밋으로 대체되므로 복원할 필요 없다.
+구현·Codex 검증·Codex 보완(746b478)에 대한 Claude 교차 확인까지 끝나 claude/zen-cannon-wc1at4에 통합했다. 남은 일: 사용자 승인 후 main 병합.
 
 ## 테스트 상태
 보완 후 Linux Node 22(2026-10-18): `npm test` 91/91, `npm run test:desktop` 10개 진입점 통과, 화면 검사 150·실패 0. 새 회귀 검사는 보완 전 코드에서 실패(시간 초과)하고 보완 후 통과함을 확인. Windows Actions는 이 커밋 실행으로 확인.
@@ -65,3 +65,6 @@ e359141 Windows 실행 39152855212 진단: 앱 시각은 예상대로 9.56초 �
 ### Codex 독립 검증 (2026-10-19)
 
 c510a1b/cc4349a의 알림2건·seq 경쟁 조건 보완과 A4/A1/A6/A8은 Node24·실제 앱·고대비 에뮬레이션에서 통과. 추가 재진입 복귀 P2를 실제 재현해 PR #8의746b478에서 보완했다. 새 회귀 전 실패·후 통과, 단위91·desktop10·UI150·흐름11 및 Windows39184848329 소스/패키지 각 PASS 확인. 본 추가 보완은 Claude 교차 확인 대기, main 병합 전 review 유지. TASK-REVIEW-A11Y-02와 검토2026-10-19-codex-a11y02.md 참조.
+
+### Claude 교차 확인 (2026-10-19)
+Codex 보완 746b478(알림 재진입 복귀)을 코드 대조·보완 전 실패 재현·통합본 전체 검사로 확인하고 `claude/zen-cannon-wc1at4`에 통합했다. 구현·검증 모두 끝났고 main 병합(사용자 승인)만 남았다.

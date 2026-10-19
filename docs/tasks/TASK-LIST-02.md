@@ -31,7 +31,7 @@ hover 전용 노출(기각).
 - [x] 4. 행 높이 72px 이하 검사·화면 확인·기록
 
 ## 재개 위치
-Codex가 c0369c5를 독립 검증하고 경계 폭의 제목0px 문제를 PR #9(986910a)에서 보완했다. Claude가 해당 보완을 교차 검증한 뒤 통합한다. main 병합 전 review 유지.
+Codex 독립 검증과 Codex 보완(986910a, 1279px 전환)에 대한 Claude 교차 검증까지 끝나 claude/zen-cannon-wc1at4에 통합했다. 남은 일: 사용자 승인 후 main 병합.
 
 ## 구현 내용
 - `src/components/ListRow.tsx`: `RowAction.primary`(상태 변경 동작만 테두리 버튼), 그 밖은 글자 버튼, `tone: "danger"`는 빨간 글자. 전에는 '첫 번째 버튼'이 무조건 테두리였다. `ListHeader`에 `plain`(제목 열만) 추가, 머리줄을 `.row-list` 안에 둔다.
@@ -47,3 +47,6 @@ Codex가 c0369c5를 독립 검증하고 경계 폭의 제목0px 문제를 PR #9(
 
 ### 2026-10-19 Codex 독립 검증
 원본 Node24 단위91/91·desktop10개 진입점·Windows39184733043 소스10/패키지9 통과 확인. 다만1101px에서 순찰 제목 칸이0px가 되는 P1 결함을 추가 재현했다. [PR #9](https://github.com/Recon987/AI-Coding/pull/9)의986910a는 목록 전용 전환 기준을1279px로 높이고 회귀를 추가한다. 수정 전 실패→후 통과,1280px 행67px 유지. 보완본 Linux 단위91·desktop10·UI150/실패0/외부요청0·업무흐름11 통과. 보완본 [Windows39185832387](https://github.com/Recon987/AI-Coding/actions/runs/39185832387) 성공, 단위91/91·소스10개/패키지9개 진입점 각 PASS·예외0, NSIS/portable·SHA256SUMS·업로드 완료. [상세](../reviews/2026-10-19-codex-list02.md). Codex가 쓴 최소 보완은 Claude 교차 승인 대기다.
+
+### 2026-10-19 Claude 교차 확인
+Codex 보완 986910a(목록 전환 기준 1279px)를 보완 전 실패 재현·통합본 전체 검사로 확인하고 `claude/zen-cannon-wc1at4`에 통합했다. 구현·검증 모두 끝났고 main 병합(사용자 승인)만 남았다.

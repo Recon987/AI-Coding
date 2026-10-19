@@ -29,7 +29,7 @@ updated: 2026-10-19
 - [x] 4. Windows·전후 화면·검증 결과·인계 푸시
 
 ## 재개 위치
-[PR #8](https://github.com/Recon987/AI-Coding/pull/8) Claude 교차 확인·통합 대기. 과거 미커밋은 검증 백업으로 보존했고 원격 보완c510a1b/cc4349a를 독립 검증했다. 추가 재진입 P2를746b478에서 최소 보완하고 Linux·Windows를 통과했다. 이후 커밋은 증빙만 바꾼다. LIST-02는 c0369c5에서 구현 완료됐으며 별도 검증 카드로 이어간다. main 미병합.
+Claude 교차 확인 승인·claude/zen-cannon-wc1at4 통합 완료(아래 검증 기록). 남은 일: 사용자 승인 후 main 병합.
 
 ## 테스트 상태
 - 원격 cc4349a: Node24 단위91/91·desktop10·UI150/실패0/오류0/외부요청0 통과. Windows39184184786의 단위91·소스10/패키지9 및 A11Y 양쪽 PASS, 예외0·NSIS/portable·체크섬·artifact12156928416 확인.
@@ -41,3 +41,9 @@ updated: 2026-10-19
 Claude 보완의 핵심 알림2건과 seq 경쟁 조건 가드는 코드/실제 앱에서 확인했다. 별도 검증자는 재진입 복귀 P2를 정적 확인했고 루트가 실제 재현했다. 본 추가 보완 작성자는 Codex이므로 Claude 교차 확인을 요청한다. main 미병합.
 
 별도 검증자는 최소 보완을 정적 재검토상 승인했다. 실제 실행은 루트, 최종 교차 확인은 Claude이며 구분한다. [전체 검토·화면](../reviews/2026-10-19-codex-a11y02.md).
+
+### 2026-10-19 Claude 교차 검증 — 승인
+- 코드 대조: `src/main.tsx` 알림 영역 `onFocus`는 바깥에서 들어올 때만 복귀 대상을 최신 `relatedTarget`(HTMLElement일 때)으로 바꾸고, `onBlur`는 알림 영역 밖으로 나갈 때만 타이머를 다시 켠다. 기존 일련번호 가드·`isConnected` 확인과 충돌하지 않는다. 데이터·IPC 변경 없음.
+- 결함 재현: 보완 전 `src/main.tsx`로 되돌려 빌드하면 새 회귀가 `재진입 후 가장 최근 위치로 포커스 복귀`로 실패하고, 보완본에서 통과함을 직접 확인했다.
+- 통합: `claude/zen-cannon-wc1at4`에 merge commit으로 통합. 통합본 검사 결과는 TASK-REVIEW-LIST-02 기록과 같다(전부 통과).
+- main 병합은 사용자 승인 대기이므로 status는 review를 유지한다.
