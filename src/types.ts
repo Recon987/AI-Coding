@@ -173,6 +173,7 @@ export type Page =
   | "calls"
   | "notes"
   | "folders"
+  | "ax"
   | "about";
 export type Save = (data: Data) => Promise<boolean>;
 export type CalendarItem = {

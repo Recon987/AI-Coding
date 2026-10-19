@@ -23,6 +23,9 @@ const paths: Record<string, string[]> = {
   arrow: ["M5 12h14m-5-5 5 5-5 5"],
   clock: ["M12 7v5l3 2", "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0"],
   download: ["M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"],
+  // TASK-MODULES-02: 모듈 관리 (stacked blocks) and AX 사업 관리 (chart with a spark).
+  modules: ["M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4z", "M16.5 13v7M13 16.5h7"],
+  ax: ["M4 20V10m6 10V4m6 16v-7", "M3 20h18", "m18 4 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"],
 };
 export function Icon({
   name,

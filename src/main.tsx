@@ -28,51 +28,34 @@ import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
 import { HolidayManager } from "./components/HolidayManager";
 import { Icon } from "./components/Icon";
+import { AppletDrawer } from "./components/AppletDrawer";
+import { AxDesk } from "./components/AxDesk";
+import { CORE_APPLETS, MODULE_APPLETS, visibleModules } from "../shared/applets.mjs";
 import { Empty, SectionHead, Tag } from "./ui";
 import "./style.css";
 import { ConfirmHost, discardChanges, isConfirmOpen } from "./confirm";
-// Five task groups plus help pinned at the bottom (TASK-NAV-01).
-const sections: {
-  label: string;
-  pages: { id: Page; label: string }[];
-  footer?: boolean;
-}[] = [
-  {
-    label: "오늘",
-    pages: [
-      { id: "briefing", label: "업무 브리핑" },
-      { id: "calendar", label: "월간 일정" },
-    ],
-  },
-  {
-    label: "현장",
-    pages: [
-      { id: "patrol", label: "현장 순찰" },
-      { id: "controls", label: "탐방로 통제" },
-    ],
-  },
-  {
-    label: "할 일",
-    pages: [
-      { id: "handover", label: "인수인계" },
-      { id: "submission", label: "제출 기한" },
-    ],
-  },
-  { label: "사무소", pages: [{ id: "office", label: "사무소 현황" }] },
-  {
-    label: "기록",
-    pages: [
-      { id: "calls", label: "전화메모" },
-      { id: "notes", label: "업무 메모" },
-      { id: "folders", label: "바로가기" },
-    ],
-  },
-  { label: "", footer: true, pages: [{ id: "about", label: "앱 안내" }] },
-];
-const pageNames = Object.fromEntries(
-  sections.flatMap((s) => s.pages.map((p) => [p.id, p.label])),
-);
+// TASK-MODULES-02: the sidebar shows the four core applets, then the job modules the
+// user keeps visible (shared/applets.mjs), then 모듈 관리·바로가기·앱 안내. Page IDs are unchanged,
+// so links from search, the briefing and the calendar still open the same screens.
+const pageNames: Record<Page, string> = {
+  briefing: "업무 브리핑",
+  calendar: "월간 일정",
+  handover: "인수인계",
+  submission: "제출 기한",
+  notes: "업무 메모",
+  calls: "전화메모",
+  patrol: "현장 순찰",
+  controls: "탐방로 통제",
+  office: "사무소 현황",
+  ax: "AX 사업 관리",
+  folders: "바로가기",
+  about: "앱 안내",
+};
+type Applet = { id: string; name: string; navName?: string; icon: string; pages: string[] };
+const APPLETS: Applet[] = [...CORE_APPLETS, ...MODULE_APPLETS];
+const appletOf = (page: Page) => APPLETS.find((a) => a.pages.includes(page));
 const subtitles: Record<Page, string> = {
+  ax: "권역별 AX 사업, GIS·AI 스니펫, 보고서 초안을 관리합니다.",
   office: "직원별 근무·휴무·당직·거점 배치를 일별·주간으로 확인합니다.",
   briefing: "순찰에서 사무실까지, 오늘 이어갈 업무를 확인하세요.",
   patrol: "현장의 확인 사항과 조치 내용을 기록하고 다음 업무로 연결합니다.",
@@ -98,6 +81,8 @@ function App() {
     [readOnly, setReadOnly] = useState(false),
     // TASK-HOLIDAY-01: user-added holidays sheet, opened from 자료 관리.
     [holidaysOpen, setHolidaysOpen] = useState(false),
+    // TASK-MODULES-02: 모듈 관리 drawer.
+    [modulesOpen, setModulesOpen] = useState(false),
     [query, setQuery] = useState("");
   const [, setClock] = useState(0);
   useEffect(() => {
@@ -169,6 +154,13 @@ function App() {
     window.addEventListener("keydown", shortcut);
     return () => window.removeEventListener("keydown", shortcut);
   }, []);
+  const shownModules = visibleModules(data);
+  const currentApplet = appletOf(page);
+  // A page of a hidden module still opens (search, briefing, calendar links); it says so.
+  const hiddenModule =
+    currentApplet && MODULE_APPLETS.some((m) => m.id === currentApplet.id) && !shownModules.includes(currentApplet.id)
+      ? currentApplet
+      : undefined;
   const saving = useRef(false);
   const api = window.workdesk;
   useEffect(() => {
@@ -314,44 +306,74 @@ function App() {
             공원 업무 수첩<small>PARK WORKDESK</small>
           </div>
         </div>
-        <nav>
-          {sections.map((section) => (
-            <div
-              className={`nav-section ${section.footer ? "nav-footer" : ""}`}
-              key={section.label || "footer"}
-            >
-              {section.label && <p>{section.label}</p>}
-              {section.pages.map((p) => (
-                <button
-                  key={p.id}
-                  aria-disabled={busy || undefined}
-                  className={page === p.id ? "active" : ""}
-                  aria-current={page === p.id ? "page" : undefined}
-                  onClick={() => navigate(p.id)}
-                  aria-label={p.label}
-                >
-                  <Icon name={p.id} />
-                  {p.label}
-                  {(() => {
-                    const count =
-                      p.id === "controls"
-                        ? activeControls(data, dayKey()).length
-                        : p.id === "calls"
+        <nav aria-label="주 메뉴">
+          {[
+            { label: "기본", applets: CORE_APPLETS as Applet[] },
+            {
+              label: "모듈",
+              applets: shownModules
+                .map((id) => MODULE_APPLETS.find((m) => m.id === id))
+                .filter(Boolean) as Applet[],
+            },
+          ].map((section) =>
+            section.applets.length ? (
+              <div className="nav-section" key={section.label}>
+                <p>{section.label}</p>
+                {section.applets.map((a) => {
+                  const here = a.pages.includes(page);
+                  const count =
+                    a.id === "patrols"
+                      ? activeControls(data, dayKey()).length
+                      : a.id === "memos"
                         ? data.calls.filter((c) => !c.done).length
-                        : ["handover", "submission"].includes(p.id)
-                          ? data.tasks.filter((t) => t.kind === p.id && !t.done)
-                              .length
+                        : a.id === "tasks"
+                          ? data.tasks.filter((t) => !t.done).length
                           : 0;
-                    return count ? (
-                      <small className="nav-count" aria-hidden="true">
-                        {count}
-                      </small>
-                    ) : null;
-                  })()}
-                </button>
-              ))}
-            </div>
-          ))}
+                  return (
+                    <button
+                      key={a.id}
+                      aria-disabled={busy || undefined}
+                      className={here ? "active" : ""}
+                      aria-current={here ? "page" : undefined}
+                      onClick={() => navigate(here ? page : (a.pages[0] as Page))}
+                      aria-label={a.name}
+                    >
+                      <Icon name={a.icon} />
+                      {a.navName ?? a.name}
+                      {count ? (
+                        <small className="nav-count" aria-hidden="true">
+                          {count}
+                        </small>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null,
+          )}
+          <div className="nav-section nav-footer">
+            <button
+              aria-disabled={busy || undefined}
+              aria-haspopup="dialog"
+              onClick={() => !busy && setModulesOpen(true)}
+            >
+              <Icon name="modules" />
+              모듈 관리
+            </button>
+            {(["folders", "about"] as Page[]).map((id) => (
+              <button
+                key={id}
+                aria-disabled={busy || undefined}
+                className={page === id ? "active" : ""}
+                aria-current={page === id ? "page" : undefined}
+                onClick={() => navigate(id)}
+                aria-label={pageNames[id]}
+              >
+                <Icon name={id} />
+                {pageNames[id]}
+              </button>
+            ))}
+          </div>
         </nav>
         <div className="sidebar-bottom">
           <span className="version">공원 업무 수첩 · v0.8.0</span>
@@ -446,6 +468,30 @@ function App() {
 {formatDate(new Date())}
             </time>
           </div>
+          {currentApplet && currentApplet.pages.length > 1 && (
+            <nav className="page-switch" aria-label={`${currentApplet.name} 보기`}>
+              {(currentApplet.pages as Page[]).map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-disabled={busy || undefined}
+                  className={page === id ? "selected" : ""}
+                  aria-current={page === id ? "page" : undefined}
+                  onClick={() => page !== id && navigate(id)}
+                >
+                  {pageNames[id]}
+                </button>
+              ))}
+            </nav>
+          )}
+          {hiddenModule && (
+            <p className="hidden-module-note" role="note">
+              {hiddenModule.name} 모듈은 메뉴에서 숨겨져 있습니다. 자료는 그대로이며 모듈 관리에서 다시 켤 수 있습니다.{" "}
+              <button type="button" className="text-button" onClick={() => setModulesOpen(true)}>
+                모듈 관리 열기
+              </button>
+            </p>
+          )}
           {!api && (
             <div className="notice">
               화면 체험 중입니다. 브라우저 기록은 데스크톱 앱과 별개이며,
@@ -493,6 +539,9 @@ function App() {
             <div role="alert" className="error read-only-notice">
               읽기 전용: {NEWER_DATA_MESSAGE}
             </div>
+          )}
+          {modulesOpen && (
+            <AppletDrawer data={data} busy={busy} save={save} onClose={() => setModulesOpen(false)} />
           )}
           {holidaysOpen && (
             <HolidayManager data={data} busy={busy} save={save} onClose={() => setHolidaysOpen(false)} />
@@ -565,6 +614,7 @@ function App() {
                   initialId={focusId}
                 />
               )}
+              {page === "ax" && <AxDesk data={data} />}
               {page === "folders" && (
                 <section className="panel">
                   <SectionHead title="자주 쓰는 업무 폴더">

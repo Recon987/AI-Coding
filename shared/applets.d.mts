@@ -3,6 +3,8 @@ export type AppletCategory = "core" | "field" | "planning" | "admin";
 export type AppletDefinition = {
   id: string;
   name: string;
+  /** Shorter sidebar text when the name is long. */
+  navName?: string;
   icon: string;
   category: AppletCategory;
   description?: string;
