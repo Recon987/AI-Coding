@@ -1,9 +1,9 @@
 ---
 id: TASK-MODULES-02
 title: 코어 4종·동적 모듈 메뉴·모듈 관리 서랍(Step B)
-status: backlog
+status: in-progress
 role: builder
-owner: none
+owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: TASK-MODULES-01
@@ -13,6 +13,9 @@ updated: 2026-10-19
 
 ## 배경
 TASK-ARCH-MODULAR-01 Step B. [보정 명세](../specs/modular-ax/implementation.md) 4·6장.
+
+## 의존 예외
+- 의존 예외: TASK-MODULES-01 (사용자 승인 2026-10-19, "이어서 MODULES-02 진행해" — MODULES-01은 구현·Linux 검사 완료 후 Codex 검증 대기. 검증에서 바뀌는 점은 이 카드에도 반영)
 
 ## 완료 조건
 - [ ] 사이드바: 코어 4종(업무 브리핑·월간 일정·인수인계·제출 기한·업무·전화 메모) 고정, 활성 모듈만 중단에 순서대로, 하단 모듈 관리·바로가기·앱 안내
@@ -31,7 +34,7 @@ AX Desk 화면 내용.
 - [ ] 3. 숨김 모듈 링크·검사·기록
 
 ## 재개 위치
-MODULES-01 완료 후.
+1단계: src/main.tsx 사이드바를 CORE_APPLETS·visibleModules로, 화면 안 전환(인수인계↔제출 기한, 업무 메모↔전화메모, 순찰↔탐방로 통제), src/applets.tsx 정적 연결.
 
 ## 테스트 상태
 미실행
