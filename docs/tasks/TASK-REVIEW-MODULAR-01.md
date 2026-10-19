@@ -24,14 +24,14 @@ updated: 2026-10-19
 
 ## 진행 단계
 - [x] 1. 검증 기준 고정·카드 선점
-- [ ] 2. 코드·실제 앱·Windows 증빙 검토
+- [x] 2. 코드·실제 앱·Windows 증빙 검토
 - [ ] 3. 판정과 인계 기록
 
 ## 재개 위치
-shared/applets.mjs·shared/ax.mjs·desktop/store.cjs와 AppletDrawer·AxDesk의 계약을 대조하고 전체 검사를 실행한다.
+3단계: docs/reviews/2026-10-19-codex-modular.md에 판정과 증빙을 기록한다. 새 독립 감사 tests/modular-contract-audit.cjs의 MOD-01(64KB 바이트 제한)·AX-DATE-01(0001~0099년 보정)을 원 카드에 인계한다.
 
 ## 테스트 상태
-선점 문서만 변경. 기능 검사 미실행.
+Linux Node 24: npm test 147/147, npm run test:desktop 17개 진입점(일반 14+감사 3), 감사 9/9 통과. 화면 strict+확대 150/150, 업무 흐름 11/11 통과. Windows 39261289803·39263527042·39264945738의 소스 SHA·성공·마지막 소스/설치본 검사 로그 확인. 추가 독립 경계 감사 2/2 실패(기존 필수 검사와 분리): 한글 설정 90,023바이트 허용, 허용된 0099년 마일스톤이 1999년으로 바뀜.
 
 ## 검증 기록
 Codex의 원 카드 독립 검증 결과를 기록한다. 본 검토 문서의 후속 확인은 Claude가 담당한다.
