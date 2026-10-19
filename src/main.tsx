@@ -542,7 +542,7 @@ function App() {
             </div>
           )}
           {modulesOpen && (
-            <AppletDrawer data={data} busy={busy} save={save} onClose={() => setModulesOpen(false)} />
+            <AppletDrawer data={data} busy={busy} readOnly={readOnly} error={error} save={save} onClose={() => setModulesOpen(false)} />
           )}
           {holidaysOpen && (
             <HolidayManager data={data} busy={busy} save={save} onClose={() => setHolidaysOpen(false)} />

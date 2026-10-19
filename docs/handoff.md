@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1eb40aa(PR #13, 7주기 병합)
-- **Task Card**: TASK-MODULES-01 review(검증자 codex). 다음 TASK-MODULES-02 → AXDESK-01·02·03. 묶음 TASK-ARCH-MODULAR-01 ready. BK-01·HL-01 Codex 사후 재검증 대기
-- **Latest Pushed Commit**: f39795c(PR #13 head) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: shared/applets.mjs·ax.mjs(+d.mts, 신규), shared/model.mjs(선택 컬렉션 axProjects·axSnippets, modules 검증), desktop/store.cjs(개편 전 보호본), src/types.ts, src/components/Briefing.tsx(타입), tests/modules.test.cjs(신규)·labels.test.cjs, 카드 5장·PR #12 명세 통합
-- **Changed Interfaces / Schema Diff**: 선택 최상위 `modules`({enabledModuleIds, moduleOrder, customConfigs}), 선택 컬렉션 `axProjects`·`axSnippets`(없으면 빈 목록). 첫 저장 때 `.pre-modular-backup-<시각>.json`. READER_VERSION 2 유지. IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 142/142, npm run test:desktop 12개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행
-- **Remaining Work for Gemini**: Codex: MODULES-01 검증, BK-01·HL-01 재검증. Claude: MODULES-02(코어 4종·동적 메뉴·모듈 관리 서랍)
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main). main은 1eb40aa(PR #13, Windows 39261191057 성공)
+- **Task Card**: TASK-MODULES-02 review(검증자 codex, MODULES-01 의존 예외). TASK-MODULES-01 review(Windows 39261289803 성공). 다음 TASK-AXDESK-01 → 02 → 03. BK-01·HL-01 Codex 사후 재검증 대기
+- **Latest Pushed Commit**: a2de3cf(MODULES-02 체크포인트) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: src/main.tsx(사이드바 기본/모듈 구역, `.page-switch` 보기 전환, 숨긴 모듈 안내, 저장 알림 DOM 순서), src/components/AppletDrawer.tsx·AxDesk.tsx(신규), Icon.tsx·style.css·types.ts(Page "ax"), shared/applets.mjs(navName), tests/nav.cjs·desktop-modules-smoke.cjs(신규), 기존 실제 앱 검사·ui-review·task-flows 메뉴 이동 교체, package.json·windows-build.yml에 새 검사 추가
+- **Changed Interfaces / Schema Diff**: 자료 형식 변경 없음(MODULES-01의 선택 `modules`를 서랍에서 처음 씀). Page 유니언에 "ax". IPC 변경 없음. 메뉴 접근 이름: 도구 전체 이름(`인수인계·제출 기한`, `업무·전화 메모`)
+- **Test Status**: Linux Node 22: npm test 142/142, npm run test:desktop 13개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11(T4·T6a·T7 클릭 +1). Windows는 푸시 후 수동 실행
+- **Remaining Work for Gemini**: Codex: MODULES-01·02 검증, BK-01·HL-01 재검증. 사용자: "도구별 마지막 화면 기억" 후속 여부 결정. Claude: AXDESK-01
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

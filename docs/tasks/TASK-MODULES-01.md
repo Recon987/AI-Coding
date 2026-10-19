@@ -41,6 +41,6 @@ TASK-ARCH-MODULAR-01 Step A. 기준 문서: [보정 명세](../specs/modular-ax/
 - 명세 ⑪(예제 재주입 방지)은 예제를 넣는 TASK-AXDESK-02에서 검사한다.
 
 ## 테스트 상태
-2026-10-19 Linux(Node 22): `npm test` 142/142(새 modules 11개 + 허용값 스냅샷에 AX 3종), `npm run test:desktop` 12개 진입점 + 감사 9/9, 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행.
+2026-10-19 Linux(Node 22): `npm test` 142/142(새 modules 11개 + 허용값 스냅샷에 AX 3종), `npm run test:desktop` 12개 진입점 + 감사 9/9, 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. Windows 39261289803(c08591d, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사 통과. main 1eb40aa(PR #13 병합) Windows 39261191057 성공.
 
 ## 검증 기록
