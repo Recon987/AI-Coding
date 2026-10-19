@@ -289,7 +289,7 @@ export function Calendar({
       setMonth(next);
     setGridFocusRequest((n) => n + 1);
   }
-  const selectedHoliday = holidayName(selected);
+  const selectedHoliday = holidayName(selected, data.customHolidays);
   // Week (Mon–Sun around the selected day) and 30-day list views (TASK-CALENDAR-03).
   const [view, setView] = useState<View>("month");
   // Arrow/Home/End move between view tabs and select them (roving tabindex).
@@ -501,6 +501,7 @@ export function Calendar({
       <section className="panel calendar-view-panel">
         {view === "week" && (
           <WeekView
+            customHolidays={data.customHolidays}
             days={weekDays}
             selected={selected}
             items={viewItems}
@@ -509,10 +510,11 @@ export function Calendar({
           />
         )}
         {view === "list" && (
-          <ListView startDate={selected} items={viewItems} onOpen={openItem} />
+          <ListView startDate={selected} items={viewItems} customHolidays={data.customHolidays} onOpen={openItem} />
         )}
         {view === "month" && (
           <MonthGrid
+            customHolidays={data.customHolidays}
             days={days}
             monthIndex={monthIndex}
             items={items}

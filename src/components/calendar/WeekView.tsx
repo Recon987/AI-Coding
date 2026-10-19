@@ -1,15 +1,17 @@
 import { dayKey, holidayName } from "../../../shared/model.mjs";
-import type { CalendarItem } from "../../types";
+import type { CalendarItem, CustomHoliday } from "../../types";
 import { categoryTone, formatDate, itemClock } from "../../ui";
 import { Icon } from "../Icon";
 
 export function WeekView({
+  customHolidays,
   days,
   selected,
   items,
   onChoose,
   onOpen,
 }: {
+  customHolidays: CustomHoliday[];
   days: string[];
   selected: string;
   items: CalendarItem[];
@@ -28,7 +30,7 @@ export function WeekView({
       {days.map((key) => {
         const entries = byDay(key);
         const closures = entries.filter((i) => i.category === "통제");
-        const holiday = holidayName(key);
+        const holiday = holidayName(key, customHolidays);
         return (
           <section
             key={key}

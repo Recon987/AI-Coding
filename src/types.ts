@@ -102,6 +102,7 @@ export type Assignment = {
   baseId: string | null;
   note: string;
 };
+export type CustomHoliday = { id: string; date: string; name: string };
 export type Data = {
   version: 3;
   /** TASK-SCHEMA-01: lowest app reader version that may write this file. Absent = 1. */
@@ -113,6 +114,8 @@ export type Data = {
   patrols: Patrol[];
   tasks: Task[];
   controls: Control[];
+  /** TASK-HOLIDAY-01: holidays the user adds (임시공휴일, later election days). */
+  customHolidays: CustomHoliday[];
   organizations: Organization[];
   employees: Employee[];
   bases: Base[];
@@ -147,6 +150,8 @@ export type HolidayEntry = {
   date: string;
   name: string;
   substitute: boolean;
+  /** Added by the user (customHolidays). */
+  custom?: boolean;
 };
 export type DesktopSettings = {
   version: 1;

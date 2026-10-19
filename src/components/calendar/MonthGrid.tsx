@@ -6,7 +6,7 @@ import {
   isRecurring,
   recurrenceText,
 } from "../../../shared/model.mjs";
-import type { CalendarItem } from "../../types";
+import type { CalendarItem, CustomHoliday } from "../../types";
 import { categoryTone, formatDate, itemClock } from "../../ui";
 import { Icon } from "../Icon";
 import { Tag } from "../../ui";
@@ -20,6 +20,7 @@ function overflowByKind(rest: { category: string }[]) {
 }
 
 export function MonthGrid({
+  customHolidays,
   days,
   monthIndex,
   items,
@@ -30,6 +31,7 @@ export function MonthGrid({
   onMoveDate,
   onChoose,
 }: {
+  customHolidays: CustomHoliday[];
   days: Date[];
   monthIndex: number;
   items: CalendarItem[];
@@ -143,7 +145,7 @@ export function MonthGrid({
               {days.slice(row * 7, row * 7 + 7).map((date) => {
                 const key = dayKey(date),
                   entries = items.filter((i) => dayKey(new Date(i.at)) === key),
-                  holiday = holidayName(key);
+                  holiday = holidayName(key, customHolidays);
                 // Closures can span weeks; they get one marker so work items keep the chip slots.
                 const closures = entries.filter((i) => i.category === "통제");
                 const work = entries.filter((i) => i.category !== "통제");

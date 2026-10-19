@@ -17,7 +17,8 @@ const personalCollections = [
   "tasks",
 ];
 // Added after v3 shipped; files without it load as an empty list (TASK-CONTROL-01).
-const optionalCollections = ["controls"];
+// customHolidays: user-entered holidays (임시공휴일, later election days), TASK-HOLIDAY-01.
+const optionalCollections = ["controls", "customHolidays"];
 export const collections = [
   ...personalCollections,
   ...optionalCollections,
@@ -93,6 +94,7 @@ export const empty = () => ({
   patrols: [],
   tasks: [],
   controls: [],
+  customHolidays: [],
   organizations: [],
   employees: [],
   bases: [],
@@ -297,6 +299,8 @@ function normalizeContent(input) {
     ensure(row.zone === null || string(row.zone, 50), "담당구역 번호는 50자 이하로 입력하세요.");
     ensure(string(row.note, 2000), "통제 메모는 2,000자 이하로 입력하세요.");
   }
+  const customHolidays = data.customHolidays === undefined ? [] : data.customHolidays;
+  validateCustomHolidays(customHolidays);
   for (const key of personalCollections) {
     ensure(
       Array.isArray(data[key]) && data[key].length <= 10000,
@@ -453,6 +457,7 @@ function normalizeContent(input) {
     ...(input.minReader !== undefined || minReader > 1 ? { minReader } : {}),
     ...Object.fromEntries(collections.map((key) => [key, data[key]])),
     controls,
+    customHolidays,
   };
 }
 
@@ -478,6 +483,25 @@ const FIXED_HOLIDAYS = [
   { date: "2026-06-03", name: "지방선거일" },
   { date: "2028-04-12", name: "국회의원선거일" },
 ];
+const MAX_CUSTOM_HOLIDAYS = 1000;
+/** Throws unless `list` is a valid customHolidays list: unique ids and dates, names up to 30 characters. */
+export function validateCustomHolidays(list) {
+  ensure(
+    Array.isArray(list) && list.length <= MAX_CUSTOM_HOLIDAYS,
+    `추가 공휴일은 ${MAX_CUSTOM_HOLIDAYS.toLocaleString("ko-KR")}개 이하의 목록이어야 합니다.`,
+  );
+  const ids = new Set();
+  const dates = new Set();
+  for (const row of list) {
+    ensure(row && required(row.id, 100) && !ids.has(row.id), "추가 공휴일의 ID를 확인하세요.");
+    ensure(validDate(row.date), "추가 공휴일 날짜는 실제로 있는 YYYY-MM-DD여야 합니다.");
+    ensure(!dates.has(row.date), `추가 공휴일 날짜가 중복됩니다: ${row.date}`);
+    ensure(required(row.name, 30), "추가 공휴일 이름은 1~30자로 입력하세요.");
+    ids.add(row.id);
+    dates.add(row.date);
+  }
+  return list;
+}
 /** Years covered by the lunar holiday table; other years have solar holidays only. */
 export const LUNAR_TABLE_YEARS = { first: 2025, last: 2035 };
 
@@ -590,7 +614,24 @@ const parseLocalDate = (dateStr) => {
   return new Date(y, m - 1, d);
 };
 
-export function holidaysForYear(year) {
+/**
+ * Built-in holidays of `year` plus the user's `custom` ones (data.customHolidays).
+ * User holidays are added as they are: they never create substitute holidays.
+ */
+export function holidaysForYear(year, custom = []) {
+  const builtIn = builtInHolidays(year);
+  const own = custom.filter((h) => h.date.startsWith(`${year}-`));
+  if (!own.length) return builtIn;
+  const byDate = new Map(builtIn.map((h) => [h.date, h]));
+  for (const h of own) {
+    const existing = byDate.get(h.date);
+    byDate.set(h.date, existing
+      ? { ...existing, name: `${existing.name} · ${h.name}`, custom: true }
+      : { date: h.date, name: h.name, substitute: false, custom: true });
+  }
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+function builtInHolidays(year) {
   ensure(
     Number.isInteger(year) && year >= 1970 && year <= 2100,
     "공휴일 조회 연도를 확인하세요.",
@@ -689,10 +730,10 @@ export function holidaysForYear(year) {
   return sorted;
 }
 
-export function holidayName(date) {
+export function holidayName(date, custom = []) {
   ensure(validDate(date), "공휴일 조회 날짜를 확인하세요.");
   const year = Number(date.slice(0, 4));
-  const found = holidaysForYear(year).find((h) => h.date === date);
+  const found = holidaysForYear(year, custom).find((h) => h.date === date);
   return found ? found.name : null;
 }
 
@@ -983,17 +1024,18 @@ export function describeObservations(observations = []) {
 }
 
 /** Days the briefing's enforcement section covers: last working day through yesterday. */
-export function enforcementRange(date) {
+export function enforcementRange(date, custom = []) {
   ensure(validDate(date), "브리핑 날짜를 확인하세요.");
   return {
-    startDate: previousWorkday(date, (key) => holidayName(key) !== null),
+    startDate: previousWorkday(date, (key) => holidayName(key, custom) !== null),
     endDate: addDays(date, -1),
   };
 }
 
 export function briefing(data, date) {
   ensure(validDate(date), "브리핑 날짜를 확인하세요.");
-  const holiday = holidayName(date);
+  const custom = data.customHolidays ?? [];
+  const holiday = holidayName(date, custom);
   const when = formatTime;
   const due = data.tasks.filter(
     (t) => !t.done && dayKey(new Date(t.at)) <= date,
@@ -1012,7 +1054,7 @@ export function briefing(data, date) {
   );
   // Since the last working day (TASK-BRIEF-02): Tuesday shows Monday, Monday shows
   // Friday–Sunday, and the day after a holiday includes the holiday too.
-  const { startDate: since, endDate: yesterday } = enforcementRange(date);
+  const { startDate: since, endDate: yesterday } = enforcementRange(date, custom);
   const enforcement = patrolSummary(data, { startDate: since, endDate: yesterday });
   return [
     `공원 업무 수첩 | ${date}${holiday ? ` (${holiday})` : ""} 업무 브리핑`,

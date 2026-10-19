@@ -57,7 +57,7 @@ export function Briefing({
     endDate: week[6],
   });
   const daily = items.filter((i) => dayKey(new Date(i.at)) === date);
-  const holiday = holidayName(date);
+  const holiday = holidayName(date, data.customHolidays);
   function chooseDate(value: string) {
     setDate(value);
     setExpandedDay(false);

@@ -1,5 +1,5 @@
 import { dayKey, holidayName } from "../../../shared/model.mjs";
-import type { CalendarItem } from "../../types";
+import type { CalendarItem, CustomHoliday } from "../../types";
 import { categoryTone, formatDate, itemClock } from "../../ui";
 import { Empty, Tag } from "../../ui";
 import { addDays } from "../../../shared/dates.mjs";
@@ -7,10 +7,12 @@ import { addDays } from "../../../shared/dates.mjs";
 export function ListView({
   startDate,
   items,
+  customHolidays,
   onOpen,
 }: {
   startDate: string;
   items: CalendarItem[];
+  customHolidays: CustomHoliday[];
   onOpen: (item: CalendarItem) => void | Promise<void>;
 }) {
   const byDay = (date: string) =>
@@ -28,7 +30,7 @@ export function ListView({
           <section key={key} className="list-view-day">
             <h3>
               {formatDate(key)}
-              {holidayName(key) && <Tag tone="holiday">{holidayName(key)}</Tag>}
+              {holidayName(key, customHolidays) && <Tag tone="holiday">{holidayName(key, customHolidays)}</Tag>}
             </h3>
             {byDay(key).map((i) => (
               <button

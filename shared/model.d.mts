@@ -5,6 +5,7 @@ import type {
   EventRecurrence,
   HolidayEntry,
   Control,
+  CustomHoliday,
   Observation,
   Patrol,
   PatrolKind,
@@ -20,8 +21,9 @@ export function isNewerData(input: unknown): boolean;
 /** allowNewer: read-only use of a newer app's file; failures carry code "NEWER_DATA". */
 export function normalize(input: unknown, options?: { allowNewer?: boolean }): Data;
 export function dayKey(date?: Date): string;
-export function holidaysForYear(year: number): HolidayEntry[];
-export function holidayName(date: string): string | null;
+/** Built-in holidays plus the user's (`data.customHolidays`); user holidays never create substitutes. */
+export function holidaysForYear(year: number, custom?: CustomHoliday[]): HolidayEntry[];
+export function holidayName(date: string, custom?: CustomHoliday[]): string | null;
 /** Derives at most 400 occurrences in the requested local-date range without changing the source. */
 export function expandEventOccurrences(
   event: Event,
@@ -94,7 +96,7 @@ export function activeControls(data: Data, date: string): Control[];
 export function patrolAutoTitle(patrol: Patrol): string;
 export function newPatrolDraft(from: Patrol | undefined, options?: { route?: string; at?: string }): Patrol;
 /** Days the briefing's enforcement section covers: last working day (weekends and holidays skipped) through yesterday. */
-export function enforcementRange(date: string): { startDate: string; endDate: string };
+export function enforcementRange(date: string, custom?: CustomHoliday[]): { startDate: string; endDate: string };
 /** Patrol risk labels; keys are the allowed `risk` values. */
 export const RISK_LABEL: Record<Patrol["risk"], string>;
 /** True when the event repeats (recurrence set and not "none"). */
@@ -106,3 +108,5 @@ export function recurrenceText(
 ): string;
 /** Years covered by the lunar holiday table (설·추석·부처님오신날). */
 export const LUNAR_TABLE_YEARS: { first: number; last: number };
+/** Throws unless the list is valid (unique ids and dates, names 1–30 characters, at most 1,000). */
+export function validateCustomHolidays(list: unknown): CustomHoliday[];

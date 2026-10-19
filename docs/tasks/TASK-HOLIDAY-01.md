@@ -29,14 +29,14 @@ updated: 2026-10-19
 ## 진행 단계
 - [x] 1. 법령·선거일 확인(docs/research/holidays.md): 노동절·제헌절 2026년부터 공휴일(대체 적용), 선거일 2025-06-03·2026-06-03·2028-04-12, 임시공휴일 2025-01-27, 겹침 대체공휴일 하루 더 만드는 기존 오류 발견
 - [x] 2. 내장 표: 노동절·제헌절(2026~), 선거일·임시공휴일, 겹침 대체공휴일 오류 수정, 표 범위 함수
-- [ ] 3. 사용자 공휴일: 선택 컬렉션 customHolidays(검증·한도), holidaysForYear/holidayName이 함께 계산
+- [x] 3. 사용자 공휴일: 선택 컬렉션 customHolidays(검증·한도), holidaysForYear/holidayName이 함께 계산
 - [ ] 4. 화면: '공휴일 관리'(직접 추가·붙여 넣기 반입·삭제), 표 범위 밖 안내
 - [ ] 5. 테스트·기록
 
 ## 재개 위치
-3단계: 선택 컬렉션 customHolidays({id,date,name}) — src/types.ts, shared/model.mjs(optionalCollections·검증·holidaysForYear(year, custom)·holidayName(date, custom)·enforcementRange(date, custom)), 호출부(Calendar·Briefing·MonthGrid·WeekView·ListView).
+4단계: 화면 — '공휴일 관리' 시트(src/components/HolidayManager.tsx 신규: 직접 추가·붙여 넣기 반입 'YYYY-MM-DD,이름'·삭제, 저장은 save({...data, customHolidays})), 자료 관리 메뉴에서 열기(src/main.tsx), 달력에 음력 표 범위 밖 안내(src/components/Calendar.tsx, LUNAR_TABLE_YEARS).
 
 ## 테스트 상태
-2026-10-19 체크포인트(2단계): npm test 112/112(새 holidays 4개 — 고치기 전 코드에서 4개 모두 실패 확인). test:desktop 미실행.
+2026-10-19 체크포인트(3단계): npm test 113/113, tsc 통과. test:desktop 미실행.
 
 ## 검증 기록
