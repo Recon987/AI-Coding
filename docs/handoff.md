@@ -4,6 +4,10 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 제품 방향 통합안 — Claude·Gemini 응답 수신 완료
+
+사용자 제공 Gemini 결과와 Claude270cf7a를 대조해 [단일 통합안](product/hub-integrated-plan-2026-10-20.md)을 작성했다. [Gemini 수신 요약](product/gemini-product-flow-response-2026-10-20.md)에서 원문 제안과 사실 보정을 구분한다. 권고: 새 공통 사업/업무 + 기존 원본 연결, 세 화면, 후속1:N·근거N:M·완료사업사후작업, B1~B3로 사용자 흐름 완주. 구현 착수·카드ready는 아직 확정하지 않았다. 아래 Gemini 미수신 표시는 당시 기록이다.
+
 ## 제품 방향 공동 검토 — Claude 응답 수신
 
 Claude270cf7a의[기술설계응답](product/claude-architecture-response-2026-10-20.md)을수신해문서/카드만통합했다. [Codex기술검토](product/codex-architecture-review-2026-10-20.md)는큰방향지지와구현전계약보완요청이다. Gemini응답은아직없다. 보안코드는병합하지않았고신규구현착수승인도아니다.
@@ -152,3 +156,18 @@ DS-01은 afc3825에서 승인됐다. 자료 안전성 **감사 카드**는 사�
 - **Test Status**: 문서 링크·보드·공백 검사. 제품 전체 검사 미실행
 - **Remaining Work for Gemini**: 직무 흐름/세 화면/수용 기준 응답, 이후 Codex 단일 결정표 통합
 - **Modified Code Snippets (if uncommitted)**: 제품 변경 없음, 최종 문서 커밋·푸시 상태는 응답 패킷 참조
+
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-product-direction-01
+- **Task Card**: PRODUCT-DIRECTION-01·HUB-ARCH-01 review. 두 응답 수신·Codex 통합안 작성 완료, B1 착수 결정 대기
+- **Latest Pushed Commit**: 작성 직전 확인1cd32e5 — Claude 설계 검토. 이번 최종 해시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: Gemini 수신 요약·원문 해시, 통합 결정표·세 화면·B1~B3·계약/수용 기준, 카드·인계·작업 기록
+- **Changed Interfaces / Schema Diff**: 제안만 존재. 제품·보안 코드/기존 스키마 미변경
+- **Test Status**: 문서 링크·보드 규칙·공백 검사. 앱 전체 검사 미실행(문서 전용)
+- **Remaining Work for Gemini**: 통합안에서 달라진 화면 의미만 검토 가능. 사용자 B1 착수 범위 판단 후 구현 카드 확정
+- **Modified Code Snippets (if uncommitted)**: 제품 변경 없음, 최종 문서 커밋·푸시 상태는 응답 패킷 참조
+
+
+### Gemini 통합안 게시 상태
+이번 Gemini 파생 요약·통합안의 원격 푸시는 자동 승인 검토가 구체적인 업로드 파생 payload/목적지 게시 승인 부족을 이유로 거절했다. 원격 푸시를 우회하지 않았고 로컬 커밋에 보존한다. 기존에 게시한 Claude 검토1cd32e5와 이번 미게시 문서를 구분한다. 문서 링크·보드 규칙·공백 검사는 통과했다.
