@@ -8,6 +8,8 @@ Electron의 제한된 preload API로 로컬 파일 저장·폴더 열기·백업
 
 **저장 암호화(TASK-SECURITY-02)**: 사용자가 켜면 `desktop/keystore.cjs`가 `workdesk.key.json`(무작위 256비트 데이터 키를 `safeStorage`/DPAPI로 감싼 값과 복구 키로 감싼 값, 평문 키 없음)을 만들고, `store.setSealer`가 켜진 동안 `store.write()`의 모든 출력(주 파일·last-good·보호본·백업·`.tmp`)을 `desktop/seal.cjs` 봉투 `{version:3, minReader:3, sealed:{AES-256-GCM, keyId, iv, tag, data, recovery}}`로 쓴다. 안쪽 자료 스키마는 그대로다. 시작할 때 키를 먼저 열고, 못 열면 복구 키 창(`index.html?view=unlock`)에서 열기 전까지 자료 파일을 읽거나 쓰지 않는다. 운영체제 키 보호가 없으면(`desktop/protector.cjs`, Linux `basic_text` 포함) 켜지 않고 이유를 보여 준다.
 
+**백업 암호(TASK-SECURITY-03)**: 자료 관리 > 백업은 항상 그 백업에만 쓰는 암호를 두 번 받아(`shared/backup-password.mjs` 규칙, main에서 다시 확인) `desktop/backup-seal.cjs`가 scrypt(N=2^17, r=8, p=1) → AES-256-GCM 봉투 `{version:3, minReader:3, backupSealed:{…}}`로 `store.writeBackup()` 원자 저장한다. 암호는 어디에도 저장하지 않는다. 복원은 `store.readBackup()`: 평문·이 PC 봉함 백업은 그대로 읽고, 암호 백업이면 IPC `restore`가 `{needsPassword}`를 돌려주고 main이 고른 경로를 쥔 채 `restore-password`로 연다(틀리면 원본 불변·재시도). 일반 `store.read()`(시작·last-good·보호본)는 암호 백업을 열지 않는다. 시작 복구 흐름에서 고른 암호 백업은 복구 키 창과 같은 시작 창(`askSecret`)에서 암호를 받는다.
+
 ## 날짜 키와 현지 시각
 
 `shared/dates.mjs`는 YYYY-MM-DD 날짜 키의 주 시작·하루 이동·포함 일수·집계 기간을 UTC 정오에서 계산한다. 키는 시각이 아니므로 PC 시간대나 DST의23/25시간 영향으로 날짜를 바꾸지 않는다. `dayKey`와 표시 함수는 현지 날짜 입출력 경계로 유지하며 알림의 경과 시간 계산과 혼동하지 않는다. 모델·양식·브리핑·사무소·달력·집계가 같은 날짜 산술을 참조한다. `office.validDate`는 기존 import 호환을 위해 `dates.validDateKey`를 그대로 노출한다. 함수와 선언은 dates.mjs/dates.d.mts, 시간대 회귀는 tests/dates.test.cjs에 있다. 날짜 부분으로 현지 Date를 만들 때는 `new Date(y, m, d)` 대신 `localDate`를 쓴다(생성자는 0~99년을 1900~1999년으로 바꾼다). `dayKey`는 연도를 4자리로 채운다. 기본 공휴일 표는 1970~2100년이며 그 밖의 해는 기본 공휴일 없이(사용자 공휴일만) 표시하고 달력에 안내한다(TASK-AX-DATES-01, tests/low-years.test.cjs).
