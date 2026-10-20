@@ -1,7 +1,7 @@
 ---
 id: TASK-LOCATION-01
 title: 담당구역 번호 목록(로컬 반입)과 순찰 선택 입력
-status: in-progress
+status: review
 role: builder
 owner: claude
 verifier: codex
@@ -38,7 +38,12 @@ updated: 2026-10-20
 - [x] 3. 테스트·문서
 
 ## 재개 위치
-반려(LOC-01/P2). 정상 CSV 미리보기 뒤 다른 파일이 UTF-8 오류/2MB 초과로 거부되면 CSV칸은 비워지지만 이전 미리보기·적용 단추가 남는다. 누르면 이전 파일의 구역이 실제 저장된다. 두 경로 각각 독립 재현 실패. 파일 선택 변경·읽기 실패 시 preview 무효화 보완 후 재검증한다. 정상 반입·저장 실패 보존·읽기전용은 통과. 전체 필수 검사 성공과 별도 발견이다. [독립 검토·증빙](../reviews/2026-10-20-codex-dispatch.md).
+LOC-01 보완 완료, Codex 재검증 대기(tests/desktop-nav-zones-audit.cjs의 LOC-01 두 사례, tests/desktop-zones-smoke.cjs 새 단계).
+
+## LOC-01 보완 (2026-10-20, Claude)
+- 원인: src/components/ZoneManager.tsx 파일 선택 처리에서 정상 파일만 `update()`로 미리보기를 지우고, 2MB 초과·UTF-8 아님 같은 거부 경로는 미리보기를 남겨 이전 CSV의 "확인 후 반입 적용"이 살아 있었다.
+- 보완: 파일을 고르는 순간(읽기 전) 미리보기·오류·상태 문구를 먼저 지우고, 실패 경로에서도 다시 지운다. 읽는 동안이나 거부 뒤에는 적용 단추가 없다. 사무소 반입(OfficeImport)은 이미 같은 순서라 바꾸지 않았다.
+- 검사: Codex 감사 `node tests/desktop-nav-zones-audit.cjs` 3통과·2실패 → 5/5 통과(종료 0). tests/desktop-zones-smoke.cjs에 같은 두 경로(UTF-8 아님 3바이트, 2MB+1바이트)를 넣었고, 보완 전 코드로 빌드하면 "bad.csv: 이전 미리보기 무효화"에서 실패하고 보완 후 통과함을 확인했다.
 
 ## 구현 메모
 - 설계 메모대로 구현. 추가로: 사용 안 함(active false) 구역은 제안에서 빼고 목록 표에는 보인다. 자동 채움은 순찰 구간이 비어 있을 때만 하고, 직접 쓴 구간은 덮지 않는다. 읽기 전용 자료에서는 반입·삭제를 잠근다. 미리보기 뒤 자료가 바뀌면 미리보기를 지워 낡은 미리보기를 적용하지 못하게 했다(사무소 반입과 같음).

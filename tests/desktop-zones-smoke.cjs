@@ -64,6 +64,23 @@ const shots = process.env.PARK_ZONES_SHOTS;
     const preview = sheet.getByRole("region", { name: "반입 미리보기" });
     await preview.getByText("추가 3 · 수정 0 · 유지 0건").waitFor();
     assert.equal(fs.readFileSync(file, "utf8"), before, "미리보기만으로는 쓰지 않음");
+    // LOC-01 (Codex): choosing a file that is then rejected voids the previous preview, so its
+    // "적용" button cannot save the old CSV. Checked for a non-UTF-8 file and a file over 2MB.
+    const fileInput = sheet.getByLabel("CSV 파일", { exact: true });
+    for (const [name, buffer, message] of [
+      ["bad.csv", Buffer.from([0xff, 0xfe, 0xff]), "UTF-8 CSV로 저장한 파일을 선택하세요."],
+      ["big.csv", Buffer.alloc(2 * 1024 * 1024 + 1, 0x61), "2MB 이하의 CSV 파일을 선택하세요."],
+    ]) {
+      await fileInput.setInputFiles({ name, mimeType: "text/csv", buffer });
+      await sheet.getByRole("alert").filter({ hasText: message }).waitFor();
+      assert.equal(await preview.count(), 0, `${name}: 이전 미리보기 무효화`);
+      assert.equal(await sheet.getByRole("button", { name: "확인 후 반입 적용" }).count(), 0);
+      assert.equal(fs.readFileSync(file, "utf8"), before);
+      // Back to a reviewed preview for the next case and the apply step below.
+      await csv.fill("code,name,route,active\n3-1,가상 계곡 구역,계곡안내소 → 쉼터,true\n3-2,가상 능선 구역,,\n3-9,가상 폐쇄 구역,,false");
+      await sheet.getByRole("button", { name: "반입 미리보기", exact: true }).click();
+      await preview.getByText("추가 3 · 수정 0 · 유지 0건").waitFor();
+    }
     if (shots) await page.screenshot({ path: path.join(shots, "zones-preview.png") });
     await preview.getByRole("button", { name: "확인 후 반입 적용", exact: true }).click();
     await sheet.getByRole("status").filter({ hasText: "담당구역 3건을 확인하고 반입했습니다(추가 3 · 수정 0 · 유지 0)." }).waitFor();
@@ -121,7 +138,7 @@ const shots = process.env.PARK_ZONES_SHOTS;
     await sheet.getByRole("status").filter({ hasText: "담당구역 3-1을(를) 지웠습니다." }).waitFor();
     assert.deepEqual(saved().zones.map((z) => z.code), ["3-2", "3-9"]);
     assert.equal(saved().patrols.find((p) => p.id === "p0").zone, "3-1");
-    console.log("PASS: 담당구역 CSV 반입(틀린 행 전체 거부·미리보기 무저장·적용·같은 번호 갱신), 순찰 입력 제안(사용 중 구역·대표 구간 채움·최근 구간·입력한 구간 보존·목록 밖 번호 허용), 삭제 확인·순찰 기록 보존");
+    console.log("PASS: 담당구역 CSV 반입(틀린 행 전체 거부·미리보기 무저장·거부된 파일 뒤 이전 미리보기 무효화·적용·같은 번호 갱신), 순찰 입력 제안(사용 중 구역·대표 구간 채움·최근 구간·입력한 구간 보존·목록 밖 번호 허용), 삭제 확인·순찰 기록 보존");
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });

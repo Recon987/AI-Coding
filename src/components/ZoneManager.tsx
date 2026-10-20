@@ -92,11 +92,17 @@ export function ZoneManager({
                 const file = e.target.files?.[0];
                 e.target.value = "";
                 if (!file) return;
+                // LOC-01: a new file choice voids the old preview at once, so a rejected or
+                // still-loading file can never leave the previous file's "적용" button behind.
+                setPreview(null);
+                setError("");
+                setStatus("");
                 try {
                   if (file.size > 2 * 1024 * 1024) throw new Error("2MB 이하의 CSV 파일을 선택하세요.");
                   update(new TextDecoder("utf-8", { fatal: true }).decode(await file.arrayBuffer()));
                 } catch (cause) {
                   setSource("");
+                  setPreview(null);
                   setError(cause instanceof Error && cause.message.includes("2MB") ? cause.message : "UTF-8 CSV로 저장한 파일을 선택하세요.");
                 }
               }}
