@@ -1,7 +1,7 @@
 ---
 id: TASK-REVIEW-POSTMERGE-01
-title: 8주기 main 병합 후 MOD-01·스니펫·보고서·낮은 연도 독립 검증
-status: review
+title: 8주기 사후 검증과 TZ-TEST-01·NAV-02·LOCATION-01 추가 독립 검증
+status: in-progress
 role: verifier
 owner: codex
 verifier: claude
@@ -36,3 +36,14 @@ Node24 npm test 161/161, desktop 일반17+감사3(9/9) 통과. 기존 계약 감
 
 ## 검증 기록
 제품 구현자는 Claude, 사후 검증자는 Codex다. 본 검토 기록의 교차 확인은 Claude 대기다. 푸시 불가를 검증 실패로 혼동하지 않으며, 제품 카드 done 상태는 사용자의 병합 결정대로 유지했다.
+
+## 2026-10-20 추가 디스패치 체크포인트
+사용자가 b3552b9 및 이후 모든 검증 커밋의 origin 푸시를 명시적으로 승인했다. b3552b9는 origin/task/task-review-postmerge-01에 실제 푸시 완료했다. 이전 원격 게시 차단은 해소됐으며, 기존 미푸시 표시는 당시의 기록이다.
+
+- [x] b3552b9 즉시 원격 푸시
+- [x] Claude 519b7cc6bb782fd057949d5f1bddb06ca27664cc 가져오기·기존 기록과 병합(017dd62)
+- [x] 전체 단위 검사5개 시간대 각각167/167
+- [ ] 전체 desktop·추가 경계 감사·Windows39358186950 상세 로그 대조
+- [ ] 세 카드 판정·POSTMERGE 기록·최종 푸시
+
+추가 재개 위치: tests/desktop-nav-zones-audit.cjs 실행 결과와 work/dispatch-20261020/ 로그 확인. 카드 범위 밖 제품 구현은 하지 않는다.
