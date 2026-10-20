@@ -109,6 +109,8 @@ export type ModuleSettings = {
   moduleOrder: string[];
   customConfigs: Record<string, unknown>;
 };
+/** 담당구역 번호 목록 (TASK-LOCATION-01); `code` is what patrols store in `zone`. */
+export type Zone = { id: string; code: string; name: string; route: string; active: boolean };
 export type AxZone = "hq" | "west" | "north" | "institute" | "other";
 export type AxStage = "planning" | "contract" | "execution" | "done";
 /** Amounts are in thousand won (천원). */
@@ -155,6 +157,7 @@ export type Data = {
   /** TASK-MODULES-01 (AX Desk). */
   axProjects: AxProject[];
   axSnippets: AxSnippet[];
+  zones: Zone[];
   /** Absent until the user changes which modules show. */
   modules?: ModuleSettings;
   organizations: Organization[];

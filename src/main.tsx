@@ -27,12 +27,13 @@ import { Tasks } from "./components/Tasks";
 import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
 import { HolidayManager } from "./components/HolidayManager";
+import { ZoneManager } from "./components/ZoneManager";
 import { Icon } from "./components/Icon";
 import { AppletDrawer } from "./components/AppletDrawer";
 import { AxDesk } from "./components/AxDesk";
 import { AxSnippets } from "./components/AxSnippets";
 import { AxReport } from "./components/AxReport";
-import { CORE_APPLETS, MODULE_APPLETS, visibleModules } from "../shared/applets.mjs";
+import { CORE_APPLETS, MODULE_APPLETS, rememberPage, restorePage, visibleModules } from "../shared/applets.mjs";
 import { Empty, SectionHead, Tag } from "./ui";
 import "./style.css";
 import { ConfirmHost, discardChanges, isConfirmOpen } from "./confirm";
@@ -74,6 +75,17 @@ const subtitles: Record<Page, string> = {
   folders: "자주 사용하는 업무 폴더를 바로 엽니다.",
   about: "저장 위치, 알림과 백업 사용 방법을 확인하세요.",
 };
+// TASK-NAV-02: which page each multi-page tool was last on. A window preference only, never
+// in workdesk.json; unreadable or unknown values are ignored.
+const LAST_PAGE_KEY = "park-workdesk-last-page";
+function readLastPages(): Record<string, string> {
+  try {
+    const value = JSON.parse(localStorage.getItem(LAST_PAGE_KEY) ?? "{}");
+    return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  } catch {
+    return {};
+  }
+}
 const READ_ONLY_BLOCKED =
   "읽기 전용 자료라 저장·백업·복원을 하지 않았습니다. 새 버전 앱에서 작업하세요.";
 function App() {
@@ -87,6 +99,7 @@ function App() {
     [readOnly, setReadOnly] = useState(false),
     // TASK-HOLIDAY-01: user-added holidays sheet, opened from 자료 관리.
     [holidaysOpen, setHolidaysOpen] = useState(false),
+    [zonesOpen, setZonesOpen] = useState(false),
     // TASK-MODULES-02: 모듈 관리 drawer.
     [modulesOpen, setModulesOpen] = useState(false),
     [query, setQuery] = useState("");
@@ -160,6 +173,17 @@ function App() {
     window.addEventListener("keydown", shortcut);
     return () => window.removeEventListener("keydown", shortcut);
   }, []);
+  const [lastPages, setLastPages] = useState(readLastPages);
+  useEffect(() => {
+    const next = rememberPage(lastPages, page);
+    if (next === lastPages) return;
+    setLastPages(next);
+    try {
+      localStorage.setItem(LAST_PAGE_KEY, JSON.stringify(next));
+    } catch {
+      // Storage unavailable: remembering is a convenience, so keep working without it.
+    }
+  }, [page, lastPages]);
   const shownModules = visibleModules(data);
   const currentApplet = appletOf(page);
   // A page of a hidden module still opens (search, briefing, calendar links); it says so.
@@ -341,7 +365,8 @@ function App() {
                       aria-disabled={busy || undefined}
                       className={here ? "active" : ""}
                       aria-current={here ? "page" : undefined}
-                      onClick={() => navigate(here ? page : (a.pages[0] as Page))}
+                      // Opens the page last used in this tool (TASK-NAV-02); inside it, stays put.
+                      onClick={() => navigate(here ? page : (restorePage(a, lastPages) as Page))}
                       aria-label={a.name}
                     >
                       <Icon name={a.icon} />
@@ -460,6 +485,18 @@ function App() {
                   <Icon name="calendar" size={16} />
                   공휴일 관리
                 </button>
+                <button
+                  disabled={busy}
+                  onClick={(event) => {
+                    event.currentTarget
+                      .closest("details")
+                      ?.removeAttribute("open");
+                    setZonesOpen(true);
+                  }}
+                >
+                  <Icon name="patrol" size={16} />
+                  담당구역 목록
+                </button>
               </div>
             </details>
           </div>
@@ -552,6 +589,9 @@ function App() {
           )}
           {holidaysOpen && (
             <HolidayManager data={data} busy={busy} save={save} onClose={() => setHolidaysOpen(false)} />
+          )}
+          {zonesOpen && (
+            <ZoneManager data={data} busy={busy} readOnly={readOnly} save={save} onClose={() => setZonesOpen(false)} />
           )}
           {error && (
             <div role="alert" className="error">

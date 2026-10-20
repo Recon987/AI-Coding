@@ -165,3 +165,48 @@ test("스니펫 본문: 한글·따옴표·탭·개행·HTML 글자·100,000자�
   }
   assert.throws(() => normalize({ ...empty(), axSnippets: [row("c", big + "x")] }), /100,000자/);
 });
+
+// TASK-SNIPPET-COORDS-01 (Codex SNIP-01): the DD↔DMS Python example keeps the hemisphere for
+// values between -1 and 0 (-0.5 was coming back as +0.5). Runs the example text with Python 3.
+test("SNIP-01: 좌표 예제는 1도 미만 음수도 반구를 지키고 앱 좌표 규칙과 같은 결과를 낸다", (t) => {
+  const { spawnSync } = require("node:child_process");
+  const { decimalToDms, dmsToDecimal } = require("../shared/model.mjs");
+  const python = ["python3", "python", "py"].find((cmd) => {
+    const r = spawnSync(cmd, ["-c", "import sys; assert sys.version_info >= (3, 9)"], { encoding: "utf8" });
+    return r.status === 0;
+  });
+  if (!python) return t.skip("Python 3.9 이상이 없어 예제 실행 검사를 건너뜀");
+  const example = AX_EXAMPLE_SNIPPETS.find((s) => s.id === "example-dd-dms").snippet;
+  const cases = [
+    [-0.5, "lat"], [0.5, "lat"], [-38.119444, "lat"], [38.119444, "lat"], [0, "lat"],
+    [-0.0002777, "lat"], [37.9999999, "lat"], [90, "lat"], [-90, "lat"],
+    [-0.5, "lon"], [180, "lon"], [-180, "lon"], [-127.123456, "lon"],
+  ];
+  const harness = `${example}\nimport json\nout = []\nfor v, axis in ${JSON.stringify(cases)}:\n    d = dd_to_dms(v, axis)\n    out.append([list(d), dms_to_dd(*d)])\nbad = []\nfor v, axis in [(90.5, "lat"), (-180.1, "lon")]:\n    try:\n        dd_to_dms(v, axis)\n    except ValueError:\n        bad.append(True)\nprint("RESULT" + json.dumps([out, bad]))\n`;
+  const run = spawnSync(python, ["-I", "-"], { input: harness, encoding: "utf8", env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
+  assert.equal(run.status, 0, run.stderr);
+  const [results, rejected] = JSON.parse(run.stdout.split("RESULT").pop());
+  assert.deepEqual(rejected, [true, true], "범위 밖은 거부");
+  const tolerance = 0.005 / 3600; // seconds are rounded to 0.01″
+  cases.forEach(([value, axis], i) => {
+    const [[deg, min, sec, hemisphere], back] = results[i];
+    const label = `${value} ${axis}`;
+    assert.ok(Math.abs(back - value) <= tolerance + 1e-12, `${label}: 왕복 ${back}`);
+    if (value <= -tolerance) assert.ok(back < 0, `${label}: 남위·서경 유지`);
+    assert.ok(min >= 0 && min < 60 && sec >= 0 && sec < 60 && deg >= 0, `${label}: 자리올림 ${deg} ${min} ${sec}`);
+    // Same rule as the app's own coordinate input: same hemisphere and the same position.
+    const app = decimalToDms(value, axis === "lat" ? "latitude" : "longitude");
+    assert.equal(hemisphere, app.hemisphere, label);
+    assert.ok(Math.abs(dmsToDecimal(app, axis === "lat" ? "latitude" : "longitude") - back) <= tolerance + 1e-12, label);
+  });
+  assert.deepEqual(results[0][0], [0, 30, 0.0, "S"], "-0.5 → 0°30′0″S");
+  assert.deepEqual(results[6][0], [38, 0, 0.0, "N"], "37.9999999 → 38°0′0″ (60초 자리올림)");
+});
+
+test("SNIP-01: 이미 넣은 예제는 새 예제로 자동 교체하지 않는다", () => {
+  const old = { ...AX_EXAMPLE_SNIPPETS[1], snippet: "def dd_to_dms(value): ...  # 예전 예제", updatedAt: NOW };
+  const data = normalize({ ...empty(), axSnippets: [old] });
+  const after = normalize(withExampleSnippets(data, NOW));
+  assert.equal(after.axSnippets.find((s) => s.id === "example-dd-dms").snippet, old.snippet);
+  assert.equal(after.axSnippets.length, 3, "없는 예제만 추가");
+});

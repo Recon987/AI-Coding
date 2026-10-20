@@ -1,0 +1,104 @@
+{
+  "reviewedSource": "519b7cc6bb782fd057949d5f1bddb06ca27664cc",
+  "integration": "017dd62",
+  "node": "24.19.0",
+  "unitRuns": [
+    {
+      "timezone": "America_New_York",
+      "tests": 167,
+      "passed": 167,
+      "failed": 0,
+      "skipped": 0,
+      "summary": [
+        "ℹ tests 167",
+        "ℹ suites 0",
+        "ℹ pass 167",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 1058.290834"
+      ]
+    },
+    {
+      "timezone": "Asia_Seoul",
+      "tests": 167,
+      "passed": 167,
+      "failed": 0,
+      "skipped": 0,
+      "summary": [
+        "ℹ tests 167",
+        "ℹ suites 0",
+        "ℹ pass 167",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 1309.506426"
+      ]
+    },
+    {
+      "timezone": "Pacific_Honolulu",
+      "tests": 167,
+      "passed": 167,
+      "failed": 0,
+      "skipped": 0,
+      "summary": [
+        "ℹ tests 167",
+        "ℹ suites 0",
+        "ℹ pass 167",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 1042.814575"
+      ]
+    },
+    {
+      "timezone": "Pacific_Kiritimati",
+      "tests": 167,
+      "passed": 167,
+      "failed": 0,
+      "skipped": 0,
+      "summary": [
+        "ℹ tests 167",
+        "ℹ suites 0",
+        "ℹ pass 167",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 1084.290781"
+      ]
+    },
+    {
+      "timezone": "UTC",
+      "tests": 167,
+      "passed": 167,
+      "failed": 0,
+      "skipped": 0,
+      "summary": [
+        "ℹ tests 167",
+        "ℹ suites 0",
+        "ℹ pass 167",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 1082.466553"
+      ]
+    }
+  ],
+  "desktop": {
+    "exitCode": 0,
+    "normalEntrypoints": 18,
+    "auditEntrypoints": 3,
+    "auditCasesPassed": 9
+  },
+  "independentAudit": {
+    "passed": 3,
+    "failed": 2,
+    "exitCode": 1
+  },
+  "flowCasesPassed": 11
+}

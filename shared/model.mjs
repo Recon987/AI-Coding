@@ -1,5 +1,6 @@
 import { addDays, earliestLocalDay, localDate, previousWorkday } from "./dates.mjs";
 import { validateModules } from "./applets.mjs";
+import { validateZones } from "./zones.mjs";
 import { AX_STAGES, AX_ZONES, milestoneItems, validateAxProjects, validateAxSnippets } from "./ax.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
@@ -22,7 +23,8 @@ const personalCollections = [
 // customHolidays: user-entered holidays (임시공휴일, later election days), TASK-HOLIDAY-01.
 // axProjects/axSnippets: AX Desk (TASK-MODULES-01). The `modules` setting is an object,
 // not a collection, and is written only once the user changes it.
-const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets"];
+// zones: 담당구역 번호 목록 (TASK-LOCATION-01).
+const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets", "zones"];
 export const collections = [
   ...personalCollections,
   ...optionalCollections,
@@ -101,6 +103,7 @@ export const empty = () => ({
   customHolidays: [],
   axProjects: [],
   axSnippets: [],
+  zones: [],
   organizations: [],
   employees: [],
   bases: [],
@@ -310,6 +313,7 @@ function normalizeContent(input) {
   validateCustomHolidays(customHolidays);
   const axProjects = validateAxProjects(data.axProjects === undefined ? [] : data.axProjects);
   const axSnippets = validateAxSnippets(data.axSnippets === undefined ? [] : data.axSnippets);
+  const zones = validateZones(data.zones === undefined ? [] : data.zones);
   if (data.modules !== undefined) validateModules(data.modules);
   for (const key of personalCollections) {
     ensure(
@@ -471,6 +475,7 @@ function normalizeContent(input) {
     customHolidays,
     axProjects,
     axSnippets,
+    zones,
   };
 }
 

@@ -1,5 +1,9 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## 2026-10-20 9주기 main 병합 전 확인
+
+기준 코드 49bbeb1, Linux Node 22. `npm test` 169/169(서울·UTC·뉴욕·키리티마티·호놀룰루 각각, 건너뜀 0), `npm run test:desktop` 종료 0(진입점 18개 + 감사 3개 9사례), 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. Codex 추가 감사 `tests/desktop-nav-zones-audit.cjs` 5/5, `tests/postmerge-boundary-audit.cjs` 3/3. Windows 39365534106(49bbeb1) 성공: 단위 169/169·건너뜀 0(SNIP-01 Python 검사 실제 실행), 소스·설치본 실제 앱 검사 통과. Codex 독립 승인: 8주기 사후 4건, TZ-TEST-01, NAV-02, LOCATION-01 정상 경로. LOC-01·SNIP-01 보완은 사용자 승인으로 먼저 병합하고 Codex 재검증을 받는다.
+
 ## 2026-10-20 8주기 main 병합 전 확인(모듈형 개편·AX 사업 관리)
 
 기준 dbdea27(코드 7c2a067), Linux Node 22. `npm test` 161/161, `npm run test:desktop` 종료 0(진입점 17개: 기존 12 + 모듈·AX 사업·스니펫·보고서·낮은 연도, 감사 3개 9사례), `PARK_REVIEW_STRICT=1 PARK_REVIEW_ZOOM=1 node tests/ui-review.cjs` 150·실패 0·외부 요청 0, `node tests/task-flows.cjs` 11/11. 시간대 5종에서 단위 검사 확인(뉴욕·호놀룰루의 schema '고발·인계' 검사 1건은 이번 변경 전에도 같은 실패, 검사 자료의 시간대 의존). `tests/modular-contract-audit.cjs` 5개 시간대 종료 0.

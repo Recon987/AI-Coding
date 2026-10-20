@@ -1,0 +1,175 @@
+{
+  "reviewedSource": "a70d9aae70bdfd96c303b97080a76e9a04500496",
+  "runs": [
+    {
+      "timezone": "America_New_York",
+      "cases": [
+        {
+          "id": "MOD-01: 설정 64KB는 UTF-8 바이트 한도",
+          "passed": true,
+          "characters": 30023,
+          "utf8Bytes": 90023
+        },
+        {
+          "id": "AX-DATE-01: 허용된 마일스톤 연도를 그대로 유지",
+          "passed": true,
+          "timezone": "America/New_York",
+          "dates": [
+            {
+              "source": "0001-10-21",
+              "derived": "0001-10-21"
+            },
+            {
+              "source": "0099-10-21",
+              "derived": "0099-10-21"
+            },
+            {
+              "source": "0100-10-21",
+              "derived": "0100-10-21"
+            },
+            {
+              "source": "2026-10-21",
+              "derived": "2026-10-21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "timezone": "Asia_Seoul",
+      "cases": [
+        {
+          "id": "MOD-01: 설정 64KB는 UTF-8 바이트 한도",
+          "passed": true,
+          "characters": 30023,
+          "utf8Bytes": 90023
+        },
+        {
+          "id": "AX-DATE-01: 허용된 마일스톤 연도를 그대로 유지",
+          "passed": true,
+          "timezone": "Asia/Seoul",
+          "dates": [
+            {
+              "source": "0001-10-21",
+              "derived": "0001-10-21"
+            },
+            {
+              "source": "0099-10-21",
+              "derived": "0099-10-21"
+            },
+            {
+              "source": "0100-10-21",
+              "derived": "0100-10-21"
+            },
+            {
+              "source": "2026-10-21",
+              "derived": "2026-10-21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "timezone": "Pacific_Honolulu",
+      "cases": [
+        {
+          "id": "MOD-01: 설정 64KB는 UTF-8 바이트 한도",
+          "passed": true,
+          "characters": 30023,
+          "utf8Bytes": 90023
+        },
+        {
+          "id": "AX-DATE-01: 허용된 마일스톤 연도를 그대로 유지",
+          "passed": true,
+          "timezone": "Pacific/Honolulu",
+          "dates": [
+            {
+              "source": "0001-10-21",
+              "derived": "0001-10-21"
+            },
+            {
+              "source": "0099-10-21",
+              "derived": "0099-10-21"
+            },
+            {
+              "source": "0100-10-21",
+              "derived": "0100-10-21"
+            },
+            {
+              "source": "2026-10-21",
+              "derived": "2026-10-21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "timezone": "Pacific_Kiritimati",
+      "cases": [
+        {
+          "id": "MOD-01: 설정 64KB는 UTF-8 바이트 한도",
+          "passed": true,
+          "characters": 30023,
+          "utf8Bytes": 90023
+        },
+        {
+          "id": "AX-DATE-01: 허용된 마일스톤 연도를 그대로 유지",
+          "passed": true,
+          "timezone": "Pacific/Kiritimati",
+          "dates": [
+            {
+              "source": "0001-10-21",
+              "derived": "0001-10-21"
+            },
+            {
+              "source": "0099-10-21",
+              "derived": "0099-10-21"
+            },
+            {
+              "source": "0100-10-21",
+              "derived": "0100-10-21"
+            },
+            {
+              "source": "2026-10-21",
+              "derived": "2026-10-21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "timezone": "UTC",
+      "cases": [
+        {
+          "id": "MOD-01: 설정 64KB는 UTF-8 바이트 한도",
+          "passed": true,
+          "characters": 30023,
+          "utf8Bytes": 90023
+        },
+        {
+          "id": "AX-DATE-01: 허용된 마일스톤 연도를 그대로 유지",
+          "passed": true,
+          "timezone": "UTC",
+          "dates": [
+            {
+              "source": "0001-10-21",
+              "derived": "0001-10-21"
+            },
+            {
+              "source": "0099-10-21",
+              "derived": "0099-10-21"
+            },
+            {
+              "source": "0100-10-21",
+              "derived": "0100-10-21"
+            },
+            {
+              "source": "2026-10-21",
+              "derived": "2026-10-21"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

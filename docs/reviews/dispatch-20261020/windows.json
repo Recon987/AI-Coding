@@ -1,0 +1,106 @@
+{
+  "runId": 39358186950,
+  "url": "https://github.com/Recon987/AI-Coding/actions/runs/39358186950",
+  "headSha": "82f3a5985130267390cb228c6bac629392147c6d",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 118417826288,
+      "name": "windows",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39358186950,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install locked dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Verify data workflows",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Verify desktop workflows",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Build Windows installer and portable executable",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Verify packaged Windows app",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Calculate checksums",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run actions/setup-node@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    }
+  ],
+  "selectedLogLines": [
+    "2026-10-20T02:19:12.6473834Z ℹ tests 167",
+    "2026-10-20T02:19:12.6474165Z ℹ pass 167",
+    "2026-10-20T02:19:12.6474361Z ℹ fail 0",
+    "2026-10-20T02:20:06.5097261Z PASS: 코어 4종·기본 모듈, 화면 안 전환(키보드), 모듈 숨김/복구(자료·브리핑·검색 유지, 숨긴 화면 안내), 순서 변경·재실행 유지, 모두 꺼도 코어 사용, 960px·125%, 읽기 전용 잠금, 도구별 마지막 화면 기억(재실행 유지·깨진 값 무시·자료 무저장)",
+    "2026-10-20T02:20:17.8670261Z PASS: 담당구역 CSV 반입(틀린 행 전체 거부·미리보기 무저장·적용·같은 번호 갱신), 순찰 입력 제안(사용 중 구역·대표 구간 채움·최근 구간·입력한 구간 보존·목록 밖 번호 허용), 삭제 확인·순찰 기록 보존",
+    "2026-10-20T02:22:08.6415534Z PASS: 코어 4종·기본 모듈, 화면 안 전환(키보드), 모듈 숨김/복구(자료·브리핑·검색 유지, 숨긴 화면 안내), 순서 변경·재실행 유지, 모두 꺼도 코어 사용, 960px·125%, 읽기 전용 잠금, 도구별 마지막 화면 기억(재실행 유지·깨진 값 무시·자료 무저장)",
+    "2026-10-20T02:22:19.8690195Z PASS: 담당구역 CSV 반입(틀린 행 전체 거부·미리보기 무저장·적용·같은 번호 갱신), 순찰 입력 제안(사용 중 구역·대표 구간 채움·최근 구간·입력한 구간 보존·목록 밖 번호 허용), 삭제 확인·순찰 기록 보존"
+  ]
+}
