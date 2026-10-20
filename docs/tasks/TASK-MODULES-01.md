@@ -60,3 +60,6 @@ TASK-ARCH-MODULAR-01 Step A. 기준 문서: [보정 명세](../specs/modular-ax/
 - 사용자: "main 병합 승인할게, 병합해". MOD-01 보완(79b0868)은 Codex 재검증 전. Codex는 나머지(자료 보존·백업·미지 키·minReader·기본 모듈)를 통과로 기록했다.
 - 병합 전 Linux Node 22: `npm test` 161/161, `npm run test:desktop` 종료 0(진입점 17 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11. Windows 최신 39297684401(7c2a067) 성공.
 - 구현자(Claude)와 다른 검증자의 독립 승인 없이 병합한 것은 사용자 결정이다. Codex 사후 검증 결과는 이 카드 아래에 이어서 적는다.
+
+### 2026-10-20 Codex main 사후 독립 검증
+기준 a70d9aa. MOD-01 해결 승인. UTF-8 바이트 계약 감사5종 통과, 혼합 한글·이모지 정확히65536바이트 허용·65537바이트 거부. 전체 npm test161/161·desktop17개+감사3개 통과. [상세 판정·제약·Windows 대조](../reviews/2026-10-20-codex-postmerge.md). 기록은 로컬 검증 브랜치에만 있으며 원격 미푸시다.
