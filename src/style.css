@@ -291,6 +291,14 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .dashboard-filters button span { margin-left: 6px; font-size: var(--fs-xs); color: var(--muted); }
 .work-line { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 88px; padding: 12px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; text-align: left; }
 .work-line:last-child { border-bottom: 0; }
+.quick-work { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; text-align: left; }
+.quick-work input { flex: 1; min-width: 180px; }
+.quick-work .notice { flex-basis: 100%; }
+.work-entry { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); }
+.work-entry .work-line { flex: 1; min-width: 0; }
+.work-entry > .text-button { flex-shrink: 0; }
+.follow-up-panel { display: flex; align-items: flex-start; flex-direction: column; gap: 8px; margin: 12px 0; }
+.record-preview .source { display: block; }
 .work-line > div { flex: 1; min-width: 0; }
 .work-kind { color: var(--muted); font-size: var(--fs-xs); line-height: 18px; }
 .work-line strong { display: block; margin: 2px 0; font-size: var(--fs-md); line-height: 23px; overflow-wrap: anywhere; }

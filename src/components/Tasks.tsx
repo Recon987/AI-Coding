@@ -1,7 +1,9 @@
+import { unifiedWork } from "../../shared/work.mjs";
+import { WorkRow, WorkEditor, parseFollowUp, workDraft } from "./Work";
 import { matches, searchText } from "../../shared/search.mjs";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useState } from "react";
-import type { Data, Save, Task } from "../types";
+import type { Data, Page, Save, Task, SourceRef } from "../types";
 import { Empty, Field, formatTime, localInput, SectionHead, Tag } from "../ui";
 import { confirmDelete } from "../confirm";
 import { ListHeader, ListRow, rowKeys } from "./ListRow";
@@ -10,16 +12,17 @@ type Props = {
   data: Data;
   save: Save;
   busy: boolean;
-  kind: Task["kind"];
+  kind: Task["kind"] | "work";
+  navigate: (page: Page, id?: string) => void;
   initialId?: string;
 };
-export function Tasks({ data, save, busy, kind, initialId }: Props) {
+export function Tasks({ data, save, busy, kind, initialId, navigate }: Props) {
   const isSubmission = kind === "submission";
   const blank = (): Task => ({
     id: "",
     title: "",
     body: "",
-    kind,
+    kind: kind === "work" ? "handover" : kind,
     at: new Date().toISOString(),
     assignee: "",
     destination: "",
@@ -29,26 +32,27 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
     done: false,
     completedAt: null,
   });
+  const initialSource = parseFollowUp(initialId);
+  const [source, setSource] = useState<SourceRef | undefined>(initialSource);
+  const initialWork = data.workItems.find((w) => w.id === initialId);
+  const workEditor = useEditorDraft(initialWork ?? workDraft(data, initialSource), !!initialWork || !!initialSource || (kind === "work" && initialId === "new"));
+  const [typeFilter, setTypeFilter] = useState(kind === "work" ? "all" : kind);
   const initial = data.tasks.find((t) => t.id === initialId && t.kind === kind);
   const editor = useEditorDraft(
     initial || blank(),
-    !!initial || initialId === "new",
+    !!initial || (kind !== "work" && initialId === "new"),
   );
   const { draft, setDraft } = editor;
-  const [filter, setFilter] = useState(initial?.done ? "done" : "open");
+  const [filter, setFilter] = useState(initial?.done || initialWork?.status === "done" ? "done" : "open");
   const [query, setQuery] = useState("");
   const patch = (values: Partial<Task>) => setDraft({ ...draft, ...values });
-  const all = data.tasks.filter((t) => t.kind === kind);
-  const rows = all
-    .filter(
-      (t) =>
-        (filter === "all" || (filter === "done" ? t.done : !t.done)) &&
-        matches(searchText.task(t), query),
-    )
-    .sort(
-      (a, b) =>
-        Number(a.done) - Number(b.done) || Date.parse(a.at) - Date.parse(b.at),
-    );
+  const [limit, setLimit] = useState(100);
+  const taskIndex = new Map(data.tasks.map((t) => [t.id, t]));
+  const workIndex = new Map(data.workItems.map((t) => [t.id, t]));
+  const all = unifiedWork(data).filter((t) => typeFilter === "all" || (typeFilter === "work" ? t.kind === "general" : t.kind === typeFilter));
+  const rows = all.filter((t) =>
+    (filter === "all" || (filter === "waiting" ? t.status === "waiting" : filter === "done" ? t.done : !t.done)) &&
+    matches(`${t.title} ${t.body} ${t.owner} ${t.kind === "general" ? "작업" : searchText.task(taskIndex.get(t.id)!)}`, query));
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const item = {
@@ -89,24 +93,27 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
       <section className="panel records">
         <SectionHead
           eyebrow={isSubmission ? "DEADLINES" : "HANDOVER"}
-          title={isSubmission ? "제출할 서류" : "이어받을 업무"}
+          title={kind === "work" ? "작업·인수인계·제출" : isSubmission ? "제출할 서류" : "이어받을 업무"}
         >
           <div className="editor-header-actions">
             <Tag>{all.filter((t) => !t.done).length}건 남음</Tag>
+            {kind !== "work" && <button disabled={busy} onClick={() => { setSource(undefined); void workEditor.openEditor(workDraft(data)); }}>작업 등록</button>}
             <button
               className="primary"
               disabled={busy}
-              onClick={() => editor.openEditor(blank())}
+              onClick={() => { if (kind === "work") { setSource(undefined); void workEditor.openEditor(workDraft(data)); } else void editor.openEditor(blank()); }}
             >
-              {addLabel(isSubmission ? TARGET.submission : TARGET.handover)}
+              {kind === "work" ? "작업 등록" : addLabel(isSubmission ? TARGET.submission : TARGET.handover)}
             </button>
           </div>
         </SectionHead>
         <div className="list-tools">
+          <select aria-label="업무 유형" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}><option value="all">전체 유형</option><option value="work">작업</option><option value="handover">인수인계</option><option value="submission">제출</option></select>
           <div className="segmented">
             {[
               ["open", "진행 중"],
               ["done", "완료"],
+              ["waiting", "대기"],
               ["all", "전체"],
             ].map(([value, label]) => (
               <button
@@ -147,11 +154,17 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
         )}
         <div className="row-list" onKeyDown={rowKeys}>
           {rows.length > 0 && <ListHeader />}
-          {rows.map((t) => {
+          {rows.slice(0, limit).map((row) => {
+            if (row.kind === "general") {
+              const work = workIndex.get(row.id)!;
+              return <WorkRow key={`work:${row.id}`} work={work} data={data} save={save} busy={busy} navigate={navigate} edit={() => { setSource(undefined); void workEditor.openEditor(work); }} />;
+            }
+            const t = taskIndex.get(row.id)!;
+            const isSubmission = t.kind === "submission";
             const overdue = !t.done && Date.parse(t.at) < Date.now();
             return (
               <ListRow
-                key={t.id}
+                key={`task:${t.id}`}
                 busy={busy}
                 done={t.done}
                 when={`${formatTime(t.at)} 마감`}
@@ -213,10 +226,12 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
             );
           })}
         </div>
+        {rows.length > limit && <button onClick={() => setLimit(limit + 100)}>100건 더 보기 ({limit}/{rows.length})</button>}
       </section>
+      <WorkEditor data={data} save={save} busy={busy} editor={workEditor} source={source} navigate={navigate} />
       {editor.isOpen && (
         <EditorDialog
-          title={editorTitle(isSubmission ? TARGET.submission : TARGET.handover, Boolean(draft.id))}
+          title={editorTitle((draft.kind === "submission") ? TARGET.submission : TARGET.handover, Boolean(draft.id))}
           busy={busy}
           dirty={editor.dirty}
           onClose={editor.finishEditor}
@@ -243,7 +258,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
                 value={draft.title}
                 onChange={(e) => patch({ title: e.target.value })}
                 placeholder={
-                  isSubmission
+                  (draft.kind === "submission")
                     ? "예: 주간 실적 제출"
                     : "예: 탐방로 안내판 후속 점검"
                 }
@@ -281,7 +296,7 @@ export function Tasks({ data, save, busy, kind, initialId }: Props) {
                 }}
               />
             </Field>
-            {isSubmission && (
+            {(draft.kind === "submission") && (
               <Field label="제출처">
                 <input
                   maxLength={500}

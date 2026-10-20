@@ -71,6 +71,8 @@ test("B1: 잘못된 기한·상태·완료·목록 한도는 저장 전 거부",
   for (const patch of [
     { due: { kind: "date", date: "2026-02-30" } },
     { due: { kind: "datetime", at: "2026-10-20T10:00" } },
+    { due: { kind: "datetime", at: "2026-02-30T10:00:00Z" } },
+    { due: { kind: "datetime", at: "2026-10-20T24:00:00Z" } },
     { status: "unknown" }, { status: "done", completedAt: null },
     { completedAt: now }, { remindMinutes: 60 }, { title: " " },
   ]) {

@@ -1,4 +1,6 @@
 export const TARGET: {
+  work: string;
+  meeting: string;
   patrol: string;
   event: string;
   control: string;

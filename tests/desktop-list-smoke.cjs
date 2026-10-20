@@ -201,7 +201,7 @@ const root = path.resolve(__dirname, "..");
           for (const button of row.buttons) {
             assert.ok(button.visible && button.inside, `${name} ${width}px/${zoom}: ${button.label} 항상 표시·목록 안`);
             const expected = button.label === "삭제" ? "text-button danger"
-              : ["수정", "새 순찰"].includes(button.label) ? "text-button" : "";
+              : ["수정", "새 순찰", "+ 후속 작업"].includes(button.label) ? "text-button" : "";
             assert.equal(button.className, expected, `${name}: ${button.label} 의미에 따른 모양`);
           }
         }

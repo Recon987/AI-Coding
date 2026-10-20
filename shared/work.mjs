@@ -6,7 +6,8 @@ export const WORK_STATUS = { todo: "할 일", doing: "진행 중", waiting: "대
 const ensure = (ok, message) => { if (!ok) throw new Error(message); };
 const text = (v, max) => typeof v === "string" && v.length <= max;
 const required = (v, max) => text(v, max) && v.trim().length > 0;
-const instant = (v) => text(v, 40) && /^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/.test(v) && Number.isFinite(Date.parse(v));
+const object = (v) => v && typeof v === "object" && !Array.isArray(v);
+const instant = (v) => text(v, 40) && /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(v) && validDateKey(v.slice(0, 10)) && Number.isFinite(Date.parse(v));
 const localKey = (d) => `${String(d.getFullYear()).padStart(4, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const refs = { note: "notes", call: "calls", meeting: "meetings", workItem: "workItems" };
 const names = { note: "메모", call: "전화메모", meeting: "회의 기록" };
@@ -18,12 +19,12 @@ export function validateWork(data) {
     ensure(Array.isArray(rows) && rows.length <= 10000, `${key}는 10,000건 이하 목록이어야 합니다.`);
     const ids = new Set();
     for (const row of rows) {
-      ensure(row && required(row.id, 100) && !ids.has(row.id), `${key}의 ID 또는 중복을 확인하세요.`);
+      ensure(object(row) && required(row.id, 100) && !ids.has(row.id), `${key}의 ID 또는 중복을 확인하세요.`);
       ids.add(row.id);
       ensure(instant(row.createdAt), "등록 일시를 확인하세요.");
       if (key === "links") {
         ensure(row.role === "followUp", "후속 연결 종류를 확인하세요.");
-        ensure(row.from && Object.hasOwn(names, row.from.type) && required(row.from.id, 100) && row.to?.type === "workItem" && required(row.to.id, 100), "후속 연결 출처·대상을 확인하세요.");
+        ensure(object(row.from) && object(row.to) && Object.hasOwn(names, row.from.type) && required(row.from.id, 100) && row.to.type === "workItem" && required(row.to.id, 100), "후속 연결 출처·대상을 확인하세요.");
         // 삭제된 출처/작업 링크도 보존한다. ID 재작성이나 연쇄 삭제는 하지 않는다.
         continue;
       }
@@ -37,7 +38,7 @@ export function validateWork(data) {
       ensure(row.completedAt === null || instant(row.completedAt), "작업 완료 일시를 확인하세요.");
       ensure((row.status === "done") === (row.completedAt !== null), "작업 완료 상태와 일시가 다릅니다.");
       const due = row.due;
-      ensure(due === null || (due && ((due.kind === "date" && validDateKey(due.date)) || (due.kind === "datetime" && instant(due.at)))), "작업 기한을 확인하세요.");
+      ensure(due === null || (object(due) && ((due.kind === "date" && validDateKey(due.date)) || (due.kind === "datetime" && instant(due.at)))), "작업 기한을 확인하세요.");
       ensure(row.remindMinutes === null || (due?.kind === "datetime" && [0, 60, 1440].includes(row.remindMinutes)), "시각 알림은 일시 기한에서만 명시적으로 설정하세요.");
     }
     result[key] = rows;
