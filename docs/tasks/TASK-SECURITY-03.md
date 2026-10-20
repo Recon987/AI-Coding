@@ -26,13 +26,19 @@ updated: 2026-10-20
 저장 파일 봉함(SECURITY-02).
 
 ## 진행 단계
-- [ ] 1. 백업 봉투·키 유도 순수 함수와 단위 검사
+- [x] 1. 백업 봉투·키 유도 순수 함수와 단위 검사 (`desktop/backup-seal.cjs`, `shared/backup-password.mjs`, `store.readBackup/writeBackup`, `tests/backup-seal.test.cjs` 8건)
 - [ ] 2. 백업·복원 대화상자 연결·실제 앱 검사·기록
 
 ## 재개 위치
-1단계 착수: `desktop/backup-seal.cjs`(scrypt 키 유도·백업 봉투·암호 규칙)와 `tests/backup-seal.test.cjs`.
+2단계: `desktop/main.cjs` IPC `backup(password)`·`restore()`(결과 `{data}`/`{needsPassword,name}`/null)·`restore-password(password)`·`restore-cancel`, 시작 복구 흐름(`recovery.cjs`)의 암호 백업 선택 시 암호 창, `src/components/BackupSheet.tsx`(백업 암호 두 번·강도 안내, 복원 암호 입력), 기존 스모크(`desktop-smoke`·`desktop-recurrence-smoke`)의 백업 단계를 암호 입력으로 갱신, `tests/desktop-backup-password-smoke.cjs`.
 
 ## 테스트 상태
-미실행
+2026-10-20 1단계: `npm test` 196/196 통과(backup-seal 8건 포함, 실제 비용 N=2^17 1건). `test:desktop` 미실행.
+
+## 구현 결정
+- 봉투 `{version:3, minReader:3, backupSealed:{format:"park-workdesk-backup", version:1, kdf:"scrypt", N, r, p, salt, alg:"AES-256-GCM", iv, tag, data}}`. 저장 봉투(`sealed`)와 키 이름을 달리해 어느 쪽인지 섞이지 않는다.
+- 파일에 적힌 비용은 N 2^14~2^18, r 1~8, p 1~4만 받는다(조작된 파일이 메모리 수 GB를 요구하지 못하게).
+- 암호는 NFC로 정규화한다(같은 한글 암호를 다른 PC에서 입력해도 열림). 규칙: 10~256자, 서로 다른 글자 4개 이상. 강도 안내(약함/보통/강함)는 참고용이다.
+- 일반 읽기(`store.read`: 시작·last-good·보호본)는 암호 백업을 열지 않는다(`BACKUP_PASSWORD_REQUIRED`).
 
 ## 검증 기록

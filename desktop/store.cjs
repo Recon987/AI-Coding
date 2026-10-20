@@ -2,6 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { empty, normalize, isNewerData } = require("../shared/model.mjs");
 const sealing = require("./seal.cjs");
+const backupSeal = require("./backup-seal.cjs");
 const MAX_BYTES = 20 * 1024 * 1024;
 // TASK-SECURITY-02: the 20MB limit is on the plaintext; a sealed file is base64 (about 4/3) plus its header.
 const MAX_FILE_BYTES = Math.ceil(MAX_BYTES / 3) * 4 + 64 * 1024;
@@ -29,6 +30,9 @@ function parseStored(bytes) {
     // Only a sealed file may pass 20MB, so an oversize file is reported by its size.
     throw bytes.length > MAX_BYTES ? tooBig() : error;
   }
+  // TASK-SECURITY-03: a password backup opens only through readBackup() with its password.
+  if (backupSeal.isBackupSealed(outer))
+    throw codeError("BACKUP_PASSWORD_REQUIRED", "백업 암호로 잠긴 파일입니다. 자료 관리 > 복원에서 백업 암호를 입력해 여세요.");
   if (!sealing.isSealed(outer)) {
     if (bytes.length > MAX_BYTES) throw tooBig();
     return outer;
@@ -152,6 +156,46 @@ function write(file, data, { keepLastGood = false, modularBackup = keepLastGood 
     }
   }
 }
+/**
+ * TASK-SECURITY-03: a backup file for restore. A password backup needs `password`
+ * (code BACKUP_PASSWORD_REQUIRED without one); a plain or this-PC sealed backup reads as before.
+ */
+async function readBackup(file, password) {
+  const stat = fs.statSync(file);
+  if (!stat.isFile()) throw new Error("정상 JSON 파일을 선택하세요.");
+  if (stat.size > MAX_FILE_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
+  const bytes = withRetry(() => fs.readFileSync(file));
+  let outer;
+  try {
+    outer = JSON.parse(bytes.toString("utf8"));
+  } catch {
+    outer = null;
+  }
+  if (!backupSeal.isBackupSealed(outer)) return normalize(parseStored(bytes));
+  if (typeof password !== "string" || !password)
+    throw codeError("BACKUP_PASSWORD_REQUIRED", "백업 암호로 잠긴 파일입니다. 백업 암호를 입력하세요.");
+  const inner = await backupSeal.openBackup(outer, password);
+  if (inner.length > MAX_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
+  let content;
+  try {
+    content = JSON.parse(inner.toString("utf8"));
+  } catch {
+    throw codeError("BACKUP_FORMAT", "암호 백업 안의 자료 형식이 올바르지 않습니다.");
+  }
+  // Only plain v3 data is ever sealed inside; anything nested is refused, not unwrapped.
+  if (backupSeal.isBackupSealed(content) || sealing.isSealed(content))
+    throw codeError("BACKUP_FORMAT", "암호 백업 안의 자료 형식이 올바르지 않습니다.");
+  return normalize(content);
+}
+/** TASK-SECURITY-03: a backup sealed with `password`, written atomically like any data file. */
+async function writeBackup(file, data, password, options) {
+  const validated = normalize(data);
+  const payload = JSON.stringify(validated, null, 2);
+  if (Buffer.byteLength(payload) > MAX_BYTES)
+    throw new Error("저장 한도 20MB를 초과했습니다. 백업 후 기록을 정리하세요.");
+  const envelope = await backupSeal.sealBackup(Buffer.from(payload, "utf8"), password, options);
+  durableReplace(file, JSON.stringify(envelope));
+}
 function migrateFile(file) {
   if (!fs.existsSync(file)) return;
   const original = parseStored(fs.readFileSync(file));
@@ -238,6 +282,8 @@ module.exports = {
   isNewerData,
   read,
   write,
+  readBackup,
+  writeBackup,
   migrateFile,
   lastGoodFile,
   preModularBackup,
