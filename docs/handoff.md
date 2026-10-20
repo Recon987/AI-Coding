@@ -4,6 +4,20 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 게시 상태 — Gemini 통합안
+
+사용자의 명시 승인으로 Gemini 요약과 단일 통합안 de82f26을 origin/task/task-product-direction-01에 게시했다. 이전 미게시 표시는 당시 기록이다. [통합안](product/hub-integrated-plan-2026-10-20.md)과 [Gemini 수신 요약](product/gemini-product-flow-response-2026-10-20.md)을 함께 참고한다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-product-direction-01
+- **Task Card**: PRODUCT-DIRECTION-01·HUB-ARCH-01 review, B1 착수 판단 대기
+- **Latest Pushed Commit**: 작성 직전 확인 de82f26 — Gemini 수신과 단일 통합안. 게시 상태 문서 포함 최종 해시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: Gemini 요약·통합안 원격 게시, 과제·작업 기록·인계의 게시 상태 갱신
+- **Changed Interfaces / Schema Diff**: 없음, 제품 구현·main 병합 없음
+- **Test Status**: 기존 문서 링크·보드 검사 통과. 이번 게시 상태 갱신은 공백 검사, 앱 테스트 미실행
+- **Remaining Work for Gemini**: 통합안의 변경된 화면 의미 검토 가능. 다음 구현 범위는 B1 기록→작업
+- **Modified Code Snippets (if uncommitted)**: 제품 변경 없음, 최종 문서 커밋·푸시 상태는 응답 패킷 참조
+
 ## 제품 방향 통합안 — Claude·Gemini 응답 수신 완료
 
 사용자 제공 Gemini 결과와 Claude270cf7a를 대조해 [단일 통합안](product/hub-integrated-plan-2026-10-20.md)을 작성했다. [Gemini 수신 요약](product/gemini-product-flow-response-2026-10-20.md)에서 원문 제안과 사실 보정을 구분한다. 권고: 새 공통 사업/업무 + 기존 원본 연결, 세 화면, 후속1:N·근거N:M·완료사업사후작업, B1~B3로 사용자 흐름 완주. 구현 착수·카드ready는 아직 확정하지 않았다. 아래 Gemini 미수신 표시는 당시 기록이다.
