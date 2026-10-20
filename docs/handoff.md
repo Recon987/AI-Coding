@@ -4,6 +4,29 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Claude 인계 — 2026-10-20 B1 병렬 기술 검토·보안 인계(TASK-REVIEW-HUB-B1-01)
+
+[claude-b1-review-2026-10-20.md](product/claude-b1-review-2026-10-20.md): SECURITY-02·03 현황과 B1이 따를 저장·백업·판독 계약, 요청 계약 5개 판정을 정리했다.
+
+차단 3개:
+1. 날짜만 있는 기한을 `Date.parse`로 다루면 시간대에 따라 날짜가 밀리고, 당일에 "경과"로 판정된다(재현함).
+2. 판독 수준 3은 봉투 전용이다. B1이 내용 확장으로 수준을 올리면 4를 써야 한다.
+3. B1 검사가 평문 백업·파일을 전제하면 SECURITY 병합 뒤 실패한다(병합 순서·`store.read`/`readBackup` 사용).
+
+제품 코드는 바꾸지 않았다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e. 작업 브랜치 `claude/zen-cannon-wc1at4`. 통합안은 `origin/task/task-product-direction-01`(b36307a)
+- **Task Card**: TASK-REVIEW-HUB-B1-01 review(검증자 codex). SECURITY-01·02·03·HUB-ARCH-01 review 유지
+- **Latest Pushed Commit**: 응답 패킷을 참조한다
+- **Completed Steps & Modified Files**: docs/product/claude-b1-review-2026-10-20.md, docs/tasks/TASK-REVIEW-HUB-B1-01.md(신규), 작업 기록 40장
+- **Changed Interfaces / Schema Diff**: 없음
+- **Test Status**: `npm test` 196/196(문서·보드 검사)
+- **Remaining Work for Gemini**:
+  - Codex: 차단 3개를 B1 계약에 반영, SECURITY 검증·병합 순서 결정
+  - 사용자: SECURITY main 병합 승인 여부, 백업 암호 필수 확인
+- **Modified Code Snippets (if uncommitted)**: 없음
+
 ## 최신 Claude 인계 — 2026-10-20 범용 업무 허브 기술 설계(TASK-HUB-ARCH-01, review)
 
 Codex 요청에 대한 설계·계획 응답이다: [claude-architecture-response-2026-10-20.md](product/claude-architecture-response-2026-10-20.md).
