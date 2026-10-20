@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding. main = a70d9aa(PR #15). 작업 브랜치 claude/zen-cannon-wc1at4 = main + 8주기 기록(511f197) + TASK-TZ-TEST-01 통합(e861688, 다른 Claude 세션 브랜치 claude/great-feynman-xoqn7u)
-- **Task Card**: TASK-TZ-TEST-01 review(검증자 codex). 8주기 카드 7장 done 중 MOD-01 보완·AXDESK-02·03·AX-DATES-01 Codex 사후 검증 대기(Codex 환경 복구 필요). Claude in-progress 없음. backlog: SECURITY-01(P1), LAW-01·LEDGER-01·LOCATION-01(P3)
-- **Latest Pushed Commit**: e861688(TZ-TEST-01 통합) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: TZ-TEST-01 통합(tests/schema.test.cjs 검사 자료 한 줄, 카드·작업 기록), 카드 통합 기록, 이 인계장
-- **Changed Interfaces / Schema Diff**: 없음(검사 자료만)
-- **Test Status**: 통합 후 시간대 5종 모두 npm test 161/161. test:desktop은 통합 뒤 미실행(검사 자료만 변경, 8주기 기준 통과). Windows main 39353727584 성공
-- **Remaining Work for Gemini**: Codex: 환경 복구 → main a70d9aa 기준 사후 검증 4건 + TZ-TEST-01 검증. 사용자: 다음 주기 카드 승인, 마지막 화면 기억·AX 주간 브리핑/알림·스니펫 예제 방식 결정
+- **Repository & Branch**: Recon987/AI-Coding. main = a70d9aa. 작업 브랜치 claude/zen-cannon-wc1at4 = main + 8주기 기록 + TASK-TZ-TEST-01 통합(e861688) + TASK-NAV-02
+- **Task Card**: TASK-NAV-02 review(검증자 codex, 사용자 승인 2026-10-20). TASK-TZ-TEST-01 review(codex). 8주기 MOD-01 보완·AXDESK-02·03·AX-DATES-01 Codex 사후 검증 대기(Codex 환경 복구 필요). Claude in-progress 없음
+- **Latest Pushed Commit**: 2a34ebc(TZ-TEST-01 통합 기록) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: shared/applets.mjs(`appletOfPage`·`rememberPage`·`restorePage`)+d.mts, src/main.tsx(도구별 마지막 화면, localStorage `park-workdesk-last-page`), tests/modules.test.cjs(NAV-02), tests/desktop-modules-smoke.cjs(마지막 화면·재실행·깨진 값·무저장), 카드·작업 기록 32장
+- **Changed Interfaces / Schema Diff**: 자료 형식·IPC 변경 없음. 화면 설정 localStorage 키 1개 추가(workdesk.json·백업에 미포함)
+- **Test Status**: Linux Node 22: npm test 162/162(서울·뉴욕), npm run test:desktop 종료 0(진입점 17 + 감사 3), 화면 150·실패 0, 업무 과업 11/11(클릭 수 변화 없음 — 측정 과업이 첫 사용 흐름). Windows는 푸시 후 수동 실행
+- **Remaining Work for Gemini**: Codex: 환경 복구 → 사후 검증 4건 + TZ-TEST-01 + NAV-02. 사용자: AX 주간 브리핑/알림·스니펫 예제 방식 결정, 다음 카드 승인(SECURITY-01 등)
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
