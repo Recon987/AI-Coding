@@ -4,6 +4,36 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Claude 인계 — 2026-10-20 SECURITY-03 백업 암호 구현(review)
+
+자료 관리 > 백업은 이제 그 백업에만 쓰는 암호를 두 번 받아 scrypt(N=2^17) → AES-256-GCM으로 잠근다. 암호는 저장하지 않는다.
+- 복원: 암호 백업이면 암호를 묻는다. 틀리면 무변경이고 다시 입력할 수 있다. 평문 백업은 그대로 복원된다. 다른 PC에서도 암호만 있으면 열린다.
+- 시작 복구 흐름에서 고른 암호 백업은 작은 창에서 암호를 받는다.
+
+[카드](tasks/TASK-SECURITY-03.md) · [작업 기록 38장](work-log/2026-10-18-claude-2.md)
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e. 작업 브랜치 `claude/zen-cannon-wc1at4` = main + SECURITY-01 설계 + SECURITY-02·03 구현
+- **Task Card**: TASK-SECURITY-03 review(검증자 codex, 의존 예외 SECURITY-02). SECURITY-01·02도 review. Claude in-progress 없음
+- **Latest Pushed Commit**: 4c4f521. Windows 39389450176(4bdae7c) 성공. 이 문서를 포함한 최종 해시는 응답 패킷을 참조한다
+- **Completed Steps & Modified Files**:
+  - 새 파일: `desktop/backup-seal.cjs`, `shared/backup-password.mjs`(+d.mts), `src/components/BackupSheet.tsx`
+  - 수정: `desktop/store.cjs`(`readBackup`·`writeBackup`), `desktop/main.cjs`(backup·restore·restore-password·restore-cancel, `askSecret` 시작 창), `desktop/recovery.cjs`(`askBackupPassword`), `desktop/preload.cjs`, `src/components/Security.tsx`, `src/main.tsx`, `src/types.ts`
+  - 검사: `tests/backup-seal.test.cjs`, `tests/desktop-backup-password-smoke.cjs`, `tests/backup-ui.cjs`(신규), `tests/recovery-dialog-stub.cjs`·`desktop-smoke`·`desktop-recurrence-smoke`(갱신)
+- **Changed Interfaces / Schema Diff**:
+  - 백업 봉투 `{version:3, minReader:3, backupSealed:{format, version:1, kdf:"scrypt", N, r, p, salt, alg, iv, tag, data}}`
+  - IPC `backup(password)`→boolean, `restore()`→`{data}|{needsPassword,name}|null`, 새 `restore-password`·`restore-cancel`, `unlock-info`에 `kind`(recovery/backup)
+  - 자료 스키마 불변
+- **Test Status**:
+  - Linux Node 22: `npm test` 196/196(시간대 3종), `test:desktop` 종료 0(PASS 22줄), 화면 150·실패 0, 과업·Codex 감사 3종 통과
+  - Windows 39389450176 성공
+  - 기관 실기기: 미확인
+- **Remaining Work for Gemini**:
+  - Codex: SECURITY-01 설계 검토, SECURITY-02·03 검증
+  - 사용자: 백업을 항상 암호로 잠그는 방식 확인, main 병합 승인 여부
+  - 다음 카드: SECURITY-04(켜기 전 평문 사본 정리·기본 켜기 여부·성능 실측), SECURITY-05(알림 제목 숨김)
+- **Modified Code Snippets (if uncommitted)**: 없음
+
 ## 최신 Claude 인계 — 2026-10-20 SECURITY-02 저장 암호화 구현(review)
 
 자료 관리 > **저장 암호화**를 추가했다. 사용자가 켜는 방식이다.
