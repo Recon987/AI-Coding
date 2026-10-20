@@ -4,6 +4,10 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 제품 방향안 원격 게시·병렬 요청 — 2026-10-20
+
+사용자의 명시 승인으로 d777483 제품 방향안을 origin/task/task-product-direction-01에 게시했다. [Claude·Gemini 복사용 병렬 프롬프트](collaboration/product-direction-dispatch-2026-10-20.md)를 준비했다. Claude는 기술 설계·모듈 계약·개발 카드 초안, Gemini는 네 직무 흐름·세 화면·수용 기준을 담당한다. 실제 응답은 아직 없으며 두 결과를 받아 Codex가 통합한다. 아래 로컬/게시 차단 표시는 승인 전의 기록이다.
+
 ## 제품 방향 재점검 — 2026-10-20(로컬 검토안)
 
 사용자는사업/업무/자료연결·반복보고·인계/공유를모두담는범용공단업무허브를원한다. 기존기능보완위주흐름을점검하고공통사업/업무공간→직무모듈→기관연계라는제품성장안을제안했다. [방향안](product/direction-2026-10-20.md), [Claude/Gemini전달용검토요청](collaboration/product-direction-dispatch-2026-10-20.md). 실제두모델응답/합의는아직없다. 현재Claude4c4f521의SECURITY-03은별도로보존한다. 제품전략외부게시는자동승인검토에서거절돼로컬상태다.
@@ -122,3 +126,14 @@ Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-
 ## DS-01 재감사·후속6카드 독립 검증(2026-10-19)
 
 DS-01은 afc3825에서 승인됐다. 자료 안전성 **감사 카드**는 사용자 요청대로done이다. 제품6카드는4승인·2반려로 전체 main 병합은 보류한다. [최종 검토](reviews/2026-10-19-codex-dispatch.md). BK-01은 시계 역행 때 새 복원 직전 보호본을 즉시 지우는 P1, HL-01은 공휴일 한도 초과 시 화면 안내 없는 미처리 예외 P2다. Claude가 BACKUP-02 진행 중 → HOLIDAY-01 ready 순으로 보완한다. 기존 자동 검사 성공은 이 새 경계 실패를 포함하지 않는다.
+
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-product-direction-01
+- **Task Card**: PRODUCT-DIRECTION-01 review, Claude/Gemini 실제 검토 대기
+- **Latest Pushed Commit**: 작성 직전 확인 d777483 — 범용 업무 허브 방향과 공동 검토안. 최종 문서 해시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: 제품 방향안 원격 게시, 공동 요청서를 역할별 복사용 프롬프트로 보완, 과제·인계·작업 기록
+- **Changed Interfaces / Schema Diff**: 없음, 제품/진행 중 보안 코드 미변경
+- **Test Status**: 문서·보드 검사, 앱 전체 검사 미실행(문서 변경)
+- **Remaining Work for Gemini**: 두 프롬프트 병렬 수행, 응답을 Codex에 전달해 공통 모델/시제품 범위 통합
+- **Modified Code Snippets (if uncommitted)**: 없음 또는 최종 커밋 상태는 응답 패킷 참조
