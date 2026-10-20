@@ -54,4 +54,4 @@ TASK-ARCH-MODULAR-01 Step C-2. [보정 명세](../specs/modular-ax/implementatio
 - 구현자(Claude)와 다른 검증자의 독립 승인 없이 병합한 것은 사용자 결정이다. Codex 사후 검증 결과는 이 카드 아래에 이어서 적는다.
 
 ### 2026-10-20 Codex main 사후 독립 검증
-기준 a70d9aa. 보관함 일반 기능 승인. 저장 실패 초안/원본 보존, 본문10만 자·복사·필터·검색·예제1회 유지 통과. 예제Python의 -0.5→+0.5 오류는SNIP-01/P3로 별도 TASK-SNIPPET-COORDS-01 backlog에 기록. 전체 npm test161/161·desktop17개+감사3개 통과. [상세 판정·제약·Windows 대조](../reviews/2026-10-20-codex-postmerge.md). 기록은 로컬 검증 브랜치에만 있으며 원격 미푸시다.
+기준 a70d9aa. 보관함 일반 기능 승인. 저장 실패 초안/원본 보존, 본문10만 자·복사·필터·검색·예제1회 유지 통과. 예제Python의 -0.5→+0.5 오류는SNIP-01/P3로 별도 TASK-SNIPPET-COORDS-01 backlog에 기록. 전체 npm test161/161·desktop17개+감사3개 통과. [상세 판정·제약·Windows 대조](../reviews/2026-10-20-codex-postmerge.md). 이 기록은 b3552b9에 보존했고 사용자 명시 승인 후 원격 푸시 완료했다.

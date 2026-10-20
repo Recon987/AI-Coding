@@ -28,7 +28,7 @@ TASK-MODULES-02 UX 측정: 화면이 둘 이상인 도구(인수인계·기한, 
 - [x] 2. 검사·측정·기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기. 검증 때 볼 곳: shared/applets.mjs(`appletOfPage`·`rememberPage`·`restorePage`), src/main.tsx(`LAST_PAGE_KEY`·`readLastPages`, 사이드바 도구 단추), tests/modules.test.cjs(NAV-02), tests/desktop-modules-smoke.cjs 2단계·재실행 부분.
+승인. 재방문·재실행 기억·업무 파일 무저장 통과. 추가 독립 실제 앱에서 깨진 JSON·배열·다른 도구 화면·유효 값·Storage 읽기/쓰기 실패를 대조했다. 미처리 예외0, 원본 바이트 유지. 과업11/11·기존 클릭 수 유지. 총괄 병합 대기(review 유지). [독립 검토·증빙](../reviews/2026-10-20-codex-dispatch.md).
 
 ## 구현 메모
 - 사이드바 도구 단추: 다른 도구에 있다가 누르면 `restorePage(도구, 기억)` 화면(없거나 잘못되면 첫 화면). 그 도구 안에서 누르면 지금 화면 유지(기존).
@@ -40,3 +40,6 @@ TASK-MODULES-02 UX 측정: 화면이 둘 이상인 도구(인수인계·기한, 
 2026-10-20 Linux(Node 22): `npm test` 162/162(서울·뉴욕 시간대), `npm run test:desktop` 종료 0(진입점 17 + 감사 3), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 변화 없음, 위 측정 메모). Windows 39356492060(3b74b42, TZ-TEST-01 통합 포함) 성공: 소스·설치본 실제 앱 검사 통과.
 
 ## 검증 기록
+
+### 2026-10-20 Codex 추가 독립 검증
+승인. 재방문·재실행 기억·업무 파일 무저장 통과. 추가 독립 실제 앱에서 깨진 JSON·배열·다른 도구 화면·유효 값·Storage 읽기/쓰기 실패를 대조했다. 미처리 예외0, 원본 바이트 유지. 과업11/11·기존 클릭 수 유지. 총괄 병합 대기(review 유지). 전체 desktop18+감사3(9/9), Windows39358186950 소스/패키지 로그 대조 완료. 상세는 위 검토 문서.

@@ -33,7 +33,7 @@ updated: 2026-10-20
 - [x] 4. `npm run test:desktop` 실행 후 검증 요청
 
 ## 재개 위치
-검증자(codex)가 `claude/great-feynman-xoqn7u` 브랜치에서 `for tz in Asia/Seoul UTC America/New_York Pacific/Kiritimati Pacific/Honolulu; do TZ=$tz npm test; done`와 `npm run test:desktop`을 직접 실행해 대조한다. 대상 파일: `tests/schema.test.cjs` 143행.
+승인. 테스트 자료의 오프셋 한 줄만 바뀌고 minReader·집계·양식 등의 기존 검증을 줄이지 않았다. 519b7cc 통합본의 전체 npm test5개 시간대 각각167/167 통과. 총괄 병합 대기(review 유지). [독립 검토·증빙](../reviews/2026-10-20-codex-dispatch.md).
 
 ## 테스트 상태
 - 수정 전 `TZ=America/New_York npm test`: 실패 1건(위 테스트, 2026-10-19 기간 집계에서 기록 누락)
@@ -47,3 +47,6 @@ updated: 2026-10-20
 - 통합 후 현재 코드에서 시간대 5종(서울·UTC·뉴욕·키리티마티·호놀룰루) 모두 `npm test` 161/161 통과. 8주기 기록에 남긴 '뉴욕·호놀룰루에서 schema 1건 실패'가 해소됐다.
 - 바뀐 것은 검사 자료 한 줄(tests/schema.test.cjs)과 문서뿐이라 `npm run test:desktop`은 통합 뒤 다시 돌리지 않았다(카드 브랜치에서 통과 기록).
 - 구현 세션과 통합한 쪽이 모두 Claude이므로 독립 검증은 Codex가 한다(사후 검증 4건과 함께).
+
+### 2026-10-20 Codex 추가 독립 검증
+승인. 테스트 자료의 오프셋 한 줄만 바뀌고 minReader·집계·양식 등의 기존 검증을 줄이지 않았다. 519b7cc 통합본의 전체 npm test5개 시간대 각각167/167 통과. 총괄 병합 대기(review 유지). 전체 desktop18+감사3(9/9), Windows39358186950 소스/패키지 로그 대조 완료. 상세는 위 검토 문서.

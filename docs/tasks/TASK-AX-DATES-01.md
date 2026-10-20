@@ -52,4 +52,4 @@ TASK-REVIEW-MODULAR-01의 AX-DATE-01. shared/ax.mjs milestoneItems는 검증이 
 - 구현자(Claude)와 다른 검증자의 독립 승인 없이 병합한 것은 사용자 결정이다. Codex 사후 검증 결과는 이 카드 아래에 이어서 적는다.
 
 ### 2026-10-20 Codex main 사후 독립 검증
-기준 a70d9aa. 해결 승인. 계약 감사5종·낮은 연도 단위15개·실제 앱0099년 표시·열람 무저장·표 밖 안내 통과. 전체 npm test161/161·desktop17개+감사3개 통과. [상세 판정·제약·Windows 대조](../reviews/2026-10-20-codex-postmerge.md). 기록은 로컬 검증 브랜치에만 있으며 원격 미푸시다.
+기준 a70d9aa. 해결 승인. 계약 감사5종·낮은 연도 단위15개·실제 앱0099년 표시·열람 무저장·표 밖 안내 통과. 전체 npm test161/161·desktop17개+감사3개 통과. [상세 판정·제약·Windows 대조](../reviews/2026-10-20-codex-postmerge.md). 이 기록은 b3552b9에 보존했고 사용자 명시 승인 후 원격 푸시 완료했다.

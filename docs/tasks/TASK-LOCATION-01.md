@@ -1,7 +1,7 @@
 ---
 id: TASK-LOCATION-01
 title: 담당구역 번호 목록(로컬 반입)과 순찰 선택 입력
-status: review
+status: in-progress
 role: builder
 owner: claude
 verifier: codex
@@ -38,7 +38,7 @@ updated: 2026-10-20
 - [x] 3. 테스트·문서
 
 ## 재개 위치
-구현 완료, Codex 검증 대기. 검증 때 볼 곳: shared/zones.mjs·zones-import.mjs(+d.mts), shared/model.mjs(선택 컬렉션 `zones`), src/types.ts(`Zone`), src/components/ZoneManager.tsx(자료 관리 → 담당구역 목록), src/components/Patrols.tsx(담당구역·순찰 구간 제안, 대표 구간 채움, 목록 밖 안내), tests/zones.test.cjs, tests/desktop-zones-smoke.cjs, docs/architecture.md.
+반려(LOC-01/P2). 정상 CSV 미리보기 뒤 다른 파일이 UTF-8 오류/2MB 초과로 거부되면 CSV칸은 비워지지만 이전 미리보기·적용 단추가 남는다. 누르면 이전 파일의 구역이 실제 저장된다. 두 경로 각각 독립 재현 실패. 파일 선택 변경·읽기 실패 시 preview 무효화 보완 후 재검증한다. 정상 반입·저장 실패 보존·읽기전용은 통과. 전체 필수 검사 성공과 별도 발견이다. [독립 검토·증빙](../reviews/2026-10-20-codex-dispatch.md).
 
 ## 구현 메모
 - 설계 메모대로 구현. 추가로: 사용 안 함(active false) 구역은 제안에서 빼고 목록 표에는 보인다. 자동 채움은 순찰 구간이 비어 있을 때만 하고, 직접 쓴 구간은 덮지 않는다. 읽기 전용 자료에서는 반입·삭제를 잠근다. 미리보기 뒤 자료가 바뀌면 미리보기를 지워 낡은 미리보기를 적용하지 못하게 했다(사무소 반입과 같음).
@@ -48,3 +48,6 @@ updated: 2026-10-20
 2026-10-20 Linux(Node 22): `npm test` 167/167(서울·뉴욕, zones 5개), `npm run test:desktop` 종료 0(진입점 18 + 감사 3, 새 desktop-zones-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(변화 없음). Windows 39358186950(82f3a59, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사(담당구역 검사 포함) 통과.
 
 ## 검증 기록
+
+### 2026-10-20 Codex 추가 독립 검증
+반려(LOC-01/P2). 정상 CSV 미리보기 뒤 다른 파일이 UTF-8 오류/2MB 초과로 거부되면 CSV칸은 비워지지만 이전 미리보기·적용 단추가 남는다. 누르면 이전 파일의 구역이 실제 저장된다. 두 경로 각각 독립 재현 실패. 파일 선택 변경·읽기 실패 시 preview 무효화 보완 후 재검증한다. 정상 반입·저장 실패 보존·읽기전용은 통과. 전체 필수 검사 성공과 별도 발견이다. 전체 desktop18+감사3(9/9), Windows39358186950 소스/패키지 로그 대조 완료. 상세는 위 검토 문서.

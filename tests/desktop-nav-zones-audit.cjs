@@ -8,13 +8,15 @@ const path = require('node:path');
 const store = require('../desktop/store.cjs');
 const root = path.resolve(__dirname, '..');
 const report = { reviewedSource: '519b7cc6bb782fd057949d5f1bddb06ca27664cc', cases: [] };
-async function audit(id, run) {
+async function audit(id, run, newer = false) {
   const result = { id, passed: false };
   report.cases.push(result);
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'park-nav-zones-audit-'));
   const profile = path.join(dir, 'profile');
   const file = path.join(profile, 'workdesk.json');
   store.write(file, store.empty());
+  if (newer) fs.writeFileSync(file, JSON.stringify({ ...store.empty(), minReader: 3,
+    zones: [{ id: 'z1', code: '3-1', name: '가상 읽기전용 구역', route: '', active: true }] }));
   const before = fs.readFileSync(file, 'utf8');
   let app;
   try {
@@ -25,7 +27,7 @@ async function audit(id, run) {
     page.setDefaultTimeout(8000);
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
-    await page.locator('.save-indicator[data-state="ready"]').waitFor();
+    await page.locator(`.save-indicator[data-state="${newer ? 'read-only' : 'ready'}"]`).waitFor();
     await run({ app, page, file, before, result });
     result.unhandledErrors = errors;
     assert.deepEqual(errors, []);
@@ -70,6 +72,52 @@ async function audit(id, run) {
     assert.equal(fs.readFileSync(file, 'utf8'), before);
     result.storageFailureHandled = true;
   });
+  await audit('LOCATION-01: 실제 UTF-8 파일 반입·입력 변경·저장 실패 시 원본/초안 보존', async ({ app, page, file, result }) => {
+    await page.locator('.data-menu > summary').click();
+    await page.getByRole('button', { name: '담당구역 목록', exact: true }).click();
+    const sheet = page.getByRole('dialog', { name: '담당구역 목록' });
+    const csv = sheet.getByLabel('반입 CSV', { exact: true });
+    const source = 'code,name,route,active\n3-1,가상 한글 파일,"가상 쉼표, 구간",true';
+    await sheet.getByLabel('CSV 파일', { exact: true }).setInputFiles({ name: 'valid.csv', mimeType: 'text/csv', buffer: Buffer.from(source) });
+    await page.waitForFunction(text => document.querySelector('.zone-manager textarea').value === text, source);
+    await sheet.getByRole('button', { name: '반입 미리보기', exact: true }).click();
+    const apply = sheet.getByRole('button', { name: '확인 후 반입 적용', exact: true });
+    await apply.click();
+    await sheet.getByRole('status').filter({ hasText: '반입했습니다' }).waitFor();
+    assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')).zones.map(z => [z.code, z.route]), [['3-1', '가상 쉼표, 구간']]);
+    result.validFileImported = true;
+    await csv.fill('code,name,route,active\n3-2,가상 다음 파일,,true');
+    await sheet.getByRole('button', { name: '반입 미리보기', exact: true }).click();
+    await apply.waitFor();
+    await csv.fill('code,name,route,active\n3-3,가상 수정 파일,,true');
+    await apply.waitFor({ state: 'hidden' });
+    result.editedSourceInvalidatesPreview = true;
+    await sheet.getByRole('button', { name: '반입 미리보기', exact: true }).click();
+    const beforeFailedSave = fs.readFileSync(file, 'utf8');
+    await app.evaluate(({ ipcMain }) => {
+      ipcMain.removeHandler('save');
+      ipcMain.handle('save', () => { throw new Error('가상 담당구역 ENOSPC'); });
+    });
+    await apply.click();
+    await page.waitForFunction(() => document.body.textContent.includes('가상 담당구역 ENOSPC'));
+    assert.equal(fs.readFileSync(file, 'utf8'), beforeFailedSave);
+    assert.equal(await csv.inputValue(), 'code,name,route,active\n3-3,가상 수정 파일,,true');
+    assert.equal(await apply.isVisible(), true);
+    result.failedSavePreservesOriginalAndPreview = true;
+  });
+  await audit('LOCATION-01: 미래 자료 읽기 전용에서 반입·삭제 잠금 및 원본 불변', async ({ page, file, before, result }) => {
+    await page.locator('.data-menu > summary').click();
+    await page.getByRole('button', { name: '담당구역 목록', exact: true }).click();
+    const sheet = page.getByRole('dialog', { name: '담당구역 목록' });
+    for (const locator of [sheet.getByLabel('CSV 파일', { exact: true }), sheet.getByLabel('반입 CSV', { exact: true }), sheet.getByRole('button', { name: '반입 미리보기', exact: true })])
+      assert.equal(await locator.isDisabled(), true);
+    const remove = sheet.getByRole('button', { name: '삭제 · 담당구역 3-1', exact: true });
+    assert.equal(await remove.getAttribute('aria-disabled'), 'true');
+    await remove.evaluate(button => button.click());
+    assert.equal(await page.getByRole('alertdialog').count(), 0);
+    assert.equal(fs.readFileSync(file, 'utf8'), before);
+    result.originalUnchanged = true;
+  }, true);
   for (const kind of ['invalid-utf8', 'over-2mb']) {
     await audit(`LOC-01: ${kind} 파일 거부 뒤 이전 미리보기 무효화`, async ({ page, file, before, result }) => {
       await page.locator('.data-menu > summary').click();

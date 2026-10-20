@@ -4,21 +4,21 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
-## 2026-10-20 Codex 사후 검증(로컬·미푸시)
+## 최신 Codex 인계 — 2026-10-20 추가 디스패치
 
-MOD-01·AX-DATES-01 해결 승인, AXDESK-03 승인, 스니펫 일반 기능 승인. 추가 Python 좌표 예제의 음수1도 미만 부호 손실 SNIP-01/P3는 별도 backlog다. [결과·Windows·제약](reviews/2026-10-20-codex-postmerge.md). 아래 이전 인계는 병합 당시 기록이다.
+원격 게시 승인을 받아 기존b3552b9를 먼저 푸시했고 Claude519b7cc의 세 카드를 추가 검증했다. **TZ-TEST-01·NAV-02 승인, LOCATION-01은LOC-01/P2 반려**다. 정상 미리보기 뒤 다른CSV가UTF-8/크기 오류로 거부되면 이전 적용 단추가 남아 낡은CSV를 저장할 수 있다. [최종 판정·증빙](reviews/2026-10-20-codex-dispatch.md). 이전 사후검증의MOD-01·AX-DATES-01·보고서 승인은 유지하고SNIP-01/P3는backlog다.
 
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding, task/task-review-postmerge-01(로컬), 기준 main a70d9aa
-- **Task Card**: TASK-REVIEW-POSTMERGE-01 review, Claude 기록 교차 확인 대기. TASK-SNIPPET-COORDS-01 backlog
-- **Latest Pushed Commit**: 이번 작업 미푸시. 확인한 원격 main a70d9aae70bdfd96c303b97080a76e9a04500496 — PR #15 병합
-- **Completed Steps & Modified Files**: main 연결·환경 확인·사후 검증 완료. tests/postmerge-boundary-audit.cjs, 카드6장, 검토/증빙, 작업 기록, handoff
-- **Changed Interfaces / Schema Diff**: 제품 코드·IPC·스키마 변경 없음
-- **Test Status**: npm test161/161·desktop17+감사3(9/9) 통과. 계약5종10/10·낮은 연도5종15/15. 추가감사2통과·SNIP-01 1실패
-- **Remaining Work for Gemini**: 기록 교차 확인, 원격 게시 승인/푸시, Python 예제 부호 보존 후속 착수 결정
-- **Modified Code Snippets (if uncommitted)**: 최종 로컬 커밋에 기록·독립 검사 보존. 제품 코드 변경 없음, 원격 미푸시
+- **Repository & Branch**: Recon987/AI-Coding, task/task-review-postmerge-01 → main(미병합). 추가 검증 기준 Claude 519b7cc
+- **Task Card**: POSTMERGE-01 review(검토 기록 교차 확인 대기). TZ-TEST-01·NAV-02 승인/review, LOCATION-01 LOC-01/P2 반려/in-progress(Claude)
+- **Latest Pushed Commit**: 작성 직전 확인한 bdc8ab7 — 원격 게시 복구와 세 카드 시간대 검증 체크포인트. 문서 포함 최종 푸시 해시는 응답 패킷과 git log -1 참조
+- **Completed Steps & Modified Files**: b3552b9 선푸시, Claude 519b7cc 통합(017dd62), 시간대5종·desktop·Windows 대조. 세 카드·POSTMERGE 카드·검토/JSON증빙·독립 감사·handoff·작업 기록
+- **Changed Interfaces / Schema Diff**: Codex 제품 코드 변경 없음. 검증 대상 Claude 변경: 선택 zones({id,code,name,route,active})·도구 화면 localStorage 기억, 데이터v3/READER_VERSION2 유지, IPC 변경 없음
+- **Test Status**: 전체 단위5종 각각167/167(835/835), desktop18+감사3(9/9), 과업11/11 통과. 추가 NAV/LOCATION 경계3통과·LOC-01 2실패(종료1). Windows39358186950(82f3a59) 소스/패키지 성공 대조
+- **Remaining Work for Gemini**: Claude: LOCATION-01 파일 선택/거부 시preview 무효화 보완 후Codex 재검증. 총괄: 승인2카드 병합 판단·검토 기록 교차 확인. SNIP-01/P3 기존 backlog 유지
+- **Modified Code Snippets (if uncommitted)**: 최종 커밋에 기록·감사 보존, 제품 직접 수정 없음. 최종 푸시 및 미커밋 여부는 응답 패킷 참조
 
-## 1. 최신 인계 패킷
+## 이전 Claude 인계(추가 검증 전 기록)
 
 문서의 커밋 해시는 작성 직전 확인한 원격 기준이다. 문서를 포함한 최종 해시는 응답 패킷과 git log -1에서 확인한다.
 
