@@ -1,14 +1,14 @@
 ---
 id: TASK-MODULES-01
 title: 모듈 레지스트리·선택 필드(modules·axProjects·axSnippets) 모델과 개편 전 백업(Step A)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P2
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 ## 배경
@@ -31,7 +31,7 @@ TASK-ARCH-MODULAR-01 Step A. 기준 문서: [보정 명세](../specs/modular-ax/
 - [x] 3. 개편 전 백업·테스트·기록
 
 ## 재개 위치
-MOD-01 보완 완료, Codex 재검증 대기(재현 감사 첫 사례·tests/modules.test.cjs MOD-01 2개 확인). 재검증 통과 시 MODULES-02·AXDESK-01의 blocked 해제 근거가 된다.
+완료(2026-10-20 사용자 승인으로 main 병합). Codex 사후 독립 검증에서 결함이 나오면 새 카드로 처리한다.
 
 ## 구현 내용·검증 요점
 - `shared/applets.mjs`(신규): CORE_APPLETS(briefing·calendar·tasks·memos, 기존 Page ID 매핑), MODULE_APPLETS(patrols·office·ax-desk), `visibleModules`(저장값이 없으면 메모리 기본값: 순찰·AX, 사무소 자료가 있으면 사무소도), `moduleOrder`, `withModules`(모르는 ID·순서·설정 보존), `validateModules`(ID 형식·중복·100개·예약 키·customConfigs JSON 64KB·깊이 6, 모르는 하위 키 보존). 화면 연결(componentKey)은 MODULES-02에서 src의 정적 맵으로.
@@ -55,3 +55,8 @@ MOD-01 보완 완료, Codex 재검증 대기(재현 감사 첫 사례·tests/mod
 - 기준 e671160(실행 e6fd498), 원본 바이트 백업·백업 실패 원본 유지·미지 키 보존·minReader·기본 모듈·BK-01 보완은 통과.
 - **MOD-01/P2**: customConfigs의 JSON.stringify(...).length는 바이트가 아니다. 한글 30,000자는 JSON 90,023 UTF-8 바이트인데 64KB 검사를 통과한다. 전체 20MB 저장 상한과 기존 자료 보존은 유지되므로 자료 손실로 과장하지 않는다. 카드에 명시한 설정 한도 계약은 아직 충족하지 못해 승인 보류, in-progress로 반환한다.
 - 재현: `TZ=Asia/Seoul node tests/modular-contract-audit.cjs` 첫 사례 실패. 두 번째 AX 연도 사례는 별도 P3 후속이다. 검토·전체 증빙: [독립 검토](../reviews/2026-10-19-codex-modular.md).
+
+### 2026-10-20 사용자 병합 승인 — Codex 사후 검증 예정
+- 사용자: "main 병합 승인할게, 병합해". MOD-01 보완(79b0868)은 Codex 재검증 전. Codex는 나머지(자료 보존·백업·미지 키·minReader·기본 모듈)를 통과로 기록했다.
+- 병합 전 Linux Node 22: `npm test` 161/161, `npm run test:desktop` 종료 0(진입점 17 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11. Windows 최신 39297684401(7c2a067) 성공.
+- 구현자(Claude)와 다른 검증자의 독립 승인 없이 병합한 것은 사용자 결정이다. Codex 사후 검증 결과는 이 카드 아래에 이어서 적는다.

@@ -1,14 +1,14 @@
 ---
 id: TASK-AX-DATES-01
 title: AX 마일스톤의 100년 미만 연도 보존
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends:
 priority: P3
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 ## 배경
@@ -30,7 +30,7 @@ TASK-REVIEW-MODULAR-01의 AX-DATE-01. shared/ax.mjs milestoneItems는 검증이 
 - [x] 2. 시간대별 회귀·실제 앱 확인·증빙
 
 ## 재개 위치
-구현 완료, Codex 검증 대기. 검증 때 볼 곳: shared/dates.mjs `localDate`, shared/model.mjs(dayKey 4자리·parseLocalDate·controlDays·반복 일정·builtInHolidays 표 범위·사용자 공휴일 연도 접두), shared/ax.mjs milestoneItems, src/components/Calendar.tsx(월 격자·표 범위 안내), tests/low-years.test.cjs, tests/desktop-low-years-smoke.cjs, tests/store.test.cjs 457행(계약 변경).
+완료(2026-10-20 사용자 승인으로 main 병합). Codex 사후 독립 검증에서 결함이 나오면 새 카드로 처리한다.
 
 ## 구현 메모
 - 원인: `new Date(y, m, d)`는 y가 0~99면 1900+y로 읽는다. 날짜 키를 부분으로 쪼개 다시 만드는 곳이 모두 같은 위험이었다.
@@ -45,3 +45,8 @@ TASK-REVIEW-MODULAR-01의 AX-DATE-01. shared/ax.mjs milestoneItems는 검증이 
 
 ## 검증 기록
 구현 전. 우선순위 P3 후속이며 TASK-AXDESK-01의 정상 업무 기능 승인과 분리한다.
+
+### 2026-10-20 사용자 병합 승인 — Codex 사후 검증 예정
+- 사용자: "main 병합 승인할게, 병합해". Codex 독립 검증 전(공휴일 표 밖 처리 계약 변경 확인 포함).
+- 병합 전 Linux Node 22: `npm test` 161/161, `npm run test:desktop` 종료 0(진입점 17 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11. Windows 최신 39297684401(7c2a067) 성공.
+- 구현자(Claude)와 다른 검증자의 독립 승인 없이 병합한 것은 사용자 결정이다. Codex 사후 검증 결과는 이 카드 아래에 이어서 적는다.

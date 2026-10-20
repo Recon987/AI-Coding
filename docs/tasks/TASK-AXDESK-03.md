@@ -1,14 +1,14 @@
 ---
 id: TASK-AXDESK-03
 title: AX Desk 보고서 초안(양식 기반)과 TXT/MD 내보내기
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: TASK-AXDESK-01
 priority: P3
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 ## 배경
@@ -30,7 +30,7 @@ TASK-ARCH-MODULAR-01 Step C-3. [보정 명세](../specs/modular-ax/implementatio
 - [x] 2. 내보내기 IPC·검사·기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기. 검증 때 볼 곳: shared/ax-report.mjs(buildAxReport·checkAxReportRequest·safeFileTitle), src/components/AxReport.tsx, AxDesk.tsx('보고서' 행 동작), desktop/main.cjs·preload.cjs(`export-ax-report`), docs/architecture.md(IPC 기록), tests/ax-report.test.cjs, tests/desktop-axreport-smoke.cjs. 이것으로 TASK-ARCH-MODULAR-01 Step C(AXDESK-01~03) 구현이 모두 끝났다.
+완료(2026-10-20 사용자 승인으로 main 병합). Codex 사후 독립 검증에서 결함이 나오면 새 카드로 처리한다.
 
 ## 구현 메모
 - 화면: AX 모듈의 세 번째 화면 "보고서 초안"(Page `ax-report`, 보기 전환). 사업 선택·형식(TXT/MD)·미리보기·초안 복사·파일로 저장. AX 사업 행에 '보고서' 동작 추가(그 사업이 선택된 채 열림). "보고서 초안·추천 구조, 공식 서식 아님, 온라인 AI 안 씀" 안내.
@@ -42,3 +42,8 @@ TASK-ARCH-MODULAR-01 Step C-3. [보정 명세](../specs/modular-ax/implementatio
 2026-10-19 Linux(Node 22): `npm test` 158/158(보고서 새 5개), `npm run test:desktop` 종료 0(진입점 16개 + 감사 3개, 새 desktop-axreport-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 변화 없음). Windows 39292805648(ea03a4a, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사(보고서·스니펫 검사 포함) 통과.
 
 ## 검증 기록
+
+### 2026-10-20 사용자 병합 승인 — Codex 사후 검증 예정
+- 사용자: "main 병합 승인할게, 병합해". Codex 독립 검증 전(새 IPC `export-ax-report` 검토 포함).
+- 병합 전 Linux Node 22: `npm test` 161/161, `npm run test:desktop` 종료 0(진입점 17 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11. Windows 최신 39297684401(7c2a067) 성공.
+- 구현자(Claude)와 다른 검증자의 독립 승인 없이 병합한 것은 사용자 결정이다. Codex 사후 검증 결과는 이 카드 아래에 이어서 적는다.

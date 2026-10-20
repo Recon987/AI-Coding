@@ -10,17 +10,19 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 / 병합 대상 main 1eb40aa)
-- **Task Card**: TASK-AX-DATES-01 review(검증자 codex, 사용자 승인 착수). TASK-MODULES-01 review(MOD-01 재검증 대기). TASK-MODULES-02·AXDESK-01 review(Codex 기능 승인). TASK-AXDESK-02·03 review(Windows 39292805648 성공)
-- **Latest Pushed Commit**: 7c2a067(AX-DATES-01 구현, Windows 39297684401 성공) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: shared/dates.mjs(`localDate`)+d.mts, shared/model.mjs(dayKey 4자리, parseLocalDate·controlDays·반복 회차에 localDate, HOLIDAY_TABLE_YEARS·표 밖 빈 목록, 사용자 공휴일 4자리 접두)+d.mts, shared/ax.mjs(milestoneItems), src/components/Calendar.tsx(월 격자, 표 범위 안내), docs/architecture.md, tests/low-years.test.cjs·desktop-low-years-smoke.cjs(신규), tests/store.test.cjs(공휴일 표 밖 계약), package.json·windows-build.yml
-- **Changed Interfaces / Schema Diff**: 새 export `localDate`, `HOLIDAY_TABLE_YEARS`. `dayKey`가 1000년 미만도 4자리. `holidaysForYear`는 1970~2100 밖 정수 연도에 예외 대신 기본 공휴일 없음(사용자 공휴일만) — 계약 변경. 자료 형식·IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 161/161(5개 시간대 중 뉴욕·호놀룰루는 기존 schema 139번 1건 실패, 변경 전에도 동일), modular-contract-audit 5개 시간대 종료 0, npm run test:desktop 종료 0(진입점 17 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows 39297684401(7c2a067) 성공
-- **Remaining Work for Gemini**: Codex: MODULES-01 재검증, AXDESK-02·03·AX-DATES-01 검증(공휴일 표 밖 계약 변경 확인). 사용자: 스니펫 예제 방식, main 병합 승인, 마지막 화면 기억·AX 주간 브리핑/알림 결정, schema 139번 시간대 의존 후속 여부
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main, 8주기 병합 PR). 병합 전 main 1eb40aa
+- **Task Card**: MODULES-01·02, AXDESK-01·02·03, AX-DATES-01, ARCH-MODULAR-01 done(사용자 병합 승인). MOD-01 보완·AXDESK-02·03·AX-DATES-01은 Codex 사후 검증 예정
+- **Latest Pushed Commit**: dbdea27(AX-DATES-01 Windows 기록) (병합 커밋 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: 카드 7장 done·검증 기록, docs/validation.md(8주기), docs/orchestration/loop-log.md(8주기), 작업 기록 31장, 이 인계장
+- **Changed Interfaces / Schema Diff**: 이번 묶음 전체: 선택 최상위 `modules`·`axProjects`·`axSnippets`(v3 유지, 처음 저장 때 개편 전 보호본), 새 IPC `export-ax-report`, 새 Page `ax`·`ax-snippets`·`ax-report`, `jsonBytes`·`localDate`·`HOLIDAY_TABLE_YEARS`, `holidaysForYear` 표 밖 계약 변경
+- **Test Status**: Linux Node 22: npm test 161/161, npm run test:desktop 종료 0(진입점 17 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows 39297684401(7c2a067) 성공, PR·main Windows는 병합 과정에서 확인
+- **Remaining Work for Gemini**: Codex: MOD-01·AXDESK-02·03·AX-DATES-01 사후 독립 검증. 사용자: 마지막 화면 기억·AX 주간 브리핑/알림·스니펫 예제 방식 결정, schema 시간대 의존 검사 후속 여부
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황
+
+**2026-10-20 세 번째 main 병합(8주기, 모듈형 개편)**: MODULES-01·02, AXDESK-01·02·03, AX-DATES-01과 묶음 카드 ARCH-MODULAR-01을 사용자 승인("main 병합 승인할게, 병합해")으로 병합. 기본 4종 + 켤 수 있는 모듈 메뉴(현장 순찰·사무소 현황·AX 사업 관리), 모듈 관리 서랍, AX 사업 관리(권역·단계·집행률·마일스톤 달력/브리핑 파생)·GIS·AI 스니펫·보고서 초안(새 IPC `export-ax-report`), 0001~0099년 날짜 보존. 자료 형식 v3 유지(선택 항목 `modules`·`axProjects`·`axSnippets`, 처음 저장 때 `.pre-modular-backup-<시각>.json`). **Codex 독립 검증은 MODULES-02·AXDESK-01 기능 승인까지만 받았고 MOD-01 보완·AXDESK-02·03·AX-DATES-01은 사후 검증 예정**(각 카드 검증 기록 참조).
 
 **2026-10-19 모듈·AX 독립 검증**: [검토](reviews/2026-10-19-codex-modular.md). BK-01·HL-01 사후 재검증은 해결 승인이다. MODULES-02·AXDESK-01의 일반 업무 기능은 통과했으나 MODULES-01의 설정 64KB 바이트 계약(MOD-01/P2)을 보완해야 전체 병합을 승인할 수 있다. 낮은 연도 AX-DATE-01은 P3 후속. 아래의 과거 반려·검증 대기 문단은 당시 기록이다.
 

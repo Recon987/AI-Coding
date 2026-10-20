@@ -1,14 +1,14 @@
 ---
 id: TASK-AXDESK-02
 title: AX Desk GIS·AI 스니펫 보관함
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: TASK-AXDESK-01
 priority: P3
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 ## 배경
@@ -31,7 +31,7 @@ TASK-ARCH-MODULAR-01 Step C-2. [보정 명세](../specs/modular-ax/implementatio
 - [x] 2. 예제·검사·기록
 
 ## 재개 위치
-구현 완료, Codex 검증 대기. 검증 때 볼 곳: src/components/AxSnippets.tsx, shared/ax.mjs(AX_EXAMPLE_SNIPPETS·examplesAdded·withExampleSnippets), shared/search.mjs(axSnippet), src/components/Briefing.tsx(첫 사용 판정에서 예제 제외), tests/ax-desk.test.cjs(스니펫 4개), tests/desktop-snippets-smoke.cjs. 다음 카드: TASK-AXDESK-03(보고서 초안).
+완료(2026-10-20 사용자 승인으로 main 병합). Codex 사후 독립 검증에서 결함이 나오면 새 카드로 처리한다.
 
 ## 구현 메모
 - 화면: AX 모듈의 두 번째 화면 "GIS·AI 스니펫"(Page `ax-snippets`, 제목 아래 보기 전환 "AX 사업 관리 | GIS·AI 스니펫"). 분류 단추(전체·GEE·Python·프롬프트·법령·지침, 건수, aria-pressed), 검색(제목·분류·태그·설명·본문), 등록·수정·삭제(확인). 열: 수정일 / 구분(예제) / 분류 / 제목(+태그) / 분량(줄 수). 행 동작 순서: 복사(주 동작)·수정·삭제.
@@ -47,3 +47,8 @@ TASK-ARCH-MODULAR-01 Step C-2. [보정 명세](../specs/modular-ax/implementatio
 2026-10-19 Linux(Node 22): `npm test` 153/153(스니펫 새 4개), `npm run test:desktop` 종료 0(진입점 15개 + 감사 3개, 새 desktop-snippets-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(클릭 수 변화 없음). Windows 39291699887(4d46ed2) **실패**: desktop-snippets-smoke 복사 비교에서 Windows 클립보드가 줄 끝을 CRLF로 바꿔(Chromium이 Windows 관례대로 \n→\r\n 변환) 바이트 비교가 어긋남. 앱 결함이 아니라 플랫폼 줄 끝 차이이므로 검사를 Windows에서만 줄 끝을 맞춘 뒤 비교하도록 고침(다른 글자는 모두 그대로 비교). 재실행 Windows 39292805648(ea03a4a, 06a9f4d 보완 포함) 성공: 소스·설치본 실제 앱 검사(스니펫 검사 포함) 통과.
 
 ## 검증 기록
+
+### 2026-10-20 사용자 병합 승인 — Codex 사후 검증 예정
+- 사용자: "main 병합 승인할게, 병합해". Codex 독립 검증 전(예제 3개를 '빈 보관함 단추로 1회' 넣는 해석 포함).
+- 병합 전 Linux Node 22: `npm test` 161/161, `npm run test:desktop` 종료 0(진입점 17 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11. Windows 최신 39297684401(7c2a067) 성공.
+- 구현자(Claude)와 다른 검증자의 독립 승인 없이 병합한 것은 사용자 결정이다. Codex 사후 검증 결과는 이 카드 아래에 이어서 적는다.

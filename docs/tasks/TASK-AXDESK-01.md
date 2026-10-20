@@ -1,14 +1,14 @@
 ---
 id: TASK-AXDESK-01
 title: AX Desk 권역별 사업 관리와 마일스톤 달력·브리핑 파생
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: TASK-MODULES-02
 priority: P2
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 ## 배경
@@ -31,7 +31,7 @@ TASK-ARCH-MODULAR-01 Step C-1. [보정 명세](../specs/modular-ax/implementatio
 - [x] 2. 마일스톤 파생·검사·기록
 
 ## 재개 위치
-Codex 기능 승인 받음(2026-10-19). 선행 MODULES-01의 MOD-01 보완을 Claude가 마쳐 review로 되돌렸다. MODULES-01 재검증이 통과하면 추가 구현 없이 done 가능.
+완료(2026-10-20 사용자 승인으로 main 병합). Codex 사후 독립 검증에서 결함이 나오면 새 카드로 처리한다.
 
 ## 구현 메모
 - 목록: 권역 단추(전체·본사·서부·북부·연구원·보전원·기타, 건수, aria-pressed), 단계 선택, 정렬(마일스톤 가까운 순·최근 수정·사업명·집행률), 검색(사업명·권역·단계·담당·협력기관·마일스톤·위험·메모). 열: 마일스톤 날짜 / 단계 / 권역 / 사업명 / 담당. 마일스톤 정렬은 진행 중 사업을 날짜순(지난 날짜 먼저, '지남' 표시) → 날짜 없음 → 완료 사업 순.
@@ -50,3 +50,8 @@ Codex 기능 승인 받음(2026-10-19). 선행 MODULES-01의 MOD-01 보완을 Cl
 - MODULES-02: 코어4·모듈 순서/숨김/다시 켬·읽기 전용·실패 원본/스위치/포커스 유지 통과. AXDESK-01: 사업 CRUD·필터/정렬·집행률·달력/브리핑/검색 원본 파생·숨김 후 유지·실패 초안 유지 통과.
 - 기능 승인과 통합 가능 상태를 구분한다. 선행 MODULES-01의 MOD-01/P2로 blocked이며, 코드 자체의 실패를 의미하지 않는다. [독립 검토](../reviews/2026-10-19-codex-modular.md).
 - AX-DATE-01/P3: 허용된 0001~0099년이 1901~1999년으로 파생되는 낮은 연도 경계는 별도 TASK-AX-DATES-01에 등록. 일반 업무 연도와 검증된 2026년 연결의 실패로 표현하지 않는다.
+
+### 2026-10-20 사용자 병합 승인 — Codex 사후 검증 예정
+- 사용자: "main 병합 승인할게, 병합해". Codex 기능 승인(2026-10-19) 받음. 선행 MODULES-01의 MOD-01 재검증만 남았던 상태.
+- 병합 전 Linux Node 22: `npm test` 161/161, `npm run test:desktop` 종료 0(진입점 17 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11. Windows 최신 39297684401(7c2a067) 성공.
+- 구현자(Claude)와 다른 검증자의 독립 승인 없이 병합한 것은 사용자 결정이다. Codex 사후 검증 결과는 이 카드 아래에 이어서 적는다.
