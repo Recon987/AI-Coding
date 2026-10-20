@@ -32,14 +32,29 @@ updated: 2026-10-20
 
 ## 진행 단계
 - [x] 1. `shared/projects.mjs` 순수 함수·라벨과 단위 검사
-- [ ] 2. `shared/model.mjs` 연결, 타입(`src/types.ts`, `.d.mts`), 호환·봉함·측정 검사
+- [x] 2. `shared/model.mjs` 연결, 타입(`src/types.ts`, `.d.mts`), 호환·봉함·측정 검사
 - [ ] 3. 기록·검증 요청
 
 ## 재개 위치
-2단계 진행 중. 완료: `shared/projects.mjs`(+`.d.mts`), `shared/model.mjs`(`empty`·optionalCollections·검증 연결), `src/types.ts`, `tests/projects.test.cjs` 10건, `tests/labels.test.cjs` 스냅샷(projectStage·referenceKind).
-다음: 10,000건 혼합 측정(`scripts/hub-bench.cjs`), `test:desktop` 전체, 기록.
+3단계: 전체 `test:desktop`·Codex 감사 결과를 기록한 뒤 review로 올린다. 화면 변경이 없어 Windows Actions는 B2b와 함께 돌린다.
 
-## 테스트 상태
-2026-10-20 중간: `npm test` 206/206, `tsc --noEmit` 통과. `test:desktop` 미실행.
+B1(Codex)에 주는 공용 함수는 다음과 같다.
+- `workItems.projectId`: `projectIdSet(data)`로 확인한다.
+- `referenceIds`: `validReferenceIds`로 확인한다.
+- `source`: `validateSource`로 검증하고 `sourceView`로 표시한다.
+
+## 측정(10,000건 혼합, `node scripts/hub-bench.cjs`)
+- 조건: Node v22(개발 기준 24와 다름), Xeon 2.8GHz 클라우드, 2026-10-20.
+- 자료: 사업 1,000, AX 500, 근거·메모·전화·인계·작업(workItems 형태) 각 2,500.
+
+| 항목 | 값 |
+| --- | --- |
+| 평문 크기 | 10.34MB(한도 20MB의 52%) |
+| 정규화 | 10ms |
+| 저장 평문(last-good 포함) / 읽기 | 149ms / 102ms |
+| 저장 봉함 / 봉한 크기 / 읽기 | 304ms / 13.79MB / 267ms |
+| 암호 백업 쓰기 / 읽기(N=2^17) | 788ms / 991ms |
+
+이 조건이면 JSON 유지 판단에 무리가 없다. 다만 기관 PC에서 다시 재야 한다. 링크·근거가 많은 자료에서는 종류별 10,000건 한도가 크기 한도보다 먼저 걸린다.
 
 ## 검증 기록
