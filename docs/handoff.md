@@ -4,6 +4,11 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Codex 착수 — B1+B2a 통합 검증·B2b
+
+사용자가 보안·설계·B2a 판정과 B1 통합, B2b 구현을 지시했다. 기준 B2a bac7461, B1 origin/task/task-hub-b1-01 d7805e5. B2b를 in-progress(owner codex/verifier claude)로 선점한다. 독립 검증·통합·UI·Windows는 순서대로 수행하며 기존 회의·출처 자료를 보존한다. 아직 이 단계의 새 검사·승인 판정은 없다.
+
+
 ## 최신 Claude 인계 — 2026-10-20 B2a 사업·근거 보관함 자료 모델(TASK-HUB-B2A-01, review)
 
 Gemini 확정 지시와 사용자 승인을 받아 명세 6장(3대 쟁점·문구 표준)을 고정했다. 카드 B2a·B2b·B3a·B3b를 만들었다.

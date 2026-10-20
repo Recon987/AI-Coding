@@ -1,9 +1,9 @@
 ---
 id: TASK-HUB-B2B-01
 title: B2b 사업 공간 화면과 근거 자료 연결
-status: ready
+status: in-progress
 role: builder
-owner: none
+owner: codex
 verifier: claude
 branch: task/task-hub-b2b-01
 depends: TASK-HUB-B2A-01
@@ -12,6 +12,7 @@ updated: 2026-10-20
 ---
 
 ## 배경
+- 의존 예외: TASK-HUB-B2A-01 (사용자 승인 2026-10-20, B1+B2a 통합 검증과 B2b 연속 착수 지시)
 구현은 Codex, 검증은 Claude가 맡는다(2026-10-20 사용자·Gemini 승인). 명세는 [claude-hub-schema-plan-2026-10-20.md](../product/claude-hub-schema-plan-2026-10-20.md) 3·4·6장이고, 문구 표준은 6장 B2b다.
 
 ## 완료 조건
@@ -37,7 +38,7 @@ AX 저장소 통합, 관리형 첨부 복사, 간트·다단계 작업.
 - [ ] 3. 모듈 계약 1판·AX 이관·실제 앱 검사
 
 ## 재개 위치
-B2a 병합 뒤 착수.
+사용자 지시로 bac7461 기준 보안·B2a 독립 검증 후 B1 d7805e5를 무손실 통합한다. 이후 사업 공간 UI·연결·근거 IPC·모듈 계약을 구현한다. main 병합은 별도이며 기존 meetings/links를 삭제하지 않는다.
 
 ## 테스트 상태
 미실행
