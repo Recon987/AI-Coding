@@ -178,6 +178,77 @@ Codex 요청에 대한 설계·계획 응답이다: [claude-architecture-respons
   - 사용자: 기관 PC에서 켜기·재시작 확인, main 병합 승인 여부
   - 다음 카드: SECURITY-03(백업 암호·다른 PC 복원), SECURITY-04(켜기 전 평문 사본 정리·기본 켜기 여부)
 - **Modified Code Snippets (if uncommitted)**: 없음
+## 최신 B1 후속 — Windows 실행·Claude 스키마 교차 검증
+
+원격 `322f56c`에 B1 `77de23d`가 포함됨을 확인했다. 사용자 요청에 따라 [Windows 39408113609](https://github.com/Recon987/AI-Coding/actions/runs/39408113609)를 수동 시작했다. 소스 단위175/175·desktop·Windows 빌드·패키징 앱 검사·체크섬·산출물 업로드까지 최종 성공했다. 아래의 Windows 미실행 표시는 이전 시점 기록이다.
+
+Claude `1ac80a3`와 최신 `9f4fe7c` 확정안을 B1과 대조했다. 일반 작업 별도 저장 원칙은 일치하나 **출처 저장·기한 필드·기존 회의/한도** 세 묶음의 보완이 필요하다. [판정·실측·Claude 전달 문구](reviews/2026-10-20-codex-hub-schema-crosscheck.md). Claude 브랜치·제품 코드는 바꾸지 않았다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-hub-b1-01 / main 미병합
+- **Task Card**: TASK-HUB-B1-01 review. HUB-SCHEMA-01 명세 보완 요청, B1 Claude 독립 승인 대기
+- **Latest Pushed Commit**: 작성 직전 확인 322f56c(B1 구현 77de23d 포함). 이 검토 포함 최종 푸시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: Windows 수동 실행 39408113609, 1ac80a3/9f4fe7c 명세 대조·감사 도구/JSON·검토 문서·카드/인계
+- **Changed Interfaces / Schema Diff**: 제품 변경 없음. 출처 links/source, datetime/at·remindMinutes, 기존 meetings/제목500자 정렬 필요
+- **Test Status**: 교차 감사8/8 재현·모델15/15 통과. 이전 B1 전체175/175·desktop 통과. Windows 39408113609/322f56c 최종 success(소스·패키징·업로드)
+- **Remaining Work for Gemini**: Claude에 SCHEMA-B1-01~03 정렬 전달, B1 독립 검증·보안 통합 확인. main 병합 별도
+- **Modified Code Snippets (if uncommitted)**: 제품 변경 없음. 검토/감사 도구를 같은 브랜치에 보존, 최종 git 상태는 응답 패킷 참조
+
+## 최신 B1 인계 — 사용자 게시 승인·원격 푸시 완료
+
+사용자가 B1 착수를 승인했고 Gemini의 화면 수용 기준을 수신했다. 사업·기한 없는 작업, 오늘 및 기존 메뉴의 세 유형 조회, 메모/전화/회의의 1:N 후속·원본 복귀·삭제 표시를 구현했다. [자체 검증과 재현 명령](reviews/2026-10-20-codex-hub-b1.md). 아래의 B1 착수 대기·제품 미변경 표시는 이전 시점 기록이다. 보안 카드의 기존 review 상태와 main은 변경하지 않았다.
+
+사용자가 완성된 B1 브랜치 게시를 명시 승인했다. `77de23d21fab9e45976b0dac9aa8886b578dd017`을 `origin/task/task-hub-b1-01`에 푸시하고 원격 SHA 일치를 확인했다. 이전 게시 차단 표시는 승인 전 기록이다. Claude의 독립 검토와 PR Windows 검사는 아직 없다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, `task/task-hub-b1-01` 원격 게시 완료 / 병합 대상 main `ea3105e`
+- **Task Card**: TASK-HUB-B1-01 review. 구현·자체 검사 완료, Claude 독립 검토 대기
+- **Latest Pushed Commit**: 작성 직전 원격 확인 `77de23d` — B1 구현·전체 검증 기록. 게시 상태 문서 포함 최종 해시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: shared/work·모델/검색, 타입, 오늘·Tasks·Personal·Work·Meetings UI, 단위/실제 앱/측정·교차 검사, Windows 검사 목록·검증 문서
+- **Changed Interfaces / Schema Diff**: 선택 workItems/meetings/links, WorkDue·SourceRef, work/meetings 페이지. v3·reader2·기존 Task.kind·IPC 유지. 날짜만 알림 없음·원본 상태 비전파
+- **Test Status**: npm test 175/175, test:desktop 종료 0(19종+감사3종/9사례). 혼합10,000건 시작 중앙값534ms·실제검색p95 55ms. 구판·보안 가상 사본 왕복 통과. Windows/DPAPI·독립 승인 미실행
+- **Remaining Work for Gemini**: 구현 화면 문구 확인. Claude 독립 검증·보안 통합 시 B1 모델 유지. PR Windows 검사·main 병합 별도
+- **Modified Code Snippets (if uncommitted)**: 제품 코드 미변경. 이번 게시 상태 기록을 같은 브랜치에 커밋·푸시하며 최종 git 상태는 응답 패킷 참조
+
+## 최신 게시 상태 — Gemini 통합안
+
+사용자의 명시 승인으로 Gemini 요약과 단일 통합안 de82f26을 origin/task/task-product-direction-01에 게시했다. 이전 미게시 표시는 당시 기록이다. [통합안](product/hub-integrated-plan-2026-10-20.md)과 [Gemini 수신 요약](product/gemini-product-flow-response-2026-10-20.md)을 함께 참고한다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-product-direction-01
+- **Task Card**: PRODUCT-DIRECTION-01·HUB-ARCH-01 review, B1 착수 판단 대기
+- **Latest Pushed Commit**: 작성 직전 확인 de82f26 — Gemini 수신과 단일 통합안. 게시 상태 문서 포함 최종 해시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: Gemini 요약·통합안 원격 게시, 과제·작업 기록·인계의 게시 상태 갱신
+- **Changed Interfaces / Schema Diff**: 없음, 제품 구현·main 병합 없음
+- **Test Status**: 기존 문서 링크·보드 검사 통과. 이번 게시 상태 갱신은 공백 검사, 앱 테스트 미실행
+- **Remaining Work for Gemini**: 통합안의 변경된 화면 의미 검토 가능. 다음 구현 범위는 B1 기록→작업
+- **Modified Code Snippets (if uncommitted)**: 제품 변경 없음, 최종 문서 커밋·푸시 상태는 응답 패킷 참조
+
+## 제품 방향 통합안 — Claude·Gemini 응답 수신 완료
+
+사용자 제공 Gemini 결과와 Claude270cf7a를 대조해 [단일 통합안](product/hub-integrated-plan-2026-10-20.md)을 작성했다. [Gemini 수신 요약](product/gemini-product-flow-response-2026-10-20.md)에서 원문 제안과 사실 보정을 구분한다. 권고: 새 공통 사업/업무 + 기존 원본 연결, 세 화면, 후속1:N·근거N:M·완료사업사후작업, B1~B3로 사용자 흐름 완주. 구현 착수·카드ready는 아직 확정하지 않았다. 아래 Gemini 미수신 표시는 당시 기록이다.
+
+## 제품 방향 공동 검토 — Claude 응답 수신
+
+Claude270cf7a의[기술설계응답](product/claude-architecture-response-2026-10-20.md)을수신해문서/카드만통합했다. [Codex기술검토](product/codex-architecture-review-2026-10-20.md)는큰방향지지와구현전계약보완요청이다. Gemini응답은아직없다. 보안코드는병합하지않았고신규구현착수승인도아니다.
+
+## 제품 방향안 원격 게시·병렬 요청 — 2026-10-20
+
+사용자의 명시 승인으로 d777483 제품 방향안을 origin/task/task-product-direction-01에 게시했다. [Claude·Gemini 복사용 병렬 프롬프트](collaboration/product-direction-dispatch-2026-10-20.md)를 준비했다. Claude는 기술 설계·모듈 계약·개발 카드 초안, Gemini는 네 직무 흐름·세 화면·수용 기준을 담당한다. 실제 응답은 아직 없으며 두 결과를 받아 Codex가 통합한다. 아래 로컬/게시 차단 표시는 승인 전의 기록이다.
+
+## 제품 방향 재점검 — 2026-10-20(로컬 검토안)
+
+사용자는사업/업무/자료연결·반복보고·인계/공유를모두담는범용공단업무허브를원한다. 기존기능보완위주흐름을점검하고공통사업/업무공간→직무모듈→기관연계라는제품성장안을제안했다. [방향안](product/direction-2026-10-20.md), [Claude/Gemini전달용검토요청](collaboration/product-direction-dispatch-2026-10-20.md). 실제두모델응답/합의는아직없다. 현재Claude4c4f521의SECURITY-03은별도로보존한다. 제품전략외부게시는자동승인검토에서거절돼로컬상태다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-product-direction-01(로컬), 기준main ea3105e·검증기록960d2fb
+- **Task Card**: PRODUCT-DIRECTION-01 review. Claude/Gemini실제검토응답대기, 신규구현/우선순위미확정
+- **Latest Pushed Commit**: 이번전략미푸시. 이전확인푸시960d2fb(POSTMERGE-02검증). 최종로컬해시는응답패킷참조
+- **Completed Steps & Modified Files**: direction-2026-10-20.md(방향/레퍼런스/큰개발묶음), 공동검토요청서, 카드·handoff·작업기록
+- **Changed Interfaces / Schema Diff**: 없음. 오프라인/기존자료계약유지, 기관API미접속, 전문모듈/협업은설계제안
+- **Test Status**: 문서/보드검사결과는작업기록참조. 제품검사/desktop미실행(제품미변경)
+- **Remaining Work for Gemini**: 네직무흐름·세화면·코어/모듈경계검토. Claude는보안체크포인트보존및통합안검토. 전략게시승인·구현착수결정별도
+- **Modified Code Snippets (if uncommitted)**: 제품변경없음. 전략문서는로컬커밋보존·원격게시차단, 최종상태는응답패킷참조
 
 ## 최신 Codex 인계 — 2026-10-20 PR16 병합 후 재검증
 
@@ -283,3 +354,40 @@ Windows 검증 소스 `887ca68`, [실행 성공](https://github.com/Recon987/AI-
 ## DS-01 재감사·후속6카드 독립 검증(2026-10-19)
 
 DS-01은 afc3825에서 승인됐다. 자료 안전성 **감사 카드**는 사용자 요청대로done이다. 제품6카드는4승인·2반려로 전체 main 병합은 보류한다. [최종 검토](reviews/2026-10-19-codex-dispatch.md). BK-01은 시계 역행 때 새 복원 직전 보호본을 즉시 지우는 P1, HL-01은 공휴일 한도 초과 시 화면 안내 없는 미처리 예외 P2다. Claude가 BACKUP-02 진행 중 → HOLIDAY-01 ready 순으로 보완한다. 기존 자동 검사 성공은 이 새 경계 실패를 포함하지 않는다.
+
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-product-direction-01
+- **Task Card**: PRODUCT-DIRECTION-01 review, Claude/Gemini 실제 검토 대기
+- **Latest Pushed Commit**: 작성 직전 확인 d777483 — 범용 업무 허브 방향과 공동 검토안. 최종 문서 해시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: 제품 방향안 원격 게시, 공동 요청서를 역할별 복사용 프롬프트로 보완, 과제·인계·작업 기록
+- **Changed Interfaces / Schema Diff**: 없음, 제품/진행 중 보안 코드 미변경
+- **Test Status**: 문서·보드 검사, 앱 전체 검사 미실행(문서 변경)
+- **Remaining Work for Gemini**: 두 프롬프트 병렬 수행, 응답을 Codex에 전달해 공통 모델/시제품 범위 통합
+- **Modified Code Snippets (if uncommitted)**: 없음 또는 최종 커밋 상태는 응답 패킷 참조
+
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-product-direction-01
+- **Task Card**: PRODUCT-DIRECTION-01·HUB-ARCH-01 review, Gemini 실제 응답 대기
+- **Latest Pushed Commit**: 작성 직전 확인 f632273 — 병렬 요청 프롬프트. 이번 최종 해시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: Claude270cf7a 문서/카드 수신, Codex 기술 검토·세 쟁점 권고, 방향 카드·인계·작업 기록
+- **Changed Interfaces / Schema Diff**: 없음. 보안 코드/스키마 미병합, 구현 카드 ready 미확정
+- **Test Status**: 문서 링크·보드·공백 검사. 제품 전체 검사 미실행
+- **Remaining Work for Gemini**: 직무 흐름/세 화면/수용 기준 응답, 이후 Codex 단일 결정표 통합
+- **Modified Code Snippets (if uncommitted)**: 제품 변경 없음, 최종 문서 커밋·푸시 상태는 응답 패킷 참조
+
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-product-direction-01
+- **Task Card**: PRODUCT-DIRECTION-01·HUB-ARCH-01 review. 두 응답 수신·Codex 통합안 작성 완료, B1 착수 결정 대기
+- **Latest Pushed Commit**: 작성 직전 확인1cd32e5 — Claude 설계 검토. 이번 최종 해시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: Gemini 수신 요약·원문 해시, 통합 결정표·세 화면·B1~B3·계약/수용 기준, 카드·인계·작업 기록
+- **Changed Interfaces / Schema Diff**: 제안만 존재. 제품·보안 코드/기존 스키마 미변경
+- **Test Status**: 문서 링크·보드 규칙·공백 검사. 앱 전체 검사 미실행(문서 전용)
+- **Remaining Work for Gemini**: 통합안에서 달라진 화면 의미만 검토 가능. 사용자 B1 착수 범위 판단 후 구현 카드 확정
+- **Modified Code Snippets (if uncommitted)**: 제품 변경 없음, 최종 문서 커밋·푸시 상태는 응답 패킷 참조
+
+
+### Gemini 통합안 게시 상태
+이번 Gemini 파생 요약·통합안의 원격 푸시는 자동 승인 검토가 구체적인 업로드 파생 payload/목적지 게시 승인 부족을 이유로 거절했다. 원격 푸시를 우회하지 않았고 로컬 커밋에 보존한다. 기존에 게시한 Claude 검토1cd32e5와 이번 미게시 문서를 구분한다. 문서 링크·보드 규칙·공백 검사는 통과했다.

@@ -101,13 +101,13 @@ test("구판이 의존하는 보존 성질: 모르는 레코드 필드와 최상
       ...empty(),
       tasks: [task("t1", { projectId: "p1", futureField: { a: 1 } })],
       notes: [{ id: "n1", title: "가상 메모", body: "", futureField: "유지" }],
-      workItems: [{ id: "w1", title: "가상 작업", source: { kind: "call", id: "c1", title: "가상 전화" } }],
+      futureCollection: [{ id: "w1", title: "가상 작업", source: { kind: "call", id: "c1", title: "가상 전화" } }],
     };
     store.write(file, data);
     const read = store.read(file);
     assert.deepEqual(read.tasks[0].futureField, { a: 1 });
     assert.equal(read.notes[0].futureField, "유지");
-    assert.deepEqual(read.workItems, data.workItems);
+    assert.deepEqual(read.futureCollection, data.futureCollection);
   }));
 
 test("ProjectView: 일반·AX를 한 형태로, AX 단계는 일반 단계로 표시만, 모듈을 끄면 확장 필드 없음", () => {
@@ -145,7 +145,7 @@ test("출처 표시: 원본이 있으면 현재 제목, 지워졌으면 사본 �
   assert.equal(P.sourceView(data, { kind: "patrol", id: "p9", title: "가상 순찰" }).label, "출처: 삭제된 순찰 기록 — 가상 순찰");
   assert.equal(P.sourceView(data, null), null);
   assert.equal(P.validateSource(null), null);
-  for (const bad of [{ kind: "meeting", id: "m1", title: "" }, { kind: "call", id: "", title: "" }, { kind: "call", id: "c1", title: "가".repeat(201) }, "c1"])
+  for (const bad of [{ kind: "unknown", id: "m1", title: "" }, { kind: "call", id: "", title: "" }, { kind: "call", id: "c1", title: "가".repeat(501) }, "c1"])
     assert.throws(() => P.validateSource(bad), /출처/);
 });
 

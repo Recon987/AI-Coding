@@ -11,10 +11,11 @@
     "test": "node --test tests/*.test.cjs tests/data-safety-audit.cjs",
     "package:win": "npm run build && electron-builder --win nsis portable --x64 --publish never",
     "postinstall": "node node_modules/electron/install.js",
-    "test:desktop": "npm run build && node tests/desktop-smoke.cjs && node tests/desktop-confirm-smoke.cjs && node tests/desktop-forms-smoke.cjs && node tests/desktop-list-smoke.cjs && node tests/desktop-recovery-smoke.cjs && node tests/desktop-recurrence-smoke.cjs && node tests/desktop-notice-smoke.cjs && node tests/desktop-editor-smoke.cjs && node tests/desktop-calendar-smoke.cjs && node tests/desktop-a11y-smoke.cjs && node tests/desktop-schema-smoke.cjs && node tests/desktop-holiday-smoke.cjs && node tests/desktop-modules-smoke.cjs && node tests/desktop-axdesk-smoke.cjs && node tests/desktop-snippets-smoke.cjs && node tests/desktop-axreport-smoke.cjs && node tests/desktop-low-years-smoke.cjs && node tests/desktop-zones-smoke.cjs && node tests/desktop-security-smoke.cjs && node tests/desktop-backup-password-smoke.cjs && node tests/desktop-data-safety-audit.cjs && node tests/desktop-backup-clock-audit.cjs && node tests/desktop-holiday-limits-audit.cjs",
+    "test:desktop": "npm run build && node tests/desktop-smoke.cjs && node tests/desktop-confirm-smoke.cjs && node tests/desktop-forms-smoke.cjs && node tests/desktop-list-smoke.cjs && node tests/desktop-recovery-smoke.cjs && node tests/desktop-recurrence-smoke.cjs && node tests/desktop-notice-smoke.cjs && node tests/desktop-editor-smoke.cjs && node tests/desktop-calendar-smoke.cjs && node tests/desktop-a11y-smoke.cjs && node tests/desktop-schema-smoke.cjs && node tests/desktop-holiday-smoke.cjs && node tests/desktop-modules-smoke.cjs && node tests/desktop-axdesk-smoke.cjs && node tests/desktop-snippets-smoke.cjs && node tests/desktop-axreport-smoke.cjs && node tests/desktop-low-years-smoke.cjs && node tests/desktop-zones-smoke.cjs && node tests/desktop-security-smoke.cjs && node tests/desktop-backup-password-smoke.cjs && node tests/desktop-work-smoke.cjs && node tests/desktop-data-safety-audit.cjs && node tests/desktop-backup-clock-audit.cjs && node tests/desktop-holiday-limits-audit.cjs",
     "review:ui": "npm run build && node tests/ui-review.cjs",
     "board": "node scripts/board.mjs",
-    "review:flows": "npm run build && node tests/task-flows.cjs"
+    "review:flows": "npm run build && node tests/task-flows.cjs",
+    "measure:work": "npm run build && node tests/work-performance.cjs"
   },
   "dependencies": {
     "react": "19.3.1",

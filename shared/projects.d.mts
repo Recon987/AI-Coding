@@ -36,7 +36,7 @@ export function projectRef(
 export function sourceView(
   data: Partial<Data>,
   source: Source | null | undefined,
-): null | { live: boolean; label: string; page: "notes" | "calls" | "patrol" | null; id: string };
+): null | { live: boolean; label: string; page: "notes" | "calls" | "patrol" | "meetings" | null; id: string };
 export function referenceView(
   data: Partial<Data>,
   id: string,

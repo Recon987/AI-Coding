@@ -8,8 +8,8 @@ export const CORE_APPLETS = [
   { id: "briefing", name: "업무 브리핑", icon: "briefing", category: "core", pages: ["briefing"] },
   { id: "calendar", name: "월간 일정", icon: "calendar", category: "core", pages: ["calendar"] },
   // navName: shorter sidebar text; the full name stays the accessible name.
-  { id: "tasks", name: "인수인계·제출 기한", navName: "인수인계·기한", icon: "handover", category: "core", pages: ["handover", "submission"] },
-  { id: "memos", name: "업무·전화 메모", navName: "메모·전화", icon: "notes", category: "core", pages: ["notes", "calls"] },
+  { id: "tasks", name: "인수인계·제출 기한", navName: "인수인계·기한", icon: "handover", category: "core", pages: ["handover", "submission", "work"] },
+  { id: "memos", name: "업무·전화 메모", navName: "메모·전화", icon: "notes", category: "core", pages: ["notes", "calls", "meetings"] },
 ];
 /** Job modules the user can show or hide. Hiding never deletes data. */
 export const MODULE_APPLETS = [

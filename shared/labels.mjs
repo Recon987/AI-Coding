@@ -3,6 +3,8 @@
 // "<대상> 등록" / "<대상> 수정", and the submit button is always "저장".
 // Tests read these constants, so a wording change is a one-line edit here.
 export const TARGET = {
+  work: "작업",
+  meeting: "회의 기록",
   patrol: "순찰 기록",
   event: "일정",
   control: "통제",

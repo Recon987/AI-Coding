@@ -236,3 +236,14 @@ weeklyRollup(data, { start, end, projectId?: string | null /* null = 사업 없�
 **main 병합(지시 1)**: 지시는 "Codex 검증 완료 건"을 병합하라는 것이었다. 2026-10-20 기준 SECURITY-01·02·03, HUB-ARCH-01, REVIEW-HUB-B1-01, HUB-SCHEMA-01 카드는 모두 `review` 상태이고 검증 기록이 비어 있다. 조건을 만족하는 건이 없어 병합하지 않았다. 검증이 끝나면 병합한다. 검증 전 병합(사후 검증)은 사용자의 별도 명시 승인이 있을 때만 한다.
 
 **실행 순서**: B2a(Claude → Codex 검증) → B2b(Codex → Claude) → B3a(Claude → Codex) → B3b(Codex → Claude). 카드 [B2a](../tasks/TASK-HUB-B2A-01.md) · [B2b](../tasks/TASK-HUB-B2B-01.md) · [B3a](../tasks/TASK-HUB-B3A-01.md) · [B3b](../tasks/TASK-HUB-B3B-01.md).
+
+
+## 7. B1+B2a 통합 계약 (2026-10-20 Codex, 사용자 통합 지시 반영)
+
+이 절은 게시된 B1과 B2a를 결합한 실제 계약이며 앞선 B1 미수신 가정을 대체한다.
+- workItems의 기한은 null/date/datetime이다. remindMinutes 누락은 null(알림 없음)으로만 보완하며 시각을 추정하지 않는다. 제목500자를 보존한다.
+- 새 후속 관계는 기존 links.from.type(note/call/meeting)→to.workItem, role:followUp에 저장한다. 기존 링크·회의를 삭제하거나 일괄 이관하지 않는다.
+- B2a source.kind 입력이 이미 있는 workItems도 읽는다. sourceView/validateSource가 note/call/patrol/meeting과 제목500자를 처리하며 같은 출처를 중복 표시하지 않는다. 새 저장에서 source와 links 두 곳에 같은 관계를 쓰지 않는다. 삭제된 원본은 가능한 제목 사본과 작업 본문을 유지한다.
+- meetings는 이미 B1에 있다. at/attendees 문자열/createdAt/updatedAt을 보존한다. 메모·전화·순찰·회의의 projectIds와 referenceIds는 선택 배열(각50개)이고 누락·끊긴 참조를 허용한다. 작업/인계의 사업 소속은 단일 projectId가 원본이다.
+- projects/references와 AX의 기존 저장 위치·단일 사업 ID 공간은 유지한다. 사업 삭제가 기록·근거를 삭제하지 않는다. reader3은 봉투 전용이며 기존 links의 새 역할·순찰 출처는 이번에 추가하지 않는다.
+- B2a의 희소 referenceIds 배열을 거부해 JSON null로 저장되는 경계를 보완했다. 기존 측정 스크립트의 실제 합계는14,000건이며10,000건 표기와 구별한다.

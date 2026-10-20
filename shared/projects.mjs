@@ -10,14 +10,14 @@ import { AX_STAGES } from "./ax.mjs";
 export const PROJECT_FIELDS = { facility: "시설", resource: "자원보전", ax: "AX", admin: "행정", general: "일반" };
 export const PROJECT_STAGES = { planning: "기획", progress: "추진", hold: "보류", done: "완료" };
 export const REFERENCE_KINDS = { folder: "폴더", snippet: "스니펫", file: "파일", docNo: "공문·문서번호", text: "메모" };
-export const SOURCE_KINDS = { note: "메모", call: "전화메모", patrol: "순찰 기록" };
+export const SOURCE_KINDS = { note: "메모", call: "전화메모", patrol: "순찰 기록", meeting: "회의 기록" };
 export const MAX_PROJECT_RECORDS = 10000;
 export const MAX_REFERENCE_IDS = 50;
 // AX stages shown as general stages; the AX record keeps its own stage.
 const AX_STAGE_TO_GENERAL = { planning: "planning", contract: "progress", execution: "progress", done: "done" };
 // Only the AX project stores field "ax"; a general project is one of these.
 const GENERAL_FIELDS = ["facility", "resource", "admin", "general"];
-const SOURCE_PAGES = { note: "notes", call: "calls", patrol: "patrol" };
+const SOURCE_PAGES = { note: "notes", call: "calls", patrol: "patrol", meeting: "meetings" };
 
 const fail = (message) => {
   throw new Error(message);
@@ -44,7 +44,7 @@ export function validReferenceIds(value) {
   return (
     Array.isArray(value) &&
     value.length <= MAX_REFERENCE_IDS &&
-    value.every((id) => requiredText(id, 100)) &&
+    Array.from(value).every((id) => requiredText(id, 100)) &&
     new Set(value).size === value.length
   );
 }
@@ -91,7 +91,7 @@ export function validateSource(source) {
     typeof source !== "object" ||
     !Object.hasOwn(SOURCE_KINDS, source.kind) ||
     !requiredText(source.id, 100) ||
-    !text(source.title, 200)
+    !text(source.title, 500)
   )
     fail("작업의 출처를 확인하세요.");
   return source;
@@ -106,11 +106,19 @@ export function validateProjectLinks(data) {
   const axIds = new Set((data.axProjects ?? []).map((p) => p.id));
   for (const p of data.projects ?? [])
     if (axIds.has(p.id)) fail("일반 사업과 AX 사업의 ID가 겹칩니다.");
-  for (const t of data.tasks ?? []) {
+  for (const t of [...(data.tasks ?? []), ...(data.workItems ?? [])]) {
     if (t.projectId !== undefined && !(t.projectId === null || requiredText(t.projectId, 100)))
       fail("업무에 연결된 사업을 확인하세요.");
     if (t.referenceIds !== undefined && !validReferenceIds(t.referenceIds))
       fail("업무의 근거 자료 목록을 확인하세요(50개 이하, 중복 없음).");
+  }
+  for (const name of ["notes", "calls", "patrols", "meetings"]) {
+    for (const row of data[name] ?? []) {
+      if (row.projectIds !== undefined && !validReferenceIds(row.projectIds))
+        fail("기록에 연결된 사업 목록을 확인하세요(50개 이하, 중복 없음).");
+      if (row.referenceIds !== undefined && !validReferenceIds(row.referenceIds))
+        fail("기록의 근거 자료 목록을 확인하세요(50개 이하, 중복 없음).");
+    }
   }
   for (const p of data.axProjects ?? [])
     if (p.referenceIds !== undefined && !validReferenceIds(p.referenceIds))
@@ -179,7 +187,7 @@ export function projectRef(data, projectId) {
   return found ? { exists: true, id: found.id, title: found.title, field: found.field } : { exists: false, id: projectId, label: "사업 없음(삭제됨)" };
 }
 
-const recordsOf = { note: (d) => d.notes ?? [], call: (d) => d.calls ?? [], patrol: (d) => d.patrols ?? [] };
+const recordsOf = { note: (d) => d.notes ?? [], call: (d) => d.calls ?? [], patrol: (d) => d.patrols ?? [], meeting: (d) => d.meetings ?? [] };
 /**
  * How a work item's source is shown: the source's current title while it exists
  * ("출처: 전화메모 · <현재 제목>", openable), otherwise the stored title
@@ -191,7 +199,7 @@ export function sourceView(data, source) {
   const live = recordsOf[source.kind]?.(data).find((r) => r.id === source.id);
   return live
     ? { live: true, label: `출처: ${kindLabel} · ${live.title}`, page: SOURCE_PAGES[source.kind], id: source.id }
-    : { live: false, label: `출처: 삭제된 ${kindLabel} — ${source.title}`, page: null, id: source.id };
+    : { live: false, label: `출처: 삭제된 ${kindLabel}${source.title ? ` — ${source.title}` : ""}`, page: null, id: source.id };
 }
 
 /** Shown evidence for one ID: the entry, and whether the folder or snippet it points at still exists. */

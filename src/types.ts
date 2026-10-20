@@ -5,7 +5,8 @@ export type EventRecurrence =
   | "weekly"
   | "monthly"
   | "yearly";
-export type Note = { id: string; title: string; body: string };
+export type RecordProjectLinks = { projectIds?: string[]; referenceIds?: string[] };
+export type Note = RecordProjectLinks & { id: string; title: string; body: string };
 export type Event = {
   id: string;
   title: string;
@@ -19,6 +20,25 @@ export type Event = {
   excludedDates?: string[];
 };
 export type Call = Note & { phone: string; done: boolean };
+export type WorkDue = null | { kind: "date"; date: string } | { kind: "datetime"; at: string };
+export type WorkItem = Note & {
+  status: "todo" | "doing" | "waiting" | "done";
+  due: WorkDue;
+  projectId: string | null;
+  owner: string;
+  priority: "normal" | "high";
+  /** null = 알림 없음. 날짜만 기한에는 항상 null. */
+  remindMinutes: number | null;
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string | null;
+  referenceIds?: string[];
+  /** B2a 제안 형식으로 만들어진 기존 자료 읽기용. 새 출처는 links에만 저장한다. */
+  source?: Source | null;
+};
+export type Meeting = Note & { at: string; attendees: string; createdAt: string; updatedAt: string };
+export type SourceRef = { type: "note" | "call" | "meeting"; id: string; title?: string };
+export type WorkLink = { id: string; from: SourceRef; to: { type: "workItem"; id: string }; role: "followUp"; createdAt: string };
 export type Folder = { id: string; title: string; path: string };
 export type PatrolKind =
   | "safety"
@@ -37,7 +57,7 @@ export type Observation = {
   coordinates?: Coordinates | null;
   note: string;
 };
-export type Patrol = {
+export type Patrol = RecordProjectLinks & {
   coordinates?: Coordinates | null;
   kind?: PatrolKind | null;
   /** 담당구역 번호 */
@@ -159,6 +179,9 @@ export type Data = {
   folders: Folder[];
   patrols: Patrol[];
   tasks: Task[];
+  workItems: WorkItem[];
+  meetings: Meeting[];
+  links: WorkLink[];
   controls: Control[];
   /** TASK-HOLIDAY-01: holidays the user adds (임시공휴일, later election days). */
   customHolidays: CustomHoliday[];
@@ -184,6 +207,8 @@ export type Page =
   | "controls"
   | "handover"
   | "submission"
+  | "work"
+  | "meetings"
   | "calendar"
   | "calls"
   | "notes"
@@ -204,6 +229,7 @@ export type CalendarItem = {
   recurrence?: EventRecurrence;
   repeatUntil?: string | null;
   occurrenceDate?: string;
+  allDay?: boolean;
 };
 export type HolidayEntry = {
   date: string;
@@ -290,6 +316,6 @@ export type Reference = {
   note: string;
   addedAt: string;
 };
-export type SourceKind = "note" | "call" | "patrol";
+export type SourceKind = "note" | "call" | "patrol" | "meeting";
 /** Where a work item came from; title is the source's title when the item was made. */
 export type Source = { kind: SourceKind; id: string; title: string };

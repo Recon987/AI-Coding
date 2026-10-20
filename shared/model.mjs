@@ -2,6 +2,7 @@ import { addDays, earliestLocalDay, localDate, previousWorkday } from "./dates.m
 import { validateModules } from "./applets.mjs";
 import { validateZones } from "./zones.mjs";
 import { validateProjectLinks, validateProjects, validateReferences } from "./projects.mjs";
+import { validateWork, workCalendarItems, workReminders, dueText, WORK_STATUS, workDueKey } from "./work.mjs";
 import { AX_STAGES, AX_ZONES, milestoneItems, validateAxProjects, validateAxSnippets } from "./ax.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
@@ -25,9 +26,8 @@ const personalCollections = [
 // axProjects/axSnippets: AX Desk (TASK-MODULES-01). The `modules` setting is an object,
 // not a collection, and is written only once the user changes it.
 // zones: 담당구역 번호 목록 (TASK-LOCATION-01).
-// projects/references: 일반 사업과 근거 보관함 (TASK-HUB-B2A-01). New collections only, so
-// no READER_VERSION change: older readers keep them as unknown top-level keys.
-const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets", "zones", "projects", "references"];
+// B1 작업·회의·출처와 B2 사업·근거는 모두 선택 컬렉션이다.
+const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets", "zones", "projects", "references", "workItems", "meetings", "links"];
 export const collections = [
   ...personalCollections,
   ...optionalCollections,
@@ -109,6 +109,9 @@ export const empty = () => ({
   zones: [],
   projects: [],
   references: [],
+  workItems: [],
+  meetings: [],
+  links: [],
   organizations: [],
   employees: [],
   bases: [],
@@ -325,6 +328,7 @@ function normalizeContent(input) {
   const references = validateReferences(data.references === undefined ? [] : data.references);
   // Optional projectId/referenceIds on tasks and AX projects; dangling targets are allowed.
   validateProjectLinks({ ...data, projects, axProjects });
+  const work = validateWork(data);
   if (data.modules !== undefined) validateModules(data.modules);
   for (const key of personalCollections) {
     ensure(
@@ -489,6 +493,7 @@ function normalizeContent(input) {
     zones,
     projects,
     references,
+    ...work,
   };
 }
 
@@ -985,6 +990,8 @@ export function calendarItems(data, range) {
   };
   return [
     ...data.events.flatMap((e) => expandEventOccurrences(e, range)),
+    ...workCalendarItems(data).filter((w) => inRange(w.at)),
+    ...(data.meetings ?? []).filter((m) => inRange(m.at)).map((m) => ({ ...m, key: `meeting:${m.id}`, category: "회의", page: "meetings", done: false })),
     ...data.tasks
       .filter((t) => inRange(t.at))
       .map((t) => ({
@@ -1031,6 +1038,7 @@ export function reminderItems(data, now = Date.now()) {
   );
   return [
     ...expandedEvents,
+    ...workReminders(data),
     ...data.tasks.map((t) => ({
       id: `task:${t.id}`,
       title: `${t.kind === "submission" ? "제출" : "인수인계"} · ${t.title}`,
@@ -1104,6 +1112,8 @@ export function briefing(data, date) {
     (t) => !t.done && dayKey(new Date(t.at)) <= date,
   );
   const patrols = data.patrols.filter((p) => dayKey(new Date(p.at)) === date);
+  const work = (data.workItems ?? []).filter((w) => w.status !== "done" && (!w.due || workDueKey(w) <= date));
+  const meetings = (data.meetings ?? []).filter((m) => dayKey(new Date(m.at)) === date);
   const controls = activeControls(data, date);
   const milestones = (data.axProjects ?? []).filter((p) => p.nextMilestoneDate === date);
   const events = calendarItems(data, {
@@ -1162,6 +1172,16 @@ export function briefing(data, date) {
         `- ${p.title} | ${p.route} | ${p.observer}${p.kind ? ` | ${PATROL_KINDS[p.kind]}` : ""}${p.zone ? ` | 담당구역 ${p.zone}` : ""}\n  확인: ${p.findings || "없음"}\n  현장 조치: ${p.action || "없음"}${p.observations?.length ? `\n  단속·확인: ${describeObservations(p.observations)}` : ""}${p.coordinates ? `\n  좌표: ${formatCoordinates(p.coordinates)} | ${formatCoordinates(p.coordinates, "dms")}` : ""}`,
     ),
     "",
+    ...(work.length ? [
+      `미완료 작업 (${work.length}, 기한 없음·기준일까지 마감)`,
+      ...work.map((w) => `- [${WORK_STATUS[w.status]}] ${w.title} | ${dueText(w)} | 담당: ${w.owner || "미지정"}\n  ${w.body}`),
+      "",
+    ] : []),
+    ...(meetings.length ? [
+      `회의 기록 (${meetings.length})`,
+      ...meetings.map((m) => `- ${when(m.at)} ${m.title}\n  ${m.body}`),
+      "",
+    ] : []),
     `미완료 인계·제출 (${due.length}, 기준일까지 마감)`,
     ...due.map(
       (t) =>

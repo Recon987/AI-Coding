@@ -1,7 +1,9 @@
-import type { AxProject, AxSnippet, Call, Control, Data, Event, Note, Page, Patrol, Task } from "../src/types";
+import type { WorkItem, Meeting, AxProject, AxSnippet, Call, Control, Data, Event, Note, Page, Patrol, Task } from "../src/types";
 export const searchText: {
   patrol(p: Patrol): string;
   control(c: Control): string;
+  work(w: WorkItem): string;
+  meeting(m: Meeting): string;
   task(t: Task): string;
   event(e: Event): string;
   note(n: Note): string;
