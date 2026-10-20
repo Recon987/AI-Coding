@@ -1,0 +1,31 @@
+{
+  "reviewedSource": "ea3105eda91cdc1d164b0cb237b53b524959601a",
+  "unit": {
+    "timezones": 5,
+    "perTimezone": 169,
+    "total": 845,
+    "failed": 0,
+    "skipped": 0
+  },
+  "desktop": {
+    "exitCode": 0,
+    "normalEntrypoints": 18,
+    "auditEntrypoints": 3,
+    "auditCasesPassed": 9
+  },
+  "navZonesAudit": {
+    "passed": 5,
+    "failed": 0,
+    "exitCode": 0
+  },
+  "postmergeBoundaryAudit": {
+    "passed": 3,
+    "failed": 0,
+    "exitCode": 0
+  },
+  "mainWindows": {
+    "runId": 39372610397,
+    "status": "completed",
+    "conclusion": "success"
+  }
+}

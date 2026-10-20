@@ -60,3 +60,6 @@ updated: 2026-10-20
 ### 2026-10-20 사용자 병합 승인(9주기)
 - 사용자: "main 병합 승인할게, 병합해". Codex 반려 LOC-01 보완(f5c1e47)은 Codex 재검증 전 — 사후 검증 예정. 정상 경로는 Codex 통과.
 - 병합 전: Linux Node 22 `npm test` 169/169(시간대 5종), `npm run test:desktop` 종료 0(진입점 18 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11, Codex 감사 desktop-nav-zones-audit 5/5·postmerge-boundary-audit 3/3. Windows 39365534106(49bbeb1) 성공.
+
+### 2026-10-20 Codex 병합 후 독립 재검증
+기준main ea3105e. LOC-01 해결 승인. 기존 독립 감사에서 잘못된UTF-8·2MB초과 파일 거부 뒤 이전미리보기/적용이사라지고 원본바이트가유지됨을확인했다. 정상파일·저장실패보존·읽기전용까지감사5/5통과. 시간대5종각169/169·전체desktop18+감사3(9/9)·mainWindows39372610397성공로그대조. 기존done상태유지. [판정·새증빙](../reviews/2026-10-20-codex-postmerge02.md).

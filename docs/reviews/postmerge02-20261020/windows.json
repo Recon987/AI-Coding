@@ -1,0 +1,108 @@
+{
+  "runId": 39372610397,
+  "url": "https://github.com/Recon987/AI-Coding/actions/runs/39372610397",
+  "headSha": "ea3105eda91cdc1d164b0cb237b53b524959601a",
+  "event": "push",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 118463608998,
+      "name": "windows",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 39372610397,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Install locked dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Verify data workflows",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Verify desktop workflows",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Build Windows installer and portable executable",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Verify packaged Windows app",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Calculate checksums",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Post Run actions/setup-node@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        }
+      ]
+    }
+  ],
+  "selectedLogLines": [
+    "2026-10-20T05:01:28.2929031Z ✔ SNIP-01: 좌표 예제는 1도 미만 음수도 반구를 지키고 앱 좌표 규칙과 같은 결과를 낸다 (1439.7797ms)",
+    "2026-10-20T05:01:28.2932728Z ✔ SNIP-01: 이미 넣은 예제는 새 예제로 자동 교체하지 않는다 (0.4451ms)",
+    "2026-10-20T05:01:29.2432317Z ℹ tests 169",
+    "2026-10-20T05:01:29.2432787Z ℹ pass 169",
+    "2026-10-20T05:01:29.2432959Z ℹ fail 0",
+    "2026-10-20T05:01:29.2433396Z ℹ skipped 0",
+    "2026-10-20T05:02:24.6350395Z PASS: 담당구역 CSV 반입(틀린 행 전체 거부·미리보기 무저장·거부된 파일 뒤 이전 미리보기 무효화·적용·같은 번호 갱신), 순찰 입력 제안(사용 중 구역·대표 구간 채움·최근 구간·입력한 구간 보존·목록 밖 번호 허용), 삭제 확인·순찰 기록 보존",
+    "2026-10-20T05:04:10.5559626Z PASS: 담당구역 CSV 반입(틀린 행 전체 거부·미리보기 무저장·거부된 파일 뒤 이전 미리보기 무효화·적용·같은 번호 갱신), 순찰 입력 제안(사용 중 구역·대표 구간 채움·최근 구간·입력한 구간 보존·목록 밖 번호 허용), 삭제 확인·순찰 기록 보존"
+  ]
+}
