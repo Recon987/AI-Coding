@@ -4,6 +4,22 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 B1 후속 — Windows 실행·Claude 스키마 교차 검증
+
+원격 `322f56c`에 B1 `77de23d`가 포함됨을 확인했다. 사용자 요청에 따라 [Windows 39408113609](https://github.com/Recon987/AI-Coding/actions/runs/39408113609)를 수동 시작했다. 소스 단위175/175·desktop·Windows 빌드·패키징 앱 검사·체크섬·산출물 업로드까지 최종 성공했다. 아래의 Windows 미실행 표시는 이전 시점 기록이다.
+
+Claude `1ac80a3`와 최신 `9f4fe7c` 확정안을 B1과 대조했다. 일반 작업 별도 저장 원칙은 일치하나 **출처 저장·기한 필드·기존 회의/한도** 세 묶음의 보완이 필요하다. [판정·실측·Claude 전달 문구](reviews/2026-10-20-codex-hub-schema-crosscheck.md). Claude 브랜치·제품 코드는 바꾸지 않았다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-hub-b1-01 / main 미병합
+- **Task Card**: TASK-HUB-B1-01 review. HUB-SCHEMA-01 명세 보완 요청, B1 Claude 독립 승인 대기
+- **Latest Pushed Commit**: 작성 직전 확인 322f56c(B1 구현 77de23d 포함). 이 검토 포함 최종 푸시는 응답 패킷 참조
+- **Completed Steps & Modified Files**: Windows 수동 실행 39408113609, 1ac80a3/9f4fe7c 명세 대조·감사 도구/JSON·검토 문서·카드/인계
+- **Changed Interfaces / Schema Diff**: 제품 변경 없음. 출처 links/source, datetime/at·remindMinutes, 기존 meetings/제목500자 정렬 필요
+- **Test Status**: 교차 감사8/8 재현·모델15/15 통과. 이전 B1 전체175/175·desktop 통과. Windows 39408113609/322f56c 최종 success(소스·패키징·업로드)
+- **Remaining Work for Gemini**: Claude에 SCHEMA-B1-01~03 정렬 전달, B1 독립 검증·보안 통합 확인. main 병합 별도
+- **Modified Code Snippets (if uncommitted)**: 제품 변경 없음. 검토/감사 도구를 같은 브랜치에 보존, 최종 git 상태는 응답 패킷 참조
+
 ## 최신 B1 인계 — 사용자 게시 승인·원격 푸시 완료
 
 사용자가 B1 착수를 승인했고 Gemini의 화면 수용 기준을 수신했다. 사업·기한 없는 작업, 오늘 및 기존 메뉴의 세 유형 조회, 메모/전화/회의의 1:N 후속·원본 복귀·삭제 표시를 구현했다. [자체 검증과 재현 명령](reviews/2026-10-20-codex-hub-b1.md). 아래의 B1 착수 대기·제품 미변경 표시는 이전 시점 기록이다. 보안 카드의 기존 review 상태와 main은 변경하지 않았다.
