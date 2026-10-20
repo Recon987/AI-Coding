@@ -1,11 +1,11 @@
 ---
 id: TASK-SNIPPET-COORDS-01
 title: DD↔DMS Python 예제의 음수 1도 미만 좌표 부호 보존
-status: backlog
+status: in-progress
 role: builder
-owner: none
+owner: claude
 verifier: codex
-branch: task/task-snippet-coords-01
+branch: claude/zen-cannon-wc1at4
 depends:
 priority: P3
 updated: 2026-10-20
@@ -13,6 +13,9 @@ updated: 2026-10-20
 
 ## 배경
 사후 검증 SNIP-01. shared/ax.mjs의 example-dd-dms를 Python으로 실행하면 -0.5 → (0, 30, 0.0) → +0.5가 된다. 앱은 예제를 실행하지 않지만 복사해 쓰는 예제가 남위·서경 0~1도에서 반구를 바꾼다. 앱 자체 좌표 입력 결함은 아니다.
+
+## 착수
+- 2026-10-20 사용자 디스패치(GEMINI_DISPATCH → CLAUDE: "음수 각도 부호 반전 오류 수정, 음수 각도 단위 테스트 추가")로 backlog → in-progress. 클라우드 세션 지정 브랜치 사용.
 
 ## 완료 조건
 - [ ] 예제의 부호/반구 표현을 명시해 -0.5·+0.5·-38.119444·+38.119444 왕복 보존
@@ -28,7 +31,7 @@ updated: 2026-10-20
 - [ ] 2. 경계 검증·기록
 
 ## 재개 위치
-사용자/총괄 착수 승인 대기. tests/postmerge-boundary-audit.cjs의 마지막 사례 및 docs/reviews/2026-10-20-codex-postmerge.md에서 재개한다.
+1단계: shared/ax.mjs example-dd-dms를 부호를 따로 돌려주는 계약으로 바꾸고 tests/ax-desk.test.cjs에 Python 실행 왕복 검사. 재현: tests/postmerge-boundary-audit.cjs의 마지막 사례 및 docs/reviews/2026-10-20-codex-postmerge.md에서 재개한다.
 
 ## 테스트 상태
 a70d9aa 독립 감사 SNIP-01 실패(원본 -0.5, 왕복 +0.5). 기존 npm test 161/161·전체 desktop 통과와 별도다.
