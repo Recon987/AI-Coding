@@ -32,10 +32,11 @@ updated: 2026-10-20
 - [ ] 3. 복구 키 화면·실제 앱 검사·기록
 
 ## 재개 위치
-2단계: `desktop/store.cjs`에 봉함기(`setSealer`)를 붙여 읽기·쓰기·개편 전 확인·v1/v2 전환이 봉투를 처리하게 하고, `shared/model.mjs` `READER_VERSION`을 3으로 올린다. 그다음 `desktop/main.cjs`에 키 파일 `workdesk.key.json`과 `safeStorage` 연결.
+2단계 진행 중. 완료: `desktop/store.cjs` 봉함기(`setSealer`·`parseStored`, 평문 20MB·봉한 파일 `MAX_FILE_BYTES`), `READER_VERSION` 3, `desktop/keystore.cjs`(`loadState`·`unlock`·`enable`), `tests/store-sealed.test.cjs` 12건.
+다음: `desktop/main.cjs`에 `safeStorage` 보호기(개발 실행에서만 `PARK_TEST_PROTECTOR` 가짜 보호기), 시작 시 `keystore.loadState` → 잠김이면 복구 키 입력 창(`?view=unlock`) → `store.setSealer`, IPC `security-status`·`security-prepare`·`security-enable`과 `desktop/preload.cjs` 노출.
 
 ## 테스트 상태
-2026-10-20 1단계: `node --test tests/seal.test.cjs` 7/7 통과. 전체 `npm test`·`test:desktop`은 미실행.
+2026-10-20 2단계 중간: `npm test` 188/188 통과(seal 7·store-sealed 12 포함). `test:desktop` 미실행.
 
 ## 설계 보완(구현 중 결정)
 - 봉투에 복구 키로 감싼 데이터 키 사본(`sealed.recovery`)을 함께 넣는다. 키 파일이 지워지거나 다른 PC로 옮겨도 종이 복구 키로 열 수 있게 하려는 것이다. 복구 키는 120비트 무작위라 HKDF-SHA256으로 충분하다.

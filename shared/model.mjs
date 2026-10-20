@@ -228,8 +228,10 @@ export function dayKey(date = new Date()) {
 // TASK-SCHEMA-01: the highest `minReader` this app understands. A later app that
 // stores something older readers would misread or drop raises the file's minReader
 // above this; such a file opens read-only here and is never written back.
-// Reader levels: 1 = TASK-SCHEMA-01; 2 = observation outcome "referral" (TASK-FORMS-02).
-export const READER_VERSION = 2;
+// Reader levels: 1 = TASK-SCHEMA-01; 2 = observation outcome "referral" (TASK-FORMS-02);
+// 3 = sealed storage envelope (TASK-SECURITY-02, desktop/seal.cjs). Level 3 is set on the
+// envelope only, never on the content inside it, so readerNeeded() stays at 1 or 2.
+export const READER_VERSION = 3;
 const MAX_EXTRA_KEYS = 100;
 const RESERVED_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 export const NEWER_DATA_MESSAGE =

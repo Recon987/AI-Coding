@@ -82,16 +82,20 @@ function createKeyring(protector, { now = new Date() } = {}) {
   const dataKey = crypto.randomBytes(32);
   const keyId = crypto.randomBytes(8).toString("hex");
   const recoveryKey = newRecoveryKey();
-  const keyFile = {
+  const keyFile = buildKeyFile({ dataKey, keyId, recovery: wrapForRecovery(dataKey, keyId, recoveryKey) }, protector, now);
+  return { keyFile, dataKey, recoveryKey };
+}
+/** Key file content for an open key ring (also rebuilds a lost key file from an envelope's recovery wrap). */
+function buildKeyFile({ dataKey, keyId, recovery }, protector, now = new Date()) {
+  return {
     format: KEY_FORMAT,
     version: 1,
     keyId,
     created: now.toISOString(),
     check: keyCheck(dataKey, keyId),
     protected: { method: "safeStorage", data: b64(protector.protect(Buffer.from(b64(dataKey), "utf8"))) },
-    recovery: wrapForRecovery(dataKey, keyId, recoveryKey),
+    recovery,
   };
-  return { keyFile, dataKey, recoveryKey };
 }
 
 function validKeyFile(keyFile) {
@@ -169,6 +173,7 @@ module.exports = {
   newRecoveryKey,
   normalizeRecoveryKey,
   createKeyring,
+  buildKeyFile,
   validKeyFile,
   unlockWithProtector,
   unlockWithRecovery,

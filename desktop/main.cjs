@@ -135,7 +135,7 @@ else {
         filters: [{ name: "JSON", extensions: ["json"] }],
       });
       if (r.canceled) return null;
-      if (fs.statSync(r.filePaths[0]).size > 20 * 1024 * 1024)
+      if (fs.statSync(r.filePaths[0]).size > store.MAX_FILE_BYTES)
         throw new Error("20MB 이하의 백업을 선택하세요.");
       const data = store.read(r.filePaths[0], { required: true });
       // TASK-BACKUP-02: only the newest RESTORE_KEEP protection copies are kept;

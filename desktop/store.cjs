@@ -1,7 +1,45 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { empty, normalize, isNewerData } = require("../shared/model.mjs");
+const sealing = require("./seal.cjs");
 const MAX_BYTES = 20 * 1024 * 1024;
+// TASK-SECURITY-02: the 20MB limit is on the plaintext; a sealed file is base64 (about 4/3) plus its header.
+const MAX_FILE_BYTES = Math.ceil(MAX_BYTES / 3) * 4 + 64 * 1024;
+// The open key ring ({ dataKey, keyId, recovery }) or null when storage encryption is off.
+// While set, every write() is sealed: the main file, last-good, protection copies and backups.
+let sealer = null;
+function setSealer(next) {
+  sealer = next ?? null;
+}
+const sealerActive = () => Boolean(sealer);
+function codeError(code, message) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+// File bytes to the stored object, opening a sealed envelope. A plaintext file still reads
+// while encryption is on (older copies, backups); it is sealed on its next write.
+function parseStored(bytes) {
+  const tooBig = () => new Error("데이터 파일이 20MB를 초과했습니다.");
+  if (bytes.length > MAX_FILE_BYTES) throw tooBig();
+  let outer;
+  try {
+    outer = JSON.parse(bytes.toString("utf8"));
+  } catch (error) {
+    // Only a sealed file may pass 20MB, so an oversize file is reported by its size.
+    throw bytes.length > MAX_BYTES ? tooBig() : error;
+  }
+  if (!sealing.isSealed(outer)) {
+    if (bytes.length > MAX_BYTES) throw tooBig();
+    return outer;
+  }
+  // A future envelope this app cannot read goes to normalize(), which reports NEWER_DATA.
+  if (isNewerData(outer)) return outer;
+  if (!sealer) throw codeError("SEALED_LOCKED", "암호화된 자료입니다. 이 PC의 키나 복구 키로 연 뒤에 읽을 수 있습니다.");
+  const inner = sealing.open(sealer, outer);
+  if (inner.length > MAX_BYTES) throw tooBig();
+  return JSON.parse(inner.toString("utf8"));
+}
 // Antivirus, indexing or sync tools on Windows can hold a file for a moment.
 const TRANSIENT = new Set(["EPERM", "EBUSY", "EACCES"]);
 const isTransientLock = (error) => TRANSIENT.has(error?.code);
@@ -29,10 +67,8 @@ function read(file, { required = false, allowNewer = false } = {}) {
     throw error;
   }
   if (!stat.isFile()) throw new Error("정상 JSON 파일을 선택하세요.");
-  if (stat.size > MAX_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
-  const bytes = withRetry(() => fs.readFileSync(file));
-  if (bytes.length > MAX_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
-  return normalize(JSON.parse(bytes.toString("utf8")), { allowNewer });
+  if (stat.size > MAX_FILE_BYTES) throw new Error("데이터 파일이 20MB를 초과했습니다.");
+  return normalize(parseStored(withRetry(() => fs.readFileSync(file))), { allowNewer });
 }
 // Write, flush to disk, then rename so a power loss leaves either the old or the new file.
 function durableReplace(file, payload) {
@@ -74,7 +110,7 @@ const MODULAR_KEYS = ["modules", "axProjects", "axSnippets"];
 const modularChecked = new Set();
 function hasModularKeys(file) {
   try {
-    const raw = JSON.parse(withRetry(() => fs.readFileSync(file, "utf8")));
+    const raw = parseStored(withRetry(() => fs.readFileSync(file)));
     return MODULAR_KEYS.some((key) => Object.hasOwn(raw, key));
   } catch {
     // An unreadable file is the recovery flow's business; back it up rather than guess.
@@ -103,10 +139,12 @@ function write(file, data, { keepLastGood = false, modularBackup = keepLastGood 
     throw new Error(
       "저장 한도 20MB를 초과했습니다. 백업 후 기록을 정리하세요.",
     );
+  // Sealed once, so the main file and last-good hold the same bytes; .tmp only ever sees these.
+  const stored = sealer ? JSON.stringify(sealing.seal(sealer, Buffer.from(payload, "utf8"))) : payload;
   if (modularBackup) preModularBackup(file);
-  durableReplace(file, payload);
+  durableReplace(file, stored);
   if (keepLastGood) {
-    try { durableReplace(lastGoodFile(file), payload); }
+    try { durableReplace(lastGoodFile(file), stored); }
     catch {
       // The primary rename already committed. Reporting failure would leave the
       // renderer on stale data and allow its next save to overwrite this commit.
@@ -116,7 +154,7 @@ function write(file, data, { keepLastGood = false, modularBackup = keepLastGood 
 }
 function migrateFile(file) {
   if (!fs.existsSync(file)) return;
-  const original = JSON.parse(fs.readFileSync(file, "utf8"));
+  const original = parseStored(fs.readFileSync(file));
   // A newer app's v3 file is never converted here; read-only handling is in recovery.cjs.
   normalize(original, { allowNewer: true });
   if ([1, 2].includes(original.version)) {
@@ -191,6 +229,10 @@ function due(events, now, seen) {
   );
 }
 module.exports = {
+  MAX_FILE_BYTES,
+  setSealer,
+  sealerActive,
+  durableReplace,
   empty,
   validate: normalize,
   isNewerData,
