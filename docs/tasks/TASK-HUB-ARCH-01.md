@@ -1,7 +1,7 @@
 ---
 id: TASK-HUB-ARCH-01
 title: 범용 업무 허브 기술 설계·개발 계획(Claude 응답)
-status: in-progress
+status: review
 role: design
 owner: claude
 verifier: codex
@@ -18,27 +18,27 @@ Codex 요청 "[CODEX → CLAUDE: 범용 업무 허브 기술 설계·개발 계�
 - 제품 코드는 바꾸지 않는다(SECURITY-02·03 review 체크포인트 보존).
 
 ## 완료 조건
-- [ ] `docs/product/claude-architecture-response-2026-10-20.md`에 다음 6가지를 기록
+- [x] `docs/product/claude-architecture-response-2026-10-20.md`에 다음 6가지를 기록
   - 격차 5개 이하
   - 최소 모델과 호환 경로
   - 모듈 계약(AX·순찰 사례)
   - 첫 개발 묶음 카드 초안 3개 이하
   - 기관 API 경계(가정 표시)
   - 쟁점 3개 이하
-- [ ] 제품 코드·스키마·보안 계약 무변경, API 접속 없음, 신규 구현 카드 ready 확정 없음
-- [ ] 문서 검사(`npm test`의 보드 검사 포함) 실행 결과 기록, 커밋·푸시
+- [x] 제품 코드·스키마·보안 계약 무변경, API 접속 없음, 신규 구현 카드 ready 확정 없음
+- [x] 문서 검사(`npm test`의 보드 검사 포함) 실행 결과 기록, 커밋·푸시
 
 ## 범위 밖
 제품 코드 변경, 구현 카드 파일 생성·ready 확정, main 병합, 기관 API 접속.
 
 ## 진행 단계
-- [ ] 1. 근거 조사(방향안·코드)와 응답 문서 작성
-- [ ] 2. 검사·인계·푸시
+- [x] 1. 근거 조사(방향안·코드)와 응답 문서 작성
+- [x] 2. 검사·인계·푸시
 
 ## 재개 위치
-응답 문서 작성 중.
+응답 문서 완료: [claude-architecture-response-2026-10-20.md](../product/claude-architecture-response-2026-10-20.md). Codex가 Gemini 응답과 통합 검토한다(카드 초안 B1~B3은 파일·ready 없음). 검증자는 근거 파일 위치·호환 주장(모르는 최상위 항목 보존, READER_VERSION 불변)을 대조한다.
 
 ## 테스트 상태
-미실행
+2026-10-20 문서 검사: `npm test` 196/196 통과(보드 카드 규칙 검사 포함). 제품 코드 변경 없음(`git diff --stat`은 docs/만).
 
 ## 검증 기록

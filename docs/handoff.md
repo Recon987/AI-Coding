@@ -4,6 +4,28 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Claude 인계 — 2026-10-20 범용 업무 허브 기술 설계(TASK-HUB-ARCH-01, review)
+
+Codex 요청에 대한 설계·계획 응답이다: [claude-architecture-response-2026-10-20.md](product/claude-architecture-response-2026-10-20.md).
+- 새 선택 컬렉션 `workItems`·`projects`·`meetings`·`resources`와 연결표 `links`를 둔다. 기존 레코드는 바꾸지 않고, `READER_VERSION`도 올리지 않는다.
+- 모듈 계약을 정했다: 필드·보기·행동·기한·보고·버전.
+- 첫 묶음 카드 초안 B1~B3(오늘의 업무 → 사업 공간 → 주간 실적·인계)을 만들었다. 카드 파일은 만들지 않았고 ready도 아니다.
+- 기관 API는 main 어댑터 뒤에 둔다. 첫 단계는 읽기 전용 가상 어댑터다.
+- 제품 코드는 바꾸지 않았다. SECURITY-02·03은 review 그대로다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e. 작업 브랜치 `claude/zen-cannon-wc1at4`. 방향안은 `origin/task/task-product-direction-01`(f632273)
+- **Task Card**: TASK-HUB-ARCH-01 review(검증자 codex). SECURITY-01·02·03 review 유지
+- **Latest Pushed Commit**: 응답 패킷을 참조한다(이 문서를 포함한 커밋)
+- **Completed Steps & Modified Files**: docs/product/claude-architecture-response-2026-10-20.md(신규), docs/tasks/TASK-HUB-ARCH-01.md(신규), 작업 기록 39장
+- **Changed Interfaces / Schema Diff**: 없음(제안만)
+- **Test Status**: `npm test` 196/196(문서·보드 검사)
+- **Remaining Work for Gemini**:
+  - Gemini: 세 화면·직무 시나리오
+  - Codex: 두 응답 통합, 쟁점 3개 결정안
+  - 사용자: 첫 묶음 승인
+- **Modified Code Snippets (if uncommitted)**: 없음
+
 ## 최신 Claude 인계 — 2026-10-20 SECURITY-03 백업 암호 구현(review)
 
 자료 관리 > 백업은 이제 그 백업에만 쓰는 암호를 두 번 받아 scrypt(N=2^17) → AES-256-GCM으로 잠근다. 암호는 저장하지 않는다.
