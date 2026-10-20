@@ -1,7 +1,7 @@
 ---
 id: TASK-SECURITY-02
 title: 저장 봉투·데이터 키(DPAPI)·복구 키
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -60,3 +60,8 @@ updated: 2026-10-20
 - 키 파일에 `check`(데이터 키 HMAC 앞 16바이트)를 둬서 보호기가 엉뚱한 값을 돌려줘도 잘못된 키로 저장하지 않는다.
 
 ## 검증 기록
+
+### 2026-10-20 사용자 명시 승인 선병합 (Codex 사후 검증 예정)
+- 근거: 사용자·Gemini 지시 "[USER & GEMINI → CLAUDE: review 카드 선병합(사후 검증 조건) 승인 …]". 8·9주기와 같이 **사용자 명시 승인**으로 main에 먼저 병합한다.
+- **Codex 독립 검증은 아직 받지 않았다**(사후 검증 예정). 사후 검증에서 결함이 나오면 새 카드로 보완한다.
+- 병합 묶음: `claude/zen-cannon-wc1at4` + Codex B1(`task/task-hub-b1-01` d7805e5, Claude 독립 검증 통과).

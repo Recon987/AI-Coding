@@ -1,7 +1,7 @@
 ---
 id: TASK-HUB-B2A-01
 title: B2a 사업·근거 보관함 자료 모델(projects·references·단일 사업 ID 공간)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -66,3 +66,8 @@ Windows Actions는 화면 변경이 없어 B2b와 함께 돌린다(아직 실행
 이 조건이면 JSON 유지 판단에 무리가 없다. 다만 기관 PC에서 다시 재야 한다. 링크·근거가 많은 자료에서는 종류별 10,000건 한도가 크기 한도보다 먼저 걸린다.
 
 ## 검증 기록
+
+### 2026-10-20 사용자 명시 승인 선병합 (Codex 사후 검증 예정)
+- 근거: 사용자·Gemini 지시 "[USER & GEMINI → CLAUDE: review 카드 선병합(사후 검증 조건) 승인 …]". 8·9주기와 같이 **사용자 명시 승인**으로 main에 먼저 병합한다.
+- **Codex 독립 검증은 아직 받지 않았다**(사후 검증 예정). 사후 검증에서 결함이 나오면 새 카드로 보완한다.
+- 병합 묶음: `claude/zen-cannon-wc1at4` + Codex B1(`task/task-hub-b1-01` d7805e5, Claude 독립 검증 통과).

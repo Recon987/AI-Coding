@@ -1,7 +1,7 @@
 ---
 id: TASK-SECURITY-03
 title: 백업 암호(scrypt)로 이동 백업 봉함·복원
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -55,3 +55,8 @@ updated: 2026-10-20
 - 일반 읽기(`store.read`: 시작·last-good·보호본)는 암호 백업을 열지 않는다(`BACKUP_PASSWORD_REQUIRED`).
 
 ## 검증 기록
+
+### 2026-10-20 사용자 명시 승인 선병합 (Codex 사후 검증 예정)
+- 근거: 사용자·Gemini 지시 "[USER & GEMINI → CLAUDE: review 카드 선병합(사후 검증 조건) 승인 …]". 8·9주기와 같이 **사용자 명시 승인**으로 main에 먼저 병합한다.
+- **Codex 독립 검증은 아직 받지 않았다**(사후 검증 예정). 사후 검증에서 결함이 나오면 새 카드로 보완한다.
+- 병합 묶음: `claude/zen-cannon-wc1at4` + Codex B1(`task/task-hub-b1-01` d7805e5, Claude 독립 검증 통과).

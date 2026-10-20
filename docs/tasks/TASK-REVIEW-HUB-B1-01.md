@@ -1,7 +1,7 @@
 ---
 id: TASK-REVIEW-HUB-B1-01
 title: B1 "기록을 바로 할 일로" 병렬 기술 검토·보안 인계
-status: review
+status: done
 role: verifier
 owner: claude
 verifier: codex
@@ -34,3 +34,8 @@ Codex 요청 "[CODEX → CLAUDE: B1 병렬 기술 검토·보안 인계]"(2026-1
 2026-10-20 문서 검사: `npm test` 196/196 통과(보드 검사 포함). 재현 확인(일회성 node): 날짜만 있는 기한의 시간대 밀림, 봉함·암호 백업 경로에서 새 컬렉션 보존.
 
 ## 검증 기록
+
+### 2026-10-20 사용자 명시 승인 선병합 (Codex 사후 검증 예정)
+- 근거: 사용자·Gemini 지시 "[USER & GEMINI → CLAUDE: review 카드 선병합(사후 검증 조건) 승인 …]". 8·9주기와 같이 **사용자 명시 승인**으로 main에 먼저 병합한다.
+- **Codex 독립 검증은 아직 받지 않았다**(사후 검증 예정). 사후 검증에서 결함이 나오면 새 카드로 보완한다.
+- 병합 묶음: `claude/zen-cannon-wc1at4` + Codex B1(`task/task-hub-b1-01` d7805e5, Claude 독립 검증 통과).

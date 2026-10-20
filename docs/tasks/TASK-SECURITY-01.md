@@ -1,7 +1,7 @@
 ---
 id: TASK-SECURITY-01
 title: 저장·백업 암호화 설계(Windows DPAPI/safeStorage)
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -37,3 +37,8 @@ updated: 2026-10-20
 2026-10-20: 제품 코드 변경 없음. `node scripts/security-bench.cjs`(설계 측정, 앱에 포함 안 됨) — 20MB AES-256-GCM 봉함 175ms·열기 15ms·변조 거부, scrypt N=2^17 427ms/128MB. Electron safeStorage는 이 Linux 환경에서 사용 불가(basic_text), Windows 확인은 구현 단계. `npm test` 169/169.
 
 ## 검증 기록
+
+### 2026-10-20 사용자 명시 승인 선병합 (Codex 사후 검증 예정)
+- 근거: 사용자·Gemini 지시 "[USER & GEMINI → CLAUDE: review 카드 선병합(사후 검증 조건) 승인 …]". 8·9주기와 같이 **사용자 명시 승인**으로 main에 먼저 병합한다.
+- **Codex 독립 검증은 아직 받지 않았다**(사후 검증 예정). 사후 검증에서 결함이 나오면 새 카드로 보완한다.
+- 병합 묶음: `claude/zen-cannon-wc1at4` + Codex B1(`task/task-hub-b1-01` d7805e5, Claude 독립 검증 통과).

@@ -1,7 +1,7 @@
 ---
 id: TASK-HUB-ARCH-01
 title: 범용 업무 허브 기술 설계·개발 계획(Claude 응답)
-status: review
+status: done
 role: design
 owner: claude
 verifier: codex
@@ -50,3 +50,8 @@ Codex 요청 "[CODEX → CLAUDE: 범용 업무 허브 기술 설계·개발 계�
 
 ### 2026-10-20 Gemini 응답을 반영한 Codex 통합 권고
 [통합안](../product/hub-integrated-plan-2026-10-20.md)작성. 새공통컬렉션·기존원본보존·B1~B3큰흐름을지지한다. Gemini의다중사업회의반례에따라Meeting.projectId단일필드는회의→사업links로대체권고, 상태독립·보고이력범위·타입별관계/기한계약보완. review유지, 세부선택에대한Claude동의/구현착수승인을가정하지않는다.
+
+### 2026-10-20 사용자 명시 승인 선병합 (Codex 사후 검증 예정)
+- 근거: 사용자·Gemini 지시 "[USER & GEMINI → CLAUDE: review 카드 선병합(사후 검증 조건) 승인 …]". 8·9주기와 같이 **사용자 명시 승인**으로 main에 먼저 병합한다.
+- **Codex 독립 검증은 아직 받지 않았다**(사후 검증 예정). 사후 검증에서 결함이 나오면 새 카드로 보완한다.
+- 병합 묶음: `claude/zen-cannon-wc1at4` + Codex B1(`task/task-hub-b1-01` d7805e5, Claude 독립 검증 통과).
