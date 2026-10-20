@@ -8,6 +8,8 @@ const PAGE_IDS = {
   "월간 일정": "calendar",
   "현장 순찰": "patrol",
   "탐방로 통제": "controls",
+  작업: "work",
+  "회의 기록": "meetings",
   인수인계: "handover",
   "제출 기한": "submission",
   "사무소 현황": "office",

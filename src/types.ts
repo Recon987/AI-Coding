@@ -19,6 +19,26 @@ export type Event = {
   excludedDates?: string[];
 };
 export type Call = Note & { phone: string; done: boolean };
+export type WorkDue = null | { kind: "date"; date: string } | { kind: "datetime"; at: string };
+export type WorkItem = Note & {
+  status: "todo" | "doing" | "waiting" | "done";
+  due: WorkDue;
+  projectId: string | null;
+  owner: string;
+  priority: "normal" | "high";
+  /** null = 알림 없음. 날짜만 기한에는 항상 null. */
+  remindMinutes: number | null;
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string | null;
+};
+export type Meeting = Note & { at: string; attendees: string; createdAt: string; updatedAt: string };
+export type SourceRef = { type: "note" | "call" | "meeting"; id: string };
+export type WorkLink = {
+  id: string; from: SourceRef; to: { type: "workItem"; id: string }; role: "followUp"; createdAt: string;
+  /** Source title when the link was made; shown only after the source is deleted (TASK-HUB-SCHEMA-01 6장). */
+  sourceTitle?: string;
+};
 export type Folder = { id: string; title: string; path: string };
 export type PatrolKind =
   | "safety"
@@ -159,6 +179,9 @@ export type Data = {
   folders: Folder[];
   patrols: Patrol[];
   tasks: Task[];
+  workItems: WorkItem[];
+  meetings: Meeting[];
+  links: WorkLink[];
   controls: Control[];
   /** TASK-HOLIDAY-01: holidays the user adds (임시공휴일, later election days). */
   customHolidays: CustomHoliday[];
@@ -184,6 +207,8 @@ export type Page =
   | "controls"
   | "handover"
   | "submission"
+  | "work"
+  | "meetings"
   | "calendar"
   | "calls"
   | "notes"
@@ -204,6 +229,7 @@ export type CalendarItem = {
   recurrence?: EventRecurrence;
   repeatUntil?: string | null;
   occurrenceDate?: string;
+  allDay?: boolean;
 };
 export type HolidayEntry = {
   date: string;
@@ -290,6 +316,3 @@ export type Reference = {
   note: string;
   addedAt: string;
 };
-export type SourceKind = "note" | "call" | "patrol";
-/** Where a work item came from; title is the source's title when the item was made. */
-export type Source = { kind: SourceKind; id: string; title: string };

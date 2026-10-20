@@ -236,3 +236,17 @@ weeklyRollup(data, { start, end, projectId?: string | null /* null = 사업 없�
 **main 병합(지시 1)**: 지시는 "Codex 검증 완료 건"을 병합하라는 것이었다. 2026-10-20 기준 SECURITY-01·02·03, HUB-ARCH-01, REVIEW-HUB-B1-01, HUB-SCHEMA-01 카드는 모두 `review` 상태이고 검증 기록이 비어 있다. 조건을 만족하는 건이 없어 병합하지 않았다. 검증이 끝나면 병합한다. 검증 전 병합(사후 검증)은 사용자의 별도 명시 승인이 있을 때만 한다.
 
 **실행 순서**: B2a(Claude → Codex 검증) → B2b(Codex → Claude) → B3a(Claude → Codex) → B3b(Codex → Claude). 카드 [B2a](../tasks/TASK-HUB-B2A-01.md) · [B2b](../tasks/TASK-HUB-B2B-01.md) · [B3a](../tasks/TASK-HUB-B3A-01.md) · [B3b](../tasks/TASK-HUB-B3B-01.md).
+
+## 7. B1 통합 때 조정 (2026-10-20, Claude)
+
+Codex B1(`origin/task/task-hub-b1-01` d7805e5)을 이 브랜치에 병합하면서 B1이 이미 구현한 계약을 기준으로 맞췄다. Codex 교차 검증 SCHEMA-B1-01~03을 반영한 것이다.
+
+| 항목 | 이 명세 1·6장 | 통합 기준(B1) |
+| --- | --- | --- |
+| 출처 저장 | `workItems.source {kind,id,title}` | **`links[]`**: `{from:{type: note\|call\|meeting, id}, to:{type:"workItem", id}, role:"followUp", createdAt}`. 1:N과 다중 출처를 표현한다. B2a의 `sourceView`·`validateSource`는 제거했다 |
+| 삭제된 출처 제목(6장 승인) | `source.title` 사본 | **`links[].sourceTitle?`**(선택, 500자). 후속을 만들 때 저장하고, 출처가 지워졌을 때 "출처: 삭제된 메모 — {제목}"으로 표시한다. 이 필드가 없는 기존 연결은 "출처: 삭제된 메모" 그대로 둔다(`shared/work.mjs` `sourceInfo`) |
+| 순찰 출처 | `patrol` 포함 | B1 `links.from.type`은 note·call·meeting뿐이다. 순찰 출처를 더하는 것은 알려진 필드의 열거값 확장이라 판독 수준 4 설계가 필요하다(별도 카드) |
+| 일시 기한 | `{kind:"at"}` | **`{kind:"datetime", at}`**와 `remindMinutes: null \| 0 \| 60 \| 1440`(일시형만, 기본 null) |
+| 작업 제목 | 200자 | **500자** |
+| 회의 | B2에서 도입 | B1에 이미 있다. `{id, title, body, at, attendees, createdAt, updatedAt}`. B2 필드(`projectIds`·`decisions`·`referenceIds`)는 선택 확장이다 |
+| `workItems.referenceIds` | — | B2a `validateProjectLinks`가 선택 필드로 형식만 검사한다 |

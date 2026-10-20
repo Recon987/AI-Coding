@@ -23,6 +23,7 @@ import { Office } from "./components/Office";
 import { Briefing } from "./components/Briefing";
 import { Patrols } from "./components/Patrols";
 import { Controls } from "./components/Controls";
+import { Meetings } from "./components/Meetings";
 import { Tasks } from "./components/Tasks";
 import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
@@ -45,6 +46,8 @@ import { ConfirmHost, discardChanges, isConfirmOpen } from "./confirm";
 const pageNames: Record<Page, string> = {
   briefing: "업무 브리핑",
   calendar: "월간 일정",
+  work: "작업",
+  meetings: "회의 기록",
   handover: "인수인계",
   submission: "제출 기한",
   notes: "업무 메모",
@@ -69,6 +72,8 @@ const subtitles: Record<Page, string> = {
   briefing: "순찰에서 사무실까지, 오늘 이어갈 업무를 확인하세요.",
   patrol: "현장의 확인 사항과 조치 내용을 기록하고 다음 업무로 연결합니다.",
   controls: "산불·기상특보·공사 등으로 통제 중인 구간과 기간을 기록합니다.",
+  work: "기한 없는 작은 일부터, 기록에서 이어지는 후속 작업까지 관리합니다.",
+  meetings: "회의 결정 사항을 남기고 여러 후속 작업으로 연결합니다.",
   handover: "남은 조치와 담당자, 마감일을 한눈에 확인합니다.",
   submission: "서류 제출 기한을 일정과 함께 관리합니다.",
   calendar: "일정·순찰·인수인계·제출 기한과 공휴일·반복 일정을 확인합니다.",
@@ -399,7 +404,7 @@ function App() {
                       : a.id === "memos"
                         ? data.calls.filter((c) => !c.done).length
                         : a.id === "tasks"
-                          ? data.tasks.filter((t) => !t.done).length
+                          ? data.tasks.filter((t) => !t.done).length + data.workItems.filter((w) => w.status !== "done").length
                           : 0;
                   return (
                     <button
@@ -674,7 +679,7 @@ function App() {
                 <Office data={data} save={save} busy={busy} />
               )}
               {page === "briefing" && (
-                <Briefing data={data} navigate={navigate} busy={busy} />
+                <Briefing data={data} save={save} navigate={navigate} busy={busy || readOnly} />
               )}
               {page === "patrol" && (
                 <Patrols
@@ -695,12 +700,13 @@ function App() {
                   initialId={focusId}
                 />
               )}
-              {(page === "handover" || page === "submission") && (
+              {(page === "handover" || page === "submission" || page === "work") && (
                 <Tasks
                   key={page + focusId}
                   data={data}
                   save={save}
-                  busy={busy}
+                  busy={busy || readOnly}
+                  navigate={navigate}
                   kind={page}
                   initialId={focusId}
                 />
@@ -721,10 +727,12 @@ function App() {
                   data={data}
                   save={save}
                   busy={busy}
+                  navigate={navigate}
                   mode={page}
                   initialId={focusId}
                 />
               )}
+              {page === "meetings" && <Meetings key={page + focusId} data={data} save={save} busy={busy || readOnly} navigate={navigate} initialId={focusId} />}
               {page === "ax" && (
                 <AxDesk
                   key={page + focusId}

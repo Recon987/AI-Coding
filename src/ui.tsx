@@ -9,8 +9,8 @@ export { formatDate, formatClock, formatTime } from "../shared/format.mjs";
 import { RISK_LABEL } from "../shared/model.mjs";
 import { formatClock as clock } from "../shared/format.mjs";
 /** Derived calendar rows: closures and AX milestones span whole days, everything else has a time. */
-export const itemClock = (item: { category: string; at: string }) =>
-  item.category === "통제" || item.category === "AX" ? "종일" : clock(item.at);
+export const itemClock = (item: { category: string; at: string; allDay?: boolean }) =>
+  item.allDay || item.category === "통제" || item.category === "AX" ? "종일" : clock(item.at);
 export const categoryTone = (category: string) =>
   category === "순찰"
     ? "patrol"

@@ -105,7 +105,7 @@ const L = require("../shared/labels.mjs");
     // First use must offer working actions; merely visiting it never adds sample data.
     const firstUse = page.getByRole("region", { name: "업무 시작 안내", exact: true });
     await firstUse.waitFor();
-    assert.equal(await firstUse.getByRole("button").count(), 4);
+    assert.equal(await firstUse.getByRole("button").count(), 5);
     for (const [action, title] of [L.TARGET.patrol, L.TARGET.event, L.TARGET.call].map((target) => [L.addLabel(target), L.addLabel(target)])) {
       await firstUse.getByRole("button", { name: action, exact: true }).click();
       const dialog = page.getByRole("dialog", { name: title, exact: true });

@@ -23,7 +23,7 @@ updated: 2026-10-20
 - [x] `tasks`·`axProjects`의 선택 필드 `projectId?`·`referenceIds?` 검증
   - 형식만 검사하고, 끊긴 참조는 거부하지 않음
 - [x] 단일 사업 ID 공간: `projects`와 `axProjects`의 ID가 겹치면 거부. 순수 함수 `projectIdSet`·`listProjects`(`ProjectView`, AX 확장 표시 여부)
-- [x] 출처·근거 표시 함수: 원본 현재 제목 우선, 삭제 시 사본 제목과 "삭제된 …" 문구, 근거의 대상 없음
+- [x] 출처·근거 표시 함수: 원본 현재 제목 우선, 삭제 시 사본 제목과 "삭제된 …" 문구, 근거의 대상 없음 — B1 통합 때 출처 쪽은 B1 `links`·`sourceInfo`(+`sourceTitle`)로 옮기고 B2a의 `sourceView`는 제거(명세 7장)
 - [x] 구판(reader 2) 보존, 봉함 저장·암호 백업 왕복, 10,000건 혼합 측정 기록
 - [x] `npm test`, `npm run test:desktop` 통과(Windows는 화면 변경이 없어 B2b에서 함께 — 미실행)
 

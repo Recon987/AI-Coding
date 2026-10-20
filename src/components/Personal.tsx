@@ -1,7 +1,8 @@
+import { FollowUpPanel, FollowUpSummary, followUpId } from "./Work";
 import { matches, searchText } from "../../shared/search.mjs";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { useState } from "react";
-import type { Data, Save, Call } from "../types";
+import type { Data, Page, Save, Call } from "../types";
 import { Empty, Field, SectionHead, Tag } from "../ui";
 import { confirmDelete } from "../confirm";
 import { ListHeader, ListRow, rowKeys } from "./ListRow";
@@ -12,12 +13,14 @@ export function Personal({
   busy,
   mode,
   initialId,
+  navigate,
 }: {
   data: Data;
   save: Save;
   busy: boolean;
   mode: "notes" | "calls";
   initialId?: string;
+  navigate: (page: Page, id?: string) => void;
 }) {
   const blank = (): Call => ({
     id: "",
@@ -125,7 +128,7 @@ export function Personal({
               done={mode === "calls" && n.done}
               status={mode === "calls" ? <Tag tone={n.done ? "" : "warning"}>{n.done ? "처리 완료" : "미처리"}</Tag> : undefined}
               title={n.title}
-              subtitle={n.body || "내용 없음"}
+              subtitle={<>{n.body || "내용 없음"}<FollowUpSummary data={data} source={{ type: mode === "calls" ? "call" : "note", id: n.id }} /></>}
               owner={mode === "calls" ? n.phone || "번호 없음" : ""}
               actions={[
                 ...(mode === "calls"
@@ -146,6 +149,7 @@ export function Personal({
                       },
                     ]
                   : []),
+                { label: "+ 후속 작업", onClick: () => navigate("work", followUpId({ type: mode === "calls" ? "call" : "note", id: n.id })) },
                 { label: "수정", onClick: () => editor.openEditor({ ...blank(), ...n }) },
                 {
                   label: "삭제",
@@ -161,6 +165,7 @@ export function Personal({
                 },
               ]}
             >
+              <FollowUpPanel data={data} source={{ type: mode === "calls" ? "call" : "note", id: n.id }} navigate={navigate} busy={busy} />
               <p className="record-body">{n.body || "내용 없음"}</p>
               {mode === "calls" && <p className="source">전화번호 · {n.phone || "없음"}</p>}
             </ListRow>
