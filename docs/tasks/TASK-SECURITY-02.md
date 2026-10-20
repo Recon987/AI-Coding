@@ -32,11 +32,16 @@ updated: 2026-10-20
 - [ ] 3. 복구 키 화면·실제 앱 검사·기록
 
 ## 재개 위치
-2단계 구현 끝(검사 진행 중). 완료: `desktop/main.cjs` 보호기·시작 잠김 창·IPC(`security-status/prepare/cancel/enable`, `unlock-info/try/quit`), `desktop/protector.cjs`, `desktop/preload.cjs`, `src/components/Security.tsx`(저장 암호화 시트·복구 키 창), `tests/desktop-security-smoke.cjs`(test:desktop·Windows 워크플로에 추가).
-다음: `npm test`·`npm run test:desktop`·UI 검토(`tests/ui-review.cjs`) 전체 실행 → Windows Actions(패키징 앱은 실제 safeStorage/DPAPI) → 카드·handoff·작업 기록.
+Linux 검사를 모두 마쳤다. 다음은 Windows Actions(`windows-build.yml` workflow_dispatch, ref `claude/zen-cannon-wc1at4`)다. 패키징 앱은 `PARK_TEST_PROTECTOR`를 무시하므로 `tests/desktop-security-smoke.cjs`가 실제 safeStorage/DPAPI로 돈다. 결과를 아래 테스트 상태에 적고, 통과하면 완료 조건을 표시한 뒤 `status: review`로 바꾼다.
 
 ## 테스트 상태
-2026-10-20: `npm test` 188/188 통과. `node tests/desktop-security-smoke.cjs` 통과(시험용 보호기). 전체 `test:desktop`·Windows 미실행.
+2026-10-20 Linux Node 22:
+- `npm test` 188/188 통과(시간대 5종: 서울·뉴욕·UTC·키리티마티·파고파고).
+- `npm run test:desktop` 종료 0(진입점 19개, 새 `desktop-security-smoke` 포함, 감사 포함).
+- 화면 검토 150건·실패 0, 업무 과업 11/11.
+- Codex 감사: `modular-contract-audit` 통과, `postmerge-boundary-audit` 통과, `desktop-nav-zones-audit` 5/5 통과.
+  - `desktop-nav-zones-audit`은 고친 뒤 통과했다. 이 감사는 "미래 자료"를 `minReader: 3`으로 고정해 두었는데, 이번 카드에서 READER_VERSION이 3이 되어 실패했다. 계약 변경에 맞춰 `READER_VERSION + 1`로 바꿨다(검사 의도는 그대로).
+- Windows: 미실행.
 
 ## 설계 보완(구현 중 결정)
 - 봉투에 복구 키로 감싼 데이터 키 사본(`sealed.recovery`)을 함께 넣는다. 키 파일이 지워지거나 다른 PC로 옮겨도 종이 복구 키로 열 수 있게 하려는 것이다. 복구 키는 120비트 무작위라 HKDF-SHA256으로 충분하다.
