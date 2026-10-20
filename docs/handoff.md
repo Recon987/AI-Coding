@@ -12,10 +12,10 @@
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding. main = a70d9aa. 작업 브랜치 claude/zen-cannon-wc1at4 = main + 8주기 기록 + TZ-TEST-01 + NAV-02 + LOCATION-01
 - **Task Card**: TASK-LOCATION-01 review(검증자 codex, 사용자 승인 착수). TASK-NAV-02·TZ-TEST-01 review. 8주기 MOD-01 보완·AXDESK-02·03·AX-DATES-01 Codex 사후 검증 대기. Claude in-progress 없음
-- **Latest Pushed Commit**: 6c121c0(NAV-02 Windows 기록) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Latest Pushed Commit**: 82f3a59(LOCATION-01 구현, Windows 39358186950 성공) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
 - **Completed Steps & Modified Files**: shared/zones.mjs·zones-import.mjs(+d.mts, 신규), shared/model.mjs(선택 컬렉션 zones), src/types.ts(Zone), src/components/ZoneManager.tsx(신규)·Patrols.tsx(제안), src/main.tsx(자료 관리 메뉴), style.css, docs/architecture.md, tests/zones.test.cjs·desktop-zones-smoke.cjs(신규), package.json·windows-build.yml, 카드·작업 기록 33장
 - **Changed Interfaces / Schema Diff**: 선택 최상위 컬렉션 `zones`({id, code, name, route, active}, 10,000건, 번호 고유). READER_VERSION 그대로(열거값 변경 없음, 구버전은 모르는 항목으로 보존). 순찰 `zone`은 자유 입력 유지. IPC 변경 없음
-- **Test Status**: Linux Node 22: npm test 167/167(서울·뉴욕), npm run test:desktop 종료 0(진입점 18 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행
+- **Test Status**: Linux Node 22: npm test 167/167(서울·뉴욕), npm run test:desktop 종료 0(진입점 18 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows 39358186950(82f3a59) 성공
 - **Remaining Work for Gemini**: Codex: 환경 복구 → 사후 검증 4건 + TZ-TEST-01 + NAV-02 + LOCATION-01. 사용자: 실제 담당구역 번호표로 반입 확인, 다음 카드 승인(SECURITY-01 등), AX 주간 브리핑/알림·스니펫 예제 방식 결정
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
