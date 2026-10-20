@@ -31,14 +31,15 @@ updated: 2026-10-20
 화면(B2b), `workItems` 컬렉션 자체(B1, Codex), 회의(`meetings`), AX 저장소 통합.
 
 ## 진행 단계
-- [ ] 1. `shared/projects.mjs` 순수 함수·라벨과 단위 검사
+- [x] 1. `shared/projects.mjs` 순수 함수·라벨과 단위 검사
 - [ ] 2. `shared/model.mjs` 연결, 타입(`src/types.ts`, `.d.mts`), 호환·봉함·측정 검사
 - [ ] 3. 기록·검증 요청
 
 ## 재개 위치
-1단계 착수: `shared/projects.mjs`, `tests/projects.test.cjs`.
+2단계 진행 중. 완료: `shared/projects.mjs`(+`.d.mts`), `shared/model.mjs`(`empty`·optionalCollections·검증 연결), `src/types.ts`, `tests/projects.test.cjs` 10건, `tests/labels.test.cjs` 스냅샷(projectStage·referenceKind).
+다음: 10,000건 혼합 측정(`scripts/hub-bench.cjs`), `test:desktop` 전체, 기록.
 
 ## 테스트 상태
-미실행
+2026-10-20 중간: `npm test` 206/206, `tsc --noEmit` 통과. `test:desktop` 미실행.
 
 ## 검증 기록

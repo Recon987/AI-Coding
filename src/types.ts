@@ -52,7 +52,14 @@ export type Patrol = {
   action: string;
   risk: "normal" | "attention" | "urgent";
 };
-export type Task = Note & {
+/** TASK-HUB-B2A-01: optional links on existing records (older apps keep them untouched). */
+export type ProjectLinks = {
+  /** A general or AX project ID (one ID space); may point at a deleted project. */
+  projectId?: string | null;
+  /** IDs in `references`; may include deleted entries. */
+  referenceIds?: string[];
+};
+export type Task = Note & ProjectLinks & {
   kind: "handover" | "submission";
   at: string;
   assignee: string;
@@ -128,6 +135,7 @@ export type AxProject = {
   risks: string;
   notes: string;
   updatedAt: string;
+  referenceIds?: string[];
 };
 export type AxSnippetCategory = "gee" | "python" | "prompt" | "policy";
 export type AxSnippet = {
@@ -158,6 +166,10 @@ export type Data = {
   axProjects: AxProject[];
   axSnippets: AxSnippet[];
   zones: Zone[];
+  /** TASK-HUB-B2A-01: general projects (AX projects stay in axProjects). */
+  projects: Project[];
+  /** TASK-HUB-B2A-01: one evidence store shared by projects and tasks. */
+  references: Reference[];
   /** Absent until the user changes which modules show. */
   modules?: ModuleSettings;
   organizations: Organization[];
@@ -247,3 +259,37 @@ declare global {
     };
   }
 }
+
+/** TASK-HUB-B2A-01 (docs/product/claude-hub-schema-plan-2026-10-20.md). */
+export type ProjectField = "facility" | "resource" | "ax" | "admin" | "general";
+export type ProjectStage = "planning" | "progress" | "hold" | "done";
+export type Project = {
+  id: string;
+  title: string;
+  /** "ax" is never stored here: AX projects live in axProjects. */
+  field: Exclude<ProjectField, "ax">;
+  stage: ProjectStage;
+  manager: string;
+  nextMilestone: string;
+  nextMilestoneDate: string | null;
+  risks: string;
+  notes: string;
+  referenceIds: string[];
+  updatedAt: string;
+};
+export type ReferenceKind = "folder" | "snippet" | "file" | "docNo" | "text";
+export type Reference = {
+  id: string;
+  title: string;
+  kind: ReferenceKind;
+  /** folder → folders[].id, snippet → axSnippets[].id */
+  targetId: string | null;
+  /** file only: absolute path; shown and revealed, never run */
+  path: string | null;
+  docNo: string | null;
+  note: string;
+  addedAt: string;
+};
+export type SourceKind = "note" | "call" | "patrol";
+/** Where a work item came from; title is the source's title when the item was made. */
+export type Source = { kind: SourceKind; id: string; title: string };

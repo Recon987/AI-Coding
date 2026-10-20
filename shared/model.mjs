@@ -1,6 +1,7 @@
 import { addDays, earliestLocalDay, localDate, previousWorkday } from "./dates.mjs";
 import { validateModules } from "./applets.mjs";
 import { validateZones } from "./zones.mjs";
+import { validateProjectLinks, validateProjects, validateReferences } from "./projects.mjs";
 import { AX_STAGES, AX_ZONES, milestoneItems, validateAxProjects, validateAxSnippets } from "./ax.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
@@ -24,7 +25,9 @@ const personalCollections = [
 // axProjects/axSnippets: AX Desk (TASK-MODULES-01). The `modules` setting is an object,
 // not a collection, and is written only once the user changes it.
 // zones: 담당구역 번호 목록 (TASK-LOCATION-01).
-const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets", "zones"];
+// projects/references: 일반 사업과 근거 보관함 (TASK-HUB-B2A-01). New collections only, so
+// no READER_VERSION change: older readers keep them as unknown top-level keys.
+const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets", "zones", "projects", "references"];
 export const collections = [
   ...personalCollections,
   ...optionalCollections,
@@ -104,6 +107,8 @@ export const empty = () => ({
   axProjects: [],
   axSnippets: [],
   zones: [],
+  projects: [],
+  references: [],
   organizations: [],
   employees: [],
   bases: [],
@@ -316,6 +321,10 @@ function normalizeContent(input) {
   const axProjects = validateAxProjects(data.axProjects === undefined ? [] : data.axProjects);
   const axSnippets = validateAxSnippets(data.axSnippets === undefined ? [] : data.axSnippets);
   const zones = validateZones(data.zones === undefined ? [] : data.zones);
+  const projects = validateProjects(data.projects === undefined ? [] : data.projects);
+  const references = validateReferences(data.references === undefined ? [] : data.references);
+  // Optional projectId/referenceIds on tasks and AX projects; dangling targets are allowed.
+  validateProjectLinks({ ...data, projects, axProjects });
   if (data.modules !== undefined) validateModules(data.modules);
   for (const key of personalCollections) {
     ensure(
@@ -478,6 +487,8 @@ function normalizeContent(input) {
     axProjects,
     axSnippets,
     zones,
+    projects,
+    references,
   };
 }
 
