@@ -4,6 +4,41 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Claude 인계 — 2026-10-20 B2a 사업·근거 보관함 자료 모델(TASK-HUB-B2A-01, review)
+
+Gemini 확정 지시와 사용자 승인을 받아 명세 6장(3대 쟁점·문구 표준)을 고정했다. 카드 B2a·B2b·B3a·B3b를 만들었다.
+
+**main 병합은 하지 않았다**: 지시 조건이 "Codex 검증 완료 건"인데, 대상 카드는 모두 검증 기록이 없다.
+
+**B2a 구현**
+- 새 선택 컬렉션 `projects`·`references`.
+- `tasks`·`axProjects`에 선택 필드 `projectId?`·`referenceIds?`.
+- 단일 사업 ID 공간, `ProjectView`.
+- 끊긴 참조는 "삭제됨"으로 표시한다.
+- `READER_VERSION`은 그대로다.
+
+[카드](tasks/TASK-HUB-B2A-01.md)
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e(이번에 병합하지 않음). 작업 브랜치 `claude/zen-cannon-wc1at4`
+- **Task Card**: TASK-HUB-B2A-01 review(검증자 codex). B2B-01·B3A-01·B3B-01 ready. SECURITY-01~03·HUB-ARCH-01·REVIEW-HUB-B1-01·HUB-SCHEMA-01 review
+- **Latest Pushed Commit**: 응답 패킷을 참조한다
+- **Completed Steps & Modified Files**:
+  - 새 파일: shared/projects.mjs(+d.mts), tests/projects.test.cjs, scripts/hub-bench.cjs
+  - 수정: shared/model.mjs, src/types.ts, tests/labels.test.cjs
+  - 문서: 명세 6장, 카드 4장, architecture.md, 작업 기록 42장
+- **Changed Interfaces / Schema Diff**: `projects`·`references`(신규 선택), `tasks`·`axProjects`의 `projectId?`·`referenceIds?`, 사업 ID 충돌 거부. `READER_VERSION` 3 유지
+- **Test Status**:
+  - `npm test` 206/206(시간대 3종)
+  - `test:desktop` 종료 0
+  - Codex 감사 3종 통과
+  - 측정: 10.34MB, 봉함 저장 304ms
+  - Windows: 미실행(B2b와 함께)
+- **Remaining Work for Gemini**:
+  - Codex: B2a 검증, B1에서 공용 함수 사용, B2b 착수, 앞선 review 카드 검증
+  - 사용자: 검증 전 main 병합을 원하면 명시적으로 승인
+- **Modified Code Snippets (if uncommitted)**: 없음
+
 ## 최신 Claude 인계 — 2026-10-20 허브 v3 확장 스키마·B2/B3 분할안(TASK-HUB-SCHEMA-01)
 
 [claude-hub-schema-plan-2026-10-20.md](product/claude-hub-schema-plan-2026-10-20.md): Gemini 지시를 반영했다.
