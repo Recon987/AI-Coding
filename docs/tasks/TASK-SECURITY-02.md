@@ -1,9 +1,9 @@
 ---
 id: TASK-SECURITY-02
 title: 저장 봉투·데이터 키(DPAPI)·복구 키
-status: ready
+status: in-progress
 role: builder
-owner: none
+owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: TASK-SECURITY-01
@@ -12,6 +12,8 @@ updated: 2026-10-20
 ---
 
 ## 배경
+- 의존 예외: TASK-SECURITY-01 (사용자 승인 2026-10-20, "이어서 SECURITY-02 진행해" — 설계 카드는 Codex 검토 대기)
+
 [설계안](../research/security-01-design.md) 5장 권장안 D, 10장 사용자 결정(2026-10-20).
 
 ## 완료 조건
@@ -30,7 +32,7 @@ updated: 2026-10-20
 - [ ] 3. 복구 키 화면·실제 앱 검사·기록
 
 ## 재개 위치
-착수 전. 설계 승인(2026-10-20) 반영 카드.
+1단계 착수: `desktop/seal.cjs`(봉투·키 파일·복구 키 순수 함수)와 `tests/seal.test.cjs` 작성.
 
 ## 테스트 상태
 미실행
