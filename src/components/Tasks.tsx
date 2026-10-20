@@ -1,3 +1,4 @@
+import { ProjectSelect, ReferencePicker } from "./ProjectLinks";
 import { unifiedWork } from "../../shared/work.mjs";
 import { WorkRow, WorkEditor, parseFollowUp, workDraft } from "./Work";
 import { matches, searchText } from "../../shared/search.mjs";
@@ -33,9 +34,10 @@ export function Tasks({ data, save, busy, kind, initialId, navigate }: Props) {
     completedAt: null,
   });
   const initialSource = parseFollowUp(initialId);
+  const initialProject = initialId?.startsWith("project:") ? initialId.slice(8) : null;
   const [source, setSource] = useState<SourceRef | undefined>(initialSource);
   const initialWork = data.workItems.find((w) => w.id === initialId);
-  const workEditor = useEditorDraft(initialWork ?? workDraft(data, initialSource), !!initialWork || !!initialSource || (kind === "work" && initialId === "new"));
+  const workEditor = useEditorDraft(initialWork ?? workDraft(data, initialSource, initialProject), !!initialWork || !!initialSource || !!initialProject || (kind === "work" && initialId === "new"));
   const [typeFilter, setTypeFilter] = useState(kind === "work" ? "all" : kind);
   const initial = data.tasks.find((t) => t.id === initialId && t.kind === kind);
   const editor = useEditorDraft(
@@ -264,6 +266,8 @@ export function Tasks({ data, save, busy, kind, initialId, navigate }: Props) {
                 }
               />
             </Field>
+            <ProjectSelect data={data} value={draft.projectId ?? null} onChange={(projectId) => patch({ projectId })} busy={busy} />
+            <ReferencePicker data={data} value={draft.referenceIds ?? []} onChange={(referenceIds) => patch({ referenceIds })} busy={busy} />
             <div className="form-row">
               <Field label="담당자">
                 <input

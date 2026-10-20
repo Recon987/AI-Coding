@@ -1,3 +1,4 @@
+import { LinkedProjects } from "./ProjectLinks";
 import { useState } from "react";
 import type { Data, Meeting, Page, Save } from "../types";
 import { Empty, Field, formatTime, localInput, SectionHead, Tag } from "../ui";
@@ -24,7 +25,7 @@ export function Meetings({ data, save, busy, navigate, initialId }: { data: Data
         { label: "+ 후속 작업", onClick: () => navigate("work", followUpId({ type: "meeting", id: m.id })) },
         { label: "수정", onClick: () => { void editor.openEditor(m); } },
         { label: "삭제", tone: "danger", onClick: async () => { if (await confirmDelete("이 회의 기록")) await save({ ...data, meetings: data.meetings.filter((r) => r.id !== m.id) }); } },
-      ]}><p className="record-body">{m.body || "내용 없음"}</p><FollowUpPanel data={data} source={{ type: "meeting", id: m.id }} navigate={navigate} busy={busy} /></ListRow>)}</div>
+      ]}><p className="record-body">{m.body || "내용 없음"}</p><LinkedProjects data={data} ids={m.projectIds ?? []} navigate={navigate} busy={busy} /><FollowUpPanel data={data} source={{ type: "meeting", id: m.id }} navigate={navigate} busy={busy} /></ListRow>)}</div>
     </section>
     {editor.isOpen && <EditorDialog title={draft.id ? "회의 기록 수정" : "회의 기록 등록"} busy={busy} dirty={editor.dirty} onClose={editor.finishEditor} error={editor.saveError}>
       <form className="editor" onSubmit={async (e) => {

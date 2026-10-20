@@ -1,5 +1,8 @@
-import type { WorkItem, Meeting, AxProject, AxSnippet, Call, Control, Data, Event, Note, Page, Patrol, Task } from "../src/types";
+import type { ProjectView } from "./projects.mjs";
+import type { Project, Reference, WorkItem, Meeting, AxProject, AxSnippet, Call, Control, Data, Event, Note, Page, Patrol, Task } from "../src/types";
 export const searchText: {
+  project(p: Project | ProjectView): string;
+  reference(r: Reference): string;
   patrol(p: Patrol): string;
   control(c: Control): string;
   work(w: WorkItem): string;

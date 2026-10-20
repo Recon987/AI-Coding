@@ -71,7 +71,7 @@ const closeDrawer = async (page, drawer) => {
     const core = await menu(page).locator(".nav-section").first().getByRole("button").evaluateAll(
       (buttons) => buttons.map((b) => b.getAttribute("aria-label")),
     );
-    assert.deepEqual(core, ["업무 브리핑", "월간 일정", "인수인계·제출 기한", "업무·전화 메모"]);
+    assert.deepEqual(core, ["업무 브리핑", "사업 공간", "월간 일정", "인수인계·제출 기한", "업무·전화 메모"]);
     assert.deepEqual(await moduleNames(page), ["현장 순찰", "AX 사업 관리"]);
     assert.equal(Object.hasOwn(saved(), "modules"), false, "열기만 해서는 설정을 쓰지 않음");
 
@@ -101,7 +101,7 @@ const closeDrawer = async (page, drawer) => {
     // 3. Hide patrols from the drawer (keyboard): menu entry gone, records kept.
     await goTo(page, "탐방로 통제");
     let drawer = await openDrawer(page);
-    assert.equal(await drawer.getByText("항상 표시", { exact: true }).count(), 4, "코어 4종은 끌 수 없음 표시");
+    assert.equal(await drawer.getByText("항상 표시", { exact: true }).count(), 5, "코어 5종은 끌 수 없음 표시");
     await toggle(drawer, "현장 순찰").focus();
     await page.keyboard.press("Space");
     await drawer.getByRole("status").filter({ hasText: "현장 순찰을(를) 메뉴에서 숨겼습니다." }).waitFor();
@@ -213,7 +213,7 @@ const closeDrawer = async (page, drawer) => {
     assert.equal(await drawer.getByRole("button", { name: "아래로 · 현장 순찰", exact: true }).isDisabled(), true);
     await closeDrawer(page, drawer);
     assert.equal(fs.readFileSync(newerFile, "utf8"), raw);
-    console.log("PASS: 코어 4종·기본 모듈, 화면 안 전환(키보드), 모듈 숨김/복구(자료·브리핑·검색 유지, 숨긴 화면 안내), 순서 변경·재실행 유지, 모두 꺼도 코어 사용, 960px·125%, 읽기 전용 잠금, 도구별 마지막 화면 기억(재실행 유지·깨진 값 무시·자료 무저장)");
+    console.log("PASS: 코어 5종·기본 모듈, 화면 안 전환(키보드), 모듈 숨김/복구(자료·브리핑·검색 유지, 숨긴 화면 안내), 순서 변경·재실행 유지, 모두 꺼도 코어 사용, 960px·125%, 읽기 전용 잠금, 도구별 마지막 화면 기억(재실행 유지·깨진 값 무시·자료 무저장)");
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });

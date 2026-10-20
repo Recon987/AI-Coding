@@ -201,6 +201,8 @@ export type Data = {
   assignments: Assignment[];
 };
 export type Page =
+  | "references"
+  | "projects"
   | "office"
   | "briefing"
   | "patrol"
@@ -261,6 +263,9 @@ declare global {
       load(): Promise<Data>;
       takeNotice(): Promise<string>;
       save(data: Data): Promise<void | { warning: string }>;
+      chooseReferenceFile(): Promise<string | null>;
+      referenceStatus(id: string): Promise<{ state: "ready" | "none" | "missing" | "unavailable"; message?: string }>;
+      revealReference(id: string): Promise<void>;
       chooseFolder(): Promise<string | null>;
       openFolder(id: string): Promise<void>;
       /** TASK-SECURITY-03: false when the save dialog was cancelled. */

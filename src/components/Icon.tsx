@@ -51,7 +51,7 @@ export function Icon({
       strokeLinejoin="round"
       style={style}
     >
-      {(paths[name] || paths.about).map((d, i) => (
+      {(paths[name === "projects" ? "folders" : name === "references" ? "notes" : name] || paths.about).map((d, i) => (
         <path d={d} key={i} />
       ))}
     </svg>

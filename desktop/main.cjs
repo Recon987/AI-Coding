@@ -20,6 +20,7 @@ const { buildAxReport } = require("../shared/ax-report.mjs");
 const { createDesktopLifecycle } = require("./lifecycle.cjs");
 const { createNotifier } = require("./notifications.cjs");
 const { openDataFile } = require("./recovery.cjs");
+const { referenceLocation } = require("./reference-location.cjs");
 const seal = require("./seal.cjs");
 const keystore = require("./keystore.cjs");
 const { osProtector } = require("./protector.cjs");
@@ -174,6 +175,21 @@ else {
         throw new Error("폴더를 찾을 수 없습니다.");
       const error = await shell.openPath(folder.path);
       if (error) throw new Error(error);
+    });
+    ipcMain.handle("choose-reference-file", async () => {
+      refuseWhenReadOnly();
+      const selected = await dialog.showOpenDialog(win, { title: "근거 파일 선택", properties: ["openFile"] });
+      return selected.canceled ? null : selected.filePaths[0] ?? null;
+    });
+    ipcMain.handle("reference-status", (_, id) => {
+      const status = referenceLocation(readData(), id);
+      const { path: location, ...publicStatus } = status;
+      return publicStatus;
+    });
+    ipcMain.handle("reveal-reference", (_, id) => {
+      const status = referenceLocation(readData(), id);
+      if (status.state !== "ready") throw new Error(status.message);
+      shell.showItemInFolder(status.path);
     });
     ipcMain.handle("export-briefing", async (_, date) => {
       const body = briefing(readData(), date);

@@ -4,6 +4,8 @@
 const { CORE_APPLETS, MODULE_APPLETS } = require("../shared/applets.mjs");
 
 const PAGE_IDS = {
+  "사업 공간": "projects",
+  "근거 보관함": "references",
   "업무 브리핑": "briefing",
   "월간 일정": "calendar",
   "현장 순찰": "patrol",

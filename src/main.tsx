@@ -23,6 +23,8 @@ import { Office } from "./components/Office";
 import { Briefing } from "./components/Briefing";
 import { Patrols } from "./components/Patrols";
 import { Controls } from "./components/Controls";
+import { References } from "./components/References";
+import { Projects } from "./components/Projects";
 import { Meetings } from "./components/Meetings";
 import { Tasks } from "./components/Tasks";
 import { Calendar } from "./components/Calendar";
@@ -44,6 +46,8 @@ import { ConfirmHost, discardChanges, isConfirmOpen } from "./confirm";
 // user keeps visible (shared/applets.mjs), then 모듈 관리·바로가기·앱 안내. Page IDs are unchanged,
 // so links from search, the briefing and the calendar still open the same screens.
 const pageNames: Record<Page, string> = {
+  projects: "사업 공간",
+  references: "근거 보관함",
   briefing: "업무 브리핑",
   calendar: "월간 일정",
   work: "작업",
@@ -65,6 +69,8 @@ type Applet = { id: string; name: string; navName?: string; icon: string; pages:
 const APPLETS: Applet[] = [...CORE_APPLETS, ...MODULE_APPLETS];
 const appletOf = (page: Page) => APPLETS.find((a) => a.pages.includes(page));
 const subtitles: Record<Page, string> = {
+  projects: "작업과 기록, 근거 자료를 사업별로 모아 봅니다.",
+  references: "공문·파일·폴더·스니펫을 여러 사업과 작업에서 재사용합니다.",
   ax: "권역별 AX 사업의 단계·사업비 집행·차기 마일스톤을 관리합니다.",
   "ax-snippets": "자주 쓰는 GEE·Python 코드와 프롬프트, 법령·지침 문구를 보관하고 복사합니다.",
   "ax-report": "등록한 사업 정보로 4개 절 보고서 초안을 만들어 복사하거나 TXT·MD로 저장합니다.",
@@ -675,6 +681,8 @@ function App() {
             </p>
           ) : (
             <>
+              {page === "references" && <References key={page + focusId} data={data} save={save} busy={busy || readOnly} navigate={navigate} back={() => navigate("projects")} initialId={focusId} />}
+              {page === "projects" && <Projects key={page + focusId} data={data} save={save} busy={busy || readOnly} navigate={navigate} initialId={focusId} />}
               {page === "office" && (
                 <Office data={data} save={save} busy={busy} />
               )}

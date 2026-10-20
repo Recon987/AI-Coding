@@ -1,3 +1,5 @@
+import { ProjectSelect, ReferencePicker } from "./ProjectLinks";
+import { projectRef, referenceView } from "../../shared/projects.mjs";
 import { useEffect, useId, useState } from "react";
 import type { Data, Page, Save, SourceRef, WorkItem } from "../types";
 import { WORK_STATUS, dueState, dueText, followUps, newWork, setWorkStatus, sourceInfo, workSources } from "../../shared/work.mjs";
@@ -12,9 +14,9 @@ export function parseFollowUp(id?: string): SourceRef | undefined {
   const match = /^followup:(note|call|meeting):(.+)$/.exec(id ?? "");
   return match ? { type: match[1] as SourceRef["type"], id: match[2] } : undefined;
 }
-export function workDraft(data: Data, source?: SourceRef) {
+export function workDraft(data: Data, source?: SourceRef, projectId: string | null = null) {
   const original = source && sourceInfo(data, source).row;
-  return newWork({ id: "", title: original ? `후속: ${original.title}`.slice(0, 500) : "", body: original?.body ?? "" });
+  return { ...newWork({ id: "", title: original ? `후속: ${original.title}`.slice(0, 500) : "", body: original?.body ?? "" }), projectId };
 }
 
 export function QuickWork({ data, save, busy }: { data: Data; save: Save; busy: boolean }) {
@@ -51,6 +53,7 @@ export function FollowUpPanel({ data, source, navigate, busy }: { data: Data; so
 export function WorkRow({ work, data, save, busy, edit, navigate }: { work: WorkItem; data: Data; save: Save; busy: boolean; edit: () => void; navigate: (page: Page, id?: string) => void }) {
   const state = dueState(work);
   const sources = workSources(data, work.id);
+  const project = projectRef(data, work.projectId);
   const stateLabel = state === "overdue" ? "기한 경과" : state === "today" ? "오늘 마감" : state === "upcoming" ? "예정" : WORK_STATUS[work.status];
   return <ListRow title={work.title} subtitle={<>{work.body || "상세 내용 없음"}{sources.length > 0 && <span className="source">{sources.map((s) => s.label).join(" · ")}</span>}</>} kind="작업" owner={work.owner || "담당 미지정"} when={dueText(work)} done={work.status === "done"} busy={busy}
     status={<Tag tone={state === "overdue" ? "danger" : state === "today" ? "warning" : ""}>{stateLabel}{["waiting", "doing"].includes(work.status) && stateLabel !== WORK_STATUS[work.status] ? ` · ${WORK_STATUS[work.status]}` : ""}</Tag>}
@@ -62,6 +65,8 @@ export function WorkRow({ work, data, save, busy, edit, navigate }: { work: Work
     <p className="record-body">{work.body || "상세 내용 없음"}</p>
     <div className="metadata"><span>상태 · {WORK_STATUS[work.status]}</span><span>{dueText(work)}</span><span>{work.priority === "high" ? "우선 처리" : "일반"}</span></div>
     {sources.map((s) => s.row && s.page ? <button key={`${s.ref.type}:${s.ref.id}`} className="text-button" disabled={busy} onClick={() => navigate(s.page!, s.ref.id)}>{s.label}</button> : <p className="source" key={`${s.ref.type}:${s.ref.id}`}>{s.label}</p>)}
+    {project && (project.exists ? <button className="text-button" disabled={busy} onClick={() => navigate("projects", project.id)}>사업 · {project.title}</button> : <p className="source">{project.label}</p>)}
+    {(work.referenceIds ?? []).map((id) => <p className="source" key={id}>근거 · {referenceView(data, id).label}</p>)}
     {work.completedAt && <p className="source">완료 기록 · {new Date(work.completedAt).toLocaleString("ko-KR")}</p>}
   </ListRow>;
 }
@@ -89,6 +94,8 @@ export function WorkEditor({ data, save, busy, editor, source, navigate }: { dat
         <Field label="상태"><select value={draft.status} onChange={(e) => patch({ status: e.target.value as WorkItem["status"] })}>{Object.entries(WORK_STATUS).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></Field>
         <Field label="우선순위"><select value={draft.priority} onChange={(e) => patch({ priority: e.target.value as WorkItem["priority"] })}><option value="normal">일반</option><option value="high">우선 처리</option></select></Field>
       </div>
+      <ProjectSelect data={data} value={draft.projectId} onChange={(projectId) => patch({ projectId })} busy={busy} />
+      <ReferencePicker data={data} value={draft.referenceIds ?? []} onChange={(referenceIds) => patch({ referenceIds })} busy={busy} />
       <Field label="담당자"><input maxLength={100} value={draft.owner} onChange={(e) => patch({ owner: e.target.value })} /></Field>
       <Field label="기한 방식"><select value={draft.due?.kind ?? "none"} onChange={(e) => {
         // 방식 선택 때만 사용자가 입력할 빈 칸을 만든다. 새 기록 기본값은 기한 없음.
