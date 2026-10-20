@@ -29,6 +29,7 @@ import { Personal } from "./components/Personal";
 import { HolidayManager } from "./components/HolidayManager";
 import { ZoneManager } from "./components/ZoneManager";
 import { SecuritySheet, UnlockScreen } from "./components/Security";
+import { BackupSheet } from "./components/BackupSheet";
 import { Icon } from "./components/Icon";
 import { AppletDrawer } from "./components/AppletDrawer";
 import { AxDesk } from "./components/AxDesk";
@@ -103,6 +104,8 @@ function App() {
     [zonesOpen, setZonesOpen] = useState(false),
     // TASK-SECURITY-02: 저장 암호화 sheet.
     [securityOpen, setSecurityOpen] = useState(false),
+    // TASK-SECURITY-03: backup password (backup) or the password of a picked backup (restore).
+    [backupSheet, setBackupSheet] = useState<null | { mode: "backup" } | { mode: "restore"; name: string }>(null),
     // TASK-MODULES-02: 모듈 관리 drawer.
     [modulesOpen, setModulesOpen] = useState(false),
     [query, setQuery] = useState("");
@@ -267,43 +270,79 @@ function App() {
     setQuery("");
     window.scrollTo({ top: 0 });
   }
+  // Whatever failed in a restore, show what is on disk now, so a later save cannot write
+  // stale screen data over a restore that did commit (DS-01).
+  async function reloadAfterRestoreError() {
+    if (!api) return;
+    try {
+      const current = await api.load();
+      setData(normalize(current, { allowNewer: isNewerData(current) }));
+    } catch {
+      // Keep the error shown; the next start reads the file again.
+    }
+  }
+  function applyRestored(next: Data) {
+    setData(normalize(next));
+    setFocusId(undefined);
+    setPage("briefing");
+    setFeedback("백업 자료를 복원했습니다.");
+  }
   async function backup(restore = false) {
     if (saving.current) return;
     if (readOnly) {
       setError(READ_ONLY_BLOCKED);
       return;
     }
+    // TASK-SECURITY-03: a backup always starts with its password.
+    if (!restore) {
+      setBackupSheet({ mode: "backup" });
+      return;
+    }
     saving.current = true;
     setBusy(true);
     try {
-      if (restore) {
-        const next = await api?.restore();
-        if (next) {
-          setData(normalize(next));
-          setFocusId(undefined);
-          setPage("briefing");
-          setFeedback("백업 자료를 복원했습니다.");
-        }
-        setError((await api?.takeNotice()) ?? "");
-      } else {
-        await api?.backup();
-        setError("");
-      }
+      const result = await api?.restore();
+      if (result && "needsPassword" in result) setBackupSheet({ mode: "restore", name: result.name });
+      else if (result) applyRestored(result.data);
+      setError((await api?.takeNotice()) ?? "");
     } catch (e) {
       setError(e instanceof Error ? e.message : "백업 작업에 실패했습니다.");
-      // Whatever failed, show what is on disk now, so a later save cannot write
-      // stale screen data over a restore that did commit (DS-01).
-      if (restore && api)
-        try {
-          const current = await api.load();
-          setData(normalize(current, { allowNewer: isNewerData(current) }));
-        } catch {
-          // Keep the error above; the next start reads the file again.
-        }
+      await reloadAfterRestoreError();
     } finally {
       saving.current = false;
       setBusy(false);
     }
+  }
+  // The sheet's password step; throws so the sheet shows the reason and the user may retry.
+  async function submitBackupPassword(password: string) {
+    if (!api || !backupSheet || saving.current) return;
+    saving.current = true;
+    setBusy(true);
+    try {
+      if (backupSheet.mode === "backup") {
+        if (await api.backup(password)) setFeedback("백업을 암호로 잠가 저장했습니다.");
+        setBackupSheet(null);
+        setError("");
+        return;
+      }
+      let result;
+      try {
+        result = await api.restorePassword(password);
+      } catch (e) {
+        await reloadAfterRestoreError();
+        throw e;
+      }
+      setBackupSheet(null);
+      if (result) applyRestored(result.data);
+      setError((await api.takeNotice()) ?? "");
+    } finally {
+      saving.current = false;
+      setBusy(false);
+    }
+  }
+  function closeBackupSheet() {
+    if (backupSheet?.mode === "restore") void api?.restoreCancel();
+    setBackupSheet(null);
   }
   async function folder() {
     try {
@@ -609,6 +648,15 @@ function App() {
             <ZoneManager data={data} busy={busy} readOnly={readOnly} save={save} onClose={() => setZonesOpen(false)} />
           )}
           {securityOpen && <SecuritySheet readOnly={readOnly} onClose={() => setSecurityOpen(false)} />}
+          {backupSheet && (
+            <BackupSheet
+              mode={backupSheet.mode}
+              name={backupSheet.mode === "restore" ? backupSheet.name : undefined}
+              busy={busy}
+              onSubmit={submitBackupPassword}
+              onClose={closeBackupSheet}
+            />
+          )}
           {error && (
             <div role="alert" className="error">
               {error}

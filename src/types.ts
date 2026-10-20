@@ -225,8 +225,11 @@ declare global {
       save(data: Data): Promise<void | { warning: string }>;
       chooseFolder(): Promise<string | null>;
       openFolder(id: string): Promise<void>;
-      backup(): Promise<void>;
-      restore(): Promise<Data | null>;
+      /** TASK-SECURITY-03: false when the save dialog was cancelled. */
+      backup(password: string): Promise<boolean>;
+      restore(): Promise<{ data: Data } | { needsPassword: true; name: string } | null>;
+      restorePassword(password: string): Promise<{ data: Data } | null>;
+      restoreCancel(): Promise<void>;
       exportBriefing(date: string): Promise<boolean>;
       exportForm(
         request: import("../shared/forms.mjs").FormRequest,
@@ -238,7 +241,7 @@ declare global {
       securityPrepare(): Promise<{ recoveryKey: string }>;
       securityCancel(): Promise<void>;
       securityEnable(typed: string): Promise<SecurityStatus>;
-      unlockInfo(): Promise<{ reason: string }>;
+      unlockInfo(): Promise<{ kind: "recovery"; reason: string } | { kind: "backup"; name: string }>;
       unlockTry(text: string): Promise<boolean>;
       unlockQuit(): Promise<void>;
     };

@@ -87,7 +87,7 @@ export function SecuritySheet({ readOnly, onClose }: { readOnly: boolean; onClos
           {!status
             ? "상태 확인 중…"
             : status.state === "on"
-              ? `켜짐 — 자료·마지막 정상본·보호본·백업 파일을 암호화해 저장합니다.${status.test ? " (시험용 보호기)" : ""}`
+              ? `켜짐 — 자료·마지막 정상본·보호본을 암호화해 저장합니다.${status.test ? " (시험용 보호기)" : ""}`
               : status.state === "unavailable"
                 ? `사용할 수 없음 — ${status.reason}. 암호화하지 않은 채 지금처럼 저장합니다.`
                 : `꺼짐 — 자료를 암호화하지 않고 저장합니다.${status.reason ? ` (${status.reason})` : ""}`}
@@ -96,7 +96,7 @@ export function SecuritySheet({ readOnly, onClose }: { readOnly: boolean; onClos
         {status?.state === "on" && (
           <ul className="security-notes">
             <li>켜기 전에 만든 자동 보호본·복원 보호본·직접 만든 백업은 암호화되지 않은 채 남아 있습니다. 필요 없으면 직접 지우세요.</li>
-            <li>켠 뒤 만든 백업은 이 PC의 키로 암호화되어 이 PC에서 바로 복원됩니다. 다른 PC에서 여는 방법(백업 암호)은 다음 업데이트에서 제공합니다.</li>
+            <li>백업은 그때마다 정하는 백업 암호로 따로 잠겨, 다른 PC에서도 그 암호로 복원할 수 있습니다.</li>
             <li>브리핑·양식·보고서로 내보낸 파일은 사람이 읽는 파일이라 암호화하지 않습니다.</li>
           </ul>
         )}
@@ -154,13 +154,15 @@ export function SecuritySheet({ readOnly, onClose }: { readOnly: boolean; onClos
   );
 }
 
+type UnlockInfo = Awaited<ReturnType<NonNullable<typeof window.workdesk>["unlockInfo"]>>;
 /**
- * Shown in its own window at startup when this PC cannot open the data key (another
- * Windows account or PC, a damaged or missing key file). Nothing is read until it opens.
+ * Shown in its own window at startup, before any data is read: the recovery key when this
+ * PC cannot open the data key (TASK-SECURITY-02), or the password of a password backup picked
+ * in the startup recovery flow (TASK-SECURITY-03).
  */
 export function UnlockScreen() {
   const api = window.workdesk;
-  const [reason, setReason] = useState("");
+  const [info, setInfo] = useState<UnlockInfo>();
   const [typed, setTyped] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -168,9 +170,10 @@ export function UnlockScreen() {
   useEffect(() => {
     api
       ?.unlockInfo()
-      .then((info) => setReason(info.reason))
-      .catch(() => setReason(""));
+      .then(setInfo)
+      .catch(() => setInfo({ kind: "recovery", reason: "" }));
   }, [api]);
+  const backup = info?.kind === "backup";
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (!api) return;
@@ -180,25 +183,36 @@ export function UnlockScreen() {
       await api.unlockTry(typed);
       setOpened(true);
     } catch (e) {
-      setError(ipcMessage(e, "복구 키로 열지 못했습니다."));
+      setError(ipcMessage(e, backup ? "백업 암호로 열지 못했습니다." : "복구 키로 열지 못했습니다."));
       setBusy(false);
     }
   }
+  if (!info) return null;
   return (
     <main className="unlock-screen">
       <form className="panel unlock-panel" onSubmit={submit} aria-labelledby="unlock-title">
-        <h1 id="unlock-title">암호화된 업무 자료 열기</h1>
-        <p>{reason || "이 PC에서 암호화 키를 열지 못했습니다."}</p>
-        <p className="muted">
-          저장 암호화를 켤 때 종이에 적은 복구 키(4자리씩 6묶음)를 입력하세요. 열기 전에는 업무 자료를 읽거나 바꾸지 않습니다.
-        </p>
-        <Field label="복구 키" hint="대소문자·띄어쓰기는 상관없습니다.">
+        <h1 id="unlock-title">{backup ? "암호 백업 열기" : "암호화된 업무 자료 열기"}</h1>
+        {info.kind === "backup" ? (
+          <p>
+            {info.name}은(는) 백업 암호로 잠겨 있습니다. 백업할 때 정한 암호를 입력하세요. 틀리면 아무것도 바뀌지 않으며 다시 입력할
+            수 있습니다.
+          </p>
+        ) : (
+          <>
+            <p>{info.reason || "이 PC에서 암호화 키를 열지 못했습니다."}</p>
+            <p className="muted">
+              저장 암호화를 켤 때 종이에 적은 복구 키(4자리씩 6묶음)를 입력하세요. 열기 전에는 업무 자료를 읽거나 바꾸지 않습니다.
+            </p>
+          </>
+        )}
+        <Field label={backup ? "백업 암호" : "복구 키"} hint={backup ? undefined : "대소문자·띄어쓰기는 상관없습니다."}>
           <input
+            type={backup ? "password" : "text"}
             value={typed}
             autoFocus
             autoComplete="off"
             spellCheck={false}
-            maxLength={60}
+            maxLength={backup ? 256 : 60}
             disabled={busy || opened}
             onChange={(e) => setTyped(e.target.value)}
           />
@@ -213,8 +227,9 @@ export function UnlockScreen() {
           <button type="submit" className="primary" disabled={busy || opened || !typed.trim()}>
             열기
           </button>
-          <button type="button" disabled={busy || opened} onClick={() => void api?.unlockQuit().then(() => window.close())}>
-            종료
+          {/* 취소 returns to the startup recovery choices; 종료 ends the app. */}
+          <button type="button" disabled={busy || opened} onClick={() => void api?.unlockQuit()}>
+            {backup ? "취소" : "종료"}
           </button>
         </div>
       </form>

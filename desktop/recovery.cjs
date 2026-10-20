@@ -6,7 +6,8 @@ const path = require("node:path");
 // notify(text) receives warnings the renderer should show once it has loaded.
 const SEED_FAILED = "마지막 정상본(자동 보호본)을 만들지 못했습니다. 업무 자료는 정상이며 다음 저장 때 다시 시도합니다. 저장 공간과 권한을 확인하고 수동 백업을 만드세요.";
 // Returns false (quit), true (normal) or "read-only" (a newer app's file, TASK-SCHEMA-01).
-async function openDataFile({ file, store, dialog, now = Date.now, logger = console, notify = () => {} }) {
+// askBackupPassword(path): data from a password backup, or null when not given (TASK-SECURITY-03).
+async function openDataFile({ file, store, dialog, now = Date.now, logger = console, notify = () => {}, askBackupPassword }) {
   // One read path: a file held by another program is not damaged, so it gets a
   // retry prompt instead of the recovery flow.
   for (;;) {
@@ -29,7 +30,7 @@ async function openDataFile({ file, store, dialog, now = Date.now, logger = cons
         return false;
       }
       if (!store.isTransientLock(error))
-        return recover({ file, store, dialog, now, notify, reason: error });
+        return recover({ file, store, dialog, now, notify, reason: error, askBackupPassword });
       const { response } = await dialog.showMessageBox({
         type: "warning",
         buttons: ["다시 시도", "종료"],
@@ -73,7 +74,7 @@ function readLastGood(store, file) {
   }
 }
 
-async function recover({ file, store, dialog, now, notify, reason }) {
+async function recover({ file, store, dialog, now, notify, reason, askBackupPassword }) {
   let preserved;
   try {
     preserved = preserveDamaged(file, now);
@@ -134,7 +135,17 @@ async function recover({ file, store, dialog, now, notify, reason }) {
       continue;
     }
     try {
-      const data = store.read(picked.filePaths[0], { required: true });
+      let data;
+      try {
+        data = store.read(picked.filePaths[0], { required: true });
+      } catch (error) {
+        if (error?.code !== "BACKUP_PASSWORD_REQUIRED" || !askBackupPassword) throw error;
+        data = await askBackupPassword(picked.filePaths[0]);
+        if (!data) {
+          notice = "백업 암호를 입력하지 않아 복원하지 않았습니다.";
+          continue;
+        }
+      }
       const saved = store.write(file, data, { keepLastGood: true });
       if (saved?.warning) notify(saved.warning);
       return true;

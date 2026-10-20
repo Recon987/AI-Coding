@@ -7,6 +7,8 @@ const os = require("node:os");
 const path = require("node:path");
 const { empty, reminderItems, briefing } = require("../shared/model.mjs");
 const { selectDue } = require("../desktop/notifications.cjs");
+const store = require("../desktop/store.cjs");
+const { TEST_PASSWORD, fillBackupPassword, fillRestorePassword } = require("./backup-ui.cjs");
 // Button wording comes from the app (TASK-LABELS-01 U6).
 const L = require("../shared/labels.mjs");
 
@@ -313,9 +315,8 @@ const TITLE = "가상 반복 회의";
       dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
     }, backup);
     await manage("백업");
-    for (let n = 0; !fs.existsSync(backup) && n < 100; n++)
-      await new Promise((r) => setTimeout(r, 25));
-    assert.deepEqual(JSON.parse(fs.readFileSync(backup, "utf8")), saved);
+    await fillBackupPassword(page, backup);
+    assert.deepEqual(await store.readBackup(backup, TEST_PASSWORD), saved);
     await page.evaluate((value) => window.workdesk.save(value), empty());
     await page.reload();
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
@@ -327,6 +328,7 @@ const TITLE = "가상 반복 회의";
       dialog.showMessageBox = async () => ({ response: 1 });
     }, backup);
     await manage("복원");
+    await fillRestorePassword(page);
     await page.waitForFunction(() =>
       window.workdesk
         .load()
