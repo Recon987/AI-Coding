@@ -72,6 +72,7 @@ jobs:
             "tests/desktop-low-years-smoke.cjs",
             "tests/desktop-zones-smoke.cjs",
             "tests/desktop-security-smoke.cjs",
+            "tests/desktop-backup-password-smoke.cjs",
             "tests/desktop-data-safety-audit.cjs",
             "tests/desktop-backup-clock-audit.cjs",
             "tests/desktop-holiday-limits-audit.cjs"
