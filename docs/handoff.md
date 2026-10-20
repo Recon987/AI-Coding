@@ -4,6 +4,37 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Claude 인계 — 2026-10-20 B3a 정리·보고 집계 함수(TASK-HUB-B3A-01, review)
+
+**10주기 병합 결과**
+- [PR #17](https://github.com/Recon987/AI-Coding/pull/17)을 main **5ab5675**에 merge commit으로 병합했다.
+- Windows: PR 39410281371 성공, main push 39410916951 성공.
+
+**B3a**: `shared/rollup.mjs`
+- 주간 실적·계획 / 사업 추진보고 / 인수인계서 집계와 TXT·MD 렌더
+- 원본 Ref 유지, 사업별 묶음, 출처·근거 표시, 순찰 요약
+- 본문·경로는 기본 제외
+
+[카드](tasks/TASK-HUB-B3A-01.md)
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding. main = 5ab5675. 작업 브랜치 `claude/zen-cannon-wc1at4` = main + B3a
+- **Task Card**:
+  - TASK-HUB-B3A-01 done(사용자 승인 선병합 2026-10-20, Codex 사후 검증 예정)
+  - ready(Codex): HUB-B1-UI-01, B2B-01, B3B-01
+  - done(Codex 사후 검증 예정): SECURITY-01·02·03, HUB-ARCH-01, REVIEW-HUB-B1-01, HUB-SCHEMA-01, HUB-B2A-01
+- **Latest Pushed Commit**: 응답 패킷을 참조한다
+- **Completed Steps & Modified Files**: shared/rollup.mjs(+d.mts), tests/rollup.test.cjs, tests/rollup-fixture.cjs, 카드, 작업 기록 43장
+- **Changed Interfaces / Schema Diff**: 새 함수 `weekOf`·`collectRollup`·`renderReport`. 자료 스키마 변경 없음
+- **Test Status**:
+  - `npm test` 221/221(시간대 3종 + 결정성 5종)
+  - `test:desktop` 종료 0
+  - Windows: B3b와 함께 실행 예정
+- **Remaining Work for Gemini**:
+  - Codex: B3a 검증, 선병합 카드 사후 검증, B1-UI-01·B2b·B3b
+  - 사용자: B3a main 병합 시점, 기관 PC 보안 확인
+- **Modified Code Snippets (if uncommitted)**: 없음
+
 ## 최신 Claude 인계 — 2026-10-20 다섯 번째 main 병합(10주기: 보안·허브 B1·B2a, 사용자 명시 승인 선병합)
 
 사용자·Gemini의 명시 승인으로 review 카드를 main에 먼저 병합한다(Codex 사후 검증 예정).
