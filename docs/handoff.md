@@ -10,13 +10,13 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding. main = a70d9aa(PR #15 병합). 작업 브랜치 claude/zen-cannon-wc1at4는 main 위에 이 기록 커밋만 추가
-- **Task Card**: 8주기 카드 7장 done(MODULES-01·02, AXDESK-01·02·03, AX-DATES-01, ARCH-MODULAR-01). MOD-01 보완·AXDESK-02·03·AX-DATES-01은 Codex 사후 검증 예정. Claude in-progress 카드 없음
-- **Latest Pushed Commit**: a70d9aa - Merge PR #15 (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: PR #15 병합, main Windows 확인 기록(docs/handoff.md)
-- **Changed Interfaces / Schema Diff**: main 반영: 선택 최상위 `modules`·`axProjects`·`axSnippets`(v3 유지, 개편 전 보호본), IPC `export-ax-report`, Page `ax`·`ax-snippets`·`ax-report`, `jsonBytes`·`localDate`·`HOLIDAY_TABLE_YEARS`, `holidaysForYear` 표 밖 계약 변경
-- **Test Status**: Linux Node 22 npm test 161/161, test:desktop 진입점 17 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows PR 39353328936·main 39353727584 성공
-- **Remaining Work for Gemini**: Codex: MOD-01·AXDESK-02·03·AX-DATES-01 사후 독립 검증. 사용자: 마지막 화면 기억·AX 주간 브리핑/알림·스니펫 예제 방식 결정, schema 시간대 의존 검사 후속 여부
+- **Repository & Branch**: Recon987/AI-Coding. main = a70d9aa(PR #15). 작업 브랜치 claude/zen-cannon-wc1at4 = main + 8주기 기록(511f197) + TASK-TZ-TEST-01 통합(e861688, 다른 Claude 세션 브랜치 claude/great-feynman-xoqn7u)
+- **Task Card**: TASK-TZ-TEST-01 review(검증자 codex). 8주기 카드 7장 done 중 MOD-01 보완·AXDESK-02·03·AX-DATES-01 Codex 사후 검증 대기(Codex 환경 복구 필요). Claude in-progress 없음. backlog: SECURITY-01(P1), LAW-01·LEDGER-01·LOCATION-01(P3)
+- **Latest Pushed Commit**: e861688(TZ-TEST-01 통합) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: TZ-TEST-01 통합(tests/schema.test.cjs 검사 자료 한 줄, 카드·작업 기록), 카드 통합 기록, 이 인계장
+- **Changed Interfaces / Schema Diff**: 없음(검사 자료만)
+- **Test Status**: 통합 후 시간대 5종 모두 npm test 161/161. test:desktop은 통합 뒤 미실행(검사 자료만 변경, 8주기 기준 통과). Windows main 39353727584 성공
+- **Remaining Work for Gemini**: Codex: 환경 복구 → main a70d9aa 기준 사후 검증 4건 + TZ-TEST-01 검증. 사용자: 다음 주기 카드 승인, 마지막 화면 기억·AX 주간 브리핑/알림·스니펫 예제 방식 결정
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 

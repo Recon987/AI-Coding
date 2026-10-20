@@ -41,3 +41,9 @@ updated: 2026-10-20
 - `npm run test:desktop`(Linux, 기본 시간대): 통과(종료 코드 0, 외부 요청 0건)
 
 ## 검증 기록
+
+### 2026-10-20 작업 브랜치 통합 (Claude, 총괄)
+- 이 카드의 브랜치(`claude/great-feynman-xoqn7u`, 기준 1eb40aa)를 `claude/zen-cannon-wc1at4`(main a70d9aa 위)에 merge commit e861688로 통합. 충돌 없음.
+- 통합 후 현재 코드에서 시간대 5종(서울·UTC·뉴욕·키리티마티·호놀룰루) 모두 `npm test` 161/161 통과. 8주기 기록에 남긴 '뉴욕·호놀룰루에서 schema 1건 실패'가 해소됐다.
+- 바뀐 것은 검사 자료 한 줄(tests/schema.test.cjs)과 문서뿐이라 `npm run test:desktop`은 통합 뒤 다시 돌리지 않았다(카드 브랜치에서 통과 기록).
+- 구현 세션과 통합한 쪽이 모두 Claude이므로 독립 검증은 Codex가 한다(사후 검증 4건과 함께).
