@@ -26,6 +26,8 @@ export const searchText = {
       coordinates(p.coordinates),
     ),
   control: (c) => join(c.title, c.zone, CONTROL_REASONS[c.reason], c.start, c.end ?? "해제 시까지", c.note),
+  work: (w) => join(w.title, w.body, w.owner, w.status, w.due?.date, w.due?.at),
+  meeting: (m) => join(m.title, m.body, m.attendees),
   task: (t) => join(t.title, t.body, t.assignee, t.destination),
   event: (e) =>
     join(e.title, isRecurring(e) ? join(RECURRENCE_LABEL[e.recurrence], "반복", e.repeatUntil) : ""),
@@ -48,6 +50,8 @@ export function searchRecords(data, query) {
     ...data.patrols.map((r) => ({ id: r.id, page: "patrol", title: r.title, text: searchText.patrol(r) })),
     ...data.controls.map((r) => ({ id: r.id, page: "controls", title: r.title, text: searchText.control(r) })),
     ...data.tasks.map((r) => ({ id: r.id, page: r.kind, title: r.title, text: searchText.task(r) })),
+    ...(data.workItems ?? []).map((r) => ({ id: r.id, page: "work", title: r.title, text: searchText.work(r) })),
+    ...(data.meetings ?? []).map((r) => ({ id: r.id, page: "meetings", title: r.title, text: searchText.meeting(r) })),
     ...data.events.map((r) => ({ id: r.id, page: "calendar", title: r.title, text: searchText.event(r) })),
     ...data.notes.map((r) => ({ id: r.id, page: "notes", title: r.title, text: searchText.note(r) })),
     ...data.calls.map((r) => ({ id: r.id, page: "calls", title: r.title, text: searchText.call(r) })),
