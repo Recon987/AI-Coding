@@ -10,17 +10,21 @@
 
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main 병합)
-- **Task Card**: SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02 done(사용자 승인 병합). REVIEW-DATA-SAFETY-01 done. 다음 TASK-ARCH-MODULAR-01
-- **Latest Pushed Commit**: 293f658 - fix(TASK-HOLIDAY-01): 공휴일 한도 초과를 화면 안내로 처리(HL-01) (이 문서를 포함한 최종 해시·main 병합 커밋은 응답 패킷 참조)
-- **Completed Steps & Modified Files**: 카드 6장 done, loop-log 7주기, 작업 기록 23장, handoff
-- **Changed Interfaces / Schema Diff**: 이번 커밋 없음(문서). 병합 범위의 자료 변경: 선택 필드 minReader(읽기 수준 2), 선택 컬렉션 customHolidays, 단속 조치 referral. 데이터 v3 유지
-- **Test Status**: 293f658 Linux: npm test 131/131, test:desktop 12개 진입점 + 감사 9/9, 화면 150·실패 0, 업무 과업 11/11. Windows 39260014172 결과 확인 후 병합
-- **Remaining Work for Gemini**: Codex: BK-01·HL-01 사후 독립 재검증. Claude: ARCH-MODULAR-01(PR #12 보정 명세) 착수
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main, 8주기 병합 PR). 병합 전 main 1eb40aa
+- **Task Card**: MODULES-01·02, AXDESK-01·02·03, AX-DATES-01, ARCH-MODULAR-01 done(사용자 병합 승인). MOD-01 보완·AXDESK-02·03·AX-DATES-01은 Codex 사후 검증 예정
+- **Latest Pushed Commit**: dbdea27(AX-DATES-01 Windows 기록) (병합 커밋 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: 카드 7장 done·검증 기록, docs/validation.md(8주기), docs/orchestration/loop-log.md(8주기), 작업 기록 31장, 이 인계장
+- **Changed Interfaces / Schema Diff**: 이번 묶음 전체: 선택 최상위 `modules`·`axProjects`·`axSnippets`(v3 유지, 처음 저장 때 개편 전 보호본), 새 IPC `export-ax-report`, 새 Page `ax`·`ax-snippets`·`ax-report`, `jsonBytes`·`localDate`·`HOLIDAY_TABLE_YEARS`, `holidaysForYear` 표 밖 계약 변경
+- **Test Status**: Linux Node 22: npm test 161/161, npm run test:desktop 종료 0(진입점 17 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows 39297684401(7c2a067) 성공, PR·main Windows는 병합 과정에서 확인
+- **Remaining Work for Gemini**: Codex: MOD-01·AXDESK-02·03·AX-DATES-01 사후 독립 검증. 사용자: 마지막 화면 기억·AX 주간 브리핑/알림·스니펫 예제 방식 결정, schema 시간대 의존 검사 후속 여부
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```
 
 ## 2. 과제 현황
+
+**2026-10-20 세 번째 main 병합(8주기, 모듈형 개편)**: MODULES-01·02, AXDESK-01·02·03, AX-DATES-01과 묶음 카드 ARCH-MODULAR-01을 사용자 승인("main 병합 승인할게, 병합해")으로 병합. 기본 4종 + 켤 수 있는 모듈 메뉴(현장 순찰·사무소 현황·AX 사업 관리), 모듈 관리 서랍, AX 사업 관리(권역·단계·집행률·마일스톤 달력/브리핑 파생)·GIS·AI 스니펫·보고서 초안(새 IPC `export-ax-report`), 0001~0099년 날짜 보존. 자료 형식 v3 유지(선택 항목 `modules`·`axProjects`·`axSnippets`, 처음 저장 때 `.pre-modular-backup-<시각>.json`). **Codex 독립 검증은 MODULES-02·AXDESK-01 기능 승인까지만 받았고 MOD-01 보완·AXDESK-02·03·AX-DATES-01은 사후 검증 예정**(각 카드 검증 기록 참조).
+
+**2026-10-19 모듈·AX 독립 검증**: [검토](reviews/2026-10-19-codex-modular.md). BK-01·HL-01 사후 재검증은 해결 승인이다. MODULES-02·AXDESK-01의 일반 업무 기능은 통과했으나 MODULES-01의 설정 64KB 바이트 계약(MOD-01/P2)을 보완해야 전체 병합을 승인할 수 있다. 낮은 연도 AX-DATE-01은 P3 후속. 아래의 과거 반려·검증 대기 문단은 당시 기록이다.
 
 **2026-10-19 두 번째 main 병합**: 7주기 카드 6장(SCHEMA-01·BRIEF-02·LABELS-01·FORMS-02·HOLIDAY-01·BACKUP-02)과 Codex 자료 안전 감사(PR #10·#11)를 사용자 승인으로 병합. BK-01·HL-01 보완의 Codex 독립 재검증은 병합 뒤에 받는다. 다음 작업은 TASK-ARCH-MODULAR-01([보정 명세](specs/modular-ax/implementation.md)).
 

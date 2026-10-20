@@ -2,6 +2,7 @@
 // and the out-of-table notice, in the real app.
 // Build first: npm run build && node tests/desktop-holiday-smoke.cjs
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -70,7 +71,7 @@ const openManager = async (page) => {
     await page.keyboard.press("Escape");
     await sheet.waitFor({ state: "hidden" });
     // The calendar shows the user holiday; 2026 has no out-of-table notice.
-    await page.locator("nav").getByRole("button", { name: "월간 일정", exact: true }).click();
+    await goTo(page, "월간 일정");
     const day = (date) => page.locator(`.calendar-day[data-date="${date}"]`);
     await day("2026-10-02").waitFor();
     assert.match(await day("2026-10-02").innerText(), /가상 임시공휴일/);
@@ -80,14 +81,14 @@ const openManager = async (page) => {
 
     // 2027: law changes on the calendar (노동절 Saturday → 5-03 대체공휴일). 2036: notice.
     ({ app, page } = await launch(dir, "y2027", "2027-05-01"));
-    await page.locator("nav").getByRole("button", { name: "월간 일정", exact: true }).click();
+    await goTo(page, "월간 일정");
     await day("2027-05-01").waitFor();
     assert.match(await day("2027-05-01").innerText(), /노동절/);
     assert.match(await day("2027-05-03").innerText(), /대체공휴일/);
     await app.close();
     app = undefined;
     ({ app, page } = await launch(dir, "y2036", "2036-02-01"));
-    await page.locator("nav").getByRole("button", { name: "월간 일정", exact: true }).click();
+    await goTo(page, "월간 일정");
     const note = page.locator(".calendar-note");
     await note.waitFor();
     assert.match(await note.textContent(), /^2036년은 음력 공휴일\(설·추석·부처님오신날\)이 표에 없습니다/);

@@ -1,6 +1,7 @@
 // 독립 감사: npm run build 후 node tests/desktop-data-safety-audit.cjs
 // 기존 스모크·IPC를 바꾸지 않는다. 오류 주입은 이 임시 앱의 본체 프로세스에서만 한다.
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -35,7 +36,7 @@ const sample = title => ({ ...store.empty(), notes: [{ id: "audit-note", title, 
     page.context().on("request", r => { if (/^https?:/.test(r.url())) report.externalRequests.push(r.url()); });
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
     const navNotes = async () => {
-      await page.locator("nav").getByRole("button", { name: "업무 메모", exact: true }).click();
+      await goTo(page, "업무 메모");
       await page.getByRole("heading", { name: "업무 메모", level: 1 }).waitFor();
     };
     const undoInjection = async () => app.evaluate(() => {

@@ -107,6 +107,8 @@ export function recurrenceText(
   options?: { until?: boolean },
 ): string;
 /** Years covered by the lunar holiday table (설·추석·부처님오신날). */
+/** Years the built-in holiday rules cover; outside them only user holidays apply. */
+export const HOLIDAY_TABLE_YEARS: { first: number; last: number };
 export const LUNAR_TABLE_YEARS: { first: number; last: number };
 /** Throws unless the list is valid (unique ids and dates, names 1–30 characters, at most 1,000). */
 export function validateCustomHolidays(list: unknown): CustomHoliday[];

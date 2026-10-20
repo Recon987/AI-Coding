@@ -1,5 +1,6 @@
 // Real Electron lifecycle/IPC/storage; only OS notification and quit-confirmation widgets are doubled.
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -117,10 +118,7 @@ module.exports = async function traySmoke() {
     );
     assert.deepEqual(await page.evaluate(() => window.workdesk.load()), saved);
 
-    await page
-      .locator("nav")
-      .getByRole("button", { name: "앱 안내", exact: true })
-      .click();
+    await goTo(page, "앱 안내");
     const toggle = page.getByRole("checkbox", {
       name: "창을 닫아도 시스템 트레이에 유지",
     });
@@ -214,10 +212,7 @@ module.exports = async function traySmoke() {
     );
     assert.deepEqual(await page.evaluate(() => window.workdesk.load()), saved);
     // A dirty draft survives a cancelled explicit quit, then an approved quit exits.
-    await page
-      .locator("nav")
-      .getByRole("button", { name: "업무 메모", exact: true })
-      .click();
+    await goTo(page, "업무 메모");
     await page.getByRole("button", { name: L.addLabel(L.TARGET.note), exact: true }).click();
     await page
       .getByLabel("제목", { exact: true })

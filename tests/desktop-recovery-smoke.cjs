@@ -2,6 +2,7 @@
 // Build first: npm run build && node tests/desktop-recovery-smoke.cjs
 // Development Electron only: the packaged executable has no -r preload option.
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -48,7 +49,7 @@ const root = path.resolve(__dirname, "..");
     const copies = fs.readdirSync(profile).filter((f) => f.includes(".corrupt-"));
     assert.equal(copies.length, 1);
     assert.equal(fs.readFileSync(path.join(profile, copies[0]), "utf8"), '{"version":3,"notes":[');
-    await page.locator("nav").getByRole("button", { name: "업무 메모", exact: true }).click();
+    await goTo(page, "업무 메모");
     await page.getByRole("heading", { name: "정상본 메모" }).waitFor();
     console.log("PASS: 손상 파일 보관·복구 대화상자·마지막 정상본 시작·자료 표시");
   } finally {

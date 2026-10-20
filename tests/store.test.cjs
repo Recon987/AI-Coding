@@ -454,7 +454,11 @@ test("오프라인 법정공휴일·대체공휴일(양력 및 2025~2035 음력)
   assert.equal(holidayName("2028-10-05"), "대체공휴일");
   assert.ok(holidaysForYear(2026).length >= 15);
   assert.throws(() => holidayName("2026-02-30"));
-  assert.throws(() => holidaysForYear(1800));
+  // TASK-AX-DATES-01: outside the built-in table (1970–2100) there are no built-in holidays
+  // instead of an error, so valid dates still open; a non-integer year is still refused.
+  assert.deepEqual(holidaysForYear(1800), []);
+  assert.deepEqual(holidaysForYear(99, [{ id: "h", date: "0099-05-05", name: "가상" }]).map((h) => h.date), ["0099-05-05"]);
+  assert.throws(() => holidaysForYear(1.5));
   assert.match(briefing(empty(), "2026-03-01"), /2026-03-01 \(삼일절\) 업무 브리핑/);
 });
 

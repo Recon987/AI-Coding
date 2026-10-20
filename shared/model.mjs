@@ -1,4 +1,6 @@
-import { addDays, earliestLocalDay, previousWorkday } from "./dates.mjs";
+import { addDays, earliestLocalDay, localDate, previousWorkday } from "./dates.mjs";
+import { validateModules } from "./applets.mjs";
+import { AX_STAGES, AX_ZONES, milestoneItems, validateAxProjects, validateAxSnippets } from "./ax.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
   dutyTypes,
@@ -18,7 +20,9 @@ const personalCollections = [
 ];
 // Added after v3 shipped; files without it load as an empty list (TASK-CONTROL-01).
 // customHolidays: user-entered holidays (임시공휴일, later election days), TASK-HOLIDAY-01.
-const optionalCollections = ["controls", "customHolidays"];
+// axProjects/axSnippets: AX Desk (TASK-MODULES-01). The `modules` setting is an object,
+// not a collection, and is written only once the user changes it.
+const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets"];
 export const collections = [
   ...personalCollections,
   ...optionalCollections,
@@ -95,6 +99,8 @@ export const empty = () => ({
   tasks: [],
   controls: [],
   customHolidays: [],
+  axProjects: [],
+  axSnippets: [],
   organizations: [],
   employees: [],
   bases: [],
@@ -212,7 +218,8 @@ export function formatCoordinates(input, format = "dd") {
 }
 
 export function dayKey(date = new Date()) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  // Four-digit year, so years below 1000 still form a valid YYYY-MM-DD key (TASK-AX-DATES-01).
+  return `${String(date.getFullYear()).padStart(4, "0")}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 // TASK-SCHEMA-01: the highest `minReader` this app understands. A later app that
@@ -301,6 +308,9 @@ function normalizeContent(input) {
   }
   const customHolidays = data.customHolidays === undefined ? [] : data.customHolidays;
   validateCustomHolidays(customHolidays);
+  const axProjects = validateAxProjects(data.axProjects === undefined ? [] : data.axProjects);
+  const axSnippets = validateAxSnippets(data.axSnippets === undefined ? [] : data.axSnippets);
+  if (data.modules !== undefined) validateModules(data.modules);
   for (const key of personalCollections) {
     ensure(
       Array.isArray(data[key]) && data[key].length <= 10000,
@@ -442,7 +452,7 @@ function normalizeContent(input) {
   );
   // Top-level keys this version does not know are kept as they are, so saving here
   // does not delete what a newer version added (TASK-SCHEMA-01). The app never reads them.
-  const known = new Set(["version", "minReader", ...collections]);
+  const known = new Set(["version", "minReader", "modules", ...collections]);
   const extra = Object.keys(input).filter((key) => !known.has(key));
   ensure(
     extra.length <= MAX_EXTRA_KEYS &&
@@ -455,9 +465,12 @@ function normalizeContent(input) {
     ...Object.fromEntries(extra.map((key) => [key, input[key]])),
     version: 3,
     ...(input.minReader !== undefined || minReader > 1 ? { minReader } : {}),
+    ...(data.modules !== undefined ? { modules: data.modules } : {}),
     ...Object.fromEntries(collections.map((key) => [key, data[key]])),
     controls,
     customHolidays,
+    axProjects,
+    axSnippets,
   };
 }
 
@@ -533,6 +546,8 @@ export function parseHolidayLines(text, existing = [], makeId = () => crypto.ran
 }
 /** Years covered by the lunar holiday table; other years have solar holidays only. */
 export const LUNAR_TABLE_YEARS = { first: 2025, last: 2035 };
+/** Years the built-in (solar) holiday rules cover; outside them only user holidays apply. */
+export const HOLIDAY_TABLE_YEARS = { first: 1970, last: 2100 };
 
 // 오프라인 음력 법정공휴일 표 (2025~2035년, 설날 연휴·부처님오신날·추석 연휴)
 const LUNAR_HOLIDAYS_BY_YEAR = {
@@ -640,7 +655,7 @@ const LUNAR_HOLIDAYS_BY_YEAR = {
 const holidayCache = new Map();
 const parseLocalDate = (dateStr) => {
   const [y, m, d] = dateStr.split("-").map(Number);
-  return new Date(y, m - 1, d);
+  return localDate(y, m - 1, d);
 };
 
 /**
@@ -649,7 +664,7 @@ const parseLocalDate = (dateStr) => {
  */
 export function holidaysForYear(year, custom = []) {
   const builtIn = builtInHolidays(year);
-  const own = custom.filter((h) => h.date.startsWith(`${year}-`));
+  const own = custom.filter((h) => h.date.startsWith(`${String(year).padStart(4, "0")}-`));
   if (!own.length) return builtIn;
   const byDate = new Map(builtIn.map((h) => [h.date, h]));
   for (const h of own) {
@@ -661,10 +676,10 @@ export function holidaysForYear(year, custom = []) {
   return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 function builtInHolidays(year) {
-  ensure(
-    Number.isInteger(year) && year >= 1970 && year <= 2100,
-    "공휴일 조회 연도를 확인하세요.",
-  );
+  ensure(Number.isInteger(year), "공휴일 조회 연도를 확인하세요.");
+  // No built-in table outside these years: show none rather than fail (TASK-AX-DATES-01), so a
+  // valid date such as 0099-10-21 still opens in the calendar and the briefing.
+  if (year < HOLIDAY_TABLE_YEARS.first || year > HOLIDAY_TABLE_YEARS.last) return [];
   if (holidayCache.has(year)) return holidayCache.get(year);
   const raw = [
     ...SOLAR_HOLIDAYS.filter((h) => !h.from || year >= h.from).map((h) => ({
@@ -767,7 +782,7 @@ export function holidayName(date, custom = []) {
 }
 
 const daysInMonth = (year, monthIndex) =>
-  new Date(year, monthIndex + 1, 0).getDate();
+  localDate(year, monthIndex + 1, 0).getDate();
 
 const occurrenceAtStep = (base, recurrence, step) => {
   if (step === 0) return new Date(base.getTime());
@@ -778,20 +793,20 @@ const occurrenceAtStep = (base, recurrence, step) => {
     mm = base.getMinutes(),
     ss = base.getSeconds(),
     ms = base.getMilliseconds();
-  if (recurrence === "daily") return new Date(y, m, d + step, hh, mm, ss, ms);
+  if (recurrence === "daily") return localDate(y, m, d + step, hh, mm, ss, ms);
   if (recurrence === "weekly")
-    return new Date(y, m, d + step * 7, hh, mm, ss, ms);
+    return localDate(y, m, d + step * 7, hh, mm, ss, ms);
   if (recurrence === "monthly") {
     const totalMonths = m + step;
     const targetYear = y + Math.floor(totalMonths / 12);
     const targetMonth = ((totalMonths % 12) + 12) % 12;
     const clampedDay = Math.min(d, daysInMonth(targetYear, targetMonth));
-    return new Date(targetYear, targetMonth, clampedDay, hh, mm, ss, ms);
+    return localDate(targetYear, targetMonth, clampedDay, hh, mm, ss, ms);
   }
   if (recurrence === "yearly") {
     const targetYear = y + step;
     const clampedDay = Math.min(d, daysInMonth(targetYear, m));
-    return new Date(targetYear, m, clampedDay, hh, mm, ss, ms);
+    return localDate(targetYear, m, clampedDay, hh, mm, ss, ms);
   }
   return new Date(base.getTime());
 };
@@ -930,7 +945,7 @@ function controlDays(data, range) {
     for (let day = parseLocalDate(first); dayKey(day) <= last; day.setDate(day.getDate() + 1))
       rows.push({
         ...c,
-        at: new Date(day.getFullYear(), day.getMonth(), day.getDate()).toISOString(),
+        at: localDate(day.getFullYear(), day.getMonth(), day.getDate()).toISOString(),
         key: `control:${c.id}:${dayKey(day)}`,
         category: "통제",
         page: "controls",
@@ -970,6 +985,7 @@ export function calendarItems(data, range) {
         done: false,
       })),
     ...controlDays(data, range),
+    ...milestoneItems(data.axProjects, range ?? {}),
   ].sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
 }
 export function reminderItems(data, now = Date.now()) {
@@ -1071,6 +1087,7 @@ export function briefing(data, date) {
   );
   const patrols = data.patrols.filter((p) => dayKey(new Date(p.at)) === date);
   const controls = activeControls(data, date);
+  const milestones = (data.axProjects ?? []).filter((p) => p.nextMilestoneDate === date);
   const events = calendarItems(data, {
     startDate: date,
     endDate: date,
@@ -1109,6 +1126,18 @@ export function briefing(data, date) {
         `- [${e.done ? "완료" : "예정"}${isRecurring(e) ? `/${RECURRENCE_LABEL[e.recurrence]}` : ""}] ${when(e.at)} ${e.title}`,
     ),
     "",
+    // AX milestones (TASK-AXDESK-01): listed only on days that have one, so briefings of
+    // offices that do not use AX Desk stay as before.
+    ...(milestones.length
+      ? [
+          `AX 사업 마일스톤 (${milestones.length})`,
+          ...milestones.map(
+            (p) =>
+              `- ${p.title} | ${p.nextMilestone.trim() || "차기 마일스톤"} | ${AX_ZONES[p.zone]} | ${AX_STAGES[p.stage]}`,
+          ),
+          "",
+        ]
+      : []),
     `순찰 기록 (${patrols.length})`,
     ...patrols.map(
       (p) =>

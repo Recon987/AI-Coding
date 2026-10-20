@@ -103,6 +103,42 @@ export type Assignment = {
   note: string;
 };
 export type CustomHoliday = { id: string; date: string; name: string };
+/** TASK-MODULES-01: which built-in job modules show in the menu. Unknown IDs are kept. */
+export type ModuleSettings = {
+  enabledModuleIds: string[];
+  moduleOrder: string[];
+  customConfigs: Record<string, unknown>;
+};
+export type AxZone = "hq" | "west" | "north" | "institute" | "other";
+export type AxStage = "planning" | "contract" | "execution" | "done";
+/** Amounts are in thousand won (천원). */
+export type AxProject = {
+  id: string;
+  title: string;
+  zone: AxZone;
+  stage: AxStage;
+  budgetTotal: number;
+  budgetExecuted: number;
+  manager: string;
+  partner: string;
+  nextMilestone: string;
+  nextMilestoneDate: string | null;
+  risks: string;
+  notes: string;
+  updatedAt: string;
+};
+export type AxSnippetCategory = "gee" | "python" | "prompt" | "policy";
+export type AxSnippet = {
+  id: string;
+  title: string;
+  category: AxSnippetCategory;
+  tags: string[];
+  snippet: string;
+  description: string;
+  /** Built-in example placed at first setup; shown as such. */
+  example?: true;
+  updatedAt: string;
+};
 export type Data = {
   version: 3;
   /** TASK-SCHEMA-01: lowest app reader version that may write this file. Absent = 1. */
@@ -116,6 +152,11 @@ export type Data = {
   controls: Control[];
   /** TASK-HOLIDAY-01: holidays the user adds (임시공휴일, later election days). */
   customHolidays: CustomHoliday[];
+  /** TASK-MODULES-01 (AX Desk). */
+  axProjects: AxProject[];
+  axSnippets: AxSnippet[];
+  /** Absent until the user changes which modules show. */
+  modules?: ModuleSettings;
   organizations: Organization[];
   employees: Employee[];
   bases: Base[];
@@ -132,6 +173,9 @@ export type Page =
   | "calls"
   | "notes"
   | "folders"
+  | "ax"
+  | "ax-snippets"
+  | "ax-report"
   | "about";
 export type Save = (data: Data) => Promise<boolean>;
 export type CalendarItem = {
@@ -174,6 +218,9 @@ declare global {
       exportBriefing(date: string): Promise<boolean>;
       exportForm(
         request: import("../shared/forms.mjs").FormRequest,
+      ): Promise<boolean>;
+      exportAxReport(
+        request: import("../shared/ax-report.mjs").AxReportRequest,
       ): Promise<boolean>;
     };
   }

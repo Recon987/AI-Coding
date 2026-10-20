@@ -8,7 +8,7 @@ Electron의 제한된 preload API로 로컬 파일 저장·폴더 열기·백업
 
 ## 날짜 키와 현지 시각
 
-`shared/dates.mjs`는 YYYY-MM-DD 날짜 키의 주 시작·하루 이동·포함 일수·집계 기간을 UTC 정오에서 계산한다. 키는 시각이 아니므로 PC 시간대나 DST의23/25시간 영향으로 날짜를 바꾸지 않는다. `dayKey`와 표시 함수는 현지 날짜 입출력 경계로 유지하며 알림의 경과 시간 계산과 혼동하지 않는다. 모델·양식·브리핑·사무소·달력·집계가 같은 날짜 산술을 참조한다. `office.validDate`는 기존 import 호환을 위해 `dates.validDateKey`를 그대로 노출한다. 함수와 선언은 dates.mjs/dates.d.mts, 시간대 회귀는 tests/dates.test.cjs에 있다.
+`shared/dates.mjs`는 YYYY-MM-DD 날짜 키의 주 시작·하루 이동·포함 일수·집계 기간을 UTC 정오에서 계산한다. 키는 시각이 아니므로 PC 시간대나 DST의23/25시간 영향으로 날짜를 바꾸지 않는다. `dayKey`와 표시 함수는 현지 날짜 입출력 경계로 유지하며 알림의 경과 시간 계산과 혼동하지 않는다. 모델·양식·브리핑·사무소·달력·집계가 같은 날짜 산술을 참조한다. `office.validDate`는 기존 import 호환을 위해 `dates.validDateKey`를 그대로 노출한다. 함수와 선언은 dates.mjs/dates.d.mts, 시간대 회귀는 tests/dates.test.cjs에 있다. 날짜 부분으로 현지 Date를 만들 때는 `new Date(y, m, d)` 대신 `localDate`를 쓴다(생성자는 0~99년을 1900~1999년으로 바꾼다). `dayKey`는 연도를 4자리로 채운다. 기본 공휴일 표는 1970~2100년이며 그 밖의 해는 기본 공휴일 없이(사용자 공휴일만) 표시하고 달력에 안내한다(TASK-AX-DATES-01, tests/low-years.test.cjs).
 
 ## 데이터 v3
 
@@ -29,6 +29,8 @@ v1/v2 파일은 최초 시작 시 원본 바이트를 `.v1-backup.json` 또는 `
 ## 추천 양식
 
 `shared/forms.mjs`가 순찰일지·단속·계도 기록을 TXT/CSV로 만든다(순수 함수). 렌더러는 `export-form` IPC로 양식 종류·기간·형식 네 값만 보내고, 본체가 저장된 자료로 내용을 만들어 저장 대화상자 경로에 BOM과 함께 쓴다. 다른 키가 있으면 거부한다. CSV 텍스트 칸은 `= + - @`로 시작하면 `'`를 붙인다(숫자 칸 제외). 기간은 최대 366일.
+
+`shared/ax-report.mjs`의 `buildAxReport(data, { projectId, format }, date)`가 AX 사업 하나로 보고서 초안(사업개요·추진배경·추진실적·향후계획, 기록에 없는 내용은 `[작성 필요]`)을 TXT/MD로 만든다(순수 함수, TASK-AXDESK-03). 화면 미리보기·복사와 파일 저장이 같은 함수를 쓴다. 렌더러는 `export-ax-report` IPC로 사업 ID와 형식 두 값만 보내고, 본체가 저장된 자료와 본체의 오늘 날짜로 내용을 다시 만들어 저장 대화상자 경로에 쓴다(TXT는 BOM 포함, MD는 BOM 없음, 권한 0600). 다른 키·모르는 형식·없는 사업이면 대화상자를 열기 전에 거부한다. 파일 이름은 Windows 금지 문자·장치 이름·끝 점을 정리한 사업명 60자 이내다.
 
 ## 알림과 브리핑
 

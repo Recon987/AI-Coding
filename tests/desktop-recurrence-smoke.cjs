@@ -1,5 +1,6 @@
 // Real Electron, original-event storage and UI. Only OS file dialogs are doubled.
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -39,8 +40,7 @@ const TITLE = "가상 반복 회의";
     await page.clock.install({ time: new Date(`${DATE}T09:30:00+09:00`) });
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
   };
-  const nav = (name) =>
-    page.locator("nav").getByRole("button", { name, exact: true }).click();
+  const nav = (name) => goTo(page, name);
   const load = () => page.evaluate(() => window.workdesk.load());
   const selectDate = async (date) => {
     await page.locator(`.calendar-day[data-date="${date}"]`).click();

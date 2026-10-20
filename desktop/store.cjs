@@ -68,14 +68,42 @@ function durableReplace(file, payload) {
   }
 }
 const lastGoodFile = (file) => file + ".last-good";
+// TASK-MODULES-01: the first save that adds the modular fields keeps a byte copy of the
+// file as it was. Not a restore copy, so the restore-copy pruning never touches it.
+const MODULAR_KEYS = ["modules", "axProjects", "axSnippets"];
+const modularChecked = new Set();
+function hasModularKeys(file) {
+  try {
+    const raw = JSON.parse(withRetry(() => fs.readFileSync(file, "utf8")));
+    return MODULAR_KEYS.some((key) => Object.hasOwn(raw, key));
+  } catch {
+    // An unreadable file is the recovery flow's business; back it up rather than guess.
+    return false;
+  }
+}
+function preModularBackup(file, now = Date.now()) {
+  if (modularChecked.has(file)) return null;
+  if (!fs.existsSync(file) || hasModularKeys(file)) {
+    modularChecked.add(file);
+    return null;
+  }
+  let target = `${file}.pre-modular-backup-${now}.json`;
+  for (let at = now + 1; fs.existsSync(target); at++) target = `${file}.pre-modular-backup-${at}.json`;
+  // Throws on failure, so the original is not replaced without its copy.
+  withRetry(() => fs.copyFileSync(file, target, fs.constants.COPYFILE_EXCL));
+  modularChecked.add(file);
+  return target;
+}
 // keepLastGood: only for the live workdesk.json, never for backups or protection copies.
-function write(file, data, { keepLastGood = false } = {}) {
+// modularBackup: only the live file gets the one-time pre-modular copy (TASK-MODULES-01).
+function write(file, data, { keepLastGood = false, modularBackup = keepLastGood } = {}) {
   const validated = normalize(data);
   const payload = JSON.stringify(validated, null, 2);
   if (Buffer.byteLength(payload) > MAX_BYTES)
     throw new Error(
       "저장 한도 20MB를 초과했습니다. 백업 후 기록을 정리하세요.",
     );
+  if (modularBackup) preModularBackup(file);
   durableReplace(file, payload);
   if (keepLastGood) {
     try { durableReplace(lastGoodFile(file), payload); }
@@ -98,7 +126,8 @@ function migrateFile(file) {
     for (let n = 2; fs.existsSync(backup); n++)
       backup = file + `.v${original.version}-backup-${n}.json`;
     fs.copyFileSync(file, backup, fs.constants.COPYFILE_EXCL);
-    return write(file, original, { keepLastGood: true });
+    // The byte-original v1/v2 copy above already keeps the pre-modular file.
+    return write(file, original, { keepLastGood: true, modularBackup: false });
   }
 }
 // Copies made before each restore (TASK-BACKUP-02). Only "<file>.before-restore-<ms>.json"
@@ -169,6 +198,7 @@ module.exports = {
   write,
   migrateFile,
   lastGoodFile,
+  preModularBackup,
   RESTORE_KEEP,
   restoreCopies,
   restoreCopyPath,

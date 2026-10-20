@@ -1,6 +1,7 @@
 // TASK-LIST-01: one primary button per screen, and ↑/↓ + Enter work across record rows.
 // Build first: npm run build && node tests/desktop-list-smoke.cjs
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -53,7 +54,7 @@ const root = path.resolve(__dirname, "..");
     await page.getByRole("button", { name: "오늘", exact: true }).click();
     await page.getByRole("heading", { name: "오늘의 일정과 기록" }).waitFor();
     // TASK-CALENDAR-03: week and list views with week moves and source navigation.
-    await page.locator("nav").getByRole("button", { name: "월간 일정", exact: true }).click();
+    await goTo(page, "월간 일정");
     await page.getByRole("tab", { name: "주간" }).click();
     await page.getByRole("heading", { name: "10. 12. ~ 10. 18. 주간" }).waitFor();
     assert.equal(await page.locator(".week-column").count(), 7);
@@ -102,7 +103,7 @@ const root = path.resolve(__dirname, "..");
     assert.equal(await controlEditor.getByLabel("통제 구간·대상").inputValue(), "가상 계곡 탐방로");
     await page.keyboard.press("Escape");
     await controlEditor.waitFor({ state: "hidden" });
-    await page.locator("nav").getByRole("button", { name: "월간 일정", exact: true }).click();
+    await goTo(page, "월간 일정");
     await tab("목록").click();
     const patrolRow = page.locator(".list-view-row").filter({ hasText: "순찰" }).first();
     await patrolRow.click();
@@ -116,7 +117,7 @@ const root = path.resolve(__dirname, "..");
     await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setContentSize(1280, 800));
     await page.waitForFunction(() => window.innerWidth === 1280);
     for (const name of pages) {
-      await page.locator("nav").getByRole("button", { name, exact: true }).click();
+      await goTo(page, name);
       await page.getByRole("heading", { name, level: 1 }).waitFor();
       const layout = await page.locator(".row-list .list-row").evaluateAll((rows) =>
         rows.map((row) => {
@@ -170,7 +171,7 @@ const root = path.resolve(__dirname, "..");
       }, { width, zoom });
       await page.waitForFunction((expected) => Math.abs(innerWidth - expected) <= 1, width / zoom);
       for (const name of pages) {
-        await page.locator("nav").getByRole("button", { name, exact: true }).click();
+        await goTo(page, name);
         await page.getByRole("heading", { name, level: 1 }).waitFor();
         const checks = await page.locator(".row-list").evaluate((list) => {
           const box = list.getBoundingClientRect();
@@ -213,7 +214,7 @@ const root = path.resolve(__dirname, "..");
     });
     await page.waitForFunction(() => innerWidth === 1280);
     // Future closures cannot be 'lifted today' into a still-active future one-day record.
-    await page.locator("nav").getByRole("button", { name: "탐방로 통제", exact: true }).click();
+    await goTo(page, "탐방로 통제");
     await page.getByRole("tab", { name: /^예정/ }).click();
     const future = page.locator(".control-record").filter({ hasText: "가상 예정 통제" });
     assert.equal(await future.getByRole("button", { name: /^오늘 해제 · / }).count(), 0);
@@ -231,7 +232,7 @@ const root = path.resolve(__dirname, "..");
     const liveFile = await app.evaluate(({ app }) => app.getPath("userData") + "/workdesk.json");
     const previousGood = fs.readFileSync(liveFile + ".last-good", "utf8");
     fs.mkdirSync(liveFile + ".last-good.tmp");
-    await page.locator("nav").getByRole("button", { name: "업무 메모", exact: true }).click();
+    await goTo(page, "업무 메모");
     await page.getByRole("button", { name: L.addLabel(L.TARGET.note), exact: true }).click();
     await page.getByLabel("제목", { exact: true }).fill("보호본 실패에도 저장된 메모");
     await page.getByRole("button", { name: "저장", exact: true }).click();
@@ -250,7 +251,7 @@ const root = path.resolve(__dirname, "..");
     assert.ok(JSON.parse(fs.readFileSync(liveFile + ".last-good", "utf8")).notes.some(n => n.title === "보호본 실패에도 저장된 메모"));
     // TASK-PANEL-01 D2: copy a patrol as a new one; the hint names the real source and fields.
     const source = (await page.evaluate(() => window.workdesk.load())).patrols[0];
-    await page.locator("nav").getByRole("button", { name: "현장 순찰", exact: true }).click();
+    await goTo(page, "현장 순찰");
     // The fixture repeats titles, so the clicked row is identified by the copied values.
     await page.getByRole("button", { name: `이 기록으로 새 순찰 · ${source.title}`, exact: true }).first().click();
     const route = await page.getByLabel("순찰 구간").inputValue();
@@ -276,7 +277,7 @@ const root = path.resolve(__dirname, "..");
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
 
     // TASK-EDITOR-02 A2: a keyboard toggle keeps focus on the same button through the save.
-    await page.locator("nav").getByRole("button", { name: "전화메모", exact: true }).click();
+    await goTo(page, "전화메모");
     const firstToggle = page.locator(".row-list .record-actions button").first();
     const toggleLabel = (await firstToggle.textContent()).split(" · ")[0];
     await firstToggle.focus();
@@ -288,7 +289,7 @@ const root = path.resolve(__dirname, "..");
     await page.keyboard.press("Enter");
     await page.waitForFunction((before) => document.activeElement?.textContent.startsWith(before), toggleLabel);
     // A3: an invalid end date is shown under its field, linked, and focused on save.
-    await page.locator("nav").getByRole("button", { name: "탐방로 통제", exact: true }).click();
+    await goTo(page, "탐방로 통제");
     await page.getByRole("button", { name: "통제 등록", exact: true }).click();
     const controlSheet = page.locator(".sheet[open]");
     assert.match(await controlSheet.locator(".field", { hasText: "통제 구간·대상" }).locator(".required-mark").textContent(), /필수/);
@@ -316,13 +317,13 @@ const root = path.resolve(__dirname, "..");
     await page.evaluate((value) => window.workdesk.save(value), withExtras);
     await page.reload();
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
-    await page.locator("nav").getByRole("button", { name: "업무 메모", exact: true }).click();
+    await goTo(page, "업무 메모");
     // TASK-PANEL-01 A1: row actions name their record, visible label first.
     await page.getByRole("button", { name: "수정 · 미래 필드 메모", exact: true }).click();
     await page.getByLabel("내용", { exact: true }).fill("본문 수정");
     await page.locator(".sheet[open]").getByRole("button", { name: "저장", exact: true }).click();
     await page.locator(".sheet[open]").waitFor({ state: "hidden" });
-    await page.locator("nav").getByRole("button", { name: "월간 일정", exact: true }).click();
+    await goTo(page, "월간 일정");
     await page.getByRole("tab", { name: "목록", exact: true }).click();
     await page.locator(".list-view-row").filter({ hasText: "미래 필드 일정" }).click();
     await page.getByLabel("일정 제목", { exact: true }).fill("미래 필드 일정 수정");

@@ -2,6 +2,7 @@
 // a current file keeps top-level keys this version does not know through a UI save.
 // Build first: npm run build && node tests/desktop-schema-smoke.cjs
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -50,7 +51,7 @@ const future = { inspections: [{ id: "i1", facility: "가상 데크" }] };
     assert.equal((await newer.locator(".save-indicator").textContent()).trim(), "읽기 전용");
     assert.match(await newer.locator(".read-only-notice").textContent(), /^읽기 전용: 이 자료는 더 새 버전/);
     assert.equal(await newer.locator(".read-only-notice").getAttribute("role"), "alert");
-    await newer.locator("nav").getByRole("button", { name: "업무 메모", exact: true }).click();
+    await goTo(newer, "업무 메모");
     await newer.getByRole("heading", { name: "가상 보존 메모", exact: true }).waitFor();
     await newer.getByRole("button", { name: L.addLabel(L.TARGET.note), exact: true }).click();
     await newer.getByLabel("제목", { exact: true }).fill("저장되면 안 되는 메모");
@@ -85,7 +86,7 @@ const future = { inspections: [{ id: "i1", facility: "가상 데크" }] };
     ({ app, page } = await launch(dir, currentProfile));
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
     assert.equal(await page.locator(".read-only-notice").count(), 0);
-    await page.locator("nav").getByRole("button", { name: "업무 메모", exact: true }).click();
+    await goTo(page, "업무 메모");
     await page.getByRole("button", { name: /^수정 · 가상 보존 메모$/ }).click();
     await page.getByLabel("제목", { exact: true }).fill("고친 보존 메모");
     await page.getByRole("button", { name: "저장", exact: true }).click();

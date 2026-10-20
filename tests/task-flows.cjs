@@ -3,6 +3,7 @@
 // off-screen targets). It is a review aid, not a usability test with people.
 // Build first: npm run build && node tests/task-flows.cjs
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -73,11 +74,12 @@ function counter(page) {
     await page.reload();
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
 
-    const nav = (name) => page.locator("nav").getByRole("button", { name, exact: true });
+    // TASK-MODULES-02: an applet entry plus, when needed, the page switch; each is a counted click.
+    const nav = (t, name) => goTo(page, name, { click: (locator) => t.click(locator) });
     const sheet = () => page.locator(".sheet[open]");
     const home = async () => {
       await page.keyboard.press("Escape");
-      await nav("업무 브리핑").click();
+      await goTo(page, "업무 브리핑");
       await page.getByRole("heading", { name: "업무 브리핑", exact: true }).waitFor();
     };
 
@@ -106,7 +108,7 @@ function counter(page) {
     });
 
     await task("T2", "현장 복귀 후 순찰 기록(주의 등급, 구간·확인·조치)", async (t) => {
-      await t.click(nav("현장 순찰"));
+      await nav(t, "현장 순찰");
       await t.click(page.getByRole("button", { name: L.addLabel(L.TARGET.patrol), exact: true }));
       await t.fill(page.getByLabel("기록 제목"), "오후 계곡 순찰");
       await t.fill(page.getByLabel("순찰 구간"), "계곡안내소 → 쉼터");
@@ -120,7 +122,7 @@ function counter(page) {
     });
 
     await task("T3", "방금 순찰에서 인수인계 만들기(담당·마감)", async (t) => {
-      await t.click(nav("현장 순찰"));
+      await nav(t, "현장 순찰");
       const record = page.locator(".record").filter({ has: page.getByRole("heading", { name: "오후 계곡 순찰", exact: true }) });
       await t.click(record.getByRole("button", { name: /^인수인계로 연결 · / }));
       await t.fill(page.getByLabel("담당자", { exact: true }), "김담당");
@@ -131,7 +133,7 @@ function counter(page) {
     });
 
     await task("T4", "제출 기한 등록(제출처·마감)", async (t) => {
-      await t.click(nav("제출 기한"));
+      await nav(t, "제출 기한");
       await t.click(page.getByRole("button", { name: L.addLabel(L.TARGET.submission), exact: true }));
       await t.fill(page.getByLabel("업무 제목"), "주간 순찰 실적 제출");
       await t.fill(page.getByLabel("제출처"), "자원보전부");
@@ -141,7 +143,7 @@ function counter(page) {
     });
 
     await task("T2b", "순찰 기록에 단속 건 추가(종류·담당구역·유형·건수·위경도)", async (t) => {
-      await t.click(nav("현장 순찰"));
+      await nav(t, "현장 순찰");
       const record = page.locator(".record").filter({ has: page.getByRole("heading", { name: "오후 계곡 순찰", exact: true }) });
       await t.click(record.getByRole("button", { name: /^수정 · / }));
       await t.select(page.getByLabel("순찰 종류"), "enforcement");
@@ -159,7 +161,7 @@ function counter(page) {
     });
 
     await task("T2c", "같은 구역 다음 순찰을 이어서 기록(이 기록으로 새 순찰, 제목 자동)", async (t) => {
-      await t.click(nav("현장 순찰"));
+      await nav(t, "현장 순찰");
       const record = page.locator(".record").filter({ has: page.getByRole("heading", { name: "오후 계곡 순찰", exact: true }) });
       await t.click(record.getByRole("button", { name: /^이 기록으로 새 순찰 · / }));
       assert.equal(await page.getByLabel("순찰 구간").inputValue(), "계곡안내소 → 쉼터");
@@ -176,7 +178,7 @@ function counter(page) {
     });
 
     await task("T5", "이번 주 샛길 출입 단속 건수 집계", async (t) => {
-      await t.click(nav("현장 순찰"));
+      await nav(t, "현장 순찰");
       const row = page.locator(".summary-table tbody tr").filter({ hasText: "샛길·출입금지구역 출입" });
       const count = await row.locator("td").first().textContent();
       if (count !== "2") throw new Error(`집계 값이 2가 아님: ${count}`);
@@ -184,7 +186,7 @@ function counter(page) {
     });
 
     await task("T6a", "기상특보 통제 등록(구간·사유·시작일, 종료일 비움)", async (t) => {
-      await t.click(nav("탐방로 통제"));
+      await nav(t, "탐방로 통제");
       await t.click(page.getByRole("button", { name: "통제 등록", exact: true }));
       await t.fill(page.getByLabel("통제 구간·대상"), "계곡 탐방로 전 구간");
       await t.select(page.getByLabel("통제 사유"), "weather");
@@ -201,7 +203,7 @@ function counter(page) {
     });
 
     await task("T7", "전화 메모 회신 처리", async (t) => {
-      await t.click(nav("전화메모"));
+      await nav(t, "전화메모");
       await t.click(page.getByRole("button", { name: /^처리 완료 · / }).first());
     });
 

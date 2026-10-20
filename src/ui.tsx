@@ -8,9 +8,9 @@ import {
 export { formatDate, formatClock, formatTime } from "../shared/format.mjs";
 import { RISK_LABEL } from "../shared/model.mjs";
 import { formatClock as clock } from "../shared/format.mjs";
-/** Derived calendar rows: closures span whole days, everything else has a time. */
+/** Derived calendar rows: closures and AX milestones span whole days, everything else has a time. */
 export const itemClock = (item: { category: string; at: string }) =>
-  item.category === "통제" ? "종일" : clock(item.at);
+  item.category === "통제" || item.category === "AX" ? "종일" : clock(item.at);
 export const categoryTone = (category: string) =>
   category === "순찰"
     ? "patrol"
@@ -18,7 +18,9 @@ export const categoryTone = (category: string) =>
       ? "control"
       : category === "일정"
         ? ""
-        : "task";
+        : category === "AX"
+          ? "ax"
+          : "task";
 export function localInput(at = new Date().toISOString()) {
   const d = new Date(at);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
@@ -39,7 +41,7 @@ export function Tag({
 }: {
   children: ReactNode;
   /** Status (danger/warning), category (patrol/task/holiday) or work status (duty). */
-  tone?: "" | "danger" | "warning" | "patrol" | "task" | "holiday" | "duty" | "control";
+  tone?: "" | "danger" | "warning" | "patrol" | "task" | "holiday" | "duty" | "control" | "ax";
 }) {
   return <span className={`tag ${tone}`}>{children}</span>;
 }

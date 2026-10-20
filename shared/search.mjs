@@ -7,6 +7,7 @@ import {
   RECURRENCE_LABEL,
   isRecurring,
 } from "./model.mjs";
+import { AX_SNIPPET_CATEGORIES, AX_STAGES, AX_ZONES } from "./ax.mjs";
 
 const join = (...parts) => parts.filter((p) => p !== undefined && p !== null && p !== "").join(" ");
 const coordinates = (c) => (c ? join(formatCoordinates(c), formatCoordinates(c, "dms")) : "");
@@ -30,6 +31,9 @@ export const searchText = {
     join(e.title, isRecurring(e) ? join(RECURRENCE_LABEL[e.recurrence], "반복", e.repeatUntil) : ""),
   note: (n) => join(n.title, n.body),
   call: (c) => join(c.title, c.body, c.phone),
+  ax: (p) =>
+    join(p.title, AX_ZONES[p.zone], AX_STAGES[p.stage], p.manager, p.partner, p.nextMilestone, p.nextMilestoneDate, p.risks, p.notes),
+  axSnippet: (s) => join(s.title, AX_SNIPPET_CATEGORIES[s.category], ...s.tags, s.description, s.snippet),
 };
 
 /** Case-insensitive substring match; an empty query matches everything. */
@@ -47,6 +51,8 @@ export function searchRecords(data, query) {
     ...data.events.map((r) => ({ id: r.id, page: "calendar", title: r.title, text: searchText.event(r) })),
     ...data.notes.map((r) => ({ id: r.id, page: "notes", title: r.title, text: searchText.note(r) })),
     ...data.calls.map((r) => ({ id: r.id, page: "calls", title: r.title, text: searchText.call(r) })),
+    ...(data.axProjects ?? []).map((r) => ({ id: r.id, page: "ax", title: r.title, text: searchText.ax(r) })),
+    ...(data.axSnippets ?? []).map((r) => ({ id: r.id, page: "ax-snippets", title: r.title, text: searchText.axSnippet(r) })),
   ];
   return rows
     .filter((r) => matches(r.text, query))

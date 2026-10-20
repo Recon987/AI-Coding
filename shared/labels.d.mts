@@ -8,6 +8,8 @@ export const TARGET: {
   call: string;
   assignment: string;
   holiday: string;
+  axProject: string;
+  axSnippet: string;
 };
 export const SAVE: string;
 export function addLabel(target: string): string;

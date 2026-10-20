@@ -1,5 +1,22 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## 2026-10-20 8주기 main 병합 전 확인(모듈형 개편·AX 사업 관리)
+
+기준 dbdea27(코드 7c2a067), Linux Node 22. `npm test` 161/161, `npm run test:desktop` 종료 0(진입점 17개: 기존 12 + 모듈·AX 사업·스니펫·보고서·낮은 연도, 감사 3개 9사례), `PARK_REVIEW_STRICT=1 PARK_REVIEW_ZOOM=1 node tests/ui-review.cjs` 150·실패 0·외부 요청 0, `node tests/task-flows.cjs` 11/11. 시간대 5종에서 단위 검사 확인(뉴욕·호놀룰루의 schema '고발·인계' 검사 1건은 이번 변경 전에도 같은 실패, 검사 자료의 시간대 의존). `tests/modular-contract-audit.cjs` 5개 시간대 종료 0.
+
+Windows(workflow_dispatch, 소스·설치본 실제 앱 검사): 39261289803(c08591d)·39263527042(6e1a9a9)·39264945738(e6fd498)·39288485908(79b0868)·39292805648(ea03a4a)·39297684401(7c2a067) 성공. 39291699887(4d46ed2)은 Windows 클립보드가 줄 끝을 CRLF로 보관해 스니펫 복사 비교가 어긋나 실패 → 검사를 Windows에서 줄 끝만 맞춰 비교하도록 보완(06a9f4d) 후 성공.
+
+독립 검증: Codex가 MODULES-02·AXDESK-01 기능과 BK-01·HL-01 해결을 승인했다(2026-10-19). MOD-01 보완·AXDESK-02·03·AX-DATES-01은 사용자 승인으로 먼저 병합하고 Codex 사후 검증을 받는다. 기관 Windows 10/11·NVDA·고대비 실기기 확인은 별도다.
+
+## 2026-10-19 모듈·AX 독립 검증 및 BK-01·HL-01 해결 확인
+
+기준 e671160(실행 e6fd498), Linux Node24.19.0. 단위147/147·desktop17개 진입점(일반14+감사3의9사례)·화면150/150·업무11/11 통과. 추가 AX 화면5개 크기/확대 조합과 편집/서랍 저장 실패 초안·원본·포커스 보존도 통과했다. BK-01 시계 역행2/2·HL-01 한도2/2·DS-01 감사5/5 해결 승인. 과거 반려 증빙과 구분한다.
+
+Windows39261289803(c08591d)·39263527042(6e1a9a9)·39264945738(e6fd498)의 성공/SHA를 API로 확인했다. 최신 실행 상세 로그상 소스17/패키지16개 진입점과 감사 각각9/9, 빌드·체크섬·업로드 성공. Linux 실제 네이티브 Tray·기관 Windows/NVDA 실기기는 미실행.
+
+**새 독립 경계 감사는 2실패**: 한글 설정90,023바이트를64KB검사가 허용(MOD-01/P2), 0099년 AX 마일스톤이1999년으로 파생(AX-DATE-01/P3). `node tests/modular-contract-audit.cjs`는 종료1이며 기존 필수 검사·위 Windows 실행에는 포함되지 않았다. MODULES-01 보완 요청, MODULES-02·AXDESK-01 기능 승인/의존 보완 대기. 전체 main 승인 보류. [상세·재현·화면·실행 JSON](reviews/2026-10-19-codex-modular.md).
+
+
 ## 2026-10-19 DS-01 재감사·후속6카드 독립 검증
 
 기준afc3825. Node24 npm test129/129(감사13 포함)·test:desktop13개 진입점(감사5/5 포함), UI150 실패0/오류0/외부요청0·업무흐름11/11 통과. [Windows39232674307](https://github.com/Recon987/AI-Coding/actions/runs/39232674307) 소스13/패키지12개 진입점·감사 각5/5, NSIS/portable·SHA256SUMS·업로드를 상세 로그로 확인했다. [시험 빌드](https://github.com/Recon987/AI-Coding/actions/runs/39232674307/artifacts/12178067224).

@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "id": "MOD-01: 설정 64KB는 UTF-8 바이트 한도",
+      "passed": false,
+      "characters": 30023,
+      "utf8Bytes": 90023,
+      "failure": "Missing expected exception: 한글을 포함한 64KB 초과 설정도 거부해야 함"
+    },
+    {
+      "id": "AX-DATE-01: 허용된 마일스톤 연도를 그대로 유지",
+      "passed": false,
+      "timezone": "Asia/Seoul",
+      "dates": [
+        {
+          "source": "0001-10-21",
+          "derived": "1901-10-21"
+        },
+        {
+          "source": "0099-10-21",
+          "derived": "1999-10-21"
+        },
+        {
+          "source": "0100-10-21",
+          "derived": "0100-10-21"
+        },
+        {
+          "source": "2026-10-21",
+          "derived": "2026-10-21"
+        }
+      ],
+      "failure": "저장 원본 날짜와 달력 파생 날짜가 같아야 함"
+    }
+  ],
+  "reviewedSource": "e6fd498a0904d2551247c316e849c295d737e39f",
+  "reviewedDocs": "e671160",
+  "independentRun": "2026-10-19 / Linux Node 24.19.0"
+}

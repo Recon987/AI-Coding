@@ -1,5 +1,6 @@
 // 실제 Electron에서 날짜 탐색·기록 포커스·화면 배치와 원본 자료 보존을 검사한다.
 const { _electron: electron } = require("playwright");
+const { goTo } = require("./nav.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
@@ -61,10 +62,7 @@ const root = path.resolve(__dirname, "..");
     await page.reload();
     await page.locator('.save-indicator[data-state="ready"]').waitFor();
     const before = await page.evaluate(() => window.workdesk.load());
-    await page
-      .locator("nav")
-      .getByRole("button", { name: "월간 일정", exact: true })
-      .click();
+    await goTo(page, "월간 일정");
     const agenda = page.getByRole("region", {
       name: "선택 날짜 기록",
       exact: true,

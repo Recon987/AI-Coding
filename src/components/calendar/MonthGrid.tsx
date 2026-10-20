@@ -121,6 +121,12 @@ export function MonthGrid({
           <Icon name="controls" size={12} />
           통제
         </Tag>
+        {items.some((i) => i.category === "AX") && (
+          <Tag tone="ax">
+            <Icon name="ax" size={12} />
+            AX
+          </Tag>
+        )}
         <Tag tone="holiday">공휴일</Tag>
       </div>
       <div

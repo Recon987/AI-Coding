@@ -13,8 +13,9 @@ const {
 const path = require("node:path");
 const fs = require("node:fs");
 const store = require("./store.cjs");
-const { briefing, reminderItems, NEWER_DATA_MESSAGE } = require("../shared/model.mjs");
+const { briefing, dayKey, reminderItems, NEWER_DATA_MESSAGE } = require("../shared/model.mjs");
 const { buildForm } = require("../shared/forms.mjs");
+const { buildAxReport } = require("../shared/ax-report.mjs");
 const { createDesktopLifecycle } = require("./lifecycle.cjs");
 const { createNotifier } = require("./notifications.cjs");
 const { openDataFile } = require("./recovery.cjs");
@@ -95,6 +96,25 @@ else {
       });
       if (result.canceled || !result.filePath) return false;
       fs.writeFileSync(result.filePath, "\ufeff" + content, {
+        encoding: "utf8",
+        mode: 0o600,
+      });
+      return true;
+    });
+    // TASK-AXDESK-03: the renderer names only the project and the format; the draft is
+    // rebuilt here from the saved data with the same template as the preview.
+    ipcMain.handle("export-ax-report", async (_, request) => {
+      const { filename, content } = buildAxReport(readData(), request, dayKey());
+      const result = await dialog.showSaveDialog(win, {
+        defaultPath: filename,
+        filters:
+          request.format === "md"
+            ? [{ name: "마크다운", extensions: ["md"] }]
+            : [{ name: "텍스트", extensions: ["txt"] }],
+      });
+      if (result.canceled || !result.filePath) return false;
+      // TXT keeps the BOM for older Notepad; Markdown tools read UTF-8 without it.
+      fs.writeFileSync(result.filePath, (request.format === "md" ? "" : "\ufeff") + content, {
         encoding: "utf8",
         mode: 0o600,
       });

@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld("workdesk", {
     ipcRenderer.invoke("desktop-settings-set-tray", value),
   exportBriefing: (date) => ipcRenderer.invoke("export-briefing", date),
   exportForm: (request) => ipcRenderer.invoke("export-form", request),
+  exportAxReport: (request) => ipcRenderer.invoke("export-ax-report", request),
   load: () => ipcRenderer.invoke("load"),
   takeNotice: () => ipcRenderer.invoke("take-notice"),
   save: (data) => ipcRenderer.invoke("save", data),

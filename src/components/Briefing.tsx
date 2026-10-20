@@ -65,8 +65,11 @@ export function Briefing({
   function moveDay(offset: number) {
     chooseDate(addDays(date, offset));
   }
-  const firstUse = collections.every(
-    (name) => data[name as Exclude<keyof Data, "version" | "minReader">].length === 0,
+  // Built-in example snippets are not the user's records (TASK-AXDESK-02).
+  const firstUse = collections.every((name) =>
+    name === "axSnippets"
+      ? data.axSnippets.every((s) => s.example)
+      : data[name as Exclude<keyof Data, "version" | "minReader" | "modules">].length === 0,
   );
   if (firstUse)
     return (
@@ -394,6 +397,11 @@ export function Briefing({
                   }
                 </b>
               </span>
+              {daily.some((i) => i.category === "AX") && (
+                <span>
+                  AX <b>{daily.filter((i) => i.category === "AX").length}</b>
+                </span>
+              )}
             </div>
             {(expandedDay ? daily : daily.slice(0, 4)).map((row) => {
               const coordinates =
