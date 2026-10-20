@@ -1,0 +1,30 @@
+{
+  "reviewedSource": "ea3105eda91cdc1d164b0cb237b53b524959601a",
+  "cases": [
+    {
+      "id": "MOD-01: 다국어·이모지 정확히 65536바이트 허용·1바이트 초과 거부",
+      "passed": true,
+      "exactBytes": 65536
+    },
+    {
+      "id": "스니펫 저장 실패·보고서 파일 쓰기 실패: 원본·초안 보존 및 안내",
+      "passed": true,
+      "unhandledErrors": [],
+      "externalRequests": [],
+      "originalUnchanged": true
+    },
+    {
+      "id": "SNIP-01: 제공된 DD↔DMS 예제의 음수 1도 미만 왕복",
+      "passed": true,
+      "source": -0.5,
+      "dms": [
+        0,
+        30,
+        0,
+        "S"
+      ],
+      "roundtrip": -0.5
+    }
+  ],
+  "auditAuthoredSource": "a70d9aae70bdfd96c303b97080a76e9a04500496"
+}

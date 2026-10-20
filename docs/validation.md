@@ -163,3 +163,7 @@ Electron 시나리오: DD 부분 입력/181도/16진수 오류 차단 → DD 저
 NSIS 설치 마법사 및 portable 바깥 실행기의 실기기 실행, Windows 10, 기관 보안 프로그램, 실제 OS 알림 표시·집중 지원, 탐색기 실행, 높은 DPI와 다중 모니터. 자동 검증은 기관 배포 승인을 뜻하지 않는다. 코드 서명 및 저장 암호화는 미구현이다.
 
 첫 Windows 실행은 electron-builder의 자동 게시 동작 때문에 빌드 마지막에 실패했다. `--publish never`를 명시하고 NSIS/portable 대상을 모두 지정한 뒤 위 실행에서 통과했다. 이 항목은 v0.2 당시의 검증 기록이다.
+
+
+## 2026-10-20 PR16 병합 후 Codex 확인
+main ea3105eda91cdc1d164b0cb237b53b524959601a, Windows39372610397(push)성공. Codex독립: Node24시간대5종각169/169·건너뜀0, 전체desktop18+감사3(9/9), 기존독립감사5/5·3/3. LOC-01·SNIP-01해결승인. 소스/패키지Windows로그대조완료, 기관실기기는별도. [검토·증빙](reviews/2026-10-20-codex-postmerge02.md).

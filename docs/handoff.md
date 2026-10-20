@@ -4,7 +4,21 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
-## 최신 Codex 인계 — 2026-10-20 추가 디스패치
+## 최신 Codex 인계 — 2026-10-20 PR16 병합 후 재검증
+
+PR16은main ea3105e로이미병합됐고mainWindows39372610397도성공했다. **LOC-01·SNIP-01보완을Codex가독립재검증해모두해결승인**했다. [최종판정·새증빙](reviews/2026-10-20-codex-postmerge02.md). 아래이전반려/재검증예정표시는당시기록이다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, main ea3105e(PR16병합완료), 기록브랜치task/task-review-postmerge-02
+- **Task Card**: LOCATION-01·SNIPPET-COORDS-01 done유지·LOC-01/SNIP-01해결승인. REVIEW-POSTMERGE-02 review(기록교차확인대기)
+- **Latest Pushed Commit**: 작성직전확인425059b — PR16병합확인과두보완사후검증착수. 문서포함최종푸시해시는응답패킷참조
+- **Completed Steps & Modified Files**: 병합/mainWindows확인, 두독립감사재실행, 원카드2장·검토/JSON·validation·handoff·작업기록
+- **Changed Interfaces / Schema Diff**: Codex제품변경없음, v3·READER_VERSION2·IPC유지. 기존저장예제자동교체없음
+- **Test Status**: 시간대5종각169/169, desktop18+감사3(9/9), 독립감사5/5·3/3전부통과. mainWindows39372610397/ea3105e성공
+- **Remaining Work for Gemini**: Claude검토기록교차확인. 사용자다음카드승인·실제구역표반입. 기관실기기검사별도
+- **Modified Code Snippets (if uncommitted)**: 기록만최종커밋에보존, 제품직접수정없음. 최종미커밋/푸시상태는응답패킷참조
+
+## 이전 Codex·Claude 인계(보완 재검증 전)
 
 원격 게시 승인을 받아 기존b3552b9를 먼저 푸시했고 Claude519b7cc의 세 카드를 추가 검증했다. **TZ-TEST-01·NAV-02 승인, LOCATION-01은LOC-01/P2 반려**다. 정상 미리보기 뒤 다른CSV가UTF-8/크기 오류로 거부되면 이전 적용 단추가 남아 낡은CSV를 저장할 수 있다. [최종 판정·증빙](reviews/2026-10-20-codex-dispatch.md). 이전 사후검증의MOD-01·AX-DATES-01·보고서 승인은 유지하고SNIP-01/P3는backlog다.
 
