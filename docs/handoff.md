@@ -4,6 +4,38 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Claude 인계 — 2026-10-20 다섯 번째 main 병합(10주기: 보안·허브 B1·B2a, 사용자 명시 승인 선병합)
+
+사용자·Gemini의 명시 승인으로 review 카드를 main에 먼저 병합한다(Codex 사후 검증 예정).
+- **병합 대상**: SECURITY-01·02·03(저장 암호화·백업 암호), HUB-ARCH-01·REVIEW-HUB-B1-01·HUB-SCHEMA-01(설계 문서), HUB-B2A-01(사업·근거 자료 모델)
+- **Codex B1**(TASK-HUB-B1-01, 일반 작업·회의·후속 연결·오늘 화면): Claude 독립 검증을 통과했다. 비차단 발견 B1-UI-01은 [TASK-HUB-B1-UI-01](tasks/TASK-HUB-B1-UI-01.md)로 넘긴다.
+- **통합 조정**: 명세 7장(`links[].sourceTitle` 등)
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding. `claude/zen-cannon-wc1at4`(+ `task/task-hub-b1-01` d7805e5) → main(PR, merge commit)
+- **Task Card**:
+  - done(선병합, Codex 사후 검증 예정): SECURITY-01·02·03, HUB-ARCH-01, REVIEW-HUB-B1-01, HUB-SCHEMA-01, HUB-B2A-01
+  - TASK-HUB-B1-01: done(Claude 검증 통과)
+  - ready: TASK-HUB-B1-UI-01(Codex), B2B-01(Codex), B3B-01(Codex)
+  - B3A-01: 병합 뒤 Claude가 착수
+- **Latest Pushed Commit**: 응답 패킷을 참조한다(PR·main 병합 해시)
+- **Completed Steps & Modified Files**: 보안 저장 봉투·DPAPI·복구 키·백업 암호, 허브 B1(`shared/work.mjs`, `Work`·`Meetings` 화면), B2a(`shared/projects.mjs`), 문서·카드
+- **Changed Interfaces / Schema Diff**:
+  - 새 선택 컬렉션: `workItems`·`meetings`·`links`·`projects`·`references`
+  - 기존 레코드 선택 필드: `tasks`·`axProjects`의 `projectId?`·`referenceIds?`
+  - 봉투 `{version:3, minReader:3, sealed}`, 백업 봉투 `{backupSealed}`
+  - `READER_VERSION` 3(봉투 전용)
+  - IPC: `security-*`·`unlock-*`·`backup(password)`·`restore()` 반환형·`restore-password`·`restore-cancel`
+- **Test Status**:
+  - Linux Node 22: `npm test` 211/211, `test:desktop` 종료 0(PASS 23줄), 업무 과업·Codex 감사 3종 통과
+  - 엄격 화면 검토: 150건 중 3건 실패(B1-UI-01, 비차단)
+  - Windows: PR·main 실행 결과는 응답 패킷 참조
+- **Remaining Work for Gemini**:
+  - Codex: 선병합 카드 사후 검증, B1-UI-01·B2b
+  - Claude: B3a
+  - 사용자: 기관 PC에서 저장 암호화·백업 암호 확인
+- **Modified Code Snippets (if uncommitted)**: 없음
+
 ## 최신 Claude 인계 — 2026-10-20 B2a 사업·근거 보관함 자료 모델(TASK-HUB-B2A-01, review)
 
 Gemini 확정 지시와 사용자 승인을 받아 명세 6장(3대 쟁점·문구 표준)을 고정했다. 카드 B2a·B2b·B3a·B3b를 만들었다.

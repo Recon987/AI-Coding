@@ -1,7 +1,7 @@
 ---
 id: TASK-HUB-B1-01
 title: B1 기록을 바로 작업으로 — 일반 작업·후속 연결·오늘 화면
-status: review
+status: done
 role: builder
 owner: codex
 verifier: claude
@@ -49,3 +49,34 @@ B2 사업/근거 파일·B3 기간 보고, 기관 API·메신저, 기존 자료 
 사용자가 B1 검증·문서 커밋 일체의 게시를 명시 승인하고 Windows 실행·Claude 명세 대조를 요청했다. 원격 322f56c(구현77de23d 포함)를 재확인하고 Windows 39408113609를 수동 실행했다. 소스 단위175/175·desktop·빌드·패키징 앱·업로드까지 최종 성공. 증빙은 검토 문서 참조.
 
 1ac80a3와 최신9f4fe7c 대조에서 SCHEMA-B1-01(links/source), 02(datetime/at·remindMinutes), 03(이미 존재하는 회의·제목500자) 보완을 요청한다. 수동 감사8건 재현과 관련 모델15/15 통과. [근거와 재현](../reviews/2026-10-20-codex-hub-schema-crosscheck.md). 제품 수정이나 Claude 명세 승인·B1 독립 승인으로 처리하지 않는다.
+
+## 검증 기록
+
+### 2026-10-20 Claude 독립 검증 — 통과(조건부, 비차단 발견 1건)
+- **기준**
+  - Codex `task/task-hub-b1-01` d7805e5(구현 77de23d)를 `claude/zen-cannon-wc1at4`(SECURITY-02·03, B2a 포함)에 병합한 e007b36으로 검증했다.
+  - 통합 때 조정한 것(명세 7장)은 다음 4가지다.
+    - 승인된 삭제 출처 제목을 `links[].sourceTitle?`로 구현
+    - B2a 중복 출처 함수 제거
+    - `desktop-work-smoke` 백업·복원을 암호 계약에 맞춤
+    - `hub-schema-contract-audit`의 `READER_VERSION` 기대값을 3으로
+- **실행 결과(Linux Node 22)**
+  - `npm test` 211/211
+  - `npm run test:desktop` 종료 0(PASS 23줄, `desktop-work-smoke`·`security`·`backup-password` 포함)
+  - 업무 과업 통과, Codex 감사 3종 통과, `hub-schema-contract-audit` 8/8 재현
+  - `work-compatibility.cjs`(구판=origin/main 사본, 보안=통합본) PASS
+  - `work-timezone` 5개 시간대 통과
+- **대조(B1 검토 1c4caaa 차단 1~3)**
+  - 차단 1: 날짜형 기한은 날짜 키로만 비교한다(`dueState`). 달력은 현지 자정 `allDay`, 알림은 일시형+명시 `remindMinutes`만. **해소**
+  - 차단 2: 내용 판독 수준 상향 없음(`minReader` 없음). **해소**
+  - 차단 3: 평문 백업 전제 검사는 통합 때 수정했다. **해소**
+  - 상태 비전파(전화 `done` 불변)·1:N 후속·끊긴 출처 보존·라벨(작업 "완료"·"조치 완료"·"제출 완료") 확인
+- **발견 B1-UI-01(P2, 비차단)**: 엄격 화면 검토(`PARK_REVIEW_STRICT=1 tests/ui-review.cjs`) 150건 중 3건 실패.
+  - 원인: B1이 업무 브리핑 첫 사용 패널과 "챙겨야 할 업무" 위에 빠른 등록(`QuickWork`)을 넣었다.
+  - 실패 내용:
+    - 1280×800에서 첫 업무 행 top 347px(기준 300px 이하)
+    - 960×680·125% 배율에서 첫 사용 "전화메모 등록"이 스크롤 없이 보이지 않음(y≈555, 높이 132)
+  - 필수 관문(`npm test`·`test:desktop`)은 아니어서 병합은 막지 않는다.
+  - 후속 카드 [TASK-HUB-B1-UI-01](TASK-HUB-B1-UI-01.md)(Codex)로 넘긴다. 배치를 바꿀지, 기준을 재합의할지 정한다.
+- **병합**: 사용자 명시 승인(2026-10-20)으로 main에 함께 병합한다.
+
