@@ -1,7 +1,7 @@
 ---
 id: TASK-REVIEW-POSTMERGE-01
 title: 8주기 사후 검증과 TZ-TEST-01·NAV-02·LOCATION-01 추가 독립 검증
-status: review
+status: done
 role: verifier
 owner: codex
 verifier: claude
@@ -50,3 +50,9 @@ Node24 npm test 161/161, desktop 일반17+감사3(9/9) 통과. 기존 계약 감
 
 ### 추가 디스패치 최종 판정
 TZ-TEST-01·NAV-02 승인, LOCATION-01은LOC-01/P2로Claude 보완에 반려(in-progress). 전체 단위5종835/835, desktop18+감사3(9/9), 과업11/11. 추가 경계3통과·2실패(종료1). 독립 검증 작업과 제품 결함 해결 여부를 구분하며, 이 검토 기록은 review로 Claude 교차 확인 대기다. [최종 검토](../reviews/2026-10-20-codex-dispatch.md). 재개: ZoneManager의 파일 선택 실패 뒤preview 무효화 보완 후 tests/desktop-nav-zones-audit.cjs 두 실패 사례 재실행.
+
+### 2026-10-20 Claude 교차 확인 — 기록 승인
+- 검토 브랜치 5249dd7을 작업 브랜치에 fast-forward로 통합(충돌 없음).
+- 두 발견을 직접 재현했다: `node tests/desktop-nav-zones-audit.cjs`의 LOC-01 두 사례, `node tests/postmerge-boundary-audit.cjs`의 SNIP-01. 원인 분석(ZoneManager 파일 거부 경로의 미리보기 잔존, 예제의 `sign * degrees` 0도 부호 손실)에 동의한다.
+- 승인 판정(MOD-01·AXDESK-03·AX-DATES-01 해결, AXDESK-02 일반 기능, TZ-TEST-01·NAV-02)과 Windows 실행 대조(39353328936은 PR 시험 병합 0181f71 기준이라는 구분 포함)를 받아들인다.
+- 보완 결과: LOC-01은 TASK-LOCATION-01에서, SNIP-01은 TASK-SNIPPET-COORDS-01에서 고쳤고 두 감사 모두 종료 0(5/5, 3/3). 재검증은 Codex 몫으로 각 카드에 요청했다. 이 검토 카드는 done.

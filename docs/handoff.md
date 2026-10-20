@@ -9,19 +9,14 @@
 원격 게시 승인을 받아 기존b3552b9를 먼저 푸시했고 Claude519b7cc의 세 카드를 추가 검증했다. **TZ-TEST-01·NAV-02 승인, LOCATION-01은LOC-01/P2 반려**다. 정상 미리보기 뒤 다른CSV가UTF-8/크기 오류로 거부되면 이전 적용 단추가 남아 낡은CSV를 저장할 수 있다. [최종 판정·증빙](reviews/2026-10-20-codex-dispatch.md). 이전 사후검증의MOD-01·AX-DATES-01·보고서 승인은 유지하고SNIP-01/P3는backlog다.
 
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding, task/task-review-postmerge-01 → main(미병합). 추가 검증 기준 Claude 519b7cc
-- **Task Card**: POSTMERGE-01 review(검토 기록 교차 확인 대기). TZ-TEST-01·NAV-02 승인/review, LOCATION-01 LOC-01/P2 반려/in-progress(Claude)
-- **Latest Pushed Commit**: 작성 직전 확인한 bdc8ab7 — 원격 게시 복구와 세 카드 시간대 검증 체크포인트. 문서 포함 최종 푸시 해시는 응답 패킷과 git log -1 참조
-- **Completed Steps & Modified Files**: b3552b9 선푸시, Claude 519b7cc 통합(017dd62), 시간대5종·desktop·Windows 대조. 세 카드·POSTMERGE 카드·검토/JSON증빙·독립 감사·handoff·작업 기록
-- **Changed Interfaces / Schema Diff**: Codex 제품 코드 변경 없음. 검증 대상 Claude 변경: 선택 zones({id,code,name,route,active})·도구 화면 localStorage 기억, 데이터v3/READER_VERSION2 유지, IPC 변경 없음
-- **Test Status**: 전체 단위5종 각각167/167(835/835), desktop18+감사3(9/9), 과업11/11 통과. 추가 NAV/LOCATION 경계3통과·LOC-01 2실패(종료1). Windows39358186950(82f3a59) 소스/패키지 성공 대조
-- **Remaining Work for Gemini**: Claude: LOCATION-01 파일 선택/거부 시preview 무효화 보완 후Codex 재검증. 총괄: 승인2카드 병합 판단·검토 기록 교차 확인. SNIP-01/P3 기존 backlog 유지
-- **Modified Code Snippets (if uncommitted)**: 최종 커밋에 기록·감사 보존, 제품 직접 수정 없음. 최종 푸시 및 미커밋 여부는 응답 패킷 참조
-
-## 이전 Claude 인계(추가 검증 전 기록)
-
-문서의 커밋 해시는 작성 직전 확인한 원격 기준이다. 문서를 포함한 최종 해시는 응답 패킷과 git log -1에서 확인한다.
-
+- **Repository & Branch**: Recon987/AI-Coding. main = a70d9aa. 작업 브랜치 claude/zen-cannon-wc1at4 = main + 8주기 기록 + TZ-TEST-01 + NAV-02 + LOCATION-01(+LOC-01) + Codex 사후 검증 기록(5249dd7) + SNIPPET-COORDS-01
+- **Task Card**: TZ-TEST-01·NAV-02 review(Codex 승인). LOCATION-01 review(LOC-01 보완, Codex 재검증 필요). SNIPPET-COORDS-01 review(Codex 재검증 필요). REVIEW-POSTMERGE-01 done(Claude 교차 확인). 8주기 카드 Codex 사후 승인 완료
+- **Latest Pushed Commit**: 9701e95(SNIPPET-COORDS-01 착수) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: src/components/ZoneManager.tsx(LOC-01), shared/ax.mjs(example-dd-dms 반구 계약), tests/desktop-zones-smoke.cjs(LOC-01 회귀), tests/ax-desk.test.cjs(SNIP-01 2개), 카드 4장·작업 기록 34장
+- **Changed Interfaces / Schema Diff**: 자료 형식·IPC 변경 없음. 예제 스니펫 텍스트만 변경(새로 넣는 예제에만 적용, 기존 저장 예제 불변)
+- **Test Status**: Linux Node 22: npm test 169/169(시간대 5종), desktop-nav-zones-audit 5/5, postmerge-boundary-audit 3/3, npm run test:desktop 종료 0(진입점 18 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행
+- **Remaining Work for Gemini**: Codex: LOC-01·SNIP-01 재검증. 사용자: main 병합 승인(9주기: TZ-TEST-01·NAV-02·LOCATION-01·SNIPPET-COORDS-01). Claude: 승인 시 PR·병합
+- **Modified Code Snippets (if uncommitted)**: 없음
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding. main = a70d9aa. 작업 브랜치 claude/zen-cannon-wc1at4 = main + 8주기 기록 + TZ-TEST-01 + NAV-02 + LOCATION-01

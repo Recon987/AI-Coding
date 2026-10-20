@@ -50,7 +50,7 @@ LOC-01 보완 완료, Codex 재검증 대기(tests/desktop-nav-zones-audit.cjs�
 - 측정: 업무 과업 검사 자료에는 담당구역 목록이 없어 클릭·입력 수는 그대로(T2 5클릭·6칸·39자). 목록이 있으면 구역을 고를 때 대표 구간이 채워져 구간 입력을 건너뛸 수 있다(실제 앱 검사로 확인).
 
 ## 테스트 상태
-2026-10-20 Linux(Node 22): `npm test` 167/167(서울·뉴욕, zones 5개), `npm run test:desktop` 종료 0(진입점 18 + 감사 3, 새 desktop-zones-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(변화 없음). Windows 39358186950(82f3a59, workflow_dispatch) 성공: 소스·설치본 실제 앱 검사(담당구역 검사 포함) 통과.
+2026-10-20 LOC-01 보완 후 Linux(Node 22): `npm test` 169/169(시간대 5종), `node tests/desktop-nav-zones-audit.cjs` 5/5 종료 0, `npm run test:desktop` 종료 0(진입점 18 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11. 이전 Windows 39358186950(82f3a59)은 보완 전 코드. 보완 후 Windows는 푸시 후 수동 실행.
 
 ## 검증 기록
 
