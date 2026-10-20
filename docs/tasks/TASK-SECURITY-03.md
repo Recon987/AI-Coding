@@ -30,10 +30,15 @@ updated: 2026-10-20
 - [ ] 2. 백업·복원 대화상자 연결·실제 앱 검사·기록
 
 ## 재개 위치
-2단계: `desktop/main.cjs` IPC `backup(password)`·`restore()`(결과 `{data}`/`{needsPassword,name}`/null)·`restore-password(password)`·`restore-cancel`, 시작 복구 흐름(`recovery.cjs`)의 암호 백업 선택 시 암호 창, `src/components/BackupSheet.tsx`(백업 암호 두 번·강도 안내, 복원 암호 입력), 기존 스모크(`desktop-smoke`·`desktop-recurrence-smoke`)의 백업 단계를 암호 입력으로 갱신, `tests/desktop-backup-password-smoke.cjs`.
+Linux 검사 끝. Windows Actions 39389450176(4bdae7c) 결과를 확인한다(`desktop-backup-password-smoke`가 패키징 앱에서도 돈다. 시작 복구 창 부분은 `-r` 스텁이 필요해 개발 실행에서만 확인). 통과하면 완료 조건을 표시하고 `review`로 올린다.
 
 ## 테스트 상태
-2026-10-20 1단계: `npm test` 196/196 통과(backup-seal 8건 포함, 실제 비용 N=2^17 1건). `test:desktop` 미실행.
+2026-10-20 Linux Node 22:
+- `npm test` 196/196 통과(서울·뉴욕·키리티마티).
+- `npm run test:desktop` 종료 0(PASS 22줄, 새 `desktop-backup-password-smoke` 포함).
+- 화면 150건·실패 0, 업무 과업 통과, Codex 감사 3종(modular-contract, nav-zones, postmerge-boundary) 종료 0.
+- 기존 smoke 2개(`desktop-smoke`, `desktop-recurrence-smoke`)는 백업 단계를 암호 입력으로 갱신했다(`tests/backup-ui.cjs`). 복원 확인은 평문 백업 복원도 계속 검사한다.
+- Windows: 39389450176 실행 중.
 
 ## 구현 결정
 - 봉투 `{version:3, minReader:3, backupSealed:{format:"park-workdesk-backup", version:1, kdf:"scrypt", N, r, p, salt, alg:"AES-256-GCM", iv, tag, data}}`. 저장 봉투(`sealed`)와 키 이름을 달리해 어느 쪽인지 섞이지 않는다.
