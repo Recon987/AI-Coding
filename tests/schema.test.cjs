@@ -140,7 +140,7 @@ test("'고발·인계'를 쓰는 자료는 minReader 2로 저장되고, 지운 �
     assert.equal(READER_VERSION, 2);
     const data = sample();
     data.patrols.push({
-      id: "p1", title: "가상 단속", at: "2026-10-19T10:00:00+09:00", route: "가상 구간", observer: "가상 직원",
+      id: "p1", title: "가상 단속", at: "2026-10-19T10:00:00", route: "가상 구간", observer: "가상 직원",
       findings: "", action: "", risk: "normal", kind: "enforcement",
       observations: [
         { id: "o1", type: "흡연", count: 1, outcome: "referral", note: "" },
