@@ -25,13 +25,13 @@ updated: 2026-10-20
 화면·내보내기(B3b).
 
 ## 진행 단계
-- [ ] 1. 기간·분류 함수와 단위 검사
+- [x] 1. 기간·분류 함수와 단위 검사
 - [ ] 2. 모듈 기여 합성·결정성 검사·기록
 
 ## 재개 위치
-1단계 착수: main 5ab5675(B1·B2a 병합) 기준. `shared/rollup.mjs`(기간·분류·보고서 렌더)와 `tests/rollup.test.cjs`.
+2단계: `shared/rollup.mjs`(+`.d.mts`)·`tests/rollup.test.cjs` 10건·`tests/rollup-fixture.cjs` 완료. 다음: `test:desktop` 전체 실행, 기록, review.
 
 ## 테스트 상태
-미실행
+2026-10-20 중간: `npm test` 221/221(rollup 10건, 시간대 5종 결정성 포함), `tsc` 통과.
 
 ## 검증 기록
