@@ -1,7 +1,7 @@
 ---
 id: TASK-LOCATION-01
 title: 담당구역 번호 목록(로컬 반입)과 순찰 선택 입력
-status: in-progress
+status: review
 role: builder
 owner: claude
 verifier: codex
@@ -25,22 +25,26 @@ updated: 2026-10-20
 
 ## 완료 조건
 - [x] 사용자 답변으로 위치 표기 방식 확정: 담당구역 번호, 단속은 위경도(2026-10-16)
-- [ ] CSV 반입·검증·미리보기(사무소 CSV 반입과 같은 방식)
-- [ ] 순찰 구간 선택 입력과 최근 값
-- [ ] `npm test`, `npm run test:desktop` 통과
+- [x] CSV 반입·검증·미리보기(사무소 CSV 반입과 같은 방식)
+- [x] 순찰 구간 선택 입력과 최근 값
+- [x] `npm test`, `npm run test:desktop` 통과
 
 ## 범위 밖
 국가지점번호 변환(별도 검토), GPS 수집.
 
 ## 진행 단계
 - [x] 1. 설계 메모(필드·화면)를 이 카드에 추가
-- [ ] 2. 구현
-- [ ] 3. 테스트·문서
+- [x] 2. 구현
+- [x] 3. 테스트·문서
 
 ## 재개 위치
-2단계 진행: shared/zones.mjs·zones-import.mjs·model 연결·tests/zones.test.cjs 완료(5개 통과). 다음: src/components/ZoneManager.tsx(자료 관리 → 담당구역 목록 시트), Patrols.tsx 담당구역·순찰 구간 제안.
+구현 완료, Codex 검증 대기. 검증 때 볼 곳: shared/zones.mjs·zones-import.mjs(+d.mts), shared/model.mjs(선택 컬렉션 `zones`), src/types.ts(`Zone`), src/components/ZoneManager.tsx(자료 관리 → 담당구역 목록), src/components/Patrols.tsx(담당구역·순찰 구간 제안, 대표 구간 채움, 목록 밖 안내), tests/zones.test.cjs, tests/desktop-zones-smoke.cjs, docs/architecture.md.
+
+## 구현 메모
+- 설계 메모대로 구현. 추가로: 사용 안 함(active false) 구역은 제안에서 빼고 목록 표에는 보인다. 자동 채움은 순찰 구간이 비어 있을 때만 하고, 직접 쓴 구간은 덮지 않는다. 읽기 전용 자료에서는 반입·삭제를 잠근다. 미리보기 뒤 자료가 바뀌면 미리보기를 지워 낡은 미리보기를 적용하지 못하게 했다(사무소 반입과 같음).
+- 측정: 업무 과업 검사 자료에는 담당구역 목록이 없어 클릭·입력 수는 그대로(T2 5클릭·6칸·39자). 목록이 있으면 구역을 고를 때 대표 구간이 채워져 구간 입력을 건너뛸 수 있다(실제 앱 검사로 확인).
 
 ## 테스트 상태
-2026-10-20 체크포인트: tsc 통과, `npm test` 167/167(zones 5개 포함). 화면 미구현, test:desktop 미실행.
+2026-10-20 Linux(Node 22): `npm test` 167/167(서울·뉴욕, zones 5개), `npm run test:desktop` 종료 0(진입점 18 + 감사 3, 새 desktop-zones-smoke), 화면 검사(확대 포함 strict) 150·실패 0·외부 요청 0, 업무 과업 11/11(변화 없음). Windows는 푸시 후 수동 실행.
 
 ## 검증 기록

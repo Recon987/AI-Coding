@@ -27,6 +27,7 @@ import { Tasks } from "./components/Tasks";
 import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
 import { HolidayManager } from "./components/HolidayManager";
+import { ZoneManager } from "./components/ZoneManager";
 import { Icon } from "./components/Icon";
 import { AppletDrawer } from "./components/AppletDrawer";
 import { AxDesk } from "./components/AxDesk";
@@ -98,6 +99,7 @@ function App() {
     [readOnly, setReadOnly] = useState(false),
     // TASK-HOLIDAY-01: user-added holidays sheet, opened from 자료 관리.
     [holidaysOpen, setHolidaysOpen] = useState(false),
+    [zonesOpen, setZonesOpen] = useState(false),
     // TASK-MODULES-02: 모듈 관리 drawer.
     [modulesOpen, setModulesOpen] = useState(false),
     [query, setQuery] = useState("");
@@ -483,6 +485,18 @@ function App() {
                   <Icon name="calendar" size={16} />
                   공휴일 관리
                 </button>
+                <button
+                  disabled={busy}
+                  onClick={(event) => {
+                    event.currentTarget
+                      .closest("details")
+                      ?.removeAttribute("open");
+                    setZonesOpen(true);
+                  }}
+                >
+                  <Icon name="patrol" size={16} />
+                  담당구역 목록
+                </button>
               </div>
             </details>
           </div>
@@ -575,6 +589,9 @@ function App() {
           )}
           {holidaysOpen && (
             <HolidayManager data={data} busy={busy} save={save} onClose={() => setHolidaysOpen(false)} />
+          )}
+          {zonesOpen && (
+            <ZoneManager data={data} busy={busy} readOnly={readOnly} save={save} onClose={() => setZonesOpen(false)} />
           )}
           {error && (
             <div role="alert" className="error">
