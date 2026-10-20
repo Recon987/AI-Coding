@@ -4,21 +4,21 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
-## 최신 B1 인계 — 구현·자체 검증 완료, 원격 미게시
+## 최신 B1 인계 — 사용자 게시 승인·원격 푸시 완료
 
 사용자가 B1 착수를 승인했고 Gemini의 화면 수용 기준을 수신했다. 사업·기한 없는 작업, 오늘 및 기존 메뉴의 세 유형 조회, 메모/전화/회의의 1:N 후속·원본 복귀·삭제 표시를 구현했다. [자체 검증과 재현 명령](reviews/2026-10-20-codex-hub-b1.md). 아래의 B1 착수 대기·제품 미변경 표시는 이전 시점 기록이다. 보안 카드의 기존 review 상태와 main은 변경하지 않았다.
 
-원격 푸시는 자동 승인 검토에서 새 B1 payload의 게시 승인이 부족하다는 이유로 거절되어 로컬 보존했다. 사용자에게 완성된 브랜치 게시 승인을 요청할 단계다. Claude의 독립 검토와 PR Windows 검사는 아직 없다.
+사용자가 완성된 B1 브랜치 게시를 명시 승인했다. `77de23d21fab9e45976b0dac9aa8886b578dd017`을 `origin/task/task-hub-b1-01`에 푸시하고 원격 SHA 일치를 확인했다. 이전 게시 차단 표시는 승인 전 기록이다. Claude의 독립 검토와 PR Windows 검사는 아직 없다.
 
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding, `task/task-hub-b1-01` 로컬 / 병합 대상 main `ea3105e`
+- **Repository & Branch**: Recon987/AI-Coding, `task/task-hub-b1-01` 원격 게시 완료 / 병합 대상 main `ea3105e`
 - **Task Card**: TASK-HUB-B1-01 review. 구현·자체 검사 완료, Claude 독립 검토 대기
-- **Latest Pushed Commit**: B1 미푸시. 이전 방향안 `b36307a` 원격 SHA 확인, B1 원격 브랜치 없음. 최종 로컬 해시는 응답 패킷 참조
+- **Latest Pushed Commit**: 작성 직전 원격 확인 `77de23d` — B1 구현·전체 검증 기록. 게시 상태 문서 포함 최종 해시는 응답 패킷 참조
 - **Completed Steps & Modified Files**: shared/work·모델/검색, 타입, 오늘·Tasks·Personal·Work·Meetings UI, 단위/실제 앱/측정·교차 검사, Windows 검사 목록·검증 문서
 - **Changed Interfaces / Schema Diff**: 선택 workItems/meetings/links, WorkDue·SourceRef, work/meetings 페이지. v3·reader2·기존 Task.kind·IPC 유지. 날짜만 알림 없음·원본 상태 비전파
 - **Test Status**: npm test 175/175, test:desktop 종료 0(19종+감사3종/9사례). 혼합10,000건 시작 중앙값534ms·실제검색p95 55ms. 구판·보안 가상 사본 왕복 통과. Windows/DPAPI·독립 승인 미실행
-- **Remaining Work for Gemini**: 구현 화면 문구 확인. Claude 독립 검증·보안 통합 시 B1 모델 유지. B1 게시 승인 후 push·PR Windows, main 병합 별도
-- **Modified Code Snippets (if uncommitted)**: 이 문서까지 최종 로컬 커밋에 포함한다. 최종 git 상태는 응답 패킷 참조. B1 전체 미푸시
+- **Remaining Work for Gemini**: 구현 화면 문구 확인. Claude 독립 검증·보안 통합 시 B1 모델 유지. PR Windows 검사·main 병합 별도
+- **Modified Code Snippets (if uncommitted)**: 제품 코드 미변경. 이번 게시 상태 기록을 같은 브랜치에 커밋·푸시하며 최종 git 상태는 응답 패킷 참조
 
 ## 최신 게시 상태 — Gemini 통합안
 
