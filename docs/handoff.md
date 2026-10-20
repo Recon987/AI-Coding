@@ -4,6 +4,41 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Claude 인계 — 2026-10-20 SECURITY-02 저장 암호화 구현(review)
+
+자료 관리 > **저장 암호화**를 추가했다. 사용자가 켜는 방식이다.
+- 켜는 절차: 복구 키(4자리씩 6묶음)를 한 번 보여 주고, 다시 입력해야 켜진다.
+- 켜면 주 파일·last-good·보호본·백업·`.tmp`를 AES-256-GCM 봉투(`minReader 3`)로 저장한다. 데이터 키는 DPAPI로 감싸 `workdesk.key.json`에 둔다.
+- 이 PC가 키를 못 열면(계정·PC 변경, 키 파일 분실): 시작할 때 복구 키 창을 띄우고, 열기 전에는 자료를 읽거나 쓰지 않는다.
+- 운영체제 키 보호가 없는 PC에서는 켜지 않고 이유를 보여 준다.
+
+[카드](tasks/TASK-SECURITY-02.md) · [작업 기록 37장](work-log/2026-10-18-claude-2.md)
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e. 작업 브랜치 `claude/zen-cannon-wc1at4` = main + 9주기 기록 + SECURITY-01 설계 + SECURITY-02 구현
+- **Task Card**: TASK-SECURITY-02 review(검증자 codex). 의존 예외 SECURITY-01(설계 review, 사용자 승인). Claude in-progress 없음
+- **Latest Pushed Commit**: 1bc848b(Windows 39383034461 성공). 이 문서를 포함한 최종 해시는 응답 패킷을 참조한다
+- **Completed Steps & Modified Files**:
+  - 새 파일: `desktop/seal.cjs`, `desktop/keystore.cjs`, `desktop/protector.cjs`, `src/components/Security.tsx`
+  - 수정: `desktop/store.cjs`·`main.cjs`·`preload.cjs`, `shared/model.mjs`, `src/main.tsx`·`types.ts`·`Icon.tsx`·`style.css`
+  - 검사: `tests/seal.test.cjs`·`store-sealed.test.cjs`·`desktop-security-smoke.cjs`(신규), `tests/desktop-nav-zones-audit.cjs`(미래 자료를 `READER_VERSION+1`로)
+  - 설정·문서: `package.json`, `windows-build.yml`, `docs/architecture.md`
+- **Changed Interfaces / Schema Diff**:
+  - 자료 스키마 불변. 저장 봉투 `{version:3, minReader:3, sealed:{alg, keyId, iv, tag, data, recovery}}`
+  - `READER_VERSION` 2 → 3(봉투 전용). 구버전 앱은 봉한 파일을 새 버전 자료로 보고 바꾸지 않는다
+  - 새 파일 `workdesk.key.json`
+  - 새 IPC: `security-status/prepare/cancel/enable`, `unlock-info/try/quit`
+  - 개발 실행 전용 `PARK_TEST_PROTECTOR`(패키징 앱은 무시)
+- **Test Status**:
+  - Linux Node 22: `npm test` 188/188(시간대 5종), `test:desktop` 종료 0(진입점 19 + 감사), 화면 150·실패 0, 과업 11/11, Codex 감사 3종 통과
+  - Windows 39383034461 성공: 패키징 앱 `desktop-security-smoke` "safeStorage 실제" 통과
+  - 기관 실기기: 미확인
+- **Remaining Work for Gemini**:
+  - Codex: SECURITY-01 설계 검토, SECURITY-02 검증
+  - 사용자: 기관 PC에서 켜기·재시작 확인, main 병합 승인 여부
+  - 다음 카드: SECURITY-03(백업 암호·다른 PC 복원), SECURITY-04(켜기 전 평문 사본 정리·기본 켜기 여부)
+- **Modified Code Snippets (if uncommitted)**: 없음
+
 ## 최신 Codex 인계 — 2026-10-20 PR16 병합 후 재검증
 
 PR16은main ea3105e로이미병합됐고mainWindows39372610397도성공했다. **LOC-01·SNIP-01보완을Codex가독립재검증해모두해결승인**했다. [최종판정·새증빙](reviews/2026-10-20-codex-postmerge02.md). 아래이전반려/재검증예정표시는당시기록이다.
