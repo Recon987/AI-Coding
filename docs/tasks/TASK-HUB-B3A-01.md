@@ -1,9 +1,9 @@
 ---
 id: TASK-HUB-B3A-01
 title: B3a 주간 실적·계획·인계 롤업 순수 함수
-status: ready
+status: in-progress
 role: builder
-owner: none
+owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: TASK-HUB-B2A-01
@@ -29,7 +29,7 @@ updated: 2026-10-20
 - [ ] 2. 모듈 기여 합성·결정성 검사·기록
 
 ## 재개 위치
-B2a 끝나고 B1이 main에 들어간 뒤 착수.
+1단계 착수: main 5ab5675(B1·B2a 병합) 기준. `shared/rollup.mjs`(기간·분류·보고서 렌더)와 `tests/rollup.test.cjs`.
 
 ## 테스트 상태
 미실행
