@@ -38,9 +38,9 @@ updated: 2026-10-20
 - [ ] 3. 테스트·문서
 
 ## 재개 위치
-2단계: shared/zones.mjs(validateZones·previewZoneImport·zoneSuggestions·routeSuggestions)와 model 연결, src/components/ZoneManager.tsx, Patrols.tsx 입력 제안.
+2단계 진행: shared/zones.mjs·zones-import.mjs·model 연결·tests/zones.test.cjs 완료(5개 통과). 다음: src/components/ZoneManager.tsx(자료 관리 → 담당구역 목록 시트), Patrols.tsx 담당구역·순찰 구간 제안.
 
 ## 테스트 상태
-미실행
+2026-10-20 체크포인트: tsc 통과, `npm test` 167/167(zones 5개 포함). 화면 미구현, test:desktop 미실행.
 
 ## 검증 기록
