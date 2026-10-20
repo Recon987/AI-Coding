@@ -1,7 +1,7 @@
 ---
 id: TASK-SECURITY-01
 title: 저장·백업 암호화 설계(Windows DPAPI/safeStorage)
-status: in-progress
+status: review
 role: builder
 owner: claude
 verifier: codex
@@ -19,19 +19,19 @@ updated: 2026-10-20
 
 ## 완료 조건
 - [x] 위협 모델 문서(분실 PC, 공용 PC, 백업 USB 반출) — [설계안](../research/security-01-design.md) 3장
-- [ ] 키 분실·복구 정책과 이동 백업 암호 방식 결정(사용자 승인)
-- [ ] 평문→암호 전환 시 원본 백업, 대용량 성능 측정
+- [x] 키 분실·복구 정책과 이동 백업 암호 방식 결정(사용자 승인) — 2026-10-20 D 채택, 백업 암호 매번 입력, 알림 제목 숨김 선택 기능([설계안 10장](../research/security-01-design.md))
+- [ ] 평문→암호 전환 시 원본 백업, 대용량 성능 측정 — 설계·사전 측정 완료(설계안 5·6장), 구현·실측은 SECURITY-04로 이관
 
 ## 범위 밖
 서버 키 관리.
 
 ## 진행 단계
-- [ ] 1. 위협 모델·설계안(사용자 승인 필요) — 설계안 작성 완료, **사용자 결정 대기**
-- [ ] 2. 구현
-- [ ] 3. 전환·성능 검증
+- [x] 1. 위협 모델·설계안(사용자 승인 필요) — 2026-10-20 승인
+- [ ] 2. 구현 — SECURITY-02·03·05 카드로 분리
+- [ ] 3. 전환·성능 검증 — SECURITY-04 카드로 분리
 
 ## 재개 위치
-1단계 설계안 작성 완료([docs/research/security-01-design.md](../research/security-01-design.md)), **사용자 결정 대기**(9장 다섯 가지: 보호 방식·복구 키·백업 암호·알림 제목 숨김·기관 PC 사정). 결정을 받으면 8장대로 SECURITY-02~04 카드를 만들고 이 카드는 설계 승인 기록 후 done으로 정리한다. 제품 코드는 아직 바꾸지 않았다.
+설계 카드로 마무리: 위협 모델·결정 기록 완료, 구현은 SECURITY-02~05. Codex는 설계안(docs/research/security-01-design.md)의 위협 모델·봉투 형식·구버전 혼용(minReader 3)·전환 한계를 검토한다. 승인되면 done.
 
 ## 테스트 상태
 2026-10-20: 제품 코드 변경 없음. `node scripts/security-bench.cjs`(설계 측정, 앱에 포함 안 됨) — 20MB AES-256-GCM 봉함 175ms·열기 15ms·변조 거부, scrypt N=2^17 427ms/128MB. Electron safeStorage는 이 Linux 환경에서 사용 불가(basic_text), Windows 확인은 구현 단계. `npm test` 169/169.

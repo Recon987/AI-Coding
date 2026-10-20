@@ -9,13 +9,13 @@
 PR16은main ea3105e로이미병합됐고mainWindows39372610397도성공했다. **LOC-01·SNIP-01보완을Codex가독립재검증해모두해결승인**했다. [최종판정·새증빙](reviews/2026-10-20-codex-postmerge02.md). 아래이전반려/재검증예정표시는당시기록이다.
 
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e. 작업 브랜치 claude/zen-cannon-wc1at4 = main + 9주기 기록 + Codex 재검증 기록 + SECURITY-01 설계안
-- **Task Card**: TASK-SECURITY-01 in-progress(owner claude, verifier codex) — 1단계 설계안 완료, **사용자 결정 대기**. 미결 검증 없음. backlog: LAW-01·LEDGER-01
-- **Latest Pushed Commit**: 7b4c48e(재검증 교차 확인) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: docs/research/security-01-design.md(신규: 평문 사본 목록·위협 모델·선택지 A~D·권장 D·봉투 형식·전환·성능·결정 사항), scripts/security-bench.cjs(신규, 설계 측정용·앱 미포함), 카드·작업 기록 36장
-- **Changed Interfaces / Schema Diff**: 없음(제품 코드 변경 없음)
-- **Test Status**: npm test 169/169. 설계 측정: 20MB AES-256-GCM 봉함 175ms·열기 15ms·변조 거부, scrypt N=2^17 427ms/128MB. safeStorage는 Linux 클라우드에서 불가(basic_text), Windows 확인은 구현 단계
-- **Remaining Work for Gemini**: 사용자: 설계안 9장 결정 5건. Codex(선택): 설계안 2차 의견. Claude: 결정 후 SECURITY-02~04 카드 분리·구현
+- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e. 작업 브랜치 claude/zen-cannon-wc1at4 = main + 9주기 기록 + Codex 재검증 기록 + SECURITY-01 설계
+- **Task Card**: TASK-SECURITY-01 review(설계 카드, Codex 설계 검토 대기). 새 카드 ready: SECURITY-02(P1, 저장 봉투·DPAPI 키·복구 키) → SECURITY-03(P1, 백업 암호) → SECURITY-04(P1, 평문 전환·사본 정리·실측), SECURITY-05(P3, 알림 제목 숨김). Claude in-progress 없음
+- **Latest Pushed Commit**: 3b69fa9(설계안) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: docs/research/security-01-design.md(10장 사용자 결정 추가), docs/tasks/TASK-SECURITY-01.md(review)·TASK-SECURITY-02~05.md(신규), 작업 기록 36장
+- **Changed Interfaces / Schema Diff**: 없음(제품 코드 변경 없음). 예정: 저장 봉투 `{version:3, minReader:3, sealed}`, `workdesk.key.json`
+- **Test Status**: npm test 169/169. 설계 측정 scripts/security-bench.cjs(20MB 봉함 175ms·열기 15ms, scrypt N=2^17 427ms)
+- **Remaining Work for Gemini**: Codex: SECURITY-01 설계 검토. 사용자: SECURITY-02 착수 승인(의존 SECURITY-01이 review라 의존 예외 필요), 기관 PC 사정 확인되면 알려 주기. Claude: SECURITY-02 구현
 - **Modified Code Snippets (if uncommitted)**: 없음
 
 ## 이전 Codex·Claude 인계(보완 재검증 전)
