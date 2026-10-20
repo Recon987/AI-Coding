@@ -9,13 +9,13 @@
 PR16은main ea3105e로이미병합됐고mainWindows39372610397도성공했다. **LOC-01·SNIP-01보완을Codex가독립재검증해모두해결승인**했다. [최종판정·새증빙](reviews/2026-10-20-codex-postmerge02.md). 아래이전반려/재검증예정표시는당시기록이다.
 
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e(PR #16, 9주기). 작업 브랜치 claude/zen-cannon-wc1at4 = main + 9주기 기록(ad418ec) + Codex 재검증 기록(task/task-review-postmerge-02 960d2fb, merge 9b93859)
-- **Task Card**: 9주기 카드 4장 done(LOC-01·SNIP-01 포함 Codex 해결 승인). REVIEW-POSTMERGE-02 done(Claude 교차 확인). Claude in-progress 없음. backlog: SECURITY-01(P1)·LAW-01·LEDGER-01
-- **Latest Pushed Commit**: 9b93859(재검증 기록 통합) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: Codex 재검증 기록 통합, docs/tasks/TASK-REVIEW-POSTMERGE-02.md 교차 확인, 이 인계장
-- **Changed Interfaces / Schema Diff**: 없음(제품 코드는 main ea3105e와 같음)
-- **Test Status**: Claude 재실행: npm test 169/169, desktop-nav-zones-audit 5/5, postmerge-boundary-audit 3/3. Codex: 시간대 5종 각각 169/169, desktop 18 + 감사 9/9. main Windows 39372610397 성공
-- **Remaining Work for Gemini**: 사용자: 다음 카드 승인(SECURITY-01 등), AX 주간 브리핑/알림·스니펫 예제 방식 결정, 실제 담당구역 번호표 반입 확인. 미결 검증 없음
+- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e. 작업 브랜치 claude/zen-cannon-wc1at4 = main + 9주기 기록 + Codex 재검증 기록 + SECURITY-01 설계안
+- **Task Card**: TASK-SECURITY-01 in-progress(owner claude, verifier codex) — 1단계 설계안 완료, **사용자 결정 대기**. 미결 검증 없음. backlog: LAW-01·LEDGER-01
+- **Latest Pushed Commit**: 7b4c48e(재검증 교차 확인) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: docs/research/security-01-design.md(신규: 평문 사본 목록·위협 모델·선택지 A~D·권장 D·봉투 형식·전환·성능·결정 사항), scripts/security-bench.cjs(신규, 설계 측정용·앱 미포함), 카드·작업 기록 36장
+- **Changed Interfaces / Schema Diff**: 없음(제품 코드 변경 없음)
+- **Test Status**: npm test 169/169. 설계 측정: 20MB AES-256-GCM 봉함 175ms·열기 15ms·변조 거부, scrypt N=2^17 427ms/128MB. safeStorage는 Linux 클라우드에서 불가(basic_text), Windows 확인은 구현 단계
+- **Remaining Work for Gemini**: 사용자: 설계안 9장 결정 5건. Codex(선택): 설계안 2차 의견. Claude: 결정 후 SECURITY-02~04 카드 분리·구현
 - **Modified Code Snippets (if uncommitted)**: 없음
 
 ## 이전 Codex·Claude 인계(보완 재검증 전)
