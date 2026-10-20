@@ -36,8 +36,8 @@ const legacyV3 = () => {
   return rest;
 };
 
-test("① 레지스트리: 코어 4종은 끌 수 없고 모듈은 순찰·사무소·AX, 메뉴 정의는 자료에 저장하지 않는다", () => {
-  assert.deepEqual(CORE_APPLETS.map((a) => a.id), ["briefing", "calendar", "tasks", "memos"]);
+test("① 레지스트리: 코어 5종은 끌 수 없고 모듈은 순찰·사무소·AX, 메뉴 정의는 자료에 저장하지 않는다", () => {
+  assert.deepEqual(CORE_APPLETS.map((a) => a.id), ["briefing", "projects", "calendar", "tasks", "memos"]);
   assert.deepEqual(MODULE_APPLETS.map((a) => a.id), ["patrols", "office", "ax-desk"]);
   // Every existing page is reachable from exactly one applet (except folders/about, kept at the bottom).
   const pages = [...CORE_APPLETS, ...MODULE_APPLETS].flatMap((a) => a.pages);

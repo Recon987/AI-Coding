@@ -5,7 +5,8 @@ export type EventRecurrence =
   | "weekly"
   | "monthly"
   | "yearly";
-export type Note = { id: string; title: string; body: string };
+export type RecordProjectLinks = { projectIds?: string[]; referenceIds?: string[] };
+export type Note = RecordProjectLinks & { id: string; title: string; body: string };
 export type Event = {
   id: string;
   title: string;
@@ -31,12 +32,15 @@ export type WorkItem = Note & {
   createdAt: string;
   updatedAt: string;
   completedAt: string | null;
+  referenceIds?: string[];
+  /** B2a 제안 형식으로 만들어진 기존 자료 읽기용. 새 출처는 links에만 저장한다. */
+  source?: Source | null;
 };
 export type Meeting = Note & { at: string; attendees: string; createdAt: string; updatedAt: string };
-export type SourceRef = { type: "note" | "call" | "meeting"; id: string };
+export type SourceRef = { type: "note" | "call" | "meeting"; id: string; title?: string };
 export type WorkLink = {
   id: string; from: SourceRef; to: { type: "workItem"; id: string }; role: "followUp"; createdAt: string;
-  /** Source title when the link was made; shown only after the source is deleted (TASK-HUB-SCHEMA-01 6장). */
+  /** Older (main 5ab5675) place of the source-title copy; read only, new links use from.title. */
   sourceTitle?: string;
 };
 export type Folder = { id: string; title: string; path: string };
@@ -57,7 +61,7 @@ export type Observation = {
   coordinates?: Coordinates | null;
   note: string;
 };
-export type Patrol = {
+export type Patrol = RecordProjectLinks & {
   coordinates?: Coordinates | null;
   kind?: PatrolKind | null;
   /** 담당구역 번호 */
@@ -201,6 +205,8 @@ export type Data = {
   assignments: Assignment[];
 };
 export type Page =
+  | "references"
+  | "projects"
   | "office"
   | "briefing"
   | "patrol"
@@ -261,6 +267,9 @@ declare global {
       load(): Promise<Data>;
       takeNotice(): Promise<string>;
       save(data: Data): Promise<void | { warning: string }>;
+      chooseReferenceFile(): Promise<string | null>;
+      referenceStatus(id: string): Promise<{ state: "ready" | "none" | "missing" | "unavailable"; message?: string }>;
+      revealReference(id: string): Promise<void>;
       chooseFolder(): Promise<string | null>;
       openFolder(id: string): Promise<void>;
       /** TASK-SECURITY-03: false when the save dialog was cancelled. */
@@ -316,3 +325,6 @@ export type Reference = {
   note: string;
   addedAt: string;
 };
+export type SourceKind = "note" | "call" | "patrol" | "meeting";
+/** Where a work item came from; title is the source's title when the item was made. */
+export type Source = { kind: SourceKind; id: string; title: string };

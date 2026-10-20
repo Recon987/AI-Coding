@@ -1,9 +1,8 @@
 // 사업·근거 보관함 (TASK-HUB-B2A-01, docs/product/claude-hub-schema-plan-2026-10-20.md 1·6장).
 // Optional top-level collections `projects` (general projects) and `references` (one shared
 // evidence store). AX projects stay in `axProjects`; both share one project ID space and are
-// shown through ProjectView. Links to projects and evidence may dangle (an older app can delete
-// the target), so they are shown as deleted and never rejected. Work-item sources are B1's
-// `links` (shared/work.mjs), not a field here.
+// shown through ProjectView. Links to sources, projects and evidence may dangle (an older app
+// can delete the target), so they are shown as deleted and never rejected.
 // Pure: no DOM, Electron or network.
 import { validDateKey } from "./dates.mjs";
 import { AX_STAGES } from "./ax.mjs";
@@ -11,12 +10,14 @@ import { AX_STAGES } from "./ax.mjs";
 export const PROJECT_FIELDS = { facility: "시설", resource: "자원보전", ax: "AX", admin: "행정", general: "일반" };
 export const PROJECT_STAGES = { planning: "기획", progress: "추진", hold: "보류", done: "완료" };
 export const REFERENCE_KINDS = { folder: "폴더", snippet: "스니펫", file: "파일", docNo: "공문·문서번호", text: "메모" };
+export const SOURCE_KINDS = { note: "메모", call: "전화메모", patrol: "순찰 기록", meeting: "회의 기록" };
 export const MAX_PROJECT_RECORDS = 10000;
 export const MAX_REFERENCE_IDS = 50;
 // AX stages shown as general stages; the AX record keeps its own stage.
 const AX_STAGE_TO_GENERAL = { planning: "planning", contract: "progress", execution: "progress", done: "done" };
 // Only the AX project stores field "ax"; a general project is one of these.
 const GENERAL_FIELDS = ["facility", "resource", "admin", "general"];
+const SOURCE_PAGES = { note: "notes", call: "calls", patrol: "patrol", meeting: "meetings" };
 
 const fail = (message) => {
   throw new Error(message);
@@ -43,7 +44,7 @@ export function validReferenceIds(value) {
   return (
     Array.isArray(value) &&
     value.length <= MAX_REFERENCE_IDS &&
-    value.every((id) => requiredText(id, 100)) &&
+    Array.from(value).every((id) => requiredText(id, 100)) &&
     new Set(value).size === value.length
   );
 }
@@ -82,25 +83,43 @@ export function validateReferences(list) {
   return list;
 }
 
+/** Throws unless `source` is null or { kind, id, title } (title = the source's title when created). */
+export function validateSource(source) {
+  if (source === null) return source;
+  if (
+    !source ||
+    typeof source !== "object" ||
+    !Object.hasOwn(SOURCE_KINDS, source.kind) ||
+    !requiredText(source.id, 100) ||
+    !text(source.title, 500)
+  )
+    fail("작업의 출처를 확인하세요.");
+  return source;
+}
+
 /**
- * Optional link fields: `tasks[].projectId`, `tasks[].referenceIds`, `workItems[].referenceIds`
- * (B1 checks `workItems[].projectId` itself) and `axProjects[].referenceIds`. Shape only — a
- * target that no longer exists is allowed.
+ * Optional link fields on existing records: `tasks[].projectId`, `tasks[].referenceIds`,
+ * `axProjects[].referenceIds`. Shape only — a target that no longer exists is allowed.
  * General and AX project IDs must not collide (one project ID space).
  */
 export function validateProjectLinks(data) {
   const axIds = new Set((data.axProjects ?? []).map((p) => p.id));
   for (const p of data.projects ?? [])
     if (axIds.has(p.id)) fail("일반 사업과 AX 사업의 ID가 겹칩니다.");
-  for (const t of data.tasks ?? []) {
+  for (const t of [...(data.tasks ?? []), ...(data.workItems ?? [])]) {
     if (t.projectId !== undefined && !(t.projectId === null || requiredText(t.projectId, 100)))
       fail("업무에 연결된 사업을 확인하세요.");
     if (t.referenceIds !== undefined && !validReferenceIds(t.referenceIds))
       fail("업무의 근거 자료 목록을 확인하세요(50개 이하, 중복 없음).");
   }
-  for (const w of data.workItems ?? [])
-    if (w.referenceIds !== undefined && !validReferenceIds(w.referenceIds))
-      fail("작업의 근거 자료 목록을 확인하세요(50개 이하, 중복 없음).");
+  for (const name of ["notes", "calls", "patrols", "meetings"]) {
+    for (const row of data[name] ?? []) {
+      if (row.projectIds !== undefined && !validReferenceIds(row.projectIds))
+        fail("기록에 연결된 사업 목록을 확인하세요(50개 이하, 중복 없음).");
+      if (row.referenceIds !== undefined && !validReferenceIds(row.referenceIds))
+        fail("기록의 근거 자료 목록을 확인하세요(50개 이하, 중복 없음).");
+    }
+  }
   for (const p of data.axProjects ?? [])
     if (p.referenceIds !== undefined && !validReferenceIds(p.referenceIds))
       fail("AX 사업의 근거 자료 목록을 확인하세요(50개 이하, 중복 없음).");
@@ -166,6 +185,21 @@ export function projectRef(data, projectId) {
   if (projectId === null || projectId === undefined) return null;
   const found = listProjects(data, { axEnabled: false }).find((p) => p.id === projectId);
   return found ? { exists: true, id: found.id, title: found.title, field: found.field } : { exists: false, id: projectId, label: "사업 없음(삭제됨)" };
+}
+
+const recordsOf = { note: (d) => d.notes ?? [], call: (d) => d.calls ?? [], patrol: (d) => d.patrols ?? [], meeting: (d) => d.meetings ?? [] };
+/**
+ * How a work item's source is shown: the source's current title while it exists
+ * ("출처: 전화메모 · <현재 제목>", openable), otherwise the stored title
+ * ("출처: 삭제된 전화메모 — <사본 제목>", read-only).
+ */
+export function sourceView(data, source) {
+  if (!source) return null;
+  const kindLabel = SOURCE_KINDS[source.kind];
+  const live = recordsOf[source.kind]?.(data).find((r) => r.id === source.id);
+  return live
+    ? { live: true, label: `출처: ${kindLabel} · ${live.title}`, page: SOURCE_PAGES[source.kind], id: source.id }
+    : { live: false, label: `출처: 삭제된 ${kindLabel}${source.title ? ` — ${source.title}` : ""}`, page: null, id: source.id };
 }
 
 /** Shown evidence for one ID: the entry, and whether the folder or snippet it points at still exists. */

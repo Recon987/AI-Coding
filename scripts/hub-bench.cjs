@@ -20,18 +20,17 @@ function sample() {
   for (let i = 0; i < 500; i++)
     d.axProjects.push({ id: `a${i}`, title: `가상 AX 사업 ${i}`, zone: "west", stage: "execution", budgetTotal: 1000, budgetExecuted: 250, manager: "가상",
       partner: "가상 협력사", nextMilestone: "점검", nextMilestoneDate: "2026-11-02", risks: "", notes: words(10), updatedAt: NOW, referenceIds: [`r${i}`] });
-  for (let i = 0; i < 2500; i++) {
+  for (let i = 0; i < 1500; i++) {
     d.references.push({ id: `r${i}`, title: `가상 공문 ${i}`, kind: "docNo", targetId: null, path: null, docNo: `가상-2026-${i}`, note: words(3), addedAt: NOW });
-    d.notes.push({ id: `n${i}`, title: `가상 회의 메모 ${i}`, body: words(40) });
-    d.calls.push({ id: `c${i}`, title: `가상 전화 ${i}`, body: words(15), phone: "010-0000-0000", done: i % 2 === 0 });
-    d.tasks.push({ id: `t${i}`, title: `가상 인계 ${i}`, body: words(15), kind: i % 2 ? "handover" : "submission", at: "2026-10-21T09:00:00+09:00",
-      assignee: "가상", destination: "가상 부서", priority: "normal", remindMinutes: 0, patrolId: null, done: false, completedAt: null,
-      ...(i % 2 ? { projectId: `p${i % 1000}`, referenceIds: [`r${i}`] } : {}) });
+    d.tasks.push({ id: `t${i}`, title: `가상 인계 ${i}`, body: words(15), kind: i % 2 ? "handover" : "submission", at: "2026-10-21T09:00:00+09:00", assignee: "가상", destination: "가상 부서", priority: "normal", remindMinutes: 0, patrolId: null, done: false, completedAt: null, projectId: `p${i % 1000}`, referenceIds: [`r${i}`] });
+    d.workItems.push({ id: `w${i}`, title: `가상 후속 작업 ${i}`, body: words(15), status: "todo", due: { kind: "date", date: "2026-10-23" }, projectId: `p${i % 1000}`, referenceIds: [`r${i}`], owner: "가상", priority: "normal", remindMinutes: null, createdAt: NOW, updatedAt: NOW, completedAt: null });
+    d.links.push({ id: `l${i}`, from: { type: "call", id: `c${i % 1000}`, title: `가상 전화 ${i % 1000}` }, to: { type: "workItem", id: `w${i}` }, role: "followUp", createdAt: NOW });
   }
-  // B1 workItems is Codex's card; here it is an unknown top-level key of the expected shape.
-  d.workItems = Array.from({ length: 2500 }, (_, i) => ({ id: `w${i}`, title: `가상 후속 작업 ${i}`, body: words(15), status: "todo",
-    due: { kind: "date", date: "2026-10-23" }, projectId: `p${i % 1000}`, source: { kind: "call", id: `c${i}`, title: `가상 전화 ${i}` },
-    referenceIds: [`r${i}`], owner: "가상", priority: "normal", createdAt: NOW, updatedAt: NOW, completedAt: null }));
+  for (let i = 0; i < 1000; i++) {
+    d.notes.push({ id: `n${i}`, title: `가상 메모 ${i}`, body: words(40), projectIds: [`p${i}`] });
+    d.calls.push({ id: `c${i}`, title: `가상 전화 ${i}`, body: words(15), phone: "000", done: false });
+  }
+  for (let i = 0; i < 500; i++) d.meetings.push({ id: `m${i}`, title: `가상 회의 ${i}`, at: NOW, body: words(10), attendees: "가상", createdAt: NOW, updatedAt: NOW, projectIds: [`p${i}`] });
   return d;
 }
 const median = (xs) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)];
@@ -48,6 +47,10 @@ async function time(fn, runs = 5) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "hub-bench-"));
   try {
     const data = sample();
+    const counts = Object.fromEntries(require("../shared/model.mjs").collections.filter((k) => data[k]?.length).map((k) => [k, data[k].length]));
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+    if (total !== 10000) throw new Error(`가상 자료 합계가 10,000이 아닙니다: ${total}`);
+    console.log(JSON.stringify({ total, counts }));
     const plain = JSON.stringify(normalize(data), null, 2);
     const file = path.join(dir, "workdesk.json");
     const rows = [["평문 크기", `${(Buffer.byteLength(plain) / 1024 / 1024).toFixed(2)}MB`], ["정규화", await time(() => normalize(data))]];

@@ -7,12 +7,15 @@ import {
   RECURRENCE_LABEL,
   isRecurring,
 } from "./model.mjs";
+import { PROJECT_FIELDS, REFERENCE_KINDS } from "./projects.mjs";
 import { AX_SNIPPET_CATEGORIES, AX_STAGES, AX_ZONES } from "./ax.mjs";
 
 const join = (...parts) => parts.filter((p) => p !== undefined && p !== null && p !== "").join(" ");
 const coordinates = (c) => (c ? join(formatCoordinates(c), formatCoordinates(c, "dms")) : "");
 
 export const searchText = {
+  project: (p) => join(p.title, PROJECT_FIELDS[p.field], p.manager, p.nextMilestone, p.nextMilestoneDate, p.risks, p.notes),
+  reference: (r) => join(r.title, REFERENCE_KINDS[r.kind], r.docNo, r.path, r.note),
   patrol: (p) =>
     join(
       p.title,
@@ -47,6 +50,8 @@ export function matches(text, query) {
  *  text is the searchable detail after the title, for the result snippet. */
 export function searchRecords(data, query) {
   const rows = [
+    ...(data.projects ?? []).map((r) => ({ id: r.id, page: "projects", title: r.title, text: searchText.project(r) })),
+    ...(data.references ?? []).map((r) => ({ id: r.id, page: "references", title: r.title, text: searchText.reference(r) })),
     ...data.patrols.map((r) => ({ id: r.id, page: "patrol", title: r.title, text: searchText.patrol(r) })),
     ...data.controls.map((r) => ({ id: r.id, page: "controls", title: r.title, text: searchText.control(r) })),
     ...data.tasks.map((r) => ({ id: r.id, page: r.kind, title: r.title, text: searchText.task(r) })),
