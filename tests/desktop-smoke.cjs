@@ -6,6 +6,8 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { empty } = require("../shared/model.mjs");
+const store = require("../desktop/store.cjs");
+const { TEST_PASSWORD, fillBackupPassword } = require("./backup-ui.cjs");
 // Button wording comes from the app (TASK-LABELS-01 U6).
 const L = require("../shared/labels.mjs");
 (async () => {
@@ -103,7 +105,7 @@ const L = require("../shared/labels.mjs");
     // First use must offer working actions; merely visiting it never adds sample data.
     const firstUse = page.getByRole("region", { name: "업무 시작 안내", exact: true });
     await firstUse.waitFor();
-    assert.equal(await firstUse.getByRole("button").count(), 4);
+    assert.equal(await firstUse.getByRole("button").count(), 5);
     for (const [action, title] of [L.TARGET.patrol, L.TARGET.event, L.TARGET.call].map((target) => [L.addLabel(target), L.addLabel(target)])) {
       await firstUse.getByRole("button", { name: action, exact: true }).click();
       const dialog = page.getByRole("dialog", { name: title, exact: true });
@@ -360,9 +362,11 @@ const L = require("../shared/labels.mjs");
       dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
     }, backup);
     await manage("백업");
-    for (let n = 0; !fs.existsSync(backup) && n < 100; n++)
-      await new Promise((r) => setTimeout(r, 50));
-    data = JSON.parse(fs.readFileSync(backup, "utf8"));
+    // TASK-SECURITY-03: the backup is password-sealed; the plain copy below keeps
+    // checking that existing plain backups still restore.
+    await fillBackupPassword(page, backup);
+    assert.ok(!fs.readFileSync(backup, "utf8").includes("안내소 → 전망대"));
+    data = await store.readBackup(backup, TEST_PASSWORD);
     assert.equal(data.version, 3);
     assert.equal(data.patrols[0].route, "안내소 → 전망대");
     assert.deepEqual(data.patrols[0].coordinates, {
@@ -644,9 +648,10 @@ const L = require("../shared/labels.mjs");
       dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
     }, finalBackup);
     await manage("백업");
-    for (let n = 0; !fs.existsSync(finalBackup) && n < 100; n++)
-      await new Promise((r) => setTimeout(r, 50));
-    const officeBackup = JSON.parse(fs.readFileSync(finalBackup, "utf8"));
+    await fillBackupPassword(page, finalBackup);
+    const officeBackup = await store.readBackup(finalBackup, TEST_PASSWORD);
+    // Restored below as a plain file (the password path has its own smoke).
+    fs.writeFileSync(finalBackup, JSON.stringify(officeBackup));
     assert.equal(officeBackup.employees.length, 2);
     assert.equal(officeBackup.assignments.length, 2);
     assert.equal(officeBackup.assignments[0].note, "수정된 교대 인계");

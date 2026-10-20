@@ -6,6 +6,12 @@ Electron의 제한된 preload API로 로컬 파일 저장·폴더 열기·백업
 
 `src/components/`는 업무별 화면, `shared/model.mjs`는 브라우저와 Electron이 공유하는 검증·달력·브리핑·알림 계산이다. `desktop/store.cjs`가 JSON의 원자 교체(임시 파일 fsync 후 이름 바꾸기)와 v1 원본 보존을 담당한다. 주 파일을 저장할 때마다 같은 내용의 `workdesk.json.last-good`도 원자적으로 갱신한다. `desktop/recovery.cjs`는 시작 시 자료를 읽지 못하면 손상 파일을 `.corrupt-<시각>.json`으로 먼저 보관(삭제하지 않음)한 뒤 마지막 정상본 사용·백업 복원·종료를 묻는다. 보관에 실패하면 아무것도 쓰지 않고 종료한다. 주 프로세스의 단일 인스턴스 잠금으로 동시에 여러 앱이 파일을 쓰는 것을 방지한다. 다중 사용자 또는 서버 DB용 구조는 아니다.
 
+**저장 암호화(TASK-SECURITY-02)**: 사용자가 켜면 `desktop/keystore.cjs`가 `workdesk.key.json`(무작위 256비트 데이터 키를 `safeStorage`/DPAPI로 감싼 값과 복구 키로 감싼 값, 평문 키 없음)을 만들고, `store.setSealer`가 켜진 동안 `store.write()`의 모든 출력(주 파일·last-good·보호본·백업·`.tmp`)을 `desktop/seal.cjs` 봉투 `{version:3, minReader:3, sealed:{AES-256-GCM, keyId, iv, tag, data, recovery}}`로 쓴다. 안쪽 자료 스키마는 그대로다. 시작할 때 키를 먼저 열고, 못 열면 복구 키 창(`index.html?view=unlock`)에서 열기 전까지 자료 파일을 읽거나 쓰지 않는다. 운영체제 키 보호가 없으면(`desktop/protector.cjs`, Linux `basic_text` 포함) 켜지 않고 이유를 보여 준다.
+
+**백업 암호(TASK-SECURITY-03)**: 자료 관리 > 백업은 항상 그 백업에만 쓰는 암호를 두 번 받아(`shared/backup-password.mjs` 규칙, main에서 다시 확인) `desktop/backup-seal.cjs`가 scrypt(N=2^17, r=8, p=1) → AES-256-GCM 봉투 `{version:3, minReader:3, backupSealed:{…}}`로 `store.writeBackup()` 원자 저장한다. 암호는 어디에도 저장하지 않는다. 복원은 `store.readBackup()`: 평문·이 PC 봉함 백업은 그대로 읽고, 암호 백업이면 IPC `restore`가 `{needsPassword}`를 돌려주고 main이 고른 경로를 쥔 채 `restore-password`로 연다(틀리면 원본 불변·재시도). 일반 `store.read()`(시작·last-good·보호본)는 암호 백업을 열지 않는다. 시작 복구 흐름에서 고른 암호 백업은 복구 키 창과 같은 시작 창(`askSecret`)에서 암호를 받는다.
+
+**일반 사업·근거 보관함(TASK-HUB-B2A-01)**: 선택 컬렉션 `projects`(일반 사업, 분야 시설·자원보전·행정·일반)와 `references`(폴더·스니펫·파일·공문번호·메모 근거)를 `shared/projects.mjs`가 검증한다. AX 사업은 `axProjects`에 그대로 두고, 두 저장소는 ID가 겹치지 않는 하나의 사업 ID 공간이다(`projectIdSet`). 화면은 `listProjects`의 `ProjectView`로 함께 보며, AX 확장 필드는 AX 모듈이 켜졌을 때만 붙는다. 기존 `tasks`·`axProjects`에는 선택 필드 `projectId`·`referenceIds`만 더한다. 사업·근거가 지워져 참조가 끊겨도 거부하지 않고 "삭제됨"으로 표시한다(`projectRef`·`referenceView`). 작업의 출처는 B1 `links`(`shared/work.mjs` `sourceInfo`)가 맡고, 연결의 선택 필드 `sourceTitle`로 삭제된 출처의 제목을 보여 준다. 새 컬렉션만 더하므로 `READER_VERSION`은 그대로다.
+
 ## 날짜 키와 현지 시각
 
 `shared/dates.mjs`는 YYYY-MM-DD 날짜 키의 주 시작·하루 이동·포함 일수·집계 기간을 UTC 정오에서 계산한다. 키는 시각이 아니므로 PC 시간대나 DST의23/25시간 영향으로 날짜를 바꾸지 않는다. `dayKey`와 표시 함수는 현지 날짜 입출력 경계로 유지하며 알림의 경과 시간 계산과 혼동하지 않는다. 모델·양식·브리핑·사무소·달력·집계가 같은 날짜 산술을 참조한다. `office.validDate`는 기존 import 호환을 위해 `dates.validDateKey`를 그대로 노출한다. 함수와 선언은 dates.mjs/dates.d.mts, 시간대 회귀는 tests/dates.test.cjs에 있다. 날짜 부분으로 현지 Date를 만들 때는 `new Date(y, m, d)` 대신 `localDate`를 쓴다(생성자는 0~99년을 1900~1999년으로 바꾼다). `dayKey`는 연도를 4자리로 채운다. 기본 공휴일 표는 1970~2100년이며 그 밖의 해는 기본 공휴일 없이(사용자 공휴일만) 표시하고 달력에 안내한다(TASK-AX-DATES-01, tests/low-years.test.cjs).
@@ -53,3 +59,10 @@ ERP는 승인된 읽기 전용 API나 뷰를 중계 서버에서 조회한다. �
 `desktop/lifecycle.cjs`는 실제 Tray 생성과 설정 저장이 모두 성공해야 옵트인을 적용한다. 실패하면 창을 표시하고 메시지를 반환한다. 시작 시 이전 활성 설정으로 트레이를 만들지 못하면 해당 실행만 비활성으로 시작하고 설정 원본은 보존한다. 활성 상태의 닫기는 숨김, 클릭/열기/두번째 실행/알림 클릭은 복원·표시·포커스다. 종료는 app.quit 경로로 통일하며 beforeunload를 무시하지 않는다. 미저장 확인은 부모 창을 가진 native dialog, 기본 취소이며 승인에서만 unload를 허용한다. 자동 시작/자동 업데이트는 없다.
 
 공유 반복 조회는 요청 시작일 부근으로 이동해 오래된 일정을 포함한다. 결과는 조회당 최대400회차이며 데이터 복제를 저장하지 않는다. 현재42일 달력·3일 알림 조회 범위에 충분하다.
+
+
+## B1 공통 작업·출처 계약 (TASK-HUB-B1-01 검토본)
+
+`shared/work.mjs`가 작업 검증·기한 판정·통합 정렬·달력/알림 파생·출처 조회를 맡는다. 선택 `workItems`·`meetings`·`links`는 v3 안에 저장하고 기존 `tasks`의 `kind`는 인계/제출 그대로다. `normalize`가 새 필드를 저장 전에 검사하며 구판에서는 모르는 최상위 항목으로 보존한다. 날짜만 기한은 날짜 문자열을 보존하고, 종일 달력 표현만 파생한다. 시각 알림 후보에 넣지 않는다. 작업 완료와 출처 전화의 처리는 별도 상태다.
+
+Work/Tasks/Briefing은 동일 파생 목록을 사용한다. 후속 작업의 본문은 사용자가 저장한 작업 내용으로 남고, 원본 참조가 사라져도 연쇄 삭제하지 않는다. IPC·Electron 경계는 유지한다. [자료 계약·구판/보안 교차 검사·확장 시 주의](reviews/2026-10-20-codex-hub-b1.md). 보안 구현 자체는 이 브랜치에 병합하지 않았다.

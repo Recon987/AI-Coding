@@ -1,0 +1,60 @@
+{
+  "scope": "1ac80a3 및 9f4fe7c 명세와 B1 실제 계약 대조",
+  "verdict": "명세 수정 필요 — B1 제품 정상 동작과 문서 간 불일치를 구별",
+  "reproduced": 8,
+  "cases": [
+    {
+      "id": "SCHEMA-B1-01",
+      "title": "source 필드는 보존되지만 B1 출처 관계로 인식되지 않는다",
+      "reproduced": true,
+      "outcome": "제안 source는 모르는 필드로 보존되지만 links 없이는 후속 수·출처 복귀에 반영되지 않음"
+    },
+    {
+      "id": "SCHEMA-B1-01-LINKS",
+      "title": "links의 1:N·다중 출처·삭제 보존·상태 독립",
+      "reproduced": true,
+      "outcome": "B1 links 계약 정상. 단일 source로 자동 치환하면 복수 출처를 표현하지 못함"
+    },
+    {
+      "id": "SCHEMA-B1-02-AT",
+      "title": "문서 kind:at 일시 기한은 B1에서 거부",
+      "reproduced": true,
+      "message": "작업 기한을 확인하세요.",
+      "outcome": "게시된 판별값은 datetime"
+    },
+    {
+      "id": "SCHEMA-B1-02-REMINDER",
+      "title": "문서에서 빠진 remindMinutes는 null 기본값까지 계약에 필요",
+      "reproduced": true,
+      "message": "시각 알림은 일시 기한에서만 명시적으로 설정하세요.",
+      "outcome": "B1 생성자는 remindMinutes:null을 저장함"
+    },
+    {
+      "id": "SCHEMA-B1-03-MEETING",
+      "title": "회의는 B1에 존재하며 B2 필드는 선택 확장이어야 한다",
+      "reproduced": true,
+      "message": "등록 일시를 확인하세요.",
+      "outcome": "createdAt/updatedAt와 참석자 문자열 유지. B2 projectIds/decisions/referenceIds 없는 B1 행도 허용해야 함"
+    },
+    {
+      "id": "SCHEMA-B1-03-TITLE",
+      "title": "게시된 제목 한도는 문서 200자가 아닌 500자",
+      "reproduced": true,
+      "outcome": "201~500자는 유효한 B1 자료이며 B2에서 축소 거부하면 호환 회귀"
+    },
+    {
+      "id": "SCHEMA-B1-COMPAT",
+      "title": "참조 부재·선택 확장·모르는 필드·구분값 유지",
+      "reproduced": true,
+      "outcome": "B1 reader2 유지. 보안 봉투 reader3와의 충돌 없음. B2는 새 선택 필드를 기본값으로 읽어야 함"
+    },
+    {
+      "id": "SCHEMA-B1-ENUM",
+      "title": "알려진 links의 순찰 출처·새 역할은 현재 B1에서 거부",
+      "reproduced": true,
+      "patrolMessage": "후속 연결 출처·대상을 확인하세요.",
+      "roleMessage": "후속 연결 종류를 확인하세요.",
+      "outcome": "새 최상위 컬렉션과 알려진 필드의 새 열거값을 구별해야 함. 확장은 reader 호환 설계 필요"
+    }
+  ]
+}

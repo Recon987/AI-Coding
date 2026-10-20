@@ -1,5 +1,15 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## 2026-10-20 B1 Windows·스키마 교차 검증
+
+Windows [39408113609](https://github.com/Recon987/AI-Coding/actions/runs/39408113609)(322f56c) 수동 실행. 소스 단위175/175·desktop·빌드·패키징 앱·체크섬·업로드까지 최종 성공. Claude 1ac80a3와 최신9f4fe7c 명세는 B1과 세 묶음의 정렬이 필요하다. 교차 감사8건 재현·관련 모델15/15 통과, 제품 변경 없음. [판정·증빙·최종 Windows 상태](reviews/2026-10-20-codex-hub-schema-crosscheck.md).
+
+
+## 2026-10-20 B1 구현 자체 검증 (독립 승인 대기)
+
+`task/task-hub-b1-01`, 제품 기준 main ea3105e. npm test **175/175**, npm run test:desktop **종료 0**(실제 앱19종+감사3종/9사례). 신규 B1 작업·1:N 후속·날짜·원본 비전파·삭제 보존·회의·저장 실패·복원·읽기 전용·재실행·960px/125%, 5개 시간대/DST/0099년 통과. 혼합10,000건/5.20MB Linux에서 실제 앱 시작 중앙값534ms·검색p95 55ms. 구판 및 보안 가상 사본 왕복 통과. 보안 제품 통합·Windows·DPAPI·기관 실기기·Claude 독립 승인은 아직 없다. [조건·한계·재현·JSON](reviews/2026-10-20-codex-hub-b1.md). B1 원격 푸시는 자동 승인 검토에서 구체적 게시 승인 부족으로 거절되어 로컬 보존했다.
+
+
 ## 2026-10-20 9주기 main 병합 전 확인
 
 기준 코드 49bbeb1, Linux Node 22. `npm test` 169/169(서울·UTC·뉴욕·키리티마티·호놀룰루 각각, 건너뜀 0), `npm run test:desktop` 종료 0(진입점 18개 + 감사 3개 9사례), 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. Codex 추가 감사 `tests/desktop-nav-zones-audit.cjs` 5/5, `tests/postmerge-boundary-audit.cjs` 3/3. Windows 39365534106(49bbeb1) 성공: 단위 169/169·건너뜀 0(SNIP-01 Python 검사 실제 실행), 소스·설치본 실제 앱 검사 통과. Codex 독립 승인: 8주기 사후 4건, TZ-TEST-01, NAV-02, LOCATION-01 정상 경로. LOC-01·SNIP-01 보완은 사용자 승인으로 먼저 병합하고 Codex 재검증을 받는다.
@@ -163,3 +173,7 @@ Electron 시나리오: DD 부분 입력/181도/16진수 오류 차단 → DD 저
 NSIS 설치 마법사 및 portable 바깥 실행기의 실기기 실행, Windows 10, 기관 보안 프로그램, 실제 OS 알림 표시·집중 지원, 탐색기 실행, 높은 DPI와 다중 모니터. 자동 검증은 기관 배포 승인을 뜻하지 않는다. 코드 서명 및 저장 암호화는 미구현이다.
 
 첫 Windows 실행은 electron-builder의 자동 게시 동작 때문에 빌드 마지막에 실패했다. `--publish never`를 명시하고 NSIS/portable 대상을 모두 지정한 뒤 위 실행에서 통과했다. 이 항목은 v0.2 당시의 검증 기록이다.
+
+
+## 2026-10-20 PR16 병합 후 Codex 확인
+main ea3105eda91cdc1d164b0cb237b53b524959601a, Windows39372610397(push)성공. Codex독립: Node24시간대5종각169/169·건너뜀0, 전체desktop18+감사3(9/9), 기존독립감사5/5·3/3. LOC-01·SNIP-01해결승인. 소스/패키지Windows로그대조완료, 기관실기기는별도. [검토·증빙](reviews/2026-10-20-codex-postmerge02.md).

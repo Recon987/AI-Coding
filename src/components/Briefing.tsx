@@ -1,3 +1,5 @@
+import { QuickWork } from "./Work";
+import { dueText, setWorkStatus, unifiedWork, workDueKey } from "../../shared/work.mjs";
 import { useState } from "react";
 import {
   briefing,
@@ -10,7 +12,7 @@ import {
   collections,
   activeControls,
 } from "../../shared/model.mjs";
-import type { Data, Page } from "../types";
+import type { Data, Page, Save } from "../types";
 import { formatDate, formatTime, itemClock, SectionHead, Tag } from "../ui";
 import { dutyTypes, officeRows, officeSummary } from "../../shared/office.mjs";
 import { Icon } from "./Icon";
@@ -20,9 +22,11 @@ import { addLabel, TARGET } from "../../shared/labels.mjs";
 export function Briefing({
   data,
   navigate,
+  save,
   busy,
 }: {
   data: Data;
+  save: Save;
   navigate: (page: Page, id?: string) => void;
   busy: boolean;
 }) {
@@ -39,18 +43,12 @@ export function Briefing({
   const [filter, setFilter] = useState("all");
   const [expanded, setExpanded] = useState(false);
   const [expandedDay, setExpandedDay] = useState(false);
-  const tasks = data.tasks
-    .filter((t) => !t.done)
-    .sort(
-      (a, b) =>
-        Date.parse(a.at) - Date.parse(b.at) ||
-        Number(b.priority === "high") - Number(a.priority === "high"),
-    );
-  const overdue = tasks.filter((t) => Date.parse(t.at) < Date.now());
-  const dueToday = tasks.filter((t) => dayKey(new Date(t.at)) === today);
+  const tasks = unifiedWork(data).filter((t) => !t.done);
+  const overdue = tasks.filter((t) => t.state === "overdue");
+  const dueToday = tasks.filter((t) => workDueKey(t) === today);
+  const waiting = tasks.filter((t) => t.status === "waiting");
   const calls = data.calls.filter((c) => !c.done);
-  const rows =
-    filter === "overdue" ? overdue : filter === "today" ? dueToday : tasks;
+  const rows = filter === "overdue" ? overdue : filter === "today" ? dueToday : filter === "waiting" ? waiting : tasks;
   const week = weekDays(date);
   const items = calendarItems(data, {
     startDate: week[0],
@@ -86,6 +84,7 @@ export function Briefing({
             필요한 기록 하나부터 시작하면 됩니다.
           </p>
         </div>
+        <QuickWork data={data} save={save} busy={busy} />
         <div className="start-actions">
           {(
             [
@@ -207,6 +206,8 @@ export function Briefing({
                 ["calls", "전화메모"],
                 ["notes", "업무 메모"],
                 ["calendar", "일정"],
+                ["work", "작업"],
+                ["meetings", "회의 기록"],
                 ["patrol", "순찰"],
                 ["handover", "인수인계"],
                 ["submission", "제출 기한"],
@@ -227,6 +228,7 @@ export function Briefing({
       <div className="briefing-main">
         <section className="panel task-overview" aria-label="챙겨야 할 업무">
           <SectionHead title="챙겨야 할 업무">
+            <button className="text-button" disabled={busy} onClick={() => navigate("work")}>작업·기한 전체 보기</button>
             <button
               className="text-button"
               disabled={busy}
@@ -236,11 +238,13 @@ export function Briefing({
               제출 기한 등록
             </button>
           </SectionHead>
+          <QuickWork data={data} save={save} busy={busy} />
           <div className="segmented dashboard-filters">
             {[
               ["all", "진행 중", tasks.length],
               ["overdue", "기한 경과", overdue.length],
               ["today", "오늘 마감", dueToday.length],
+              ["waiting", "대기", waiting.length],
             ].map(([value, label, count]) => (
               <button
                 key={value}
@@ -268,7 +272,7 @@ export function Briefing({
               </strong>
               <p>
                 {filter === "all"
-                  ? "인수인계와 제출 기한을 등록하면 이곳에 모입니다."
+                  ? "작업·인수인계·제출 기한이 한곳에 모입니다."
                   : "다른 진행 중 업무는 전체 목록에서 확인하세요."}
               </p>
               {filter !== "all" && (
@@ -289,43 +293,19 @@ export function Briefing({
             </div>
           )}
           {(expanded ? rows : rows.slice(0, 5)).map((t) => (
-            <button
-              className="work-line"
-              key={t.id}
-              disabled={busy}
-              onClick={() => navigate(t.kind, t.id)}
-            >
-              <span className={`task-type-icon ${t.kind}`}>
-                <Icon name={t.kind} />
-              </span>
-              <div>
-                <span className="work-kind">
-                  {t.kind === "submission" ? "제출" : "인수인계"} ·{" "}
-                  {t.assignee || "담당 미지정"}
-                  {t.destination ? ` · ${t.destination}` : ""}
-                </span>
-                <strong>{t.title}</strong>
-                <small>{formatTime(t.at)} 마감</small>
-              </div>
-              <Tag
-                tone={
-                  Date.parse(t.at) < Date.now()
-                    ? "danger"
-                    : dayKey(new Date(t.at)) === today
-                      ? "warning"
-                      : ""
-                }
-              >
-                {Date.parse(t.at) < Date.now()
-                  ? "기한 경과"
-                  : dayKey(new Date(t.at)) === today
-                    ? "오늘 마감"
-                    : t.priority === "high"
-                      ? "우선 처리"
-                      : "예정"}
-              </Tag>
-              <Icon name="arrow" size={15} />
-            </button>
+            <div className="work-entry" key={`${t.kind}:${t.id}`}>
+              <button className="work-line" disabled={busy} onClick={() => navigate(t.page, t.id)}>
+                <span className={`task-type-icon ${t.kind}`}><Icon name={t.kind === "general" ? "handover" : t.kind} /></span>
+                <div>
+                  <span className="work-kind">{t.kind === "general" ? "작업" : t.kind === "submission" ? "제출" : "인수인계"} · {t.owner || "담당 미지정"}{t.status === "waiting" ? " · 대기" : ""}</span>
+                  <strong>{t.title}</strong>
+                  <small>{dueText(t)}</small>
+                </div>
+                <Tag tone={t.state === "overdue" ? "danger" : t.state === "today" ? "warning" : ""}>{t.state === "overdue" ? "기한 경과" : t.state === "today" ? "오늘 마감" : t.state === "none" ? "기한 없음" : "예정"}</Tag>
+                <Icon name="arrow" size={15} />
+              </button>
+              {t.kind === "general" && <button className="text-button" aria-label={`완료 · ${t.title}`} disabled={busy} onClick={() => { void save({ ...data, workItems: data.workItems.map((w) => w.id === t.id ? setWorkStatus(w, "done") : w) }); }}>완료</button>}
+            </div>
           ))}
           {rows.length > 5 && (
             <button
@@ -397,6 +377,8 @@ export function Briefing({
                   }
                 </b>
               </span>
+              {daily.some((i) => i.category === "작업") && <span>작업 <b>{daily.filter((i) => i.category === "작업").length}</b></span>}
+              {daily.some((i) => i.category === "회의") && <span>회의 <b>{daily.filter((i) => i.category === "회의").length}</b></span>}
               {daily.some((i) => i.category === "AX") && (
                 <span>
                   AX <b>{daily.filter((i) => i.category === "AX").length}</b>

@@ -137,7 +137,7 @@ test("'고발·인계'를 쓰는 자료는 minReader 2로 저장되고, 지운 �
   sandbox((dir, file) => {
     const { patrolSummary } = require("../shared/model.mjs");
     const { buildForm } = require("../shared/forms.mjs");
-    assert.equal(READER_VERSION, 2);
+    assert.equal(READER_VERSION, 3, "3은 봉투 전용(SECURITY-02); 내용의 minReader는 2까지");
     const data = sample();
     data.patrols.push({
       id: "p1", title: "가상 단속", at: "2026-10-19T10:00:00", route: "가상 구간", observer: "가상 직원",

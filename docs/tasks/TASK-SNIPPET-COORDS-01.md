@@ -48,3 +48,6 @@ updated: 2026-10-20
 ### 2026-10-20 사용자 병합 승인(9주기)
 - 사용자: "main 병합 승인할게, 병합해". SNIP-01 보완(49bbeb1)은 Codex 재검증 전 — 사후 검증 예정.
 - 병합 전: Linux Node 22 `npm test` 169/169(시간대 5종), `npm run test:desktop` 종료 0(진입점 18 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11, Codex 감사 desktop-nav-zones-audit 5/5·postmerge-boundary-audit 3/3. Windows 39365534106(49bbeb1) 성공.
+
+### 2026-10-20 Codex 병합 후 독립 재검증
+기준main ea3105e. SNIP-01 해결 승인. 기존 독립감사에서 -0.5→[0,30,0,"S"]→-0.5로왕복. Python실행13값·앱규칙비교·이미보관한예제미교체단위검사도건너뜀없이통과. 시간대5종각169/169·전체desktop18+감사3(9/9)·mainWindows39372610397성공로그대조. 기존done상태유지. [판정·새증빙](../reviews/2026-10-20-codex-postmerge02.md).

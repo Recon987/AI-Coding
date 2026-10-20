@@ -9,6 +9,7 @@ const {
   Menu,
   nativeImage,
   powerMonitor,
+  safeStorage,
 } = require("electron");
 const path = require("node:path");
 const fs = require("node:fs");
@@ -19,7 +20,66 @@ const { buildAxReport } = require("../shared/ax-report.mjs");
 const { createDesktopLifecycle } = require("./lifecycle.cjs");
 const { createNotifier } = require("./notifications.cjs");
 const { openDataFile } = require("./recovery.cjs");
+const seal = require("./seal.cjs");
+const keystore = require("./keystore.cjs");
+const { osProtector } = require("./protector.cjs");
+const { passwordProblem } = require("../shared/backup-password.mjs");
 let win, file, timer;
+const WEB_PREFERENCES = {
+  preload: path.join(__dirname, "preload.cjs"),
+  contextIsolation: true,
+  nodeIntegration: false,
+  sandbox: true,
+};
+const INDEX = path.join(__dirname, "../dist/index.html");
+// Startup windows (recovery key, backup password), destroyed once the main window exists.
+const startupWindows = [];
+/**
+ * TASK-SECURITY-02/03: a small window asking for a secret before the main window exists —
+ * the recovery key (this PC cannot open the data key) or a backup password (a password
+ * backup picked in the startup recovery flow). `attempt(text)` returns the result or throws
+ * (shown, then the user may retry). Resolves { result, window } or null (closed / 종료·취소).
+ * The window stays until the main window exists, so closing it does not end the app half-way.
+ */
+function askSecret(info, attempt) {
+  return new Promise((resolve) => {
+    const secretWindow = new BrowserWindow({
+      width: 620,
+      height: 640,
+      minWidth: 480,
+      minHeight: 520,
+      backgroundColor: "#f4f6f2",
+      webPreferences: WEB_PREFERENCES,
+    });
+    secretWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+    secretWindow.webContents.on("will-navigate", (e) => e.preventDefault());
+    let done = false;
+    const finish = (result) => {
+      if (done) return;
+      done = true;
+      for (const channel of ["unlock-info", "unlock-try", "unlock-quit"]) ipcMain.removeHandler(channel);
+      // Hidden, not closed: closing the only window would end the app (window-all-closed)
+      // while the startup recovery flow still waits for an answer.
+      if (result === null && !secretWindow.isDestroyed()) secretWindow.hide();
+      resolve(result === null ? null : { result, window: secretWindow });
+    };
+    startupWindows.push(secretWindow);
+    // The title-bar X answers like 종료/취소.
+    secretWindow.on("close", (event) => {
+      if (done) return;
+      event.preventDefault();
+      finish(null);
+    });
+    ipcMain.handle("unlock-info", () => info);
+    ipcMain.handle("unlock-try", async (_, text) => {
+      if (typeof text !== "string" || !text || text.length > 1024) throw new Error("입력한 내용을 확인하세요.");
+      finish(await attempt(text));
+      return true;
+    });
+    ipcMain.handle("unlock-quit", () => finish(null));
+    secretWindow.loadFile(INDEX, { query: { view: "unlock" } });
+  });
+}
 // A warning raised outside a renderer call (startup, restore), shown once after load.
 let pendingNotice = "";
 if (!app.requestSingleInstanceLock()) app.quit();
@@ -29,11 +89,35 @@ else {
       app.setAppUserModelId("local.park.workdesk");
     file = path.join(app.getPath("userData"), "workdesk.json");
     const notify = (text) => (pendingNotice = text);
-    const opened = await openDataFile({ file, store, dialog, notify });
+    // TASK-SECURITY-02: open the data key before anything reads the data file.
+    const protector = osProtector({ safeStorage, isPackaged: app.isPackaged });
+    const security = keystore.loadState({ dataFile: file, protector });
+    let securityNotice = "";
+    if (security.status === "on") store.setSealer(security.ring);
+    else if (security.status === "missing")
+      securityNotice = `${security.reason} 이 상태에서는 저장이 암호화되지 않습니다. 자료 관리 > 저장 암호화에서 다시 켜세요. 손상된 키 파일은 지우지 않습니다.`;
+    else if (security.status === "locked") {
+      const unlocked = await askSecret({ kind: "recovery", reason: security.reason }, (text) =>
+        keystore.unlock({ state: security, recoveryKey: text, protector, store, dataFile: file }),
+      );
+      if (!unlocked) {
+        app.quit();
+        return;
+      }
+      store.setSealer(unlocked.result.ring);
+      securityNotice = unlocked.result.warning;
+    }
+    // TASK-SECURITY-03: a password backup picked in the startup recovery flow asks for its password.
+    const askBackupPassword = async (picked) => {
+      const asked = await askSecret({ kind: "backup", name: path.basename(picked) }, (text) => store.readBackup(picked, text));
+      return asked ? asked.result : null;
+    };
+    const opened = await openDataFile({ file, store, dialog, notify, askBackupPassword });
     if (!opened) {
       app.quit();
       return;
     }
+    if (securityNotice) pendingNotice = [securityNotice, pendingNotice].filter(Boolean).join(" ");
     // TASK-SCHEMA-01: a newer app's file can be viewed; store.write() refuses to save it.
     const readOnly = opened === "read-only";
     const readData = () => store.read(file, { allowNewer: readOnly });
@@ -49,6 +133,34 @@ else {
     ipcMain.handle("save", (_, data) => {
       refuseWhenReadOnly();
       return store.write(file, data, { keepLastGood: true });
+    });
+    // TASK-SECURITY-02: storage encryption status and the one-time turn-on with a recovery key.
+    let pendingKeyring = null;
+    const securityStatus = () => {
+      if (store.sealerActive()) return { state: "on", keyFile: keystore.keyFilePath(file), test: Boolean(protector.test) };
+      if (!protector.available) return { state: "unavailable", reason: protector.reason };
+      return { state: "off", ...(security.status === "missing" ? { reason: security.reason } : {}) };
+    };
+    ipcMain.handle("security-status", () => securityStatus());
+    ipcMain.handle("security-prepare", () => {
+      refuseWhenReadOnly();
+      const status = securityStatus();
+      if (status.state !== "off") throw new Error(status.state === "on" ? "저장 암호화가 이미 켜져 있습니다." : status.reason);
+      pendingKeyring = seal.createKeyring(protector);
+      return { recoveryKey: pendingKeyring.recoveryKey };
+    });
+    ipcMain.handle("security-cancel", () => {
+      pendingKeyring = null;
+    });
+    ipcMain.handle("security-enable", (_, typed) => {
+      refuseWhenReadOnly();
+      if (!pendingKeyring) throw new Error("복구 키를 먼저 만드세요.");
+      if (seal.normalizeRecoveryKey(typed) !== seal.normalizeRecoveryKey(pendingKeyring.recoveryKey))
+        throw new Error("입력한 복구 키가 보여 준 키와 다릅니다. 종이에 적은 키를 다시 확인하세요.");
+      const made = pendingKeyring;
+      const result = keystore.enable({ made, store, dataFile: file });
+      pendingKeyring = null;
+      return { ...securityStatus(), ...(result.warning ? { warning: result.warning } : {}) };
     });
     ipcMain.handle("choose-folder", async () => {
       const r = await dialog.showOpenDialog(win, {
@@ -120,24 +232,56 @@ else {
       });
       return true;
     });
-    ipcMain.handle("backup", async () => {
+    // TASK-SECURITY-03: every backup is sealed with a password typed for this backup only;
+    // it is checked here again and never stored.
+    ipcMain.handle("backup", async (_, password) => {
       refuseWhenReadOnly();
+      const problem = passwordProblem(password);
+      if (problem) throw new Error(problem);
       const r = await dialog.showSaveDialog(win, {
         defaultPath: "공원업무수첩-백업.json",
         filters: [{ name: "JSON", extensions: ["json"] }],
       });
-      if (!r.canceled && r.filePath) store.write(r.filePath, store.read(file));
+      if (r.canceled || !r.filePath) return false;
+      await store.writeBackup(r.filePath, store.read(file), password);
+      return true;
     });
+    // The picked password backup waits here for its password; the renderer never names a path.
+    let pendingRestore = null;
+    // Returns { data } when restored, { needsPassword, name } for a password backup, or null.
     ipcMain.handle("restore", async () => {
       refuseWhenReadOnly();
+      pendingRestore = null;
       const r = await dialog.showOpenDialog(win, {
         properties: ["openFile"],
         filters: [{ name: "JSON", extensions: ["json"] }],
       });
-      if (r.canceled) return null;
-      if (fs.statSync(r.filePaths[0]).size > 20 * 1024 * 1024)
+      if (r.canceled || !r.filePaths?.[0]) return null;
+      if (fs.statSync(r.filePaths[0]).size > store.MAX_FILE_BYTES)
         throw new Error("20MB 이하의 백업을 선택하세요.");
-      const data = store.read(r.filePaths[0], { required: true });
+      let data;
+      try {
+        data = await store.readBackup(r.filePaths[0]);
+      } catch (error) {
+        if (error?.code !== "BACKUP_PASSWORD_REQUIRED") throw error;
+        pendingRestore = r.filePaths[0];
+        return { needsPassword: true, name: path.basename(r.filePaths[0]) };
+      }
+      return finishRestore(data);
+    });
+    // A wrong password throws and keeps the picked file, so the user can try again.
+    ipcMain.handle("restore-password", async (_, password) => {
+      refuseWhenReadOnly();
+      if (!pendingRestore) throw new Error("복원할 백업 파일을 다시 선택하세요.");
+      if (typeof password !== "string" || !password || password.length > 1024) throw new Error("백업 암호를 입력하세요.");
+      const data = await store.readBackup(pendingRestore, password);
+      pendingRestore = null;
+      return finishRestore(data);
+    });
+    ipcMain.handle("restore-cancel", () => {
+      pendingRestore = null;
+    });
+    async function finishRestore(data) {
       // TASK-BACKUP-02: only the newest RESTORE_KEEP protection copies are kept;
       // the user is told which ones go before anything is replaced.
       // Listing is advisory: if the folder cannot be listed, restore still works and nothing is pruned.
@@ -194,21 +338,18 @@ else {
       }
       const warnings = [saved?.warning, pruneWarning].filter(Boolean);
       if (warnings.length) notify(warnings.join(" "));
-      return data;
-    });
+      return { data };
+    }
     win = new BrowserWindow({
       width: 1360,
       height: 900,
       minWidth: 960,
       minHeight: 680,
       backgroundColor: "#f4f6f2",
-      webPreferences: {
-        preload: path.join(__dirname, "preload.cjs"),
-        contextIsolation: true,
-        nodeIntegration: false,
-        sandbox: true,
-      },
+      webPreferences: WEB_PREFERENCES,
     });
+    // Closed only now, so window-all-closed never fires between the windows.
+    for (const startupWindow of startupWindows) if (!startupWindow.isDestroyed()) startupWindow.destroy();
     win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
     win.webContents.on("will-navigate", (e) => e.preventDefault());
     const lifecycle = createDesktopLifecycle({
@@ -225,7 +366,7 @@ else {
     ipcMain.handle("desktop-settings-set-tray", (_, value) =>
       lifecycle.setCloseToTray(value),
     );
-    win.loadFile(path.join(__dirname, "../dist/index.html"));
+    win.loadFile(INDEX);
     const notifications = new Set();
     const notifier = createNotifier({
       readItems: (now) => reminderItems(readData(), now),

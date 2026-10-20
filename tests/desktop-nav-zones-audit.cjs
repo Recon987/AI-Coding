@@ -6,6 +6,8 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const store = require('../desktop/store.cjs');
+// TASK-SECURITY-02: READER_VERSION is now 3, so "future" data is READER_VERSION + 1 (was a literal 3).
+const { READER_VERSION } = require('../shared/model.mjs');
 const root = path.resolve(__dirname, '..');
 const report = { reviewedSource: '519b7cc6bb782fd057949d5f1bddb06ca27664cc', cases: [] };
 async function audit(id, run, newer = false) {
@@ -15,7 +17,7 @@ async function audit(id, run, newer = false) {
   const profile = path.join(dir, 'profile');
   const file = path.join(profile, 'workdesk.json');
   store.write(file, store.empty());
-  if (newer) fs.writeFileSync(file, JSON.stringify({ ...store.empty(), minReader: 3,
+  if (newer) fs.writeFileSync(file, JSON.stringify({ ...store.empty(), minReader: READER_VERSION + 1,
     zones: [{ id: 'z1', code: '3-1', name: '가상 읽기전용 구역', route: '', active: true }] }));
   const before = fs.readFileSync(file, 'utf8');
   let app;

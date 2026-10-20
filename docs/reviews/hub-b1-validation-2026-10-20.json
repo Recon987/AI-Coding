@@ -1,0 +1,223 @@
+{
+  "검증자": "Codex 구현자 자체 검증. Claude 독립 승인 대기",
+  "제품기준": "main ea3105e / TASK-HUB-B1-01",
+  "단위검사": {
+    "명령": "npm test",
+    "종료코드": 0,
+    "전체": 175,
+    "통과": 175,
+    "실패": 0
+  },
+  "실제앱검사": {
+    "명령": "npm run test:desktop",
+    "종료코드": 0,
+    "진입점": [
+      "tests/desktop-smoke.cjs",
+      "tests/desktop-confirm-smoke.cjs",
+      "tests/desktop-forms-smoke.cjs",
+      "tests/desktop-list-smoke.cjs",
+      "tests/desktop-recovery-smoke.cjs",
+      "tests/desktop-recurrence-smoke.cjs",
+      "tests/desktop-notice-smoke.cjs",
+      "tests/desktop-editor-smoke.cjs",
+      "tests/desktop-calendar-smoke.cjs",
+      "tests/desktop-a11y-smoke.cjs",
+      "tests/desktop-schema-smoke.cjs",
+      "tests/desktop-holiday-smoke.cjs",
+      "tests/desktop-modules-smoke.cjs",
+      "tests/desktop-axdesk-smoke.cjs",
+      "tests/desktop-snippets-smoke.cjs",
+      "tests/desktop-axreport-smoke.cjs",
+      "tests/desktop-low-years-smoke.cjs",
+      "tests/desktop-zones-smoke.cjs",
+      "tests/desktop-work-smoke.cjs",
+      "tests/desktop-data-safety-audit.cjs",
+      "tests/desktop-backup-clock-audit.cjs",
+      "tests/desktop-holiday-limits-audit.cjs"
+    ],
+    "일반실제앱": 19,
+    "감사": 3,
+    "감사세부통과": 9,
+    "B1결과": "PASS: B1 일반 작업·1:N 출처·상태 독립·날짜 기한·양방향 이동·삭제 보존·회의·저장 실패·백업/복원·재실행·읽기 전용·외부 요청 0",
+    "Linux한계": "실제 Tray 생성/닫기/복귀, Windows DPAPI 미검증"
+  },
+  "기존감사원결과": [
+    {
+      "baseline": "20cdc3c4431f7d055397d61aef3ab6fe982e9e9a",
+      "platform": "linux",
+      "cases": [
+        {
+          "mode": "success",
+          "passed": true,
+          "diskAfterRestore": [
+            "가상 백업에서 복원한 메모"
+          ],
+          "visibleAfterRestore": [
+            "가상 백업에서 복원한 메모"
+          ],
+          "alert": [],
+          "protectionCopies": 5
+        },
+        {
+          "mode": "cancel",
+          "passed": true,
+          "diskAfterRestore": [
+            "가상 복원 전 메모"
+          ],
+          "visibleAfterRestore": [
+            "가상 복원 전 메모"
+          ],
+          "alert": [],
+          "protectionCopies": 5
+        },
+        {
+          "mode": "invalid",
+          "passed": true,
+          "diskAfterRestore": [
+            "가상 복원 전 메모"
+          ],
+          "visibleAfterRestore": [
+            "가상 복원 전 메모"
+          ],
+          "alert": [
+            "Error invoking remote method 'restore': SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+          ],
+          "protectionCopies": 5
+        },
+        {
+          "mode": "before-commit",
+          "passed": true,
+          "diskAfterRestore": [
+            "가상 복원 전 메모"
+          ],
+          "visibleAfterRestore": [
+            "가상 복원 전 메모"
+          ],
+          "alert": [
+            "Error invoking remote method 'restore': Error: 감사 ENOSPC"
+          ],
+          "protectionCopies": 6
+        },
+        {
+          "mode": "after-commit-listing",
+          "passed": true,
+          "diskAfterRestore": [
+            "가상 백업에서 복원한 메모"
+          ],
+          "visibleAfterRestore": [],
+          "alert": [
+            "복원은 완료했지만 오래된 복원 보호본을 정리하지 못했습니다(감사 EACCES: 복원 후 보호본 목록 읽기 실패). 보호본은 그대로 남아 있습니다."
+          ],
+          "protectionCopies": 6,
+          "diskAfterNextSave": [
+            "가상 복원 직후 추가 메모",
+            "가상 백업에서 복원한 메모"
+          ],
+          "lastGoodAfterNextSave": [
+            "가상 복원 직후 추가 메모",
+            "가상 백업에서 복원한 메모"
+          ],
+          "backupUnchanged": true
+        }
+      ],
+      "errors": [],
+      "externalRequests": []
+    },
+    {
+      "reference": "afc3825",
+      "cases": [
+        {
+          "mode": "past-copies",
+          "passed": true,
+          "prompt": "복원 전 보호본은 최근 5개만 보관합니다.\n복원하면 가장 오래된 보호본 1개(2020-01-01 00:00)를 지웁니다. 필요하면 취소하고 먼저 다른 곳에 복사하세요.",
+          "restored": true,
+          "lastGoodRestored": true,
+          "retained": [
+            {
+              "name": "workdesk.json.before-restore-1577836860000.json",
+              "title": "가상 기존 보호본 2"
+            },
+            {
+              "name": "workdesk.json.before-restore-1577836920000.json",
+              "title": "가상 기존 보호본 3"
+            },
+            {
+              "name": "workdesk.json.before-restore-1577836980000.json",
+              "title": "가상 기존 보호본 4"
+            },
+            {
+              "name": "workdesk.json.before-restore-1577837040000.json",
+              "title": "가상 기존 보호본 5"
+            },
+            {
+              "name": "workdesk.json.before-restore-1792487959093.json",
+              "title": "가상 이번 복원 직전 자료"
+            }
+          ],
+          "originalProtected": true,
+          "oldCopiesKept": 4
+        },
+        {
+          "mode": "future-copies",
+          "passed": true,
+          "prompt": "복원 전 보호본은 최근 5개만 보관합니다.\n복원하면 가장 오래된 보호본 1개(2027-10-20 09:19)를 지웁니다. 필요하면 취소하고 먼저 다른 곳에 복사하세요.",
+          "restored": true,
+          "lastGoodRestored": true,
+          "retained": [
+            {
+              "name": "workdesk.json.before-restore-1824024019185.json",
+              "title": "가상 기존 보호본 2"
+            },
+            {
+              "name": "workdesk.json.before-restore-1824024079185.json",
+              "title": "가상 기존 보호본 3"
+            },
+            {
+              "name": "workdesk.json.before-restore-1824024139185.json",
+              "title": "가상 기존 보호본 4"
+            },
+            {
+              "name": "workdesk.json.before-restore-1824024199185.json",
+              "title": "가상 기존 보호본 5"
+            },
+            {
+              "name": "workdesk.json.before-restore-1824024199186.json",
+              "title": "가상 이번 복원 직전 자료"
+            }
+          ],
+          "originalProtected": true,
+          "oldCopiesKept": 4
+        }
+      ]
+    },
+    {
+      "reference": "afc3825",
+      "cases": [
+        {
+          "mode": "direct",
+          "passed": true,
+          "unhandledErrors": [],
+          "status": "등록하지 않았습니다. 아래 줄을 고친 뒤 다시 시도하세요.",
+          "validation": [
+            "공휴일은 최대 1,000개까지 등록할 수 있습니다. 지금 1,000개가 있어 1개를 더 넣을 수 없습니다. 지난 공휴일을 지운 뒤 다시 등록하세요."
+          ],
+          "dataUnchanged": true,
+          "draft": "가상 초과"
+        },
+        {
+          "mode": "paste",
+          "passed": true,
+          "unhandledErrors": [],
+          "status": "등록하지 않았습니다. 아래 줄을 고친 뒤 다시 시도하세요.",
+          "validation": [
+            "공휴일은 최대 1,000개까지 등록할 수 있습니다. 지금 1,000개가 있어 1개를 더 넣을 수 없습니다. 지난 공휴일을 지운 뒤 다시 등록하세요."
+          ],
+          "dataUnchanged": true,
+          "draft": "2030-01-01,가상 초과"
+        }
+      ],
+      "externalRequests": []
+    }
+  ],
+  "원격": "B1 미푸시. 새 게시 승인 부족으로 자동 승인 검토가 거절. main 미병합."
+}

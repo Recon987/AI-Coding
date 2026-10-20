@@ -1,0 +1,68 @@
+{
+  "reviewedSource": "ea3105eda91cdc1d164b0cb237b53b524959601a",
+  "cases": [
+    {
+      "id": "NAV-02: 깨진 설정·다른 도구 화면·유효 설정 및 읽기 실패 무저장",
+      "passed": true,
+      "settings": [
+        {
+          "raw": "{깨진JSON",
+          "expected": "인수인계",
+          "originalUnchanged": true
+        },
+        {
+          "raw": "[\"submission\"]",
+          "expected": "인수인계",
+          "originalUnchanged": true
+        },
+        {
+          "raw": "{\"tasks\":\"ax-report\"}",
+          "expected": "인수인계",
+          "originalUnchanged": true
+        },
+        {
+          "raw": "{\"tasks\":\"submission\"}",
+          "expected": "제출 기한",
+          "originalUnchanged": true
+        }
+      ],
+      "storageFailureHandled": true,
+      "unhandledErrors": []
+    },
+    {
+      "id": "LOCATION-01: 실제 UTF-8 파일 반입·입력 변경·저장 실패 시 원본/초안 보존",
+      "passed": true,
+      "validFileImported": true,
+      "editedSourceInvalidatesPreview": true,
+      "failedSavePreservesOriginalAndPreview": true,
+      "unhandledErrors": []
+    },
+    {
+      "id": "LOCATION-01: 미래 자료 읽기 전용에서 반입·삭제 잠금 및 원본 불변",
+      "passed": true,
+      "originalUnchanged": true,
+      "unhandledErrors": []
+    },
+    {
+      "id": "LOC-01: invalid-utf8 파일 거부 뒤 이전 미리보기 무효화",
+      "passed": true,
+      "sourceAfterReject": "",
+      "applyStillVisible": false,
+      "originalUnchangedBeforeApply": true,
+      "savedCodes": [],
+      "originalUnchangedAfterApply": true,
+      "unhandledErrors": []
+    },
+    {
+      "id": "LOC-01: over-2mb 파일 거부 뒤 이전 미리보기 무효화",
+      "passed": true,
+      "sourceAfterReject": "",
+      "applyStillVisible": false,
+      "originalUnchangedBeforeApply": true,
+      "savedCodes": [],
+      "originalUnchangedAfterApply": true,
+      "unhandledErrors": []
+    }
+  ],
+  "auditAuthoredSource": "519b7cc6bb782fd057949d5f1bddb06ca27664cc"
+}

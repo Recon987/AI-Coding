@@ -25,6 +25,8 @@ const paths: Record<string, string[]> = {
   download: ["M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"],
   // TASK-MODULES-02: 모듈 관리 (stacked blocks) and AX 사업 관리 (chart with a spark).
   modules: ["M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4z", "M16.5 13v7M13 16.5h7"],
+  // TASK-SECURITY-02: 저장 암호화 (padlock).
+  lock: ["M5 11h14v10H5z", "M8 11V7a4 4 0 0 1 8 0v4", "M12 15v2"],
   ax: ["M4 20V10m6 10V4m6 16v-7", "M3 20h18", "m18 4 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"],
 };
 export function Icon({

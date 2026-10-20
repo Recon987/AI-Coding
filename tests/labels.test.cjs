@@ -9,6 +9,7 @@ const model = require("../shared/model.mjs");
 const office = require("../shared/office.mjs");
 const forms = require("../shared/forms.mjs");
 const ax = require("../shared/ax.mjs");
+const projects = require("../shared/projects.mjs");
 
 const ALLOWED = {
   risk: ["normal", "attention", "urgent"],
@@ -22,6 +23,9 @@ const ALLOWED = {
   axZone: ["hq", "west", "north", "institute", "other"],
   axStage: ["planning", "contract", "execution", "done"],
   axSnippetCategory: ["gee", "python", "prompt", "policy"],
+  // 일반 사업·근거 보관함 (TASK-HUB-B2A-01): new collections only, so no READER_VERSION change.
+  projectStage: ["planning", "progress", "hold", "done"],
+  referenceKind: ["folder", "snippet", "file", "docNo", "text"],
 };
 const MAPS = {
   risk: model.RISK_LABEL,
@@ -34,6 +38,8 @@ const MAPS = {
   axZone: ax.AX_ZONES,
   axStage: ax.AX_STAGES,
   axSnippetCategory: ax.AX_SNIPPET_CATEGORIES,
+  projectStage: projects.PROJECT_STAGES,
+  referenceKind: projects.REFERENCE_KINDS,
 };
 // The TS union each set must equal (src/types.ts), found by its declaration text.
 const TYPE_SOURCES = {
@@ -47,14 +53,17 @@ const TYPE_SOURCES = {
   axZone: /type AxZone = ((?:"\w+"\s*\|?\s*)+);/,
   axStage: /type AxStage = ((?:"\w+"\s*\|?\s*)+);/,
   axSnippetCategory: /type AxSnippetCategory = ((?:"\w+"\s*\|?\s*)+);/,
+  projectStage: /type ProjectStage = ((?:"\w+"\s*\|?\s*)+);/,
+  referenceKind: /type ReferenceKind = ((?:"\w+"\s*\|?\s*)+);/,
 };
 
 test("허용값 스냅샷: 라벨 맵 키가 고정 목록과 같다(라벨 추가 = 자료 형식 확장)", () => {
   for (const [name, keys] of Object.entries(ALLOWED))
     assert.deepEqual(Object.keys(MAPS[name]), keys, name);
   assert.deepEqual(model.RECURRENCE, ALLOWED.recurrence);
-  // 2: "referral" outcome (TASK-FORMS-02). Raise it again with the next enum extension.
-  assert.equal(model.READER_VERSION, 2, "허용값을 늘리면 READER_VERSION도 올린다");
+  // 2: "referral" outcome (TASK-FORMS-02); 3: sealed envelope (TASK-SECURITY-02).
+  // Raise it again with the next enum extension.
+  assert.equal(model.READER_VERSION, 3, "허용값을 늘리면 READER_VERSION도 올린다");
 });
 
 test("라벨 맵 키 = TypeScript 타입 유니언", () => {
@@ -90,6 +99,13 @@ function withValue(name, value) {
     });
   if (name === "axSnippetCategory")
     data.axSnippets.push({ id: "s1", title: "가상", category: value, tags: [], snippet: "", description: "", updatedAt: "2026-10-19T09:00:00+09:00" });
+  if (name === "projectStage")
+    data.projects.push({
+      id: "g1", title: "가상 사업", field: "general", stage: value, manager: "", nextMilestone: "", nextMilestoneDate: null,
+      risks: "", notes: "", referenceIds: [], updatedAt: "2026-10-19T09:00:00+09:00",
+    });
+  if (name === "referenceKind")
+    data.references.push({ id: "r1", title: "가상 근거", kind: value, targetId: "x", path: "/가상", docNo: "1", note: "", addedAt: "2026-10-19T09:00:00+09:00" });
   if (name === "workType" || name === "duty") {
     const workType = name === "workType" ? value : "work";
     data.organizations.push({ id: "org", code: "ORG", name: "가상 사무소", parentId: null });

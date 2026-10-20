@@ -19,6 +19,26 @@ export type Event = {
   excludedDates?: string[];
 };
 export type Call = Note & { phone: string; done: boolean };
+export type WorkDue = null | { kind: "date"; date: string } | { kind: "datetime"; at: string };
+export type WorkItem = Note & {
+  status: "todo" | "doing" | "waiting" | "done";
+  due: WorkDue;
+  projectId: string | null;
+  owner: string;
+  priority: "normal" | "high";
+  /** null = 알림 없음. 날짜만 기한에는 항상 null. */
+  remindMinutes: number | null;
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string | null;
+};
+export type Meeting = Note & { at: string; attendees: string; createdAt: string; updatedAt: string };
+export type SourceRef = { type: "note" | "call" | "meeting"; id: string };
+export type WorkLink = {
+  id: string; from: SourceRef; to: { type: "workItem"; id: string }; role: "followUp"; createdAt: string;
+  /** Source title when the link was made; shown only after the source is deleted (TASK-HUB-SCHEMA-01 6장). */
+  sourceTitle?: string;
+};
 export type Folder = { id: string; title: string; path: string };
 export type PatrolKind =
   | "safety"
@@ -52,7 +72,14 @@ export type Patrol = {
   action: string;
   risk: "normal" | "attention" | "urgent";
 };
-export type Task = Note & {
+/** TASK-HUB-B2A-01: optional links on existing records (older apps keep them untouched). */
+export type ProjectLinks = {
+  /** A general or AX project ID (one ID space); may point at a deleted project. */
+  projectId?: string | null;
+  /** IDs in `references`; may include deleted entries. */
+  referenceIds?: string[];
+};
+export type Task = Note & ProjectLinks & {
   kind: "handover" | "submission";
   at: string;
   assignee: string;
@@ -128,6 +155,7 @@ export type AxProject = {
   risks: string;
   notes: string;
   updatedAt: string;
+  referenceIds?: string[];
 };
 export type AxSnippetCategory = "gee" | "python" | "prompt" | "policy";
 export type AxSnippet = {
@@ -151,6 +179,9 @@ export type Data = {
   folders: Folder[];
   patrols: Patrol[];
   tasks: Task[];
+  workItems: WorkItem[];
+  meetings: Meeting[];
+  links: WorkLink[];
   controls: Control[];
   /** TASK-HOLIDAY-01: holidays the user adds (임시공휴일, later election days). */
   customHolidays: CustomHoliday[];
@@ -158,6 +189,10 @@ export type Data = {
   axProjects: AxProject[];
   axSnippets: AxSnippet[];
   zones: Zone[];
+  /** TASK-HUB-B2A-01: general projects (AX projects stay in axProjects). */
+  projects: Project[];
+  /** TASK-HUB-B2A-01: one evidence store shared by projects and tasks. */
+  references: Reference[];
   /** Absent until the user changes which modules show. */
   modules?: ModuleSettings;
   organizations: Organization[];
@@ -172,6 +207,8 @@ export type Page =
   | "controls"
   | "handover"
   | "submission"
+  | "work"
+  | "meetings"
   | "calendar"
   | "calls"
   | "notes"
@@ -192,6 +229,7 @@ export type CalendarItem = {
   recurrence?: EventRecurrence;
   repeatUntil?: string | null;
   occurrenceDate?: string;
+  allDay?: boolean;
 };
 export type HolidayEntry = {
   date: string;
@@ -206,6 +244,15 @@ export type DesktopSettings = {
   trayAvailable: boolean;
   message?: string;
 };
+/** TASK-SECURITY-02: storage encryption as the main process reports it. */
+export type SecurityStatus = {
+  state: "on" | "off" | "unavailable";
+  reason?: string;
+  keyFile?: string;
+  /** Development/test protector, never in a packaged app. */
+  test?: boolean;
+  warning?: string;
+};
 declare global {
   interface Window {
     workdesk?: {
@@ -216,8 +263,11 @@ declare global {
       save(data: Data): Promise<void | { warning: string }>;
       chooseFolder(): Promise<string | null>;
       openFolder(id: string): Promise<void>;
-      backup(): Promise<void>;
-      restore(): Promise<Data | null>;
+      /** TASK-SECURITY-03: false when the save dialog was cancelled. */
+      backup(password: string): Promise<boolean>;
+      restore(): Promise<{ data: Data } | { needsPassword: true; name: string } | null>;
+      restorePassword(password: string): Promise<{ data: Data } | null>;
+      restoreCancel(): Promise<void>;
       exportBriefing(date: string): Promise<boolean>;
       exportForm(
         request: import("../shared/forms.mjs").FormRequest,
@@ -225,6 +275,44 @@ declare global {
       exportAxReport(
         request: import("../shared/ax-report.mjs").AxReportRequest,
       ): Promise<boolean>;
+      securityStatus(): Promise<SecurityStatus>;
+      securityPrepare(): Promise<{ recoveryKey: string }>;
+      securityCancel(): Promise<void>;
+      securityEnable(typed: string): Promise<SecurityStatus>;
+      unlockInfo(): Promise<{ kind: "recovery"; reason: string } | { kind: "backup"; name: string }>;
+      unlockTry(text: string): Promise<boolean>;
+      unlockQuit(): Promise<void>;
     };
   }
 }
+
+/** TASK-HUB-B2A-01 (docs/product/claude-hub-schema-plan-2026-10-20.md). */
+export type ProjectField = "facility" | "resource" | "ax" | "admin" | "general";
+export type ProjectStage = "planning" | "progress" | "hold" | "done";
+export type Project = {
+  id: string;
+  title: string;
+  /** "ax" is never stored here: AX projects live in axProjects. */
+  field: Exclude<ProjectField, "ax">;
+  stage: ProjectStage;
+  manager: string;
+  nextMilestone: string;
+  nextMilestoneDate: string | null;
+  risks: string;
+  notes: string;
+  referenceIds: string[];
+  updatedAt: string;
+};
+export type ReferenceKind = "folder" | "snippet" | "file" | "docNo" | "text";
+export type Reference = {
+  id: string;
+  title: string;
+  kind: ReferenceKind;
+  /** folder → folders[].id, snippet → axSnippets[].id */
+  targetId: string | null;
+  /** file only: absolute path; shown and revealed, never run */
+  path: string | null;
+  docNo: string | null;
+  note: string;
+  addedAt: string;
+};

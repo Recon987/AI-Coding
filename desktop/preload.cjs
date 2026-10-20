@@ -11,6 +11,17 @@ contextBridge.exposeInMainWorld("workdesk", {
   save: (data) => ipcRenderer.invoke("save", data),
   chooseFolder: () => ipcRenderer.invoke("choose-folder"),
   openFolder: (id) => ipcRenderer.invoke("open-folder", id),
-  backup: () => ipcRenderer.invoke("backup"),
+  backup: (password) => ipcRenderer.invoke("backup", password),
   restore: () => ipcRenderer.invoke("restore"),
+  // TASK-SECURITY-03: the password of the backup picked by restore().
+  restorePassword: (password) => ipcRenderer.invoke("restore-password", password),
+  restoreCancel: () => ipcRenderer.invoke("restore-cancel"),
+  // TASK-SECURITY-02: storage encryption.
+  securityStatus: () => ipcRenderer.invoke("security-status"),
+  securityPrepare: () => ipcRenderer.invoke("security-prepare"),
+  securityCancel: () => ipcRenderer.invoke("security-cancel"),
+  securityEnable: (typed) => ipcRenderer.invoke("security-enable", typed),
+  unlockInfo: () => ipcRenderer.invoke("unlock-info"),
+  unlockTry: (text) => ipcRenderer.invoke("unlock-try", text),
+  unlockQuit: () => ipcRenderer.invoke("unlock-quit"),
 });
