@@ -149,3 +149,22 @@ export function validateModules(modules) {
     if (!["enabledModuleIds", "moduleOrder", "customConfigs"].includes(key)) checkJson(value, 1);
   return modules;
 }
+
+/** The applet that shows `page`, or undefined for pages outside the applets (바로가기·앱 안내). */
+export const appletOfPage = (page) => [...CORE_APPLETS, ...MODULE_APPLETS].find((a) => a.pages.includes(page));
+
+/**
+ * Last page per multi-page applet (TASK-NAV-02). A view preference, kept by the window,
+ * never in workdesk.json. Returns `saved` itself when nothing changes.
+ */
+export function rememberPage(saved, page) {
+  const applet = appletOfPage(page);
+  if (!applet || applet.pages.length < 2 || saved?.[applet.id] === page) return saved;
+  return { ...saved, [applet.id]: page };
+}
+
+/** The page to open for `applet`: the remembered one if it still belongs to it, else its first page. */
+export function restorePage(applet, saved) {
+  const page = saved && typeof saved === "object" ? saved[applet.id] : undefined;
+  return typeof page === "string" && applet.pages.includes(page) ? page : applet.pages[0];
+}

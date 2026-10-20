@@ -917,3 +917,7 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 /* 보고서 초안 (TASK-AXDESK-03) */
 .ax-report .report-filename { margin: 4px 0 8px; font-size: var(--fs-sm); color: var(--muted); font-weight: 500; word-break: break-all; }
 .report-preview { max-height: 560px; white-space: pre-wrap; overflow-wrap: anywhere; }
+/* 담당구역 목록 (TASK-LOCATION-01) */
+.zone-example { margin: 2px 0 12px; font-size: var(--fs-sm); }
+.zone-example pre { margin: 6px 0 0; padding: 8px 10px; border-radius: 6px; background: var(--surface-sunken); font-size: var(--fs-xs); white-space: pre-wrap; }
+.zone-table td, .zone-table th { font-size: var(--fs-sm); }

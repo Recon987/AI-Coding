@@ -25,3 +25,9 @@ export function withModules(data: Partial<Data>, shownInOrder: string[]): Module
 /** UTF-8 byte size of the JSON text. */
 export function jsonBytes(value: unknown): number;
 export function validateModules(modules: unknown): ModuleSettings;
+/** The applet that shows `page` (undefined for 바로가기·앱 안내). */
+export function appletOfPage(page: string): AppletDefinition | undefined;
+/** Remembers `page` for its multi-page applet; returns `saved` unchanged when nothing changes. */
+export function rememberPage(saved: Record<string, string>, page: string): Record<string, string>;
+/** The remembered page of `applet` if still valid, else its first page. */
+export function restorePage(applet: { id: string; pages: readonly string[] }, saved: unknown): string;

@@ -243,3 +243,25 @@ test("MOD-01: 한도를 넘는 설정이 든 기존 파일은 원본 그대로 �
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// TASK-NAV-02: last page per multi-page tool.
+test("NAV-02: 도구별 마지막 화면은 여러 화면 도구만 기억하고, 깨진 값은 무시한다", () => {
+  const { rememberPage, restorePage, appletOfPage } = require("../shared/applets.mjs");
+  const tasks = appletOfPage("submission");
+  assert.equal(tasks.id, "tasks");
+  assert.equal(appletOfPage("folders"), undefined);
+  let saved = {};
+  assert.equal(restorePage(tasks, saved), "handover", "처음이면 첫 화면");
+  saved = rememberPage(saved, "submission");
+  assert.deepEqual(saved, { tasks: "submission" });
+  assert.equal(rememberPage(saved, "submission"), saved, "같으면 그대로(다시 쓰지 않음)");
+  assert.equal(rememberPage(saved, "briefing"), saved, "화면 하나인 도구는 기억하지 않음");
+  assert.equal(rememberPage(saved, "about"), saved);
+  saved = rememberPage(saved, "calls");
+  assert.deepEqual(saved, { tasks: "submission", memos: "calls" });
+  assert.equal(restorePage(tasks, saved), "submission");
+  assert.equal(restorePage(appletOfPage("notes"), saved), "calls");
+  // Unknown or foreign pages, wrong types and broken storage fall back to the first page.
+  for (const bad of [{ tasks: "calls" }, { tasks: 3 }, { tasks: "없는-화면" }, null, "x", [], undefined])
+    assert.equal(restorePage(tasks, bad), "handover", JSON.stringify(bad));
+});

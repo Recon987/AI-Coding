@@ -65,6 +65,7 @@ const closeDrawer = async (page, drawer) => {
     let page;
     ({ app, page } = await launch(dir, profile));
     const saved = () => JSON.parse(fs.readFileSync(file, "utf8"));
+    const before = fs.readFileSync(file, "utf8");
 
     // 1. Default menu: core four, then patrols and AX (office hidden without office records).
     const core = await menu(page).locator(".nav-section").first().getByRole("button").evaluateAll(
@@ -85,6 +86,17 @@ const closeDrawer = async (page, drawer) => {
     // The applet entry keeps the current page instead of jumping back.
     await menuButton(page, "인수인계").click();
     await page.getByRole("heading", { level: 1, name: "제출 기한", exact: true }).waitFor();
+    // TASK-NAV-02: coming back from another tool opens the page last used there, in one click.
+    await goTo(page, "업무 브리핑");
+    await menuButton(page, "인수인계").click();
+    await page.getByRole("heading", { level: 1, name: "제출 기한", exact: true }).waitFor();
+    await goTo(page, "전화메모");
+    await goTo(page, "월간 일정");
+    await menuButton(page, "업무 메모").click();
+    await page.getByRole("heading", { level: 1, name: "전화메모", exact: true }).waitFor();
+    // Remembering is a view setting: workdesk.json is not written.
+    assert.equal(Object.hasOwn(saved(), "modules"), false);
+    assert.equal(fs.readFileSync(file, "utf8"), before, "화면 이동만으로 자료 파일을 쓰지 않음");
 
     // 3. Hide patrols from the drawer (keyboard): menu entry gone, records kept.
     await goTo(page, "탐방로 통제");
@@ -148,6 +160,14 @@ const closeDrawer = async (page, drawer) => {
     app = undefined;
     ({ app, page } = await launch(dir, profile));
     assert.deepEqual(await moduleNames(page), ["AX 사업 관리", "현장 순찰"]);
+    // The remembered pages survive the restart too; a broken stored value falls back to the first page.
+    await menuButton(page, "인수인계").click();
+    await page.getByRole("heading", { level: 1, name: "제출 기한", exact: true }).waitFor();
+    await page.evaluate(() => localStorage.setItem("park-workdesk-last-page", "{깨진 값"));
+    await page.reload();
+    await page.locator('.save-indicator[data-state="ready"]').waitFor();
+    await menuButton(page, "인수인계").click();
+    await page.getByRole("heading", { level: 1, name: "인수인계", exact: true }).waitFor();
 
     // 5. Every module off: the core four still work and the module section disappears.
     drawer = await openDrawer(page);
@@ -193,7 +213,7 @@ const closeDrawer = async (page, drawer) => {
     assert.equal(await drawer.getByRole("button", { name: "아래로 · 현장 순찰", exact: true }).isDisabled(), true);
     await closeDrawer(page, drawer);
     assert.equal(fs.readFileSync(newerFile, "utf8"), raw);
-    console.log("PASS: 코어 4종·기본 모듈, 화면 안 전환(키보드), 모듈 숨김/복구(자료·브리핑·검색 유지, 숨긴 화면 안내), 순서 변경·재실행 유지, 모두 꺼도 코어 사용, 960px·125%, 읽기 전용 잠금");
+    console.log("PASS: 코어 4종·기본 모듈, 화면 안 전환(키보드), 모듈 숨김/복구(자료·브리핑·검색 유지, 숨긴 화면 안내), 순서 변경·재실행 유지, 모두 꺼도 코어 사용, 960px·125%, 읽기 전용 잠금, 도구별 마지막 화면 기억(재실행 유지·깨진 값 무시·자료 무저장)");
   } finally {
     if (app) await app.close().catch(() => {});
     fs.rmSync(dir, { recursive: true, force: true });

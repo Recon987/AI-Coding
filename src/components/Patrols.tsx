@@ -1,4 +1,5 @@
 import { matches, searchText } from "../../shared/search.mjs";
+import { findZone, routeSuggestions, zoneSuggestions } from "../../shared/zones.mjs";
 import {
   describeObservations,
   formatCoordinates,
@@ -13,7 +14,7 @@ import { FormExport } from "./FormExport";
 import { ListHeader, ListRow, rowKeys } from "./ListRow";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
 import { CoordinateInput } from "./CoordinateInput";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import type { Data, Patrol, PatrolKind, Save, Task } from "../types";
 import {
   Empty,
@@ -69,6 +70,19 @@ export function Patrols({
   const { draft, setDraft } = editor;
   const [editorKey, setEditorKey] = useState(0);
   const prefillHint = useId();
+  // 담당구역 목록 (TASK-LOCATION-01): suggestions only; free text stays valid.
+  const zoneListId = useId();
+  const routeListId = useId();
+  const [routeFromZone, setRouteFromZone] = useState("");
+  useEffect(() => setRouteFromZone(""), [editor.isOpen, draft.id]);
+  // With a zone list, say which zone a typed number is, or that it is not in the list.
+  const listedZone = findZone(data, draft.zone);
+  const zoneHint =
+    data.zones.length && draft.zone?.trim()
+      ? listedZone
+        ? listedZone.name || undefined
+        : "목록에 없는 번호입니다. 그대로 저장할 수 있습니다."
+      : undefined;
   // Which record filled which fields of a new draft; UI state only, never saved.
   const [prefill, setPrefill] = useState(() =>
     initial ? null : prefillOf(latest, blank()),
@@ -338,26 +352,57 @@ export function Patrols({
                   ))}
                 </select>
               </Field>
-              <Field label="담당구역 번호">
+              <Field
+                label="담당구역 번호"
+                hint={zoneHint}
+              >
                 <input
                   maxLength={50}
+                  list={zoneListId}
                   aria-describedby={filled("zone")}
                   value={draft.zone ?? ""}
-                  onChange={(e) => patch({ zone: e.target.value })}
+                  onChange={(e) => {
+                    const zone = e.target.value;
+                    const listed = findZone(data, zone);
+                    // A listed zone fills an empty route with its usual route (and says so).
+                    if (listed?.route && !draft.route.trim()) {
+                      patch({ zone, route: listed.route });
+                      setRouteFromZone(listed.code);
+                    } else patch({ zone });
+                  }}
                   placeholder="선택 · 예: 3-2"
                 />
               </Field>
             </div>
-            <Field label="순찰 구간">
+            <Field
+              label="순찰 구간"
+              hint={routeFromZone ? `담당구역 ${routeFromZone}의 대표 구간을 채웠습니다. 다르면 고치세요.` : undefined}
+            >
               <input
                 required
                 maxLength={500}
+                list={routeListId}
                 aria-describedby={filled("route")}
                 value={draft.route}
-                onChange={(e) => patch({ route: e.target.value })}
+                onChange={(e) => {
+                  patch({ route: e.target.value });
+                  setRouteFromZone("");
+                }}
                 placeholder="출발 거점 → 점검 구간 → 도착 거점"
               />
             </Field>
+            <datalist id={zoneListId}>
+              {zoneSuggestions(data).map((z) => (
+                <option key={z.id} value={z.code}>
+                  {z.name}
+                </option>
+              ))}
+            </datalist>
+            <datalist id={routeListId}>
+              {routeSuggestions(data, draft.zone).map((route) => (
+                <option key={route} value={route} />
+              ))}
+            </datalist>
             <div className="form-row">
               <Field label="기록자">
                 <input
