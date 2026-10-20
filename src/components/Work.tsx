@@ -51,9 +51,9 @@ export function FollowUpPanel({ data, source, navigate, busy }: { data: Data; so
 export function WorkRow({ work, data, save, busy, edit, navigate }: { work: WorkItem; data: Data; save: Save; busy: boolean; edit: () => void; navigate: (page: Page, id?: string) => void }) {
   const state = dueState(work);
   const sources = workSources(data, work.id);
-  const stateLabel = state === "overdue" ? "기한 경과" : state === "today" ? "오늘 마감" : WORK_STATUS[work.status];
+  const stateLabel = state === "overdue" ? "기한 경과" : state === "today" ? "오늘 마감" : state === "upcoming" ? "예정" : WORK_STATUS[work.status];
   return <ListRow title={work.title} subtitle={<>{work.body || "상세 내용 없음"}{sources.length > 0 && <span className="source">{sources.map((s) => s.label).join(" · ")}</span>}</>} kind="작업" owner={work.owner || "담당 미지정"} when={dueText(work)} done={work.status === "done"} busy={busy}
-    status={<Tag tone={state === "overdue" ? "danger" : state === "today" ? "warning" : ""}>{stateLabel}{work.status === "waiting" && stateLabel !== "대기" ? " · 대기" : ""}</Tag>}
+    status={<Tag tone={state === "overdue" ? "danger" : state === "today" ? "warning" : ""}>{stateLabel}{["waiting", "doing"].includes(work.status) && stateLabel !== WORK_STATUS[work.status] ? ` · ${WORK_STATUS[work.status]}` : ""}</Tag>}
     actions={[
       { label: work.status === "done" ? "다시 진행" : "완료", primary: true, onClick: () => { void save({ ...data, workItems: data.workItems.map((w) => w.id === work.id ? setWorkStatus(w, w.status === "done" ? "doing" : "done") : w) }); } },
       { label: "수정", onClick: edit },

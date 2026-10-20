@@ -1,0 +1,19 @@
+{
+  "base": "ea3105e 구판 및 270cf7a 보안 코드 (별도 가상 사본, 제품 병합 아님)",
+  "result": "PASS",
+  "checks": [
+    "구판 normalize 후 새 컬렉션 무손실",
+    "봉투 저장/자동 정상본 왕복",
+    "암호 백업/복원 왕복",
+    "잘못된 암호 및 B1 검증 거부 때 원본 불변"
+  ],
+  "dataBytes": 4305058,
+  "backupWriteMs": 363.31,
+  "backupReadMs": 401.28,
+  "decryptParseNormalize": {
+    "n": 30,
+    "medianMs": 61.01,
+    "p95Ms": 72.85
+  },
+  "limitations": "시험용 보호기 사용. Windows DPAPI·보안 UI 통합 미검증. 보안 구판은 B1 필드 자체를 검사하지 않으므로 병합 때 현재 모델 유지 필수."
+}

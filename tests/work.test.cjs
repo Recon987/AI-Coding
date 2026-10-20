@@ -6,6 +6,7 @@ const load = async () => ({ ...await import("../shared/model.mjs"), ...await imp
 test("B1: 선택 컬렉션 없는 구판·모르는 항목·등록과 완료의 비파괴 왕복", async () => {
   const { empty, normalize, newWork, setWorkStatus, calendarItems, reminderItems, briefing, searchRecords } = await load();
   const old = empty();
+  assert.equal(JSON.stringify(normalize(old)), JSON.stringify(old), "빈 자료와 저장 결과의 키 순서를 유지한다");
   delete old.workItems; delete old.meetings; delete old.links;
   old.futureRecords = [{ value: "보존" }];
   const data = normalize(old);
@@ -83,4 +84,18 @@ test("B1: 잘못된 기한·상태·완료·목록 한도는 저장 전 거부",
     assert.throws(() => normalize({ ...empty(), [key]: null }));
     assert.throws(() => normalize({ ...empty(), [key]: Array(10001).fill({}) }), /10,000/);
   }
+});
+
+test("B1: 무기한 작업은 우선순위·등록 순이며 기존 업무 상태를 건드리지 않는다", async () => {
+  const { empty, newWork, unifiedWork, normalize } = await load();
+  const data = empty();
+  data.workItems = [
+    { ...newWork({ id: "normal", title: "일반", now }), priority: "normal" },
+    { ...newWork({ id: "later", title: "나중 우선", now: "2026-10-20T04:00:00Z" }), priority: "high" },
+    { ...newWork({ id: "first", title: "먼저 우선", now }), priority: "high" },
+  ];
+  data.tasks.push({ id: "old", title: "원본 인계", body: "유지", kind: "handover", at: now, assignee: "", destination: "", priority: "normal", remindMinutes: 60, patrolId: null, done: false, completedAt: null });
+  const before = structuredClone(data);
+  assert.deepEqual(unifiedWork(normalize(data), new Date(now)).map((r) => r.id), ["old", "first", "later", "normal"]);
+  assert.deepEqual(data, before);
 });

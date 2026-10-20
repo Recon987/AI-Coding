@@ -1,0 +1,71 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "arch": "x64",
+    "cpus": 5,
+    "cpu": "AMD EPYC 9V74 80-Core Processor"
+  },
+  "count": {
+    "notes": 2000,
+    "calls": 1000,
+    "patrols": 100,
+    "tasks": 500,
+    "workItems": 3400,
+    "meetings": 500,
+    "links": 2500
+  },
+  "totalRecords": 10000,
+  "bytes": 5198138,
+  "metrics": {
+    "readAndNormalize": {
+      "n": 30,
+      "medianMs": 26.05,
+      "p95Ms": 38.27,
+      "maxMs": 40.79
+    },
+    "search": {
+      "n": 30,
+      "medianMs": 4.72,
+      "p95Ms": 7.71,
+      "maxMs": 7.73
+    },
+    "unifiedList": {
+      "n": 30,
+      "medianMs": 9.68,
+      "p95Ms": 14.51,
+      "maxMs": 17.56
+    },
+    "weekCalendar": {
+      "n": 30,
+      "medianMs": 6.03,
+      "p95Ms": 7.06,
+      "maxMs": 7.94
+    },
+    "atomicSaveWithProtection": {
+      "n": 30,
+      "medianMs": 44.3,
+      "p95Ms": 53.92,
+      "maxMs": 54.19
+    },
+    "electronStartToToday": {
+      "n": 3,
+      "medianMs": 533.95,
+      "p95Ms": 555.52,
+      "maxMs": 555.52
+    },
+    "electronSearchToVisibleResult": {
+      "n": 12,
+      "medianMs": 47.53,
+      "p95Ms": 54.85,
+      "maxMs": 54.85
+    },
+    "electronSaveToClosedEditor": {
+      "n": 3,
+      "medianMs": 301.58,
+      "p95Ms": 302.76,
+      "maxMs": 302.76
+    }
+  },
+  "limits": "측정은 가상 자료·이 Linux 환경 기준. Windows 실기기 성능과 다름. 저장은 정상본 보호까지 포함."
+}

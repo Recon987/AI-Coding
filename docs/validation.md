@@ -1,5 +1,10 @@
 # 검증 결과 — 2026-10-16 (한국 시간)
 
+## 2026-10-20 B1 구현 자체 검증 (독립 승인 대기)
+
+`task/task-hub-b1-01`, 제품 기준 main ea3105e. npm test **175/175**, npm run test:desktop **종료 0**(실제 앱19종+감사3종/9사례). 신규 B1 작업·1:N 후속·날짜·원본 비전파·삭제 보존·회의·저장 실패·복원·읽기 전용·재실행·960px/125%, 5개 시간대/DST/0099년 통과. 혼합10,000건/5.20MB Linux에서 실제 앱 시작 중앙값534ms·검색p95 55ms. 구판 및 보안 가상 사본 왕복 통과. 보안 제품 통합·Windows·DPAPI·기관 실기기·Claude 독립 승인은 아직 없다. [조건·한계·재현·JSON](reviews/2026-10-20-codex-hub-b1.md). B1 원격 푸시는 자동 승인 검토에서 구체적 게시 승인 부족으로 거절되어 로컬 보존했다.
+
+
 ## 2026-10-20 9주기 main 병합 전 확인
 
 기준 코드 49bbeb1, Linux Node 22. `npm test` 169/169(서울·UTC·뉴욕·키리티마티·호놀룰루 각각, 건너뜀 0), `npm run test:desktop` 종료 0(진입점 18개 + 감사 3개 9사례), 화면 검사 150·실패 0·외부 요청 0, 업무 과업 11/11. Codex 추가 감사 `tests/desktop-nav-zones-audit.cjs` 5/5, `tests/postmerge-boundary-audit.cjs` 3/3. Windows 39365534106(49bbeb1) 성공: 단위 169/169·건너뜀 0(SNIP-01 Python 검사 실제 실행), 소스·설치본 실제 앱 검사 통과. Codex 독립 승인: 8주기 사후 4건, TZ-TEST-01, NAV-02, LOCATION-01 정상 경로. LOC-01·SNIP-01 보완은 사용자 승인으로 먼저 병합하고 Codex 재검증을 받는다.

@@ -109,9 +109,10 @@ export function unifiedWork(data, now = new Date()) {
     if (a.due && b.due) {
       const key = workDueKey(a).localeCompare(workDueKey(b));
       if (key) return key;
-      const time = (a.due.kind === "datetime" ? Date.parse(a.due.at) : 0) - (b.due.kind === "datetime" ? Date.parse(b.due.at) : 0);
+      if (a.due.kind !== b.due.kind) return a.due.kind === "date" ? 1 : -1;
+      const time = a.due.kind === "datetime" ? Date.parse(a.due.at) - Date.parse(b.due.at) : 0;
       if (time) return time;
     }
-    return Number(b.priority === "high") - Number(a.priority === "high") || a.createdAt.localeCompare(b.createdAt);
+    return Number(b.priority === "high") - Number(a.priority === "high") || (a.createdAt && b.createdAt ? Date.parse(a.createdAt) - Date.parse(b.createdAt) : 0);
   });
 }
