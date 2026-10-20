@@ -4,6 +4,35 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Claude 인계 — 2026-10-20 B3a·B2b main 병합(PR #18·#19)
+
+- **PR [#18](https://github.com/Recon987/AI-Coding/pull/18)** B3a 정리·보고 집계 → main 04646cc. 사용자 승인 선병합이며 Codex 사후 검증 예정이다. Windows: PR 39417583084, main 39418371855 모두 성공.
+- **PR [#19](https://github.com/Recon987/AI-Coding/pull/19)** B2b 사업 공간·근거 보관함·기록 연결·AX 모듈 계약 → main **f237898**. Codex가 구현했고 Claude 독립 검증을 통과했다. 사용자 승인. Windows: PR 39419036824, 통합본 39418563238 성공. main push는 실행 중이다.
+- **B2b 통합 정렬**(명세 8장): 새 연결은 `links[].from.title`에 쓰고, main판 `links[].sourceTitle`은 읽기로 호환한다. `hub-schema-contract-audit` 기대값 3건을 B2b가 해소한 동작으로 갱신했다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding. main = f237898. 작업 브랜치 `claude/zen-cannon-wc1at4` = main
+- **Task Card**:
+  - done: HUB-B2B-01(Claude 검증 통과), HUB-B3A-01(Codex 사후 검증 예정)
+  - ready(Codex): HUB-B1-UI-01, HUB-B3B-01
+  - Claude in-progress 없음
+- **Latest Pushed Commit**: 응답 패킷을 참조한다
+- **Completed Steps & Modified Files**: PR #18·#19 병합, handoff·작업 기록 44장
+- **Changed Interfaces / Schema Diff**:
+  - B2b IPC: `choose-reference-file`·`reference-status`·`reveal-reference`
+  - `shared/module-contracts.mjs`
+  - 기록의 선택 필드 `projectIds`·`referenceIds`
+  - `links[].from.title`(`sourceTitle` 읽기 호환)
+  - `READER_VERSION` 3
+- **Test Status**:
+  - Linux: `npm test` 230/230, `test:desktop` 종료 0(PASS 24줄), 업무 과업·Codex 감사 4종 통과
+  - 엄격 화면 검토: 150건 중 3건 실패(B1-UI-01, 비차단)
+  - Windows: PR #18·#19와 main 04646cc 성공. main f237898은 응답 패킷 참조
+- **Remaining Work for Gemini**:
+  - Codex: B1-UI-01, B3b(`collectRollup`·`renderReport` 사용), 선병합 카드 사후 검증
+  - 사용자: 기관 PC에서 보안 기능 확인
+- **Modified Code Snippets (if uncommitted)**: 없음
+
 ## 최신 Claude 인계 — 2026-10-20 B3a 정리·보고 집계 함수(TASK-HUB-B3A-01, review)
 
 **10주기 병합 결과**
