@@ -1,7 +1,7 @@
 ---
 id: TASK-HUB-B3A-01
 title: B3a 주간 실적·계획·인계 롤업 순수 함수
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -49,3 +49,7 @@ updated: 2026-10-20
 - 날짜 없는 메모는 실적에 넣지 않는다.
 
 ## 검증 기록
+
+### 2026-10-20 사용자 명시 승인 선병합 (Codex 사후 검증 예정)
+- 근거: 사용자 "main 병합 승인할게, 병합해"(2026-10-20).
+- Codex 독립 검증은 아직 받지 않았다(사후 검증 예정).
