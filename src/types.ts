@@ -206,6 +206,15 @@ export type DesktopSettings = {
   trayAvailable: boolean;
   message?: string;
 };
+/** TASK-SECURITY-02: storage encryption as the main process reports it. */
+export type SecurityStatus = {
+  state: "on" | "off" | "unavailable";
+  reason?: string;
+  keyFile?: string;
+  /** Development/test protector, never in a packaged app. */
+  test?: boolean;
+  warning?: string;
+};
 declare global {
   interface Window {
     workdesk?: {
@@ -225,6 +234,13 @@ declare global {
       exportAxReport(
         request: import("../shared/ax-report.mjs").AxReportRequest,
       ): Promise<boolean>;
+      securityStatus(): Promise<SecurityStatus>;
+      securityPrepare(): Promise<{ recoveryKey: string }>;
+      securityCancel(): Promise<void>;
+      securityEnable(typed: string): Promise<SecurityStatus>;
+      unlockInfo(): Promise<{ reason: string }>;
+      unlockTry(text: string): Promise<boolean>;
+      unlockQuit(): Promise<void>;
     };
   }
 }

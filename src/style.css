@@ -921,3 +921,12 @@ footer { display: flex; justify-content: space-between; gap: 16px; padding: 12px
 .zone-example { margin: 2px 0 12px; font-size: var(--fs-sm); }
 .zone-example pre { margin: 6px 0 0; padding: 8px 10px; border-radius: 6px; background: var(--surface-sunken); font-size: var(--fs-xs); white-space: pre-wrap; }
 .zone-table td, .zone-table th { font-size: var(--fs-sm); }
+/* 저장 암호화 (TASK-SECURITY-02) */
+.security-state { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-sunken); font-size: var(--fs-sm); }
+.security-notes { margin: 0 0 14px; padding-left: 20px; font-size: var(--fs-sm); line-height: 1.6; }
+.recovery-key-value { margin: 0 0 12px; padding: 14px; border: 2px dashed var(--line); border-radius: 8px; text-align: center; }
+.recovery-key-value code { font: 600 var(--fs-lg)/1.4 Consolas, "D2Coding", "Courier New", monospace; letter-spacing: 1px; word-break: break-all; user-select: all; }
+.unlock-screen { display: grid; width: 100%; margin: 0; min-height: 100vh; box-sizing: border-box; place-items: center; padding: 24px; background: var(--page); }
+.unlock-panel { width: min(520px, 100%); }
+.unlock-panel h1 { font-size: var(--fs-lg); line-height: 28px; }
+.unlock-panel p { margin: 0 0 12px; }

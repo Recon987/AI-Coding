@@ -88,10 +88,21 @@ function unlock({ state, recoveryKey, protector, store, dataFile }) {
  * Turns encryption on with a key ring made by seal.createKeyring and confirmed by the user.
  * Order: key file first (nothing else changes if that fails), then the data rewritten sealed.
  */
-function enable({ made, store, dataFile }) {
-  if (fs.existsSync(keyFilePath(dataFile))) throw new Error("저장 암호화가 이미 켜져 있습니다.");
+function enable({ made, store, dataFile, now = Date.now }) {
+  const file = keyFilePath(dataFile);
+  let broken = false;
+  if (fs.existsSync(file)) {
+    try {
+      readKeyFile(file);
+    } catch {
+      broken = true;
+    }
+    if (!broken) throw new Error("저장 암호화가 이미 켜져 있습니다.");
+  }
   // Read before anything is written: an unreadable file is not touched.
   const data = store.read(dataFile);
+  // A damaged key file is kept aside, never deleted (a sealed copy may still need it).
+  if (broken) fs.renameSync(file, `${file}.broken-${now()}`);
   writeKeyFile(store, dataFile, made.keyFile);
   store.setSealer(ringOf(made.keyFile, made.dataKey));
   try {

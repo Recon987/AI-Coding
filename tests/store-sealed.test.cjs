@@ -267,6 +267,10 @@ test("키 파일이 없어지거나 깨져도 봉투의 복구 정보로 잠김 
     fs.rmSync(store.lastGoodFile(file));
     fs.writeFileSync(keyFile, "{");
     assert.equal(keystore.loadState({ dataFile: file, protector: pc }).status, "missing");
+    // Turning encryption on again keeps the damaged key file aside instead of deleting it.
+    keystore.enable({ made: seal.createKeyring(pc), store, dataFile: file, now: () => 7 });
+    assert.equal(fs.readFileSync(`${keyFile}.broken-7`, "utf8"), "{");
+    assert.equal(keystore.loadState({ dataFile: file, protector: pc }).status, "on");
   }));
 
 test("보호기를 쓸 수 없는 PC: 키 파일이 있으면 잠김, 복구 키로 열면 이번 실행만 열림을 경고", () =>

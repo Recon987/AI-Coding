@@ -9,6 +9,7 @@ const {
   Menu,
   nativeImage,
   powerMonitor,
+  safeStorage,
 } = require("electron");
 const path = require("node:path");
 const fs = require("node:fs");
@@ -19,7 +20,54 @@ const { buildAxReport } = require("../shared/ax-report.mjs");
 const { createDesktopLifecycle } = require("./lifecycle.cjs");
 const { createNotifier } = require("./notifications.cjs");
 const { openDataFile } = require("./recovery.cjs");
+const seal = require("./seal.cjs");
+const keystore = require("./keystore.cjs");
+const { osProtector } = require("./protector.cjs");
 let win, file, timer;
+const WEB_PREFERENCES = {
+  preload: path.join(__dirname, "preload.cjs"),
+  contextIsolation: true,
+  nodeIntegration: false,
+  sandbox: true,
+};
+const INDEX = path.join(__dirname, "../dist/index.html");
+/**
+ * TASK-SECURITY-02: a small window asking for the recovery key when this PC cannot open
+ * the data key by itself. Resolves { ring, warning, window } or null (quit, nothing written
+ * but a rewrapped key file). The window stays until the main window exists, so closing it
+ * does not end the app half-way.
+ */
+function askRecoveryKey(state, protector) {
+  return new Promise((resolve) => {
+    const unlockWindow = new BrowserWindow({
+      width: 620,
+      height: 640,
+      minWidth: 480,
+      minHeight: 520,
+      backgroundColor: "#f4f6f2",
+      webPreferences: WEB_PREFERENCES,
+    });
+    unlockWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+    unlockWindow.webContents.on("will-navigate", (e) => e.preventDefault());
+    let done = false;
+    const finish = (result) => {
+      if (done) return;
+      done = true;
+      for (const channel of ["unlock-info", "unlock-try", "unlock-quit"]) ipcMain.removeHandler(channel);
+      resolve(result && { ...result, window: unlockWindow });
+    };
+    ipcMain.handle("unlock-info", () => ({ reason: state.reason }));
+    ipcMain.handle("unlock-try", (_, text) => {
+      if (typeof text !== "string" || text.length > 200) throw new Error("복구 키를 확인하세요.");
+      const opened = keystore.unlock({ state, recoveryKey: text, protector, store, dataFile: file });
+      finish(opened);
+      return true;
+    });
+    ipcMain.handle("unlock-quit", () => finish(null));
+    unlockWindow.on("closed", () => finish(null));
+    unlockWindow.loadFile(INDEX, { query: { view: "unlock" } });
+  });
+}
 // A warning raised outside a renderer call (startup, restore), shown once after load.
 let pendingNotice = "";
 if (!app.requestSingleInstanceLock()) app.quit();
@@ -29,11 +77,30 @@ else {
       app.setAppUserModelId("local.park.workdesk");
     file = path.join(app.getPath("userData"), "workdesk.json");
     const notify = (text) => (pendingNotice = text);
+    // TASK-SECURITY-02: open the data key before anything reads the data file.
+    const protector = osProtector({ safeStorage, isPackaged: app.isPackaged });
+    const security = keystore.loadState({ dataFile: file, protector });
+    let unlockWindow = null;
+    let securityNotice = "";
+    if (security.status === "on") store.setSealer(security.ring);
+    else if (security.status === "missing")
+      securityNotice = `${security.reason} 이 상태에서는 저장이 암호화되지 않습니다. 자료 관리 > 저장 암호화에서 다시 켜세요. 손상된 키 파일은 지우지 않습니다.`;
+    else if (security.status === "locked") {
+      const unlocked = await askRecoveryKey(security, protector);
+      if (!unlocked) {
+        app.quit();
+        return;
+      }
+      store.setSealer(unlocked.ring);
+      unlockWindow = unlocked.window;
+      securityNotice = unlocked.warning;
+    }
     const opened = await openDataFile({ file, store, dialog, notify });
     if (!opened) {
       app.quit();
       return;
     }
+    if (securityNotice) pendingNotice = [securityNotice, pendingNotice].filter(Boolean).join(" ");
     // TASK-SCHEMA-01: a newer app's file can be viewed; store.write() refuses to save it.
     const readOnly = opened === "read-only";
     const readData = () => store.read(file, { allowNewer: readOnly });
@@ -49,6 +116,34 @@ else {
     ipcMain.handle("save", (_, data) => {
       refuseWhenReadOnly();
       return store.write(file, data, { keepLastGood: true });
+    });
+    // TASK-SECURITY-02: storage encryption status and the one-time turn-on with a recovery key.
+    let pendingKeyring = null;
+    const securityStatus = () => {
+      if (store.sealerActive()) return { state: "on", keyFile: keystore.keyFilePath(file), test: Boolean(protector.test) };
+      if (!protector.available) return { state: "unavailable", reason: protector.reason };
+      return { state: "off", ...(security.status === "missing" ? { reason: security.reason } : {}) };
+    };
+    ipcMain.handle("security-status", () => securityStatus());
+    ipcMain.handle("security-prepare", () => {
+      refuseWhenReadOnly();
+      const status = securityStatus();
+      if (status.state !== "off") throw new Error(status.state === "on" ? "저장 암호화가 이미 켜져 있습니다." : status.reason);
+      pendingKeyring = seal.createKeyring(protector);
+      return { recoveryKey: pendingKeyring.recoveryKey };
+    });
+    ipcMain.handle("security-cancel", () => {
+      pendingKeyring = null;
+    });
+    ipcMain.handle("security-enable", (_, typed) => {
+      refuseWhenReadOnly();
+      if (!pendingKeyring) throw new Error("복구 키를 먼저 만드세요.");
+      if (seal.normalizeRecoveryKey(typed) !== seal.normalizeRecoveryKey(pendingKeyring.recoveryKey))
+        throw new Error("입력한 복구 키가 보여 준 키와 다릅니다. 종이에 적은 키를 다시 확인하세요.");
+      const made = pendingKeyring;
+      const result = keystore.enable({ made, store, dataFile: file });
+      pendingKeyring = null;
+      return { ...securityStatus(), ...(result.warning ? { warning: result.warning } : {}) };
     });
     ipcMain.handle("choose-folder", async () => {
       const r = await dialog.showOpenDialog(win, {
@@ -202,13 +297,10 @@ else {
       minWidth: 960,
       minHeight: 680,
       backgroundColor: "#f4f6f2",
-      webPreferences: {
-        preload: path.join(__dirname, "preload.cjs"),
-        contextIsolation: true,
-        nodeIntegration: false,
-        sandbox: true,
-      },
+      webPreferences: WEB_PREFERENCES,
     });
+    // Closed only now, so window-all-closed never fires between the two windows.
+    if (unlockWindow && !unlockWindow.isDestroyed()) unlockWindow.destroy();
     win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
     win.webContents.on("will-navigate", (e) => e.preventDefault());
     const lifecycle = createDesktopLifecycle({
@@ -225,7 +317,7 @@ else {
     ipcMain.handle("desktop-settings-set-tray", (_, value) =>
       lifecycle.setCloseToTray(value),
     );
-    win.loadFile(path.join(__dirname, "../dist/index.html"));
+    win.loadFile(INDEX);
     const notifications = new Set();
     const notifier = createNotifier({
       readItems: (now) => reminderItems(readData(), now),

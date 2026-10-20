@@ -28,6 +28,7 @@ import { Calendar } from "./components/Calendar";
 import { Personal } from "./components/Personal";
 import { HolidayManager } from "./components/HolidayManager";
 import { ZoneManager } from "./components/ZoneManager";
+import { SecuritySheet, UnlockScreen } from "./components/Security";
 import { Icon } from "./components/Icon";
 import { AppletDrawer } from "./components/AppletDrawer";
 import { AxDesk } from "./components/AxDesk";
@@ -100,6 +101,8 @@ function App() {
     // TASK-HOLIDAY-01: user-added holidays sheet, opened from 자료 관리.
     [holidaysOpen, setHolidaysOpen] = useState(false),
     [zonesOpen, setZonesOpen] = useState(false),
+    // TASK-SECURITY-02: 저장 암호화 sheet.
+    [securityOpen, setSecurityOpen] = useState(false),
     // TASK-MODULES-02: 모듈 관리 drawer.
     [modulesOpen, setModulesOpen] = useState(false),
     [query, setQuery] = useState("");
@@ -497,6 +500,18 @@ function App() {
                   <Icon name="patrol" size={16} />
                   담당구역 목록
                 </button>
+                <button
+                  disabled={!api || !ready || busy}
+                  onClick={(event) => {
+                    event.currentTarget
+                      .closest("details")
+                      ?.removeAttribute("open");
+                    setSecurityOpen(true);
+                  }}
+                >
+                  <Icon name="lock" size={16} />
+                  저장 암호화
+                </button>
               </div>
             </details>
           </div>
@@ -593,6 +608,7 @@ function App() {
           {zonesOpen && (
             <ZoneManager data={data} busy={busy} readOnly={readOnly} save={save} onClose={() => setZonesOpen(false)} />
           )}
+          {securityOpen && <SecuritySheet readOnly={readOnly} onClose={() => setSecurityOpen(false)} />}
           {error && (
             <div role="alert" className="error">
               {error}
@@ -855,4 +871,6 @@ function App() {
     </div>
   );
 }
-createRoot(document.getElementById("root")!).render(<App />);
+// TASK-SECURITY-02: the startup recovery-key window loads the same page with ?view=unlock.
+const unlockView = new URLSearchParams(location.search).get("view") === "unlock";
+createRoot(document.getElementById("root")!).render(unlockView ? <UnlockScreen /> : <App />);
