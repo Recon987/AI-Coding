@@ -1,9 +1,9 @@
 ---
 id: TASK-SECURITY-03
 title: 백업 암호(scrypt)로 이동 백업 봉함·복원
-status: ready
+status: in-progress
 role: builder
-owner: none
+owner: claude
 verifier: codex
 branch: claude/zen-cannon-wc1at4
 depends: TASK-SECURITY-02
@@ -12,6 +12,8 @@ updated: 2026-10-20
 ---
 
 ## 배경
+- 의존 예외: TASK-SECURITY-02 (사용자 승인 2026-10-20, "이어서 SECURITY-03 진행해" — 구현 끝, Codex 검증 대기)
+
 [설계안](../research/security-01-design.md) 5장·10장: 백업·복원할 때마다 백업 암호 입력(PC에 저장하지 않음).
 
 ## 완료 조건
@@ -28,7 +30,7 @@ updated: 2026-10-20
 - [ ] 2. 백업·복원 대화상자 연결·실제 앱 검사·기록
 
 ## 재개 위치
-착수 전. 설계 승인(2026-10-20) 반영 카드.
+1단계 착수: `desktop/backup-seal.cjs`(scrypt 키 유도·백업 봉투·암호 규칙)와 `tests/backup-seal.test.cjs`.
 
 ## 테스트 상태
 미실행
