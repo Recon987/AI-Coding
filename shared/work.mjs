@@ -1,6 +1,7 @@
 // B1: 원본 기록을 복제하지 않는 작업·후속 연결 계약. DOM/저장소 의존 없음.
 import { validDateKey, localDate } from "./dates.mjs";
 import { formatDate, formatTime } from "./format.mjs";
+import { sourceView, validateSource } from "./projects.mjs";
 
 export const WORK_STATUS = { todo: "할 일", doing: "진행 중", waiting: "대기", done: "완료" };
 const ensure = (ok, message) => { if (!ok) throw new Error(message); };
@@ -9,7 +10,7 @@ const required = (v, max) => text(v, max) && v.trim().length > 0;
 const object = (v) => v && typeof v === "object" && !Array.isArray(v);
 const instant = (v) => text(v, 40) && /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(v) && validDateKey(v.slice(0, 10)) && Number.isFinite(Date.parse(v));
 const localKey = (d) => `${String(d.getFullYear()).padStart(4, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-const refs = { note: "notes", call: "calls", meeting: "meetings", workItem: "workItems" };
+const refs = { note: "notes", call: "calls", meeting: "meetings", patrol: "patrols" };
 const names = { note: "메모", call: "전화메모", meeting: "회의 기록" };
 
 export function validateWork(data) {
@@ -25,7 +26,8 @@ export function validateWork(data) {
       if (key === "links") {
         ensure(row.role === "followUp", "후속 연결 종류를 확인하세요.");
         ensure(object(row.from) && object(row.to) && Object.hasOwn(names, row.from.type) && required(row.from.id, 100) && row.to.type === "workItem" && required(row.to.id, 100), "후속 연결 출처·대상을 확인하세요.");
-        // 선택: 만들 때의 출처 제목 사본. 출처가 지워졌을 때만 표시에 쓴다(HUB-SCHEMA-01 6장).
+        validateSource({ kind: row.from.type, id: row.from.id, title: row.from.title ?? "" });
+        // main 5ab5675~04646cc판은 출처 제목 사본을 links[].sourceTitle에 썼다. 계속 받아 읽는다.
         ensure(row.sourceTitle === undefined || text(row.sourceTitle, 500), "후속 연결의 출처 제목을 확인하세요.");
         // 삭제된 출처/작업 링크도 보존한다. ID 재작성이나 연쇄 삭제는 하지 않는다.
         continue;
@@ -36,14 +38,16 @@ export function validateWork(data) {
         continue;
       }
       ensure(Object.hasOwn(WORK_STATUS, row.status) && ["normal", "high"].includes(row.priority) && text(row.owner, 100), "작업 상태·우선순위·담당자를 확인하세요.");
+      if (row.source !== undefined) validateSource(row.source);
       ensure(row.projectId === null || required(row.projectId, 100), "사업 참조를 확인하세요.");
       ensure(row.completedAt === null || instant(row.completedAt), "작업 완료 일시를 확인하세요.");
       ensure((row.status === "done") === (row.completedAt !== null), "작업 완료 상태와 일시가 다릅니다.");
       const due = row.due;
       ensure(due === null || (object(due) && ((due.kind === "date" && validDateKey(due.date)) || (due.kind === "datetime" && instant(due.at)))), "작업 기한을 확인하세요.");
-      ensure(row.remindMinutes === null || (due?.kind === "datetime" && [0, 60, 1440].includes(row.remindMinutes)), "시각 알림은 일시 기한에서만 명시적으로 설정하세요.");
+      ensure(row.remindMinutes === undefined || row.remindMinutes === null || (due?.kind === "datetime" && [0, 60, 1440].includes(row.remindMinutes)), "시각 알림은 일시 기한에서만 명시적으로 설정하세요.");
     }
-    result[key] = rows;
+    // B2a의 초기 workItems에는 알림 필드가 없다. 누락은 알림 없음으로만 보완한다.
+    result[key] = key === "workItems" ? rows.map((row) => row.remindMinutes === undefined ? { ...row, remindMinutes: null } : row) : rows;
   }
   const pairs = new Set();
   for (const link of result.links) {
@@ -87,18 +91,22 @@ export function workCalendarItems(data) {
 export function workReminders(data) {
   return (data.workItems ?? []).filter((w) => w.due?.kind === "datetime" && w.remindMinutes !== null).map((w) => ({ id: `work:${w.id}`, title: `작업 · ${w.title}`, at: new Date(Date.parse(w.due.at) - w.remindMinutes * 60000).toISOString(), done: w.status === "done" }));
 }
-/** 원본이 있으면 현재 제목, 지워졌으면 연결에 남긴 제목 사본(있을 때)으로 표시한다. */
-export function sourceInfo(data, ref, sourceTitle) {
+export function sourceInfo(data, ref) {
   const row = (data[refs[ref.type]] ?? []).find((r) => r.id === ref.id);
-  const deleted = `출처: 삭제된 ${names[ref.type]}${sourceTitle ? ` — ${sourceTitle}` : ""}`;
-  return { row, page: refs[ref.type], label: row ? `출처: ${names[ref.type]} · ${row.title}` : deleted };
+  const view = sourceView(data, validateSource({ kind: ref.type, id: ref.id, title: ref.title ?? "" }));
+  return { row, page: view.page, label: view.label };
 }
 export function followUps(data, ref) {
   const ids = new Set((data.links ?? []).filter((l) => l.role === "followUp" && l.from.type === ref.type && l.from.id === ref.id).map((l) => l.to.id));
+  for (const work of data.workItems ?? []) if (work.source?.kind === ref.type && work.source.id === ref.id) ids.add(work.id);
   return (data.workItems ?? []).filter((w) => ids.has(w.id));
 }
 export function workSources(data, id) {
-  return (data.links ?? []).filter((l) => l.to.id === id && l.role === "followUp").map((l) => ({ ...sourceInfo(data, l.from, l.sourceTitle), ref: l.from }));
+  // 제목 사본: B2b판은 from.title, main 5ab5675판은 sourceTitle에 둔다(둘 다 읽는다).
+  const sources = (data.links ?? []).filter((l) => l.to.id === id && l.role === "followUp").map((l) => (l.from.title === undefined && l.sourceTitle !== undefined ? { ...l.from, title: l.sourceTitle } : l.from));
+  const legacy = (data.workItems ?? []).find((w) => w.id === id)?.source;
+  if (legacy && !sources.some((s) => s.type === legacy.kind && s.id === legacy.id)) sources.push({ type: legacy.kind, id: legacy.id, title: legacy.title });
+  return sources.map((ref) => ({ ...sourceInfo(data, ref), ref }));
 }
 /** 양 화면에서 사용하는 동일한 정렬. 원본 배열/상태는 바꾸지 않는다. */
 export function unifiedWork(data, now = new Date()) {

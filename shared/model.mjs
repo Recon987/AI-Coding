@@ -3,7 +3,8 @@ import { validateModules } from "./applets.mjs";
 import { validateZones } from "./zones.mjs";
 import { validateProjectLinks, validateProjects, validateReferences } from "./projects.mjs";
 import { validateWork, workCalendarItems, workReminders, dueText, WORK_STATUS, workDueKey } from "./work.mjs";
-import { AX_STAGES, AX_ZONES, milestoneItems, validateAxProjects, validateAxSnippets } from "./ax.mjs";
+import { validateAxProjects, validateAxSnippets } from "./ax.mjs";
+import { moduleDeadlines, moduleBriefing } from "./module-contracts.mjs";
 import { formatClock, formatTime } from "./format.mjs";
 import {
   dutyTypes,
@@ -26,10 +27,8 @@ const personalCollections = [
 // axProjects/axSnippets: AX Desk (TASK-MODULES-01). The `modules` setting is an object,
 // not a collection, and is written only once the user changes it.
 // zones: 담당구역 번호 목록 (TASK-LOCATION-01).
-// projects/references: 일반 사업과 근거 보관함 (TASK-HUB-B2A-01); workItems/meetings/links: B1 일반 작업·회의·후속 연결
-// (TASK-HUB-B1-01). New collections only, so no READER_VERSION change: older readers keep
-// them as unknown top-level keys.
-const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets", "zones", "workItems", "meetings", "links", "projects", "references"];
+// B1 작업·회의·출처와 B2 사업·근거는 모두 선택 컬렉션이다.
+const optionalCollections = ["controls", "customHolidays", "axProjects", "axSnippets", "zones", "projects", "references", "workItems", "meetings", "links"];
 export const collections = [
   ...personalCollections,
   ...optionalCollections,
@@ -109,11 +108,11 @@ export const empty = () => ({
   axProjects: [],
   axSnippets: [],
   zones: [],
+  projects: [],
+  references: [],
   workItems: [],
   meetings: [],
   links: [],
-  projects: [],
-  references: [],
   organizations: [],
   employees: [],
   bases: [],
@@ -326,11 +325,11 @@ function normalizeContent(input) {
   const axProjects = validateAxProjects(data.axProjects === undefined ? [] : data.axProjects);
   const axSnippets = validateAxSnippets(data.axSnippets === undefined ? [] : data.axSnippets);
   const zones = validateZones(data.zones === undefined ? [] : data.zones);
-  const work = validateWork(data);
   const projects = validateProjects(data.projects === undefined ? [] : data.projects);
   const references = validateReferences(data.references === undefined ? [] : data.references);
   // Optional projectId/referenceIds on tasks and AX projects; dangling targets are allowed.
-  validateProjectLinks({ ...data, ...work, projects, axProjects });
+  validateProjectLinks({ ...data, projects, axProjects });
+  const work = validateWork(data);
   if (data.modules !== undefined) validateModules(data.modules);
   for (const key of personalCollections) {
     ensure(
@@ -493,9 +492,9 @@ function normalizeContent(input) {
     axProjects,
     axSnippets,
     zones,
-    ...work,
     projects,
     references,
+    ...work,
   };
 }
 
@@ -1012,7 +1011,7 @@ export function calendarItems(data, range) {
         done: false,
       })),
     ...controlDays(data, range),
-    ...milestoneItems(data.axProjects, range ?? {}),
+    ...moduleDeadlines(data, range ?? {}),
   ].sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
 }
 export function reminderItems(data, now = Date.now()) {
@@ -1117,7 +1116,6 @@ export function briefing(data, date) {
   const work = (data.workItems ?? []).filter((w) => w.status !== "done" && (!w.due || workDueKey(w) <= date));
   const meetings = (data.meetings ?? []).filter((m) => dayKey(new Date(m.at)) === date);
   const controls = activeControls(data, date);
-  const milestones = (data.axProjects ?? []).filter((p) => p.nextMilestoneDate === date);
   const events = calendarItems(data, {
     startDate: date,
     endDate: date,
@@ -1156,18 +1154,7 @@ export function briefing(data, date) {
         `- [${e.done ? "완료" : "예정"}${isRecurring(e) ? `/${RECURRENCE_LABEL[e.recurrence]}` : ""}] ${when(e.at)} ${e.title}`,
     ),
     "",
-    // AX milestones (TASK-AXDESK-01): listed only on days that have one, so briefings of
-    // offices that do not use AX Desk stay as before.
-    ...(milestones.length
-      ? [
-          `AX 사업 마일스톤 (${milestones.length})`,
-          ...milestones.map(
-            (p) =>
-              `- ${p.title} | ${p.nextMilestone.trim() || "차기 마일스톤"} | ${AX_ZONES[p.zone]} | ${AX_STAGES[p.stage]}`,
-          ),
-          "",
-        ]
-      : []),
+    ...moduleBriefing(data, date),
     `순찰 기록 (${patrols.length})`,
     ...patrols.map(
       (p) =>

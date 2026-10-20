@@ -23,14 +23,15 @@ function sample() {
   return data;
 }
 
-check("SCHEMA-B1-01", "source 필드는 보존되지만 B1 출처 관계로 인식되지 않는다", () => {
+check("SCHEMA-B1-01", "source 필드는 보존되고, B2b부터 후속 수·출처 표시로 읽힌다", () => {
   const data = sample();
   data.workItems[0].source = { kind: "note", id: "n1", title: "가상 검토 메모" };
   const saved = normalize(data);
   assert.deepEqual(saved.workItems[0].source, data.workItems[0].source);
-  assert.equal(followUps(saved, { type: "note", id: "n1" }).length, 0);
-  assert.equal(workSources(saved, "w1").length, 0);
-  return { outcome: "제안 source는 모르는 필드로 보존되지만 links 없이는 후속 수·출처 복귀에 반영되지 않음" };
+  // B1 게시본에서는 둘 다 0이었다. B2b(9210731)가 레거시 workItems.source를 후속 수·출처 표시로 읽도록 해소했다(명세 7b·8장).
+  assert.equal(followUps(saved, { type: "note", id: "n1" }).length, 1);
+  assert.equal(workSources(saved, "w1").length, 1);
+  return { outcome: "source는 보존되고 후속 수·출처 표시에 반영(B2b 해소)" };
 });
 check("SCHEMA-B1-01-LINKS", "links의 1:N·다중 출처·삭제 보존·상태 독립", () => {
   const data = sample();
@@ -58,11 +59,13 @@ check("SCHEMA-B1-02-AT", "문서 kind:at 일시 기한은 B1에서 거부", () =
   assert.equal(reminderItems(normalize(data))[0].id, "work:w1");
   return { message, outcome: "게시된 판별값은 datetime" };
 });
-check("SCHEMA-B1-02-REMINDER", "문서에서 빠진 remindMinutes는 null 기본값까지 계약에 필요", () => {
+check("SCHEMA-B1-02-REMINDER", "빠진 remindMinutes는 null(알림 없음)로만 읽고 시각을 추정하지 않는다", () => {
   const data = sample(); delete data.workItems[0].remindMinutes;
-  const message = reject(data);
-  assert.match(message, /알림/);
-  return { message, outcome: "B1 생성자는 remindMinutes:null을 저장함" };
+  // B1 게시본은 거부했다. B2b(9210731)가 누락을 null로만 보완하도록 바꿨다(명세 7b). 알림은 만들지 않는다.
+  const saved = normalize(data);
+  assert.equal(saved.workItems[0].remindMinutes, null);
+  assert.equal(reminderItems(saved).length, 0);
+  return { outcome: "누락은 null로 보완(B2b), 알림 후보 0" };
 });
 check("SCHEMA-B1-03-MEETING", "회의는 B1에 존재하며 B2 필드는 선택 확장이어야 한다", () => {
   const data = sample();

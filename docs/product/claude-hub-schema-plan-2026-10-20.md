@@ -250,3 +250,24 @@ Codex B1(`origin/task/task-hub-b1-01` d7805e5)을 이 브랜치에 병합하면�
 | 작업 제목 | 200자 | **500자** |
 | 회의 | B2에서 도입 | B1에 이미 있다. `{id, title, body, at, attendees, createdAt, updatedAt}`. B2 필드(`projectIds`·`decisions`·`referenceIds`)는 선택 확장이다 |
 | `workItems.referenceIds` | — | B2a `validateProjectLinks`가 선택 필드로 형식만 검사한다 |
+
+## 7b. B1+B2a 통합 계약 (2026-10-20 Codex, 사용자 통합 지시 반영)
+
+이 절은 게시된 B1과 B2a를 결합한 실제 계약이며 앞선 B1 미수신 가정을 대체한다.
+- workItems의 기한은 null/date/datetime이다. remindMinutes 누락은 null(알림 없음)으로만 보완하며 시각을 추정하지 않는다. 제목500자를 보존한다.
+- 새 후속 관계는 기존 links.from.type(note/call/meeting)→to.workItem, role:followUp에 저장한다. 기존 링크·회의를 삭제하거나 일괄 이관하지 않는다.
+- B2a source.kind 입력이 이미 있는 workItems도 읽는다. sourceView/validateSource가 note/call/patrol/meeting과 제목500자를 처리하며 같은 출처를 중복 표시하지 않는다. 새 저장에서 source와 links 두 곳에 같은 관계를 쓰지 않는다. 삭제된 원본은 가능한 제목 사본과 작업 본문을 유지한다.
+- meetings는 이미 B1에 있다. at/attendees 문자열/createdAt/updatedAt을 보존한다. 메모·전화·순찰·회의의 projectIds와 referenceIds는 선택 배열(각50개)이고 누락·끊긴 참조를 허용한다. 작업/인계의 사업 소속은 단일 projectId가 원본이다.
+- projects/references와 AX의 기존 저장 위치·단일 사업 ID 공간은 유지한다. 사업 삭제가 기록·근거를 삭제하지 않는다. reader3은 봉투 전용이며 기존 links의 새 역할·순찰 출처는 이번에 추가하지 않는다.
+- B2a의 희소 referenceIds 배열을 거부해 JSON null로 저장되는 경계를 보완했다. 기존 측정 스크립트의 실제 합계는14,000건이며10,000건 표기와 구별한다.
+
+## 8. 두 통합안의 정렬 (2026-10-20 Claude, B2b 통합 때)
+
+7장(Claude, main 5ab5675)과 7b장(Codex, B2b 브랜치)은 B1+B2a를 각각 따로 통합한 기록이다. 같은 날 같은 일을 했지만 출처 제목 사본의 저장 위치가 달랐다. B2b를 main 기준 브랜치에 병합하며 이렇게 맞췄다.
+
+| 항목 | 정렬 결과 |
+| --- | --- |
+| 새 연결의 제목 사본 | **`links[].from.title`**(B2b 화면이 이 값을 쓴다) |
+| main 5ab5675~04646cc판이 쓴 `links[].sourceTitle` | 계속 검증(500자)하고 읽는다. `workSources`는 `from.title`이 없으면 `sourceTitle`로 채운다. 지우거나 옮기지 않는다 |
+| `sourceView`·`validateSource` | B2b 판을 쓴다(note·call·patrol·meeting, 500자, `workItems.source` 레거시 읽기) |
+| 기록의 `projectIds`·`referenceIds` | B2b 판(메모·전화·순찰·회의, 선택 배열 50개) |

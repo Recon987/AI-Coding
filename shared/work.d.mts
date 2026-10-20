@@ -1,4 +1,5 @@
-import type { Data, WorkItem, WorkDue, SourceRef, Page, CalendarItem } from "../src/types";
+import type { Data, WorkItem, WorkDue, SourceRef, SourceKind, Page, CalendarItem } from "../src/types";
+type WorkSourceRef = { type: SourceKind; id: string; title?: string };
 export const WORK_STATUS: Record<WorkItem["status"], string>;
 export function validateWork(data: unknown): Pick<Data, "workItems" | "meetings" | "links">;
 export function newWork(options: { id: string; title?: string; body?: string; now?: string }): WorkItem;
@@ -8,8 +9,8 @@ export function dueState(work: { due: WorkDue; status: string }, now?: Date): "n
 export function dueText(work: { due: WorkDue }): string;
 export function workCalendarItems(data: Data): CalendarItem[];
 export function workReminders(data: Data): { id: string; title: string; at: string; done: boolean }[];
-export function sourceInfo(data: Data, ref: SourceRef, sourceTitle?: string): { row?: { id: string; title: string; body: string }; page: Page; label: string };
+export function sourceInfo(data: Data, ref: WorkSourceRef): { row?: { id: string; title: string; body?: string }; page: Page | null; label: string };
 export function followUps(data: Data, ref: SourceRef): WorkItem[];
-export function workSources(data: Data, id: string): (ReturnType<typeof sourceInfo> & { ref: SourceRef })[];
+export function workSources(data: Data, id: string): (ReturnType<typeof sourceInfo> & { ref: WorkSourceRef })[];
 export type UnifiedWork = { id: string; kind: "general" | "handover" | "submission"; page: Page; title: string; body: string; owner: string; priority: "normal" | "high"; done: boolean; status: WorkItem["status"]; due: WorkDue; createdAt: string; state: ReturnType<typeof dueState> };
 export function unifiedWork(data: Data, now?: Date): UnifiedWork[];

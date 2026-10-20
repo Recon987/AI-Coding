@@ -66,8 +66,6 @@ test("검증: 분야·단계·길이·근거 목록·종류별 필수 값·경�
     [{ tasks: [task("t1", { projectId: "" })] }, /연결된 사업/],
     [{ tasks: [task("t1", { referenceIds: "r1" })] }, /근거 자료 목록/],
     [{ axProjects: [axProject("a1", { referenceIds: [1] })] }, /AX 사업의 근거/],
-    [{ workItems: [{ id: "w1", title: "가상 작업", body: "", status: "todo", due: null, projectId: null, owner: "", priority: "normal", remindMinutes: null,
-      createdAt: NOW, updatedAt: NOW, completedAt: null, referenceIds: "r1" }] }, /작업의 근거 자료 목록/],
   ])
     assert.throws(() => normalize({ ...empty(), ...bad }), message, JSON.stringify(bad).slice(0, 80));
   for (const pathText of ["C:\\가상\\근거.hwp", "\\\\서버\\공유\\근거.pdf", "/home/가상/근거.pdf"])
@@ -103,7 +101,7 @@ test("구판이 의존하는 보존 성질: 모르는 레코드 필드와 최상
       ...empty(),
       tasks: [task("t1", { projectId: "p1", futureField: { a: 1 } })],
       notes: [{ id: "n1", title: "가상 메모", body: "", futureField: "유지" }],
-      futureCollection: [{ id: "x1", title: "다음 판의 항목" }],
+      futureCollection: [{ id: "w1", title: "가상 작업", source: { kind: "call", id: "c1", title: "가상 전화" } }],
     };
     store.write(file, data);
     const read = store.read(file);
@@ -129,6 +127,26 @@ test("ProjectView: 일반·AX를 한 형태로, AX 단계는 일반 단계로 �
   // The original AX record is untouched by the view.
   assert.equal(data.axProjects[0].stage, "execution");
   assert.deepEqual(P.PROJECT_FIELDS, { facility: "시설", resource: "자원보전", ax: "AX", admin: "행정", general: "일반" });
+});
+
+test("출처 표시: 원본이 있으면 현재 제목, 지워졌으면 사본 제목으로 '삭제된 …'", () => {
+  const data = normalize({
+    ...empty(),
+    calls: [{ id: "c1", title: "가상 전화 — 고친 제목", body: "", phone: "", done: false }],
+    notes: [{ id: "n1", title: "가상 메모", body: "" }],
+  });
+  assert.deepEqual(P.sourceView(data, { kind: "call", id: "c1", title: "가상 전화 — 처음 제목" }), {
+    live: true, label: "출처: 전화메모 · 가상 전화 — 고친 제목", page: "calls", id: "c1",
+  });
+  assert.deepEqual(P.sourceView(data, { kind: "call", id: "c9", title: "가상 지운 전화" }), {
+    live: false, label: "출처: 삭제된 전화메모 — 가상 지운 전화", page: null, id: "c9",
+  });
+  assert.equal(P.sourceView(data, { kind: "note", id: "n9", title: "가상 지운 메모" }).label, "출처: 삭제된 메모 — 가상 지운 메모");
+  assert.equal(P.sourceView(data, { kind: "patrol", id: "p9", title: "가상 순찰" }).label, "출처: 삭제된 순찰 기록 — 가상 순찰");
+  assert.equal(P.sourceView(data, null), null);
+  assert.equal(P.validateSource(null), null);
+  for (const bad of [{ kind: "unknown", id: "m1", title: "" }, { kind: "call", id: "", title: "" }, { kind: "call", id: "c1", title: "가".repeat(501) }, "c1"])
+    assert.throws(() => P.validateSource(bad), /출처/);
 });
 
 test("근거 표시: 폴더·스니펫은 현재 대상을 따르고, 대상이 지워지면 '대상 없음'", () => {

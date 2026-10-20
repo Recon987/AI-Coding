@@ -66,6 +66,10 @@
   - Claude: B3a
   - 사용자: 기관 PC에서 저장 암호화·백업 암호 확인
 - **Modified Code Snippets (if uncommitted)**: 없음
+## 최신 Codex 착수 — B1+B2a 통합 검증·B2b
+
+사용자가 보안·설계·B2a 판정과 B1 통합, B2b 구현을 지시했다. 기준 B2a bac7461, B1 origin/task/task-hub-b1-01 d7805e5. B2b를 in-progress(owner codex/verifier claude)로 선점한다. 독립 검증·통합·UI·Windows는 순서대로 수행하며 기존 회의·출처 자료를 보존한다. 아직 이 단계의 새 검사·승인 판정은 없다.
+
 
 ## 최신 Claude 인계 — 2026-10-20 B2a 사업·근거 보관함 자료 모델(TASK-HUB-B2A-01, review)
 

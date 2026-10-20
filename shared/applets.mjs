@@ -6,6 +6,7 @@
 /** Always shown; cannot be turned off. `pages` are the existing Page IDs each one covers. */
 export const CORE_APPLETS = [
   { id: "briefing", name: "업무 브리핑", icon: "briefing", category: "core", pages: ["briefing"] },
+  { id: "projects", name: "사업 공간", icon: "folders", category: "core", pages: ["projects", "references"] },
   { id: "calendar", name: "월간 일정", icon: "calendar", category: "core", pages: ["calendar"] },
   // navName: shorter sidebar text; the full name stays the accessible name.
   { id: "tasks", name: "인수인계·제출 기한", navName: "인수인계·기한", icon: "handover", category: "core", pages: ["handover", "submission", "work"] },

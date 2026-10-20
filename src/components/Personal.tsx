@@ -1,3 +1,4 @@
+import { LinkedProjects } from "./ProjectLinks";
 import { FollowUpPanel, FollowUpSummary, followUpId } from "./Work";
 import { matches, searchText } from "../../shared/search.mjs";
 import { EditorDialog, useEditorDraft } from "./EditorDialog";
@@ -165,7 +166,7 @@ export function Personal({
                 },
               ]}
             >
-              <FollowUpPanel data={data} source={{ type: mode === "calls" ? "call" : "note", id: n.id }} navigate={navigate} busy={busy} />
+<LinkedProjects data={data} ids={n.projectIds ?? []} navigate={navigate} busy={busy} />              <FollowUpPanel data={data} source={{ type: mode === "calls" ? "call" : "note", id: n.id }} navigate={navigate} busy={busy} />
               <p className="record-body">{n.body || "내용 없음"}</p>
               {mode === "calls" && <p className="source">전화번호 · {n.phone || "없음"}</p>}
             </ListRow>

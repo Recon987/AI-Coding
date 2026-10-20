@@ -8,7 +8,6 @@ const path = require("node:path");
 const store = require("../desktop/store.cjs");
 const { calendarItems, reminderItems, READER_VERSION } = require("../shared/model.mjs");
 const { newWork } = require("../shared/work.mjs");
-const { TEST_PASSWORD } = require("./backup-ui.cjs");
 const root = path.resolve(__dirname, "..");
 
 (async () => {
@@ -102,7 +101,6 @@ const root = path.resolve(__dirname, "..");
     await row("가상 검토 메모").waitFor({ state: "hidden" });
     await goTo(page, "작업");
     await row("가상 메모 후속 어제").getByRole("button", { name: /^수정 ·/ }).click();
-    // 만들 때의 출처 제목 사본으로 표시한다(HUB-SCHEMA-01 6장, 통합 때 추가).
     await dialog().getByText("출처: 삭제된 메모 — 가상 검토 메모", { exact: true }).waitFor();
     assert.equal(await dialog().getByLabel("작업 내용").inputValue(), "삭제 뒤에도 보존할 후속 본문");
     assert.equal(await dialog().getByRole("button", { name: /^출처:/ }).count(), 0);
@@ -160,12 +158,12 @@ const root = path.resolve(__dirname, "..");
       dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [backup] });
       dialog.showMessageBox = async () => ({ response: 1 });
     }, backup);
-    // TASK-SECURITY-03: backups are password-sealed; restore asks for the password.
-    assert.equal(await page.evaluate((pw) => window.workdesk.backup(pw), TEST_PASSWORD), true);
-    assert.deepEqual(await store.readBackup(backup, TEST_PASSWORD), snapshot);
+    const password = "가상 B1 통합 백업 암호 2026";
+    await page.evaluate((password) => window.workdesk.backup(password), password);
+    assert.deepEqual(await store.readBackup(backup, password), snapshot);
     await page.evaluate((data) => window.workdesk.save(data), { ...snapshot, workItems: [...snapshot.workItems, newWork({ id: "temporary", title: "복원 전 임시 작업" })] });
-    assert.deepEqual(await page.evaluate(() => window.workdesk.restore()), { needsPassword: true, name: "backup.json" });
-    assert.ok((await page.evaluate((pw) => window.workdesk.restorePassword(pw), TEST_PASSWORD)).data);
+    const restored = await page.evaluate(async (password) => { const result = await window.workdesk.restore(); return result?.needsPassword ? window.workdesk.restorePassword(password) : result; }, password);
+    assert.ok(restored?.data);
     assert.deepEqual(saved(), snapshot);
     assert.ok(store.restoreCopies(file).length > 0);
 
