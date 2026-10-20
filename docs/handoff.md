@@ -4,6 +4,20 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 제품 방향 재점검 — 2026-10-20(로컬 검토안)
+
+사용자는사업/업무/자료연결·반복보고·인계/공유를모두담는범용공단업무허브를원한다. 기존기능보완위주흐름을점검하고공통사업/업무공간→직무모듈→기관연계라는제품성장안을제안했다. [방향안](product/direction-2026-10-20.md), [Claude/Gemini전달용검토요청](collaboration/product-direction-dispatch-2026-10-20.md). 실제두모델응답/합의는아직없다. 현재Claude4c4f521의SECURITY-03은별도로보존한다. 제품전략외부게시는자동승인검토에서거절돼로컬상태다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding, task/task-product-direction-01(로컬), 기준main ea3105e·검증기록960d2fb
+- **Task Card**: PRODUCT-DIRECTION-01 review. Claude/Gemini실제검토응답대기, 신규구현/우선순위미확정
+- **Latest Pushed Commit**: 이번전략미푸시. 이전확인푸시960d2fb(POSTMERGE-02검증). 최종로컬해시는응답패킷참조
+- **Completed Steps & Modified Files**: direction-2026-10-20.md(방향/레퍼런스/큰개발묶음), 공동검토요청서, 카드·handoff·작업기록
+- **Changed Interfaces / Schema Diff**: 없음. 오프라인/기존자료계약유지, 기관API미접속, 전문모듈/협업은설계제안
+- **Test Status**: 문서/보드검사결과는작업기록참조. 제품검사/desktop미실행(제품미변경)
+- **Remaining Work for Gemini**: 네직무흐름·세화면·코어/모듈경계검토. Claude는보안체크포인트보존및통합안검토. 전략게시승인·구현착수결정별도
+- **Modified Code Snippets (if uncommitted)**: 제품변경없음. 전략문서는로컬커밋보존·원격게시차단, 최종상태는응답패킷참조
+
 ## 최신 Codex 인계 — 2026-10-20 PR16 병합 후 재검증
 
 PR16은main ea3105e로이미병합됐고mainWindows39372610397도성공했다. **LOC-01·SNIP-01보완을Codex가독립재검증해모두해결승인**했다. [최종판정·새증빙](reviews/2026-10-20-codex-postmerge02.md). 아래이전반려/재검증예정표시는당시기록이다.
