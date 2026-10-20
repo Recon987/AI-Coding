@@ -1,7 +1,7 @@
 ---
 id: TASK-SNIPPET-COORDS-01
 title: DD↔DMS Python 예제의 음수 1도 미만 좌표 부호 보존
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -31,7 +31,7 @@ updated: 2026-10-20
 - [x] 2. 경계 검증·기록
 
 ## 재개 위치
-구현 완료, Codex 재검증 대기. 검증 때 볼 곳: shared/ax.mjs `example-dd-dms`(설명·코드), tests/ax-desk.test.cjs의 SNIP-01 두 검사, `node tests/postmerge-boundary-audit.cjs`.
+완료(2026-10-20 사용자 승인으로 main 병합, 9주기). 사후 검증에서 결함이 나오면 새 카드로 처리한다.
 
 ## 구현 메모
 - 계약 변경: `dd_to_dms(value, axis="lat")` → `(도, 분, 초, 반구)`, 반구는 N·S·E·W. `dms_to_dd(도, 분, 초, 반구)` → 부호 있는 십진도. 부호를 도에 싣지 않으므로 0도(남위·서경 1도 미만)에서도 반구가 남는다. 앱의 좌표 입력(`decimalToDms`의 hemisphere)과 같은 규칙이라 설명의 "순찰 기록의 좌표 입력과 같은 규칙"이 사실이 됐다.
@@ -44,3 +44,7 @@ updated: 2026-10-20
 
 ## 검증 기록
 2026-10-20 Codex가 가상 예제를 Python 3으로 추출 실행해 재현했다. 제품 코드는 미수정.
+
+### 2026-10-20 사용자 병합 승인(9주기)
+- 사용자: "main 병합 승인할게, 병합해". SNIP-01 보완(49bbeb1)은 Codex 재검증 전 — 사후 검증 예정.
+- 병합 전: Linux Node 22 `npm test` 169/169(시간대 5종), `npm run test:desktop` 종료 0(진입점 18 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11, Codex 감사 desktop-nav-zones-audit 5/5·postmerge-boundary-audit 3/3. Windows 39365534106(49bbeb1) 성공.

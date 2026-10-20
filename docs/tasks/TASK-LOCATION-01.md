@@ -1,7 +1,7 @@
 ---
 id: TASK-LOCATION-01
 title: 담당구역 번호 목록(로컬 반입)과 순찰 선택 입력
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -38,7 +38,7 @@ updated: 2026-10-20
 - [x] 3. 테스트·문서
 
 ## 재개 위치
-LOC-01 보완 완료, Codex 재검증 대기(tests/desktop-nav-zones-audit.cjs의 LOC-01 두 사례, tests/desktop-zones-smoke.cjs 새 단계).
+완료(2026-10-20 사용자 승인으로 main 병합, 9주기). 사후 검증에서 결함이 나오면 새 카드로 처리한다.
 
 ## LOC-01 보완 (2026-10-20, Claude)
 - 원인: src/components/ZoneManager.tsx 파일 선택 처리에서 정상 파일만 `update()`로 미리보기를 지우고, 2MB 초과·UTF-8 아님 같은 거부 경로는 미리보기를 남겨 이전 CSV의 "확인 후 반입 적용"이 살아 있었다.
@@ -56,3 +56,7 @@ LOC-01 보완 완료, Codex 재검증 대기(tests/desktop-nav-zones-audit.cjs�
 
 ### 2026-10-20 Codex 추가 독립 검증
 반려(LOC-01/P2). 정상 CSV 미리보기 뒤 다른 파일이 UTF-8 오류/2MB 초과로 거부되면 CSV칸은 비워지지만 이전 미리보기·적용 단추가 남는다. 누르면 이전 파일의 구역이 실제 저장된다. 두 경로 각각 독립 재현 실패. 파일 선택 변경·읽기 실패 시 preview 무효화 보완 후 재검증한다. 정상 반입·저장 실패 보존·읽기전용은 통과. 전체 필수 검사 성공과 별도 발견이다. 전체 desktop18+감사3(9/9), Windows39358186950 소스/패키지 로그 대조 완료. 상세는 위 검토 문서.
+
+### 2026-10-20 사용자 병합 승인(9주기)
+- 사용자: "main 병합 승인할게, 병합해". Codex 반려 LOC-01 보완(f5c1e47)은 Codex 재검증 전 — 사후 검증 예정. 정상 경로는 Codex 통과.
+- 병합 전: Linux Node 22 `npm test` 169/169(시간대 5종), `npm run test:desktop` 종료 0(진입점 18 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11, Codex 감사 desktop-nav-zones-audit 5/5·postmerge-boundary-audit 3/3. Windows 39365534106(49bbeb1) 성공.

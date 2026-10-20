@@ -1,7 +1,7 @@
 ---
 id: TASK-TZ-TEST-01
 title: '고발·인계' minReader 테스트를 실행 시간대와 무관하게 고정
-status: review
+status: done
 role: builder
 owner: claude
 verifier: codex
@@ -33,7 +33,7 @@ updated: 2026-10-20
 - [x] 4. `npm run test:desktop` 실행 후 검증 요청
 
 ## 재개 위치
-승인. 테스트 자료의 오프셋 한 줄만 바뀌고 minReader·집계·양식 등의 기존 검증을 줄이지 않았다. 519b7cc 통합본의 전체 npm test5개 시간대 각각167/167 통과. 총괄 병합 대기(review 유지). [독립 검토·증빙](../reviews/2026-10-20-codex-dispatch.md).
+완료(2026-10-20 사용자 승인으로 main 병합, 9주기). 사후 검증에서 결함이 나오면 새 카드로 처리한다.
 
 ## 테스트 상태
 - 수정 전 `TZ=America/New_York npm test`: 실패 1건(위 테스트, 2026-10-19 기간 집계에서 기록 누락)
@@ -50,3 +50,7 @@ updated: 2026-10-20
 
 ### 2026-10-20 Codex 추가 독립 검증
 승인. 테스트 자료의 오프셋 한 줄만 바뀌고 minReader·집계·양식 등의 기존 검증을 줄이지 않았다. 519b7cc 통합본의 전체 npm test5개 시간대 각각167/167 통과. 총괄 병합 대기(review 유지). 전체 desktop18+감사3(9/9), Windows39358186950 소스/패키지 로그 대조 완료. 상세는 위 검토 문서.
+
+### 2026-10-20 사용자 병합 승인(9주기)
+- 사용자: "main 병합 승인할게, 병합해". Codex 승인(2026-10-20 디스패치 검증).
+- 병합 전: Linux Node 22 `npm test` 169/169(시간대 5종), `npm run test:desktop` 종료 0(진입점 18 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11, Codex 감사 desktop-nav-zones-audit 5/5·postmerge-boundary-audit 3/3. Windows 39365534106(49bbeb1) 성공.

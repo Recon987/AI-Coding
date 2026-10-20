@@ -9,13 +9,13 @@
 원격 게시 승인을 받아 기존b3552b9를 먼저 푸시했고 Claude519b7cc의 세 카드를 추가 검증했다. **TZ-TEST-01·NAV-02 승인, LOCATION-01은LOC-01/P2 반려**다. 정상 미리보기 뒤 다른CSV가UTF-8/크기 오류로 거부되면 이전 적용 단추가 남아 낡은CSV를 저장할 수 있다. [최종 판정·증빙](reviews/2026-10-20-codex-dispatch.md). 이전 사후검증의MOD-01·AX-DATES-01·보고서 승인은 유지하고SNIP-01/P3는backlog다.
 
 ### [GEMINI_HANDOFF_PACKET]
-- **Repository & Branch**: Recon987/AI-Coding. main = a70d9aa. 작업 브랜치 claude/zen-cannon-wc1at4 = main + 8주기 기록 + TZ-TEST-01 + NAV-02 + LOCATION-01(+LOC-01) + Codex 사후 검증 기록(5249dd7) + SNIPPET-COORDS-01
-- **Task Card**: TZ-TEST-01·NAV-02 review(Codex 승인). LOCATION-01 review(LOC-01 보완, Codex 재검증 필요). SNIPPET-COORDS-01 review(Codex 재검증 필요). REVIEW-POSTMERGE-01 done(Claude 교차 확인). 8주기 카드 Codex 사후 승인 완료
-- **Latest Pushed Commit**: 49bbeb1(SNIP-01 보완, Windows 39365534106 성공) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
-- **Completed Steps & Modified Files**: src/components/ZoneManager.tsx(LOC-01), shared/ax.mjs(example-dd-dms 반구 계약), tests/desktop-zones-smoke.cjs(LOC-01 회귀), tests/ax-desk.test.cjs(SNIP-01 2개), 카드 4장·작업 기록 34장
-- **Changed Interfaces / Schema Diff**: 자료 형식·IPC 변경 없음. 예제 스니펫 텍스트만 변경(새로 넣는 예제에만 적용, 기존 저장 예제 불변)
-- **Test Status**: Linux Node 22: npm test 169/169(시간대 5종), desktop-nav-zones-audit 5/5, postmerge-boundary-audit 3/3, npm run test:desktop 종료 0(진입점 18 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows 39365534106(49bbeb1) 성공(단위 169/169·건너뜀 0, 소스·설치본 담당구역 PASS)
-- **Remaining Work for Gemini**: Codex: LOC-01·SNIP-01 재검증. 사용자: main 병합 승인(9주기: TZ-TEST-01·NAV-02·LOCATION-01·SNIPPET-COORDS-01). Claude: 승인 시 PR·병합
+- **Repository & Branch**: Recon987/AI-Coding (작업 브랜치 claude/zen-cannon-wc1at4 → main, 9주기 병합 PR). 병합 전 main a70d9aa
+- **Task Card**: TZ-TEST-01·NAV-02·LOCATION-01·SNIPPET-COORDS-01 done(사용자 병합 승인). LOC-01·SNIP-01 보완은 Codex 사후 재검증 예정. REVIEW-POSTMERGE-01 done. backlog: SECURITY-01(P1)·LAW-01·LEDGER-01
+- **Latest Pushed Commit**: 1518db5(Windows 기록) (병합 커밋 해시는 응답 패킷 참조)
+- **Completed Steps & Modified Files**: 카드 4장 done, docs/validation.md·loop-log 9주기, 작업 기록 35장, 이 인계장
+- **Changed Interfaces / Schema Diff**: 9주기 전체: 선택 컬렉션 `zones`, 화면 설정 localStorage `park-workdesk-last-page`, `appletOfPage`·`rememberPage`·`restorePage`, 예제 스니펫 example-dd-dms 반구 계약. IPC 변경 없음
+- **Test Status**: Linux Node 22 npm test 169/169(시간대 5종), test:desktop 진입점 18 + 감사 3, 화면 150·실패 0, 업무 과업 11/11, Codex 감사 5/5·3/3. Windows 39365534106 성공. PR·main Windows는 병합 과정에서 확인
+- **Remaining Work for Gemini**: Codex: LOC-01·SNIP-01 재검증. 사용자: 다음 카드 승인, AX 주간 브리핑/알림·스니펫 예제 방식 결정, 실제 담당구역 번호표 반입 확인
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```markdown
 ### [GEMINI_HANDOFF_PACKET]
@@ -30,6 +30,8 @@
 ```
 
 ## 2. 과제 현황
+
+**2026-10-20 네 번째 main 병합(9주기)**: TZ-TEST-01(시간대 독립 검사)·NAV-02(도구별 마지막 화면 기억)·LOCATION-01(담당구역 번호 목록·순찰 입력 제안, LOC-01 보완)·SNIPPET-COORDS-01(좌표 예제 반구 보존)과 Codex 사후 검증 기록(REVIEW-POSTMERGE-01)을 사용자 승인으로 병합. 자료 형식 v3 유지(선택 컬렉션 `zones` 추가, 화면 설정 localStorage 키 1개). **LOC-01·SNIP-01 보완은 Codex 재검증 전**(카드 기록 참조).
 
 **2026-10-20 세 번째 main 병합(8주기, 모듈형 개편)**: [PR #15](https://github.com/Recon987/AI-Coding/pull/15) → main a70d9aa(merge commit). Windows PR 39353328936(1623334)·main push 39353727584(a70d9aa) 성공. MODULES-01·02, AXDESK-01·02·03, AX-DATES-01과 묶음 카드 ARCH-MODULAR-01을 사용자 승인("main 병합 승인할게, 병합해")으로 병합. 기본 4종 + 켤 수 있는 모듈 메뉴(현장 순찰·사무소 현황·AX 사업 관리), 모듈 관리 서랍, AX 사업 관리(권역·단계·집행률·마일스톤 달력/브리핑 파생)·GIS·AI 스니펫·보고서 초안(새 IPC `export-ax-report`), 0001~0099년 날짜 보존. 자료 형식 v3 유지(선택 항목 `modules`·`axProjects`·`axSnippets`, 처음 저장 때 `.pre-modular-backup-<시각>.json`). **Codex 독립 검증은 MODULES-02·AXDESK-01 기능 승인까지만 받았고 MOD-01 보완·AXDESK-02·03·AX-DATES-01은 사후 검증 예정**(각 카드 검증 기록 참조).
 
