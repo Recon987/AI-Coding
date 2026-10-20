@@ -4,6 +4,31 @@
 
 이 문서는 **Codex·Gemini·Claude**가 `공원 업무 수첩 (Park Workdesk)` 작업을 주고받을 때 보는 저장소 전체 요약이다. **과제별 현재 상태는 `docs/tasks/<ID>.md` 카드가 유일한 원천**이며, `npm run board`로 현황판을 본다. 운영 절차는 [docs/orchestration/README.md](orchestration/README.md), 규칙은 [AGENTS.md](../AGENTS.md), 실행 증빙은 [docs/validation.md](validation.md), 아키텍처는 [docs/architecture.md](architecture.md)에 있다.
 
+## 최신 Claude 인계 — 2026-10-20 허브 v3 확장 스키마·B2/B3 분할안(TASK-HUB-SCHEMA-01)
+
+[claude-hub-schema-plan-2026-10-20.md](product/claude-hub-schema-plan-2026-10-20.md): Gemini 지시를 반영했다.
+- **사업**: ID 공간 하나와 보기 형태 하나(`ProjectView`)로 둔다. AX 사업은 `axProjects`에 그대로 저장해 무손실이다.
+- **근거 자료**: 전역 `references`에 모으고, 레코드는 `referenceIds[]`로 N:M 참조한다.
+- **출처**: `source`(1:N, 삭제된 출처 표시)로 둔다.
+- **판독 수준**: 3은 봉투 전용이다. 열거값을 확장하면 **4**를 쓴다(Gemini의 3을 조정, 근거 표기).
+- **기한·상태·라벨**: 기한 3종 계약, 상태 비전파, 라벨 표준을 정했다.
+- **카드 분할 B2a·B2b·B3a·B3b**: 순수 카드는 Claude, 화면 카드는 Codex가 맡고, 검증은 서로 바꾼다.
+
+제품 코드는 바꾸지 않았다.
+
+### [GEMINI_HANDOFF_PACKET]
+- **Repository & Branch**: Recon987/AI-Coding. main = ea3105e. 작업 브랜치 `claude/zen-cannon-wc1at4`
+- **Task Card**: TASK-HUB-SCHEMA-01 review(검증자 codex). 이전 SECURITY-01~03·HUB-ARCH-01·REVIEW-HUB-B1-01 review 유지
+- **Latest Pushed Commit**: 응답 패킷을 참조한다
+- **Completed Steps & Modified Files**: docs/product/claude-hub-schema-plan-2026-10-20.md, docs/tasks/TASK-HUB-SCHEMA-01.md(신규), 작업 기록 41장
+- **Changed Interfaces / Schema Diff**: 없음(명세 제안). 제안: `workItems`·`projects`·`references`(신규), `tasks`/`axProjects`의 `projectId?`·`referenceIds?`, 판독 수준 4 규칙
+- **Test Status**: `npm test` 196/196. 구판 모델 실측 1건
+- **Remaining Work for Gemini**:
+  - Gemini: B2b·B3b 화면 문구와 출처 제목 표시 결정
+  - Codex: B1 저장 위치 확인, 명세 검증
+  - 사용자: B2a~B3b 승인, AX 저장 통합 시점
+- **Modified Code Snippets (if uncommitted)**: 없음
+
 ## 최신 Claude 인계 — 2026-10-20 B1 병렬 기술 검토·보안 인계(TASK-REVIEW-HUB-B1-01)
 
 [claude-b1-review-2026-10-20.md](product/claude-b1-review-2026-10-20.md): SECURITY-02·03 현황과 B1이 따를 저장·백업·판독 계약, 요청 계약 5개 판정을 정리했다.
