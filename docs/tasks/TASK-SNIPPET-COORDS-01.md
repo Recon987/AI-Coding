@@ -40,7 +40,7 @@ updated: 2026-10-20
 - 검사: tests/ax-desk.test.cjs에서 Python 3.9+로 예제를 실제 실행해 13개 값(±0.5, ±38.119444, 0, -1″, 37.9999999, ±90, 경도 -0.5·±180·-127.123456) 왕복·반구·자리올림과 앱 변환 일치, 범위 밖 거부를 확인. Python이 없는 환경이면 건너뜀으로 표시(성공으로 세지 않음). Codex 감사 SNIP-01 통과.
 
 ## 테스트 상태
-2026-10-20 Linux(Node 22, Python 3): `npm test` 169/169(시간대 5종 각각, 건너뜀 0), `node tests/postmerge-boundary-audit.cjs` 3/3 종료 0, `npm run test:desktop` 종료 0(진입점 18 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행.
+2026-10-20 Linux(Node 22, Python 3): `npm test` 169/169(시간대 5종 각각, 건너뜀 0), `node tests/postmerge-boundary-audit.cjs` 3/3 종료 0, `npm run test:desktop` 종료 0(진입점 18 + 감사 3), 화면 검사 150·실패 0, 업무 과업 11/11. Windows 39365534106(49bbeb1, workflow_dispatch) 성공: 단위 169/169(건너뜀 0, SNIP-01 Python 검사 두 개 실제 실행·통과), 소스·설치본 실제 앱 검사 모두 통과.
 
 ## 검증 기록
 2026-10-20 Codex가 가상 예제를 Python 3으로 추출 실행해 재현했다. 제품 코드는 미수정.

@@ -11,10 +11,10 @@
 ### [GEMINI_HANDOFF_PACKET]
 - **Repository & Branch**: Recon987/AI-Coding. main = a70d9aa. 작업 브랜치 claude/zen-cannon-wc1at4 = main + 8주기 기록 + TZ-TEST-01 + NAV-02 + LOCATION-01(+LOC-01) + Codex 사후 검증 기록(5249dd7) + SNIPPET-COORDS-01
 - **Task Card**: TZ-TEST-01·NAV-02 review(Codex 승인). LOCATION-01 review(LOC-01 보완, Codex 재검증 필요). SNIPPET-COORDS-01 review(Codex 재검증 필요). REVIEW-POSTMERGE-01 done(Claude 교차 확인). 8주기 카드 Codex 사후 승인 완료
-- **Latest Pushed Commit**: 9701e95(SNIPPET-COORDS-01 착수) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
+- **Latest Pushed Commit**: 49bbeb1(SNIP-01 보완, Windows 39365534106 성공) (이 문서를 포함한 최종 해시는 응답 패킷 참조)
 - **Completed Steps & Modified Files**: src/components/ZoneManager.tsx(LOC-01), shared/ax.mjs(example-dd-dms 반구 계약), tests/desktop-zones-smoke.cjs(LOC-01 회귀), tests/ax-desk.test.cjs(SNIP-01 2개), 카드 4장·작업 기록 34장
 - **Changed Interfaces / Schema Diff**: 자료 형식·IPC 변경 없음. 예제 스니펫 텍스트만 변경(새로 넣는 예제에만 적용, 기존 저장 예제 불변)
-- **Test Status**: Linux Node 22: npm test 169/169(시간대 5종), desktop-nav-zones-audit 5/5, postmerge-boundary-audit 3/3, npm run test:desktop 종료 0(진입점 18 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows는 푸시 후 수동 실행
+- **Test Status**: Linux Node 22: npm test 169/169(시간대 5종), desktop-nav-zones-audit 5/5, postmerge-boundary-audit 3/3, npm run test:desktop 종료 0(진입점 18 + 감사 3), 화면 150·실패 0, 업무 과업 11/11. Windows 39365534106(49bbeb1) 성공(단위 169/169·건너뜀 0, 소스·설치본 담당구역 PASS)
 - **Remaining Work for Gemini**: Codex: LOC-01·SNIP-01 재검증. 사용자: main 병합 승인(9주기: TZ-TEST-01·NAV-02·LOCATION-01·SNIPPET-COORDS-01). Claude: 승인 시 PR·병합
 - **Modified Code Snippets (if uncommitted)**: 없음
 ```markdown
